@@ -1,0 +1,13 @@
+{
+  "name": "@template/eslint-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./next": "./next.mjs"
+  },
+  "dependencies": {
+    "eslint": "catalog:",
+    "eslint-config-next": "catalog:"
+  }
+}
