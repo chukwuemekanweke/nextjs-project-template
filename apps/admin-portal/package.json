@@ -11,6 +11,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@template/dashboard-ui": "workspace:*",
+    "@template/ui-core": "workspace:*",
     "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:"
