@@ -271,22 +271,45 @@ export function Hero({
               )}
             </div>
           </div>
-          <div className="hidden md:w-1/2 lg:block">
-            <div className="relative aspect-700/444 w-full">
+          <div className="animate_right hidden md:w-1/2 lg:block">
+            <div className="relative 2xl:-mr-7.5">
               <Image
-                className="shadow-solid-l dark:hidden"
-                src="/images/hero/hero-light.svg"
-                alt="Product preview"
-                fill
-                priority
+                src="/images/shape/shape-01.png"
+                alt=""
+                width={46}
+                height={246}
+                className="absolute -top-0 -left-11.5"
               />
               <Image
-                className="shadow-solid-l hidden dark:block"
-                src="/images/hero/hero-dark.svg"
-                alt="Product preview"
-                fill
-                priority
+                src="/images/shape/shape-02.svg"
+                alt=""
+                width={37}
+                height={37}
+                className="absolute right-0 bottom-0 z-10"
               />
+              <Image
+                src="/images/shape/shape-03.svg"
+                alt=""
+                width={22}
+                height={22}
+                className="absolute -right-6.5 bottom-0 z-1"
+              />
+              <div className="relative aspect-700/444 w-full">
+                <Image
+                  className="shadow-solid-l dark:hidden"
+                  src="/images/hero/hero-light.svg"
+                  alt="Product preview"
+                  fill
+                  priority
+                />
+                <Image
+                  className="shadow-solid-l hidden dark:block"
+                  src="/images/hero/hero-dark.svg"
+                  alt="Product preview"
+                  fill
+                  priority
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -325,10 +348,10 @@ export function Features({
   items: FeatureItem[];
 }) {
   return (
-    <section className="py-20 lg:py-25">
+    <section id="features" className="py-20 lg:py-25 xl:py-30">
       <div className="max-w-c-1315 mx-auto px-4 md:px-8 xl:px-0">
         <SectionHeading eyebrow="Core features" title={heading} />
-        <div className="grid gap-7.5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12.5 grid grid-cols-1 gap-7.5 md:grid-cols-2 lg:mt-15 lg:grid-cols-3 xl:mt-20 xl:gap-12.5">
           {items.map((x, i) => (
             <motion.article
               key={x.title}
@@ -337,7 +360,7 @@ export function Features({
               whileInView="visible"
               viewport={{ once: true }}
               transition={{ delay: i * 0.08 }}
-              className="shadow-solid-3 dark:bg-blacksection rounded-lg bg-white p-7.5 xl:p-12.5"
+              className="animate_top shadow-solid-3 hover:shadow-solid-4 dark:border-strokedark dark:bg-blacksection dark:hover:bg-hoverdark z-40 rounded-lg border border-white bg-white p-7.5 transition-all xl:p-12.5"
             >
               <div className="bg-primary mb-7.5 flex h-15 w-15 items-center justify-center rounded-[4px] text-xl text-white">
                 {x.icon ?? String(i + 1).padStart(2, "0")}
@@ -364,24 +387,66 @@ export function Cta({
   action: Action;
 }) {
   return (
-    <section className="px-4 py-20 md:px-8">
-      <div className="max-w-c-1390 bg-primary relative mx-auto overflow-hidden rounded-lg px-7.5 py-12 text-center text-white md:px-12.5 lg:py-17.5">
-        <Image
-          src="/images/shape/shape-04.png"
-          alt=""
-          width={300}
-          height={300}
-          className="absolute top-0 left-0 opacity-30"
-        />
-        <div className="relative">
-          <h2 className="xl:text-sectiontitle2 text-3xl font-bold">{title}</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-white/80">{description}</p>
-          <Link
-            href={action.href}
-            className="text-primary mt-8 inline-flex rounded-full bg-white px-7.5 py-3 font-medium"
+    <section className="overflow-hidden px-4 py-20 md:px-8 lg:py-25 xl:py-30 2xl:px-0">
+      <div className="max-w-c-1390 dark:bg-blacksection dark:stroke-strokedark mx-auto rounded-lg bg-linear-to-t from-[#F8F9FF] to-[#DEE7FF] px-7.5 py-12.5 md:px-12.5 xl:px-17.5 xl:py-0 dark:bg-linear-to-t dark:from-transparent dark:to-transparent">
+        <div className="flex flex-wrap gap-8 md:flex-nowrap md:items-center md:justify-between md:gap-0">
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, x: -20 },
+              visible: { opacity: 1, x: 0 },
+            }}
+            initial="hidden"
+            whileInView="visible"
+            transition={{ duration: 1, delay: 0.1 }}
+            viewport={{ once: true }}
+            className="animate_left md:w-[70%] lg:w-1/2"
           >
-            {action.label}
-          </Link>
+            <h2 className="xl:text-sectiontitle4 mb-4 w-11/12 text-3xl font-bold text-black dark:text-white">
+              {title}
+            </h2>
+            <p>{description}</p>
+          </motion.div>
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, x: 20 },
+              visible: { opacity: 1, x: 0 },
+            }}
+            initial="hidden"
+            whileInView="visible"
+            transition={{ duration: 1, delay: 0.1 }}
+            viewport={{ once: true }}
+            className="animate_right lg:w-[45%]"
+          >
+            <div className="flex items-center justify-end xl:justify-between">
+              <Image
+                width={299}
+                height={299}
+                src="/images/shape/shape-06.png"
+                alt=""
+                className="hidden xl:block"
+              />
+              <Link
+                href={action.href}
+                className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white hover:opacity-90 dark:bg-white dark:text-black"
+              >
+                {action.label}
+                <Image
+                  width={20}
+                  height={20}
+                  src="/images/icon/icon-arrow-dark.svg"
+                  alt=""
+                  className="dark:hidden"
+                />
+                <Image
+                  width={20}
+                  height={20}
+                  src="/images/icon/icon-arrow-light.svg"
+                  alt=""
+                  className="hidden dark:block"
+                />
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
