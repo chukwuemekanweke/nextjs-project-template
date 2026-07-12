@@ -1,22 +1,39 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+import { Footer, Header, PublicUiProvider } from "@template/public-ui";
+import { navigation, site } from "@/config/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Product", template: "%s | Product" },
-  description: "Discover a better way to manage your product experience.",
+  metadataBase: new URL(site.url),
+  title: { default: site.name, template: `%s | ${site.name}` },
+  description: site.description,
+  alternates: { canonical: "/" },
+  icons: { icon: "/images/favicon.ico" },
 };
 export default function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
-      <body>
-        <SiteHeader />
-        {children}
-        <SiteFooter />
+    <html lang="en" suppressHydrationWarning>
+      <body className="dark:bg-black">
+        <PublicUiProvider>
+          <Header
+            logoAlt={site.name}
+            navigation={navigation}
+            signIn={site.signIn}
+            register={site.register}
+          />
+          {children}
+          <Footer
+            description={site.description}
+            navigation={navigation}
+            legal={[
+              { label: "Privacy", href: "/privacy" },
+              { label: "Terms", href: "/terms" },
+            ]}
+          />
+        </PublicUiProvider>
       </body>
     </html>
   );
