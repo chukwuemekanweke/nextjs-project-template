@@ -1,22 +1,9 @@
 ﻿"use client";
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ThemeProvider, useTheme } from "next-themes";
-import { type FormEvent, type ReactNode, useEffect, useState } from "react";
-import type {
-  Action,
-  BlogPost,
-  FaqItem,
-  FeatureItem,
-  LinkItem,
-  LogoItem,
-  PricePlan,
-  TestimonialItem,
-} from "../types";
+import type { BlogPost } from "../types";
 
 const reveal = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
 
