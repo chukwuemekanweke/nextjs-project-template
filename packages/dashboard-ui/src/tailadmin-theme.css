@@ -1,7 +1,3 @@
-/*
- * TailAdmin design tokens and core utilities, adapted from the supplied
- * free-nextjs-admin-dashboard foundation. Copyright (c) TailAdmin. MIT.
- */
 @custom-variant dark (&:is(.dark *));
 
 @theme {

@@ -1,10 +1,5 @@
 import type { ReactNode } from "react";
 
-/**
- * TailAdmin-inspired data table primitives adapted for this workspace.
- * Copyright (c) TailAdmin. Retained under the MIT License.
- */
-
 export type TableColumn<Row> = {
   header: string;
   cell: (row: Row) => ReactNode;

@@ -1,10 +1,5 @@
 import type { HTMLAttributes, ReactNode } from "react";
 
-/**
- * TailAdmin-inspired card primitives adapted for this workspace.
- * Copyright (c) TailAdmin. Retained under the MIT License.
- */
-
 type CardProps = HTMLAttributes<HTMLDivElement>;
 
 export function Card({ className = "", ...props }: CardProps) {

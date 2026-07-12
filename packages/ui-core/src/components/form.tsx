@@ -6,11 +6,6 @@ import type {
   TextareaHTMLAttributes,
 } from "react";
 
-/**
- * TailAdmin-inspired form primitives adapted for this workspace.
- * Copyright (c) TailAdmin. Retained under the MIT License.
- */
-
 export function FormField({
   label,
   hint,

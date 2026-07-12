@@ -1,10 +1,5 @@
 import Link from "next/link";
 
-/**
- * TailAdmin-inspired pagination primitives adapted for this workspace.
- * Copyright (c) TailAdmin. Retained under the MIT License.
- */
-
 export function Pagination({
   currentPage,
   totalPages,
