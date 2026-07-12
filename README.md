@@ -85,15 +85,26 @@ The images run their standalone Next.js servers on ports 3000, 3001, and 3002 re
 
 ```text
 apps/
-  admin-portal/       Admin application (TailAdmin adoption follows)
+  admin-portal/       Admin application with an app-specific dashboard layout
   public-portal/      Public website (Solid adoption follows)
-  user-portal/        User application (TailAdmin adoption follows)
+  user-portal/        User application with an app-specific dashboard layout
 packages/
+  dashboard-ui/       Shared TailAdmin-derived dashboard primitives
   eslint-config/      Shared Next.js ESLint flat configuration
+  ui-core/            Shared TailAdmin-derived UI primitives
   typescript-config/  Shared strict TypeScript configuration
 ```
 
 All applications use the `@/*` alias for their local `src/*` directory. Generated API client code under `packages/api-client/generated` is reserved for a later epic and excluded from formatting and linting.
+
+## Shared Dashboard UI
+
+Epic 03 introduces two workspace packages for TailAdmin adoption:
+
+- `@template/ui-core` for cards, forms, modals, tables, pagination, and loading states
+- `@template/dashboard-ui` for dashboard shells, sidebars, mobile navigation, breadcrumbs, and profile menus
+
+Both packages expose stable root exports, retain TailAdmin MIT attribution in `LICENSE.tailadmin`, and avoid fake ecommerce data, shared navigation state, or template branding. The User Portal and Admin Portal compose those primitives locally so each application can change its navigation independently.
 
 ## Foundation Versions
 

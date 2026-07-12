@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { AdminShell } from "@/components/admin-shell";
+import { AdminLayoutShell } from "@/components/admin-layout-shell";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,7 +13,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AdminShell>{children}</AdminShell>
+        <AdminLayoutShell>{children}</AdminLayoutShell>
       </body>
     </html>
   );
