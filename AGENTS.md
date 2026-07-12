@@ -25,3 +25,36 @@
   features, and impact introduced by the branch.
 - Prefer a title that clearly states the main change and affected area, such as
   `feat(scope): summary of the change`.
+
+## Architecture documentation
+
+- Treat the Markdown files under `docs/architecture/` as living descriptions of
+  the architecture that is actually implemented in the repository.
+- When implementing or materially changing an epic, review the affected
+  architecture documents and update them in the same change when component
+  ownership, package boundaries, runtime flow, configuration, dependencies,
+  deployment boundaries, or developer extension points have changed.
+- Describe current behaviour from the source code. Do not present planned epic
+  work, placeholder navigation, or unimplemented integrations as existing
+  architecture.
+- When a later epic extends an earlier architectural area, refine the existing
+  document instead of creating a competing explanation. Add a new document only
+  when the epic introduces a genuinely separate architectural concern.
+- Preserve historical reasoning that remains relevant, but remove or rewrite
+  statements that the implementation has made inaccurate.
+- Keep `docs/architecture/README.md` as the index and recommended reading order.
+  Update it whenever an architecture document is added, removed, or renamed.
+- Architecture documentation should explain responsibilities and interactions,
+  not merely list files. Include concrete repository paths and short code
+  examples where they make an abstraction easier to understand.
+- Use Mermaid diagrams when they materially clarify application boundaries,
+  dependency direction, composition, or runtime flow. Keep diagrams consistent
+  with the source and avoid decorative diagrams.
+- Record important constraints and ownership rules, including the distinction
+  between application-specific composition under `apps/` and reusable
+  infrastructure under `packages/`.
+- For each completed epic, document the implemented outcome, major decisions,
+  extension points, and any deliberate placeholders owned by future epics.
+- Before finishing architecture-documentation changes, verify referenced paths,
+  commands, package names, ports, and dependency relationships against the
+  repository. Run relevant checks when documentation accompanies code changes.
