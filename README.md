@@ -55,7 +55,7 @@ cp apps/admin-portal/.env.example apps/admin-portal/.env.local
 cp apps/public-portal/.env.example apps/public-portal/.env.local
 ```
 
-The authenticated portals configure `NEXT_PUBLIC_API_BASE_URL`. The Public Portal additionally configures `NEXT_PUBLIC_USER_PORTAL_URL`, which is used for registration and sign-in calls to action. Example values are safe local defaults; secrets must never use the `NEXT_PUBLIC_` prefix.
+The authenticated portals configure `NEXT_PUBLIC_API_BASE_URL`. The Public Portal additionally configures its canonical URL, product branding, contact details, and `NEXT_PUBLIC_USER_PORTAL_URL`, which is used for registration and sign-in calls to action. Example values are safe local defaults; secrets must never use the `NEXT_PUBLIC_` prefix.
 
 ## Independent Containers
 
@@ -86,16 +86,30 @@ The images run their standalone Next.js servers on ports 3000, 3001, and 3002 re
 ```text
 apps/
   admin-portal/       Admin application with an app-specific dashboard layout
-  public-portal/      Public website (Solid adoption follows)
+  public-portal/      Solid-derived public website and route composition
   user-portal/        User application with an app-specific dashboard layout
 packages/
   dashboard-ui/       Shared TailAdmin-derived dashboard primitives
   eslint-config/      Shared Next.js ESLint flat configuration
+  public-ui/          Typed Solid-derived public-site sections
   ui-core/            Shared TailAdmin-derived UI primitives
   typescript-config/  Shared strict TypeScript configuration
 ```
 
 All applications use the `@/*` alias for their local `src/*` directory. Generated API client code under `packages/api-client/generated` is reserved for a later epic and excluded from formatting and linting.
+
+## Solid Public Portal
+
+The public portal directly adopts the supplied Solid Next.js template assets,
+layout styling, and section patterns. Original MIT notices are retained in
+`apps/public-portal/LICENSE.solid` and `packages/public-ui/LICENSE.solid`.
+Marketing-only dependencies remain scoped to `@template/public-ui` and the
+public application, keeping authenticated dashboard bundles independent.
+
+Typed configuration in `apps/public-portal/src/config/site.ts` supplies the
+placeholder content used across home, features, pricing, about, contact, blog,
+privacy, and terms pages. The portal also provides canonical metadata, a
+sitemap, robots metadata, and a responsive Solid-styled 404 page.
 
 ## Shared Dashboard UI
 

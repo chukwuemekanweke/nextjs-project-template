@@ -1,10 +1,5 @@
 import type { HTMLAttributes } from "react";
 
-/**
- * TailAdmin-inspired loading primitives adapted for this workspace.
- * Copyright (c) TailAdmin. Retained under the MIT License.
- */
-
 export function Skeleton({
   className = "",
   ...props

@@ -2,11 +2,6 @@
 
 import type { ReactNode } from "react";
 
-/**
- * TailAdmin-inspired modal primitives adapted for this workspace.
- * Copyright (c) TailAdmin. Retained under the MIT License.
- */
-
 export function Modal({
   open,
   title,
