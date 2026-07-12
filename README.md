@@ -16,7 +16,7 @@ Each application owns its package manifest, build output, runtime command, and d
 
 - Node.js 20.19.0 or later
 - Corepack (included with supported Node.js distributions)
-- pnpm 11.12.0, pinned through the root `packageManager` field
+- pnpm 10.34.5, pinned through the root `packageManager` field
 
 Enable the pinned package manager and install dependencies:
 
@@ -44,6 +44,30 @@ pnpm --filter @template/public-portal dev
 ```
 
 Replace `dev` with `build`, `lint`, `typecheck`, or `test` to run that check for only the selected application.
+
+## Environment Configuration
+
+Each application owns its environment configuration. Copy the relevant example before starting local development:
+
+```bash
+cp apps/user-portal/.env.example apps/user-portal/.env.local
+cp apps/admin-portal/.env.example apps/admin-portal/.env.local
+cp apps/public-portal/.env.example apps/public-portal/.env.local
+```
+
+The authenticated portals configure `NEXT_PUBLIC_API_BASE_URL`. The Public Portal additionally configures `NEXT_PUBLIC_USER_PORTAL_URL`, which is used for registration and sign-in calls to action. Example values are safe local defaults; secrets must never use the `NEXT_PUBLIC_` prefix.
+
+## Independent Containers
+
+Build each image from the repository root so its Dockerfile can access the workspace lockfile and shared packages:
+
+```bash
+docker build -f apps/user-portal/Dockerfile -t user-portal .
+docker build -f apps/admin-portal/Dockerfile -t admin-portal .
+docker build -f apps/public-portal/Dockerfile -t public-portal .
+```
+
+The images run their standalone Next.js servers on ports 3000, 3001, and 3002 respectively, use a non-root runtime user, and contain only the selected application's production output.
 
 ## Workspace Commands
 
