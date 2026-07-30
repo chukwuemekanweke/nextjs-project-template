@@ -12,6 +12,7 @@ import {
 } from "@template/dashboard-ui";
 import type { ReactNode } from "react";
 import { adminNavigation } from "@/config/navigation";
+import { branding } from "@/config/env";
 
 export function AdminLayoutShell({
   children,
@@ -24,7 +25,7 @@ export function AdminLayoutShell({
         <MobileNav
           activeHref={pathname}
           ariaLabel="Admin navigation"
-          brand="Admin Portal"
+          brand={branding.portals.admin}
           items={adminNavigation}
         />
       }
@@ -36,10 +37,10 @@ export function AdminLayoutShell({
                 className="text-xl font-semibold text-gray-800 dark:text-white/90"
                 href="/"
               >
-                Product Control
+                {branding.productName}
               </Link>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Operational tooling for privileged users.
+                {branding.portals.admin}
               </p>
             </div>
           }
@@ -72,7 +73,7 @@ export function AdminLayoutShell({
             ]}
             meta="Privileged session"
             name="Signed-in administrator"
-            role="Admin Portal"
+            role={branding.portals.admin}
           />
         </div>
       }

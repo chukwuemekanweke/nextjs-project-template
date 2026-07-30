@@ -12,6 +12,7 @@ import {
 } from "@template/dashboard-ui";
 import type { ReactNode } from "react";
 import { userNavigation } from "@/config/navigation";
+import { branding } from "@/config/env";
 
 export function UserLayoutShell({
   children,
@@ -24,7 +25,7 @@ export function UserLayoutShell({
         <MobileNav
           activeHref={pathname}
           ariaLabel="User navigation"
-          brand="User Portal"
+          brand={branding.portals.user}
           items={userNavigation}
         />
       }
@@ -36,10 +37,10 @@ export function UserLayoutShell({
                 className="text-xl font-semibold text-gray-800 dark:text-white/90"
                 href="/"
               >
-                Product Workspace
+                {branding.productName}
               </Link>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Self-service account management and activity.
+                {branding.portals.user}
               </p>
             </div>
           }
@@ -59,7 +60,7 @@ export function UserLayoutShell({
         <div className="flex items-center justify-between gap-4">
           <Breadcrumbs
             items={[
-              { href: "/", label: "Workspace" },
+              { href: "/", label: branding.portals.user },
               { label: currentLabel(pathname) },
             ]}
           />
@@ -74,7 +75,7 @@ export function UserLayoutShell({
             ]}
             meta="Verified account"
             name="Signed-in user"
-            role="User Portal"
+            role={branding.portals.user}
           />
         </div>
       }

@@ -11,11 +11,13 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@template/config": "workspace:*",
     "@template/dashboard-ui": "workspace:*",
     "@template/ui-core": "workspace:*",
     "next": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "catalog:",

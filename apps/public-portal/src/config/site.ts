@@ -7,17 +7,14 @@ import type {
   PricePlan,
   TestimonialItem,
 } from "@template/public-ui";
-import { userPortalHref } from "./env";
+import { branding, env, userPortalHref } from "./env";
 
 export const site = {
-  name: process.env.NEXT_PUBLIC_PRODUCT_NAME ?? "Product",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3002",
-  description:
-    process.env.NEXT_PUBLIC_PRODUCT_DESCRIPTION ??
-    "A configurable foundation for modern product teams.",
-  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@example.com",
-  address:
-    process.env.NEXT_PUBLIC_CONTACT_ADDRESS ?? "123 Product Street, Your City",
+  name: branding.productName,
+  url: env.siteUrl,
+  description: env.productDescription,
+  email: branding.supportEmail,
+  address: env.contactAddress,
   signIn: { label: "Sign in", href: userPortalHref("/sign-in") },
   register: { label: "Get started", href: userPortalHref("/register") },
 } as const;

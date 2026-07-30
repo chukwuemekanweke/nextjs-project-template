@@ -6,10 +6,16 @@ import type { LinkItem } from "../types";
 
 export function Footer({
   description,
+  logo,
+  logoAlt,
+  copyright,
   navigation,
   legal,
 }: {
   description: string;
+  logo: { light: string; dark: string };
+  logoAlt: string;
+  copyright: string;
   navigation: LinkItem[];
   legal: LinkItem[];
 }) {
@@ -19,15 +25,15 @@ export function Footer({
         <div className="flex flex-wrap gap-8 lg:justify-between">
           <div className="max-w-sm">
             <Image
-              src="/images/logo/logo-light.svg"
-              alt="Product"
+              src={logo.light}
+              alt={logoAlt}
               width={119}
               height={30}
               className="dark:hidden"
             />
             <Image
-              src="/images/logo/logo-dark.svg"
-              alt="Product"
+              src={logo.dark}
+              alt={logoAlt}
               width={119}
               height={30}
               className="hidden dark:block"
@@ -64,7 +70,7 @@ export function Footer({
           </div>
         </div>
         <div className="border-stroke dark:border-strokedark mt-12 border-t pt-7 text-sm">
-          Â© {new Date().getFullYear()} Product. All rights reserved.
+          © {new Date().getFullYear()} {copyright}
         </div>
       </div>
     </footer>

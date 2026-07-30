@@ -34,11 +34,11 @@ sequenceDiagram
 
 Route pages and root layouts have no `"use client"` directive, so they can remain Server Components. The dashboard app-specific shells are Client Components because they use `usePathname` to choose active navigation and breadcrumbs. The interactive shared dashboard shell, sidebar context/sidebar, mobile navigation, and modal are also Client Components because they use React state, context, browser APIs, effects, or click handlers. The public provider and header are Client Components: `next-themes`, `useTheme`, `usePathname`, state, and scroll listeners require browser execution. A component being reusable does not by itself make it client-side.
 
-## Local configuration and aliases
+## Local configuration, branding, and aliases
 
-Each `tsconfig.json` maps `@/*` to that application's `src/*`; `@/config/site` in Public Portal and `@/config/navigation` in a dashboard app are local imports. `@template/*` imports name workspace-package public APIs. The User and Admin `config/env.ts` modules read and normalize `NEXT_PUBLIC_API_BASE_URL`, defaulting to `http://localhost:5000`. Public Portal additionally owns its user-portal URL and its branding/contact/site URL values in `src/config/site.ts`.
+Each `tsconfig.json` maps `@/*` to that application's `src/*`; `@/config/site` in Public Portal and `@/config/navigation` in a dashboard app are local imports. `@template/*` imports name workspace-package public APIs. Every app's `src/config/env.ts` extends the shared `@template/config` browser schema with local values. `src/instrumentation.ts` validates the shared server schema at Next.js startup. See [shared configuration](./06-shared-configuration.md) for the exact variables and boundary rules.
 
-Environment values are application-owned—not a repository-wide runtime configuration system. The `.env.example` files document the current variables. `NEXT_PUBLIC_` values are public to browser bundles and should not hold secrets.
+Environment deployments remain application-owned—not a repository-wide runtime configuration system. Each `.env.example` documents the required server and browser values. `NEXT_PUBLIC_` values are intentionally public to browser bundles and must not hold secrets. Branding is supplied to layouts and reusable UI through each app's validated `branding` value, so a product rename, logo, colour, favicon, support email, copyright, or portal label does not require edits to shared components.
 
 ## Source package consumption and styling
 

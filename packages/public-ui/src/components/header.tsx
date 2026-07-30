@@ -22,11 +22,13 @@ function ThemeToggle() {
 
 export function Header({
   logoAlt,
+  logo,
   navigation,
   signIn,
   register,
 }: {
   logoAlt: string;
+  logo: { light: string; dark: string };
   navigation: LinkItem[];
   signIn: Action;
   register: Action;
@@ -48,14 +50,14 @@ export function Header({
         <div className="flex w-full items-center justify-between xl:w-1/4">
           <Link href="/">
             <Image
-              src="/images/logo/logo-light.svg"
+              src={logo.light}
               alt={logoAlt}
               width={119}
               height={30}
               className="dark:hidden"
             />
             <Image
-              src="/images/logo/logo-dark.svg"
+              src={logo.dark}
               alt={logoAlt}
               width={119}
               height={30}

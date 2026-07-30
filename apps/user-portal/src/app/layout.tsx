@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { UserLayoutShell } from "@/components/user-layout-shell";
+import { branding, env } from "@/config/env";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "User Portal", template: "%s | User Portal" },
-  description: "Manage your account and product activity.",
+  title: {
+    default: branding.portals.user,
+    template: `%s | ${branding.portals.user}`,
+  },
+  description: env.description,
+  icons: { icon: branding.favicon },
 };
 
 export default function RootLayout({
@@ -13,7 +18,9 @@ export default function RootLayout({
 }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en">
-      <body>
+      <body
+        style={{ "--brand-primary": branding.colours.primary } as CSSProperties}
+      >
         <UserLayoutShell>{children}</UserLayoutShell>
       </body>
     </html>

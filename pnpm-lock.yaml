@@ -45,6 +45,9 @@ catalogs:
     vitest:
       specifier: 4.1.10
       version: 4.1.10
+    zod:
+      specifier: 4.3.6
+      version: 4.3.6
 
 importers:
 
@@ -62,6 +65,9 @@ importers:
 
   apps/admin-portal:
     dependencies:
+      '@template/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@template/dashboard-ui':
         specifier: workspace:*
         version: link:../../packages/dashboard-ui
@@ -77,6 +83,9 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.7(react@19.2.7)
+      zod:
+        specifier: 'catalog:'
+        version: 4.3.6
     devDependencies:
       '@tailwindcss/postcss':
         specifier: 'catalog:'
@@ -114,6 +123,9 @@ importers:
 
   apps/public-portal:
     dependencies:
+      '@template/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@template/public-ui':
         specifier: workspace:*
         version: link:../../packages/public-ui
@@ -132,6 +144,9 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.7(react@19.2.7)
+      zod:
+        specifier: 'catalog:'
+        version: 4.3.6
     devDependencies:
       '@tailwindcss/postcss':
         specifier: 'catalog:'
@@ -169,6 +184,9 @@ importers:
 
   apps/user-portal:
     dependencies:
+      '@template/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@template/dashboard-ui':
         specifier: workspace:*
         version: link:../../packages/dashboard-ui
@@ -184,6 +202,9 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.7(react@19.2.7)
+      zod:
+        specifier: 'catalog:'
+        version: 4.3.6
     devDependencies:
       '@tailwindcss/postcss':
         specifier: 'catalog:'
@@ -212,6 +233,31 @@ importers:
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.2
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@24.10.1)(vite@8.1.4(@types/node@24.10.1)(jiti@2.7.0))
+
+  packages/config:
+    dependencies:
+      zod:
+        specifier: 'catalog:'
+        version: 4.3.6
+    devDependencies:
+      '@template/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@template/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.10.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.5(jiti@2.7.0)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2682,6 +2728,9 @@ packages:
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
 
+  zod@4.3.6:
+    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
+
   zod@4.4.3:
     resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
@@ -5114,5 +5163,7 @@ snapshots:
   zod-validation-error@4.0.2(zod@4.4.3):
     dependencies:
       zod: 4.4.3
+
+  zod@4.3.6: {}
 
   zod@4.4.3: {}
