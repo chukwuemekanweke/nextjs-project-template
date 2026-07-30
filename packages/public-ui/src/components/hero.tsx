@@ -70,7 +70,7 @@ export function Hero({
               <Image
                 src="/images/shape/shape-03.svg"
                 alt=""
-                width={22}
+                width={23}
                 height={22}
                 className="absolute -right-6.5 bottom-0 z-1"
               />

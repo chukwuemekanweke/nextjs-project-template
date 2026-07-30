@@ -21,7 +21,7 @@
   --color-black: #181c31;
   --color-blackho: #2c3149;
   --color-blacksection: #1c2136;
-  --color-primary: #006bff;
+  --color-primary: var(--brand-primary, #006bff);
   --color-primaryho: #0063ec;
   --color-meta: #20c5a8;
   --color-waterloo: #757693;

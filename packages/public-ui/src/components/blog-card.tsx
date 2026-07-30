@@ -22,6 +22,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
           alt={post.title}
           fill
           className="rounded-sm object-cover"
+          sizes="(min-width: 1024px) 33vw, 100vw"
         />
       </Link>
       <div className="px-4">
