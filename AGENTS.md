@@ -1,5 +1,13 @@
 # Repository Instructions
 
+## Backend API reference
+
+- The compatible backend repository is `C:\Work\Chidelu\BackendProjectTemplate`.
+- Its Web API project is `C:\Work\Chidelu\BackendProjectTemplate\src\BackendProjectTemplate.WebAPI`.
+- The checked-in frontend OpenAPI source is `backendprojecttemplatewebapi.json` at the repository root.
+- During local development, the Web API runs at `http://localhost:8080/`.
+- Treat the OpenAPI document and the running Web API as the authoritative contract when implementing or regenerating the frontend API client.
+
 ## Third-party license notices
 
 - Keep required third-party copyright and license notices in the relevant
