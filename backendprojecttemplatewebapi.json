@@ -2078,7 +2078,7 @@
           }
         }
       },
-      "JsonElement": {},
+      "JsonElement": { },
       "PasswordResetRequest": {
         "required": [
           "email"

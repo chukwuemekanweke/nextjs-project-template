@@ -21,6 +21,30 @@
 - Add a source-file notice only when the upstream license expressly requires
   one in that file or when legal guidance for the repository requires it.
 
+## API client architecture
+
+- The shared API client lives in `packages/api-client` and is handwritten.
+- Do not introduce an API client generator, generated source directory,
+  regeneration command, or generated-contract drift/coverage CI check.
+- Treat `backendprojecttemplatewebapi.json` and the running backend as contract
+  references. Update the relevant handwritten contract types, operation
+  metadata, operation implementation, and HTTP-boundary tests together.
+- Keep contract types grouped by stable backend resource area under
+  `packages/api-client/src/contracts`; do not create one file per DTO or one
+  enormous whole-API declaration file.
+- Reusable operations belong in `packages/api-client`, not in application
+  features. They must remain independent of React and TanStack Query.
+- TanStack Query keys, options, hooks, caching, retries, invalidation, optimistic
+  updates, view models, forms, notifications, and UI error behaviour belong to
+  the consuming application feature.
+- Browser code must never import `@template/api-client/server`, private
+  environment variables, cookie readers, access tokens, or refresh tokens.
+- Consumers must use package exports and must not import API-client internals.
+- Features and UI components must not construct raw backend URLs or implement
+  their own HTTP transport.
+- Update `docs/architecture/07-api-client.md` when API ownership, transport,
+  authentication, routing, package exports, or extension points change.
+
 ## Pull request descriptions
 
 - When generating a pull request title or description, always use the repository

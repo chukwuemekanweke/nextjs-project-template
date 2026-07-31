@@ -4,11 +4,14 @@ packages:
 
 allowBuilds:
   # Native dependencies required by Next.js image processing and ESLint resolution.
+  esbuild: true
+  msw: true
   sharp: true
   unrs-resolver: true
 
 catalog:
   "@tailwindcss/postcss": 4.3.2
+  "@tanstack/react-query": 5.101.4
   "@types/node": 24.10.1
   "@types/react": 19.2.14
   "@types/react-dom": 19.2.3

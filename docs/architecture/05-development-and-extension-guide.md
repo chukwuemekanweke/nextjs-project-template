@@ -12,6 +12,8 @@ This guide applies the boundaries described in [Monorepo foundation](./01-monore
 | Reusable dashboard layout, sidebar/nav rendering, breadcrumb/profile presentation | `packages/dashboard-ui/src`                                                                                  |
 | Shared public section rendering and public content types                          | `packages/public-ui/src`                                                                                     |
 | Public copy, navigation, CTAs, branding/contact values, page assembly             | `apps/public-portal/src/config/site.ts` and its `src/app` routes                                             |
+| Handwritten backend contracts, transport, errors, and resource operations         | `packages/api-client/src`                                                                                    |
+| Portal session cookies and same-origin authentication endpoints                   | matching dashboard app's `src/app/api/auth` and `src/lib/server-api.ts`                                      |
 | Shared TypeScript and ESLint policy                                               | `packages/typescript-config`, `packages/eslint-config`                                                       |
 | Application variables                                                             | the matching `apps/<app>/.env.example` and `src/config/env.ts`                                               |
 
@@ -39,9 +41,9 @@ Put a component in an **app** when it contains product wording, a route destinat
 
 ## Current architecture versus future work
 
-Implemented now: pnpm/Turbo workspace orchestration; strict shared TypeScript/ESLint; three standalone Next applications; TailAdmin-derived dashboard primitives and shell; Solid-derived typed public sections; application-owned navigation, configuration, metadata, static assets, and containers; and small configuration/navigation-focused Vitest tests.
+Implemented now: pnpm/Turbo workspace orchestration; strict shared TypeScript/ESLint; three standalone Next applications; TailAdmin-derived dashboard primitives and shell; Solid-derived typed public sections; application-owned navigation, configuration, metadata, static assets, and containers; a handwritten, strongly typed API package; and User/Admin same-origin authentication endpoints that keep backend tokens in secure HttpOnly cookies.
 
-Future or deliberately absent: shared configuration validation, the reserved generated API client, API calls/query cache, form state and submission infrastructure, authentication/session handling, backend authorization enforcement in the frontend, domain workflows for accounts/admin operations, checkout/contact processing, and observability. The dashboard pages’ empty tables and the Public Portal’s marketing/legal content are extension points, not evidence that those capabilities exist.
+Future or deliberately absent: authentication UI and frontend authorization policy; feature-specific TanStack Query caches; form state and submission presentation; domain workflows for accounts/admin operations; checkout/contact processing; and observability. The session boundary and typed resource operations are infrastructure, not evidence that these product workflows or screens exist. The dashboard pages' empty tables and the Public Portal's marketing/legal content remain extension points.
 
 ## Validate a change
 

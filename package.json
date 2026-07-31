@@ -12,6 +12,7 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
+    "sync:openapi": "pnpm --filter @template/api-client sync:openapi",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

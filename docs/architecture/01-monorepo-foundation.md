@@ -41,7 +41,7 @@ The same file has a `catalog` for the core dependency versions. Manifests use `c
 
 `@template/typescript-config` supplies strict, no-emit compiler defaults in [`base.json`](../../packages/typescript-config/base.json); its Next.js variant adds JSX preservation, DOM libraries, incremental compilation, and the Next TypeScript plugin. Applications and UI packages extend it.
 
-`@template/eslint-config/next` combines `eslint-config-next` Core Web Vitals and TypeScript configurations and ignores Next output, coverage, and the reserved generated API-client path. Application and UI-package ESLint files re-export that configuration. Root Prettier 3.9.5 and `prettier-plugin-tailwindcss` provide formatting via `pnpm format` and `pnpm format:check`.
+`@template/eslint-config/next` combines `eslint-config-next` Core Web Vitals and TypeScript configurations and ignores Next output and coverage. Application and package ESLint files re-export that configuration. Root Prettier 3.9.5 and `prettier-plugin-tailwindcss` provide formatting via `pnpm format` and `pnpm format:check`.
 
 ## Turborepo execution
 
