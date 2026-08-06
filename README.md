@@ -91,14 +91,15 @@ apps/
   user-portal/        User application with an app-specific dashboard layout
 packages/
   dashboard-ui/       Shared TailAdmin-derived dashboard primitives
-  api-client/         Handwritten contracts, operations, and API transport
+  api-client/         Handwritten contracts, domain clients, and API transport
+  api-react/          Reusable TanStack Query options, keys, and hooks
   eslint-config/      Shared Next.js ESLint flat configuration
   public-ui/          Typed Solid-derived public-site sections
   ui-core/            Shared TailAdmin-derived UI primitives
   typescript-config/  Shared strict TypeScript configuration
 ```
 
-All applications use the `@/*` alias for their local `src/*` directory. `packages/api-client/src/contracts` contains handwritten wire-contract types grouped by backend resource area; adjacent resource folders contain reusable operations, and `src/client` contains the transport and normalized error model. The checked-in OpenAPI JSON is a reference only and does not generate client source.
+All applications use the `@/*` alias for their local `src/*` directory. `packages/api-client` contains handwritten wire contracts, reusable domain clients, transport, and normalized errors. `packages/api-react` adds reusable TanStack Query policy without moving URLs or HTTP behaviour into React. The checked-in OpenAPI JSON is a reference only: drift tests inspect it, but no task generates client source.
 
 ## Solid Public Portal
 

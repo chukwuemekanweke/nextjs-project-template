@@ -1,3 +1,4 @@
+/** Wire contracts owned by the providers domain. */
 export type ActivateProviderRequest = {
   providerKey: string;
   providerType: string;

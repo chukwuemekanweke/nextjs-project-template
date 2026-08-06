@@ -1,5 +1,5 @@
-import type { GetCountriesQueryResponse } from "../contracts/reference-data";
-import { referenceDataOperations } from "../contracts/reference-data";
+import type { GetCountriesQueryResponse } from "./contracts";
+import { referenceDataOperations } from "./contracts";
 import type { ApiClient, ApiOperationOptions } from "../client";
 
 export const getCountries = (

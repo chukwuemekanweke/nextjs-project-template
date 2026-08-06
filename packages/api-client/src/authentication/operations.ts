@@ -16,8 +16,8 @@ import type {
   SignUpMutationResponse,
   SignUpWithGoogleMutationRequest,
   SignUpWithGoogleMutationResponse,
-} from "../contracts/authentication";
-import { authenticationOperations } from "../contracts/authentication";
+} from "./contracts";
+import { authenticationOperations } from "./contracts";
 import type { ApiClient, ApiOperationOptions } from "../client";
 
 export const signIn = (

@@ -1,2 +1,3 @@
 export * from "./operations";
-export type * from "../contracts/providers";
+export * from "./providers.client";
+export type * from "./contracts";

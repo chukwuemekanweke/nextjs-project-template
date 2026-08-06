@@ -8,8 +8,8 @@ import type {
   SetPaymentProviderActivationMutationRequest,
   SetPaymentProviderActivationMutationResponse,
   SetPaymentProviderActivationPathParams,
-} from "../contracts/payments";
-import { paymentsOperations } from "../contracts/payments";
+} from "./contracts";
+import { paymentsOperations } from "./contracts";
 import type { ApiClient, ApiOperationOptions } from "../client";
 
 export const getWalletTransactions = (

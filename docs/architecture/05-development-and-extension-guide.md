@@ -13,6 +13,7 @@ This guide applies the boundaries described in [Monorepo foundation](./01-monore
 | Shared public section rendering and public content types                          | `packages/public-ui/src`                                                                                     |
 | Public copy, navigation, CTAs, branding/contact values, page assembly             | `apps/public-portal/src/config/site.ts` and its `src/app` routes                                             |
 | Handwritten backend contracts, transport, errors, and resource operations         | `packages/api-client/src`                                                                                    |
+| Reusable TanStack Query keys, options, invalidation, providers, and hooks         | `packages/api-react/src`                                                                                     |
 | Portal session cookies and same-origin authentication endpoints                   | matching dashboard app's `src/app/api/auth` and `src/lib/server-api.ts`                                      |
 | Shared TypeScript and ESLint policy                                               | `packages/typescript-config`, `packages/eslint-config`                                                       |
 | Application variables                                                             | the matching `apps/<app>/.env.example` and `src/config/env.ts`                                               |
@@ -43,7 +44,7 @@ Put a component in an **app** when it contains product wording, a route destinat
 
 Implemented now: pnpm/Turbo workspace orchestration; strict shared TypeScript/ESLint; three standalone Next applications; TailAdmin-derived dashboard primitives and shell; Solid-derived typed public sections; application-owned navigation, configuration, metadata, static assets, and containers; a handwritten, strongly typed API package; and User/Admin same-origin authentication endpoints that keep backend tokens in secure HttpOnly cookies.
 
-Future or deliberately absent: authentication UI and frontend authorization policy; feature-specific TanStack Query caches; form state and submission presentation; domain workflows for accounts/admin operations; checkout/contact processing; and observability. The session boundary and typed resource operations are infrastructure, not evidence that these product workflows or screens exist. The dashboard pages' empty tables and the Public Portal's marketing/legal content remain extension points.
+Future or deliberately absent: authentication UI and frontend authorization policy; application-specific query workflows; form state and submission presentation; domain workflows for accounts/admin operations; checkout/contact processing; and observability. Shared query options and hooks are infrastructure, not evidence that these product workflows or screens exist. The dashboard pages' empty tables and the Public Portal's marketing/legal content remain extension points.
 
 ## Validate a change
 

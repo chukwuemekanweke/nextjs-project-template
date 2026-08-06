@@ -1,8 +1,11 @@
-import { createApiClient } from "../client/request";
-import type { ApiClient, ApiClientConfiguration } from "../client/types";
+import {
+  createApiClient,
+  type ApiClient,
+  type ApiClientOptions,
+} from "../api-client";
 
 export type BrowserApiClientConfiguration = Omit<
-  ApiClientConfiguration,
+  ApiClientOptions,
   "getAccessToken"
 >;
 

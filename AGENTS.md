@@ -25,18 +25,18 @@
 
 - The shared API client lives in `packages/api-client` and is handwritten.
 - Do not introduce an API client generator, generated source directory,
-  regeneration command, or generated-contract drift/coverage CI check.
+  regeneration command, or any drift check that generates or overwrites client code.
 - Treat `backendprojecttemplatewebapi.json` and the running backend as contract
   references. Update the relevant handwritten contract types, operation
-  metadata, operation implementation, and HTTP-boundary tests together.
-- Keep contract types grouped by stable backend resource area under
-  `packages/api-client/src/contracts`; do not create one file per DTO or one
+  metadata, operation implementation, HTTP-boundary tests, and drift registry together.
+- Keep endpoint contracts grouped with stable domain modules; keep only genuinely
+  cross-domain contracts under `shared`. Do not create one file per DTO or one
   enormous whole-API declaration file.
 - Reusable operations belong in `packages/api-client`, not in application
   features. They must remain independent of React and TanStack Query.
-- TanStack Query keys, options, hooks, caching, retries, invalidation, optimistic
-  updates, view models, forms, notifications, and UI error behaviour belong to
-  the consuming application feature.
+- Reusable TanStack Query keys, options, hooks, cache policies, and invalidation
+  belong in `packages/api-react`. Application-specific workflows, view models,
+  forms, notifications, navigation, and UI error behaviour remain in apps.
 - Browser code must never import `@template/api-client/server`, private
   environment variables, cookie readers, access tokens, or refresh tokens.
 - Consumers must use package exports and must not import API-client internals.

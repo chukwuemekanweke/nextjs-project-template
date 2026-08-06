@@ -3,8 +3,8 @@ import type {
   UpdateProfileMutationResponse,
   UploadAvatarMutationRequest,
   UploadAvatarMutationResponse,
-} from "../contracts/profiles";
-import { profilesOperations } from "../contracts/profiles";
+} from "./contracts";
+import { profilesOperations } from "./contracts";
 import type { ApiClient, ApiOperationOptions } from "../client";
 
 export const updateProfile = (

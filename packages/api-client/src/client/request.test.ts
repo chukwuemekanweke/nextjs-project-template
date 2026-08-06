@@ -119,6 +119,49 @@ describe("createApiClient", () => {
     });
   });
 
+  it.each([
+    [401, "unauthorized"],
+    [403, "forbidden"],
+    [404, "not-found"],
+    [409, "conflict"],
+    [422, "validation"],
+    [429, "rate-limited"],
+    [500, "server"],
+  ] as const)("normalizes HTTP %s as %s", async (status, kind) => {
+    const client = createApiClient({
+      baseUrl: "http://api.test",
+      fetch: async () =>
+        Response.json(
+          { title: "Backend title", traceId: "trace-status" },
+          { status },
+        ),
+    });
+    await expect(client.get("/status")).rejects.toMatchObject({
+      isCancelled: false,
+      isNetworkError: false,
+      kind,
+      status,
+      title: "Backend title",
+      traceId: "trace-status",
+    });
+  });
+
+  it("handles invalid JSON safely", async () => {
+    const client = createApiClient({
+      baseUrl: "http://api.test",
+      fetch: async () =>
+        new Response("{not-json", {
+          headers: { "content-type": "application/json" },
+          status: 502,
+        }),
+    });
+    await expect(client.get("/invalid-json")).rejects.toMatchObject({
+      kind: "unexpected",
+      safeMessage: "The service returned an unreadable response.",
+      status: 502,
+    });
+  });
+
   it("distinguishes timeouts, caller cancellation, and network failures", async () => {
     server.use(
       http.get("http://api.test/slow", async () => {
@@ -143,6 +186,34 @@ describe("createApiClient", () => {
     await expect(
       client.request({ method: "GET", path: "/network" }),
     ).rejects.toMatchObject({ kind: "network" });
+  });
+
+  it("supports convenience methods and request-level correlation IDs", async () => {
+    const requests: Array<{ method?: string; correlationId: string | null }> =
+      [];
+    const client = createApiClient({
+      baseUrl: "http://api.test",
+      fetch: async (_input, init) => {
+        requests.push({
+          correlationId: new Headers(init?.headers).get("x-correlation-id"),
+          method: init?.method,
+        });
+        return new Response(null, { status: 204 });
+      },
+    });
+    await client.get("/one", { correlationId: "caller-id" });
+    await client.post("/two", { value: true });
+    await client.put("/three", { value: true });
+    await client.patch("/four", { value: true });
+    await client.delete("/five");
+    expect(requests.map(({ method }) => method)).toEqual([
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+    ]);
+    expect(requests[0]?.correlationId).toBe("caller-id");
   });
 
   it("keeps configuration isolated between client instances", async () => {

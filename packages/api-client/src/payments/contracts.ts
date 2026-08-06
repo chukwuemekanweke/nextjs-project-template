@@ -1,3 +1,4 @@
+/** Wire contracts owned by the payments domain. */
 export type GetWalletTransactionsQueryParams = {
   Cursor?: string;
   Limit?: number | string;

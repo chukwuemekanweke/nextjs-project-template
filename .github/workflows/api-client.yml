@@ -5,6 +5,8 @@ on:
     paths:
       - "apps/**"
       - "packages/api-client/**"
+      - "packages/api-react/**"
+      - "backendprojecttemplatewebapi.json"
       - "packages/config/**"
       - "packages/eslint-config/**"
       - "packages/typescript-config/**"
@@ -18,6 +20,8 @@ on:
     paths:
       - "apps/**"
       - "packages/api-client/**"
+      - "packages/api-react/**"
+      - "backendprojecttemplatewebapi.json"
       - "packages/config/**"
       - "packages/eslint-config/**"
       - "packages/typescript-config/**"

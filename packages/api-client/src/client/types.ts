@@ -19,18 +19,51 @@ export interface ApiRequest<TBody = unknown> {
   query?: Readonly<Record<string, QueryValue>> | object;
   signal?: AbortSignal;
   timeoutMs?: number;
+  correlationId?: string;
 }
 
 export type ApiOperationOptions = Pick<
   ApiRequest,
-  "cache" | "credentials" | "headers" | "next" | "signal" | "timeoutMs"
+  | "cache"
+  | "correlationId"
+  | "credentials"
+  | "headers"
+  | "next"
+  | "signal"
+  | "timeoutMs"
 >;
 
-export interface ApiClient {
+export interface ApiTransport {
   request<TResponse, TBody = unknown>(
     request: ApiRequest<TBody>,
   ): Promise<TResponse>;
+  get<TResponse>(
+    path: string,
+    options?: ApiOperationOptions,
+  ): Promise<TResponse>;
+  post<TResponse, TBody = unknown>(
+    path: string,
+    body?: TBody,
+    options?: ApiOperationOptions,
+  ): Promise<TResponse>;
+  put<TResponse, TBody = unknown>(
+    path: string,
+    body?: TBody,
+    options?: ApiOperationOptions,
+  ): Promise<TResponse>;
+  patch<TResponse, TBody = unknown>(
+    path: string,
+    body?: TBody,
+    options?: ApiOperationOptions,
+  ): Promise<TResponse>;
+  delete<TResponse>(
+    path: string,
+    options?: ApiOperationOptions,
+  ): Promise<TResponse>;
 }
+
+/** @deprecated Prefer ApiTransport. */
+export type ApiClient = ApiTransport;
 
 export interface ApiClientConfiguration {
   baseUrl: string;
@@ -38,7 +71,9 @@ export interface ApiClientConfiguration {
   defaultCache?: RequestCache;
   defaultHeaders?: HeadersInit | (() => HeadersInit | Promise<HeadersInit>);
   fetch?: typeof globalThis.fetch;
-  getAccessToken?: () => string | undefined | Promise<string | undefined>;
+  getAccessToken?: () =>
+    string | null | undefined | Promise<string | null | undefined>;
+  createCorrelationId?: () => string;
   getCorrelationId?: () => string | undefined | Promise<string | undefined>;
   timeoutMs?: number;
 }

@@ -10,11 +10,13 @@ describe("package boundaries", () => {
       ".",
       "./authentication",
       "./browser",
+      "./contract",
       "./payments",
       "./profiles",
       "./providers",
       "./reference-data",
       "./server",
+      "./transport",
     ]);
   });
 

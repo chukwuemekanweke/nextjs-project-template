@@ -1,8 +1,8 @@
 import type {
   SetActiveProviderMutationRequest,
   SetActiveProviderMutationResponse,
-} from "../contracts/providers";
-import { providersOperations } from "../contracts/providers";
+} from "./contracts";
+import { providersOperations } from "./contracts";
 import type { ApiClient, ApiOperationOptions } from "../client";
 
 export const setActiveProvider = (

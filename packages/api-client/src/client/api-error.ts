@@ -54,9 +54,11 @@ export class ApiError extends Error {
   readonly retryAfter: string | undefined;
   readonly safeMessage: string;
   readonly status: number | undefined;
-  readonly title: string | undefined;
+  readonly title: string;
   readonly traceId: string | undefined;
   readonly validationErrors: ValidationErrors;
+  readonly isNetworkError: boolean;
+  readonly isCancelled: boolean;
 
   constructor(options: ApiErrorOptions) {
     super(options.safeMessage, { cause: options.cause });
@@ -74,9 +76,11 @@ export class ApiError extends Error {
     this.retryAfter = options.retryAfter;
     this.safeMessage = options.safeMessage;
     this.status = options.status;
-    this.title = options.title;
+    this.title = options.title ?? options.safeMessage;
     this.traceId = options.traceId;
     this.validationErrors = options.validationErrors ?? {};
+    this.isNetworkError = options.kind === "network";
+    this.isCancelled = options.kind === "cancelled";
   }
 }
 

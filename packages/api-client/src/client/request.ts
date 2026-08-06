@@ -4,7 +4,12 @@ import {
   type ValidationErrors,
 } from "./api-error";
 import { appendQuery, interpolatePath, requestBody } from "./serialization";
-import type { ApiClient, ApiClientConfiguration, ApiRequest } from "./types";
+import type {
+  ApiClientConfiguration,
+  ApiOperationOptions,
+  ApiRequest,
+  ApiTransport,
+} from "./types";
 
 interface ProblemDetailsLike extends Record<string, unknown> {
   code?: unknown;
@@ -145,14 +150,14 @@ function randomCorrelationId(): string {
   );
 }
 
-export function createApiClient(
+export function createFetchApiTransport(
   configuration: ApiClientConfiguration,
-): ApiClient {
+): ApiTransport {
   const baseUrl = configuration.baseUrl.replace(/\/$/, "");
   if (!/^https?:\/\//.test(baseUrl))
     throw new TypeError("API base URL must be an absolute HTTP(S) URL.");
 
-  return {
+  const transport: ApiTransport = {
     async request<TResponse, TBody = unknown>(
       request: ApiRequest<TBody>,
     ): Promise<TResponse> {
@@ -176,7 +181,10 @@ export function createApiClient(
       if (!headers.has("X-Correlation-ID")) {
         headers.set(
           "X-Correlation-ID",
-          (await configuration.getCorrelationId?.()) ?? randomCorrelationId(),
+          request.correlationId ??
+            configuration.createCorrelationId?.() ??
+            (await configuration.getCorrelationId?.()) ??
+            randomCorrelationId(),
         );
       }
 
@@ -262,8 +270,49 @@ export function createApiClient(
         request.signal?.removeEventListener("abort", abort);
       }
     },
+    get: <TResponse>(path: string, options?: ApiOperationOptions) =>
+      transport.request<TResponse>({ method: "GET", path, ...options }),
+    post: <TResponse, TBody = unknown>(
+      path: string,
+      body?: TBody,
+      options?: ApiOperationOptions,
+    ) =>
+      transport.request<TResponse, TBody>({
+        method: "POST",
+        path,
+        body,
+        ...options,
+      }),
+    put: <TResponse, TBody = unknown>(
+      path: string,
+      body?: TBody,
+      options?: ApiOperationOptions,
+    ) =>
+      transport.request<TResponse, TBody>({
+        method: "PUT",
+        path,
+        body,
+        ...options,
+      }),
+    patch: <TResponse, TBody = unknown>(
+      path: string,
+      body?: TBody,
+      options?: ApiOperationOptions,
+    ) =>
+      transport.request<TResponse, TBody>({
+        method: "PATCH",
+        path,
+        body,
+        ...options,
+      }),
+    delete: <TResponse>(path: string, options?: ApiOperationOptions) =>
+      transport.request<TResponse>({ method: "DELETE", path, ...options }),
   };
+  return transport;
 }
+
+/** @deprecated Prefer createFetchApiTransport. */
+export const createApiClient = createFetchApiTransport;
 
 function isApiErrorCause(value: unknown): value is ApiError {
   return value instanceof ApiError;

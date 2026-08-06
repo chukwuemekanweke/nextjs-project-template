@@ -1,2 +1,3 @@
 export * from "./operations";
-export type * from "../contracts/reference-data";
+export * from "./reference-data.client";
+export type * from "./contracts";

@@ -1,3 +1,4 @@
+/** Wire contracts owned by the authentication domain. */
 export type SignInRequest = { email: string; password: string };
 export type GoogleSignInRequest = { idToken: string };
 export type RefreshSessionRequest = { refreshToken: string };

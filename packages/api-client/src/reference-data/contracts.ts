@@ -1,3 +1,4 @@
+/** Wire contracts owned by the reference-data domain. */
 export type CountryResponse = {
   callingCode: string | null;
   flagUrl: string;

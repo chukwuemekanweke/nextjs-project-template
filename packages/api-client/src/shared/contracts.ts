@@ -1,4 +1,4 @@
-/** Handwritten representation of the checked-in ASP.NET Problem Details schema. */
+/** Cross-domain representation of the checked-in ASP.NET Problem Details schema. */
 export type ProblemDetails = {
   detail?: string | null;
   instance?: string | null;

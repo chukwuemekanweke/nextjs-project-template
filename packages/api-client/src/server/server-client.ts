@@ -1,9 +1,12 @@
 import "server-only";
 
-import { createApiClient } from "../client/request";
-import type { ApiClient, ApiClientConfiguration } from "../client/types";
+import {
+  createApiClient,
+  type ApiClient,
+  type ApiClientOptions,
+} from "../api-client";
 
-export type ServerApiClientConfiguration = ApiClientConfiguration;
+export type ServerApiClientConfiguration = ApiClientOptions;
 
 export function createServerApiClient(
   configuration: ServerApiClientConfiguration,

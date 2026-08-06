@@ -1,3 +1,4 @@
+/** Wire contracts owned by the profiles domain. */
 export type UpdateProfileRequest = { firstName: string; lastName: string };
 export type UploadAvatarRequest = { Avatar: Blob };
 export type UploadAvatarResponse = { avatarUrl: string };
