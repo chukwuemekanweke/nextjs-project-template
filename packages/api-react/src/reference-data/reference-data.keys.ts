@@ -1,4 +1,4 @@
 export const referenceDataKeys = {
   all: ["reference-data"] as const,
-  countries: () => ["reference-data", "countries"] as const,
+  countries: () => [...referenceDataKeys.all, "countries"] as const,
 };

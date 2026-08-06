@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@template/api-client": "workspace:*",
+    "@template/api-react": "workspace:*",
     "@template/config": "workspace:*",
     "@template/dashboard-ui": "workspace:*",
     "@template/ui-core": "workspace:*",

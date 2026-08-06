@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { CSSProperties, ReactNode } from "react";
 import { Footer, Header, PublicUiProvider } from "@template/public-ui";
+import { AppProviders } from "@/components/app-providers";
 import { branding } from "@/config/env";
 import { navigation, site } from "@/config/site";
 import "./globals.css";
@@ -26,27 +27,29 @@ export default function RootLayout({
           } as CSSProperties
         }
       >
-        <PublicUiProvider>
-          <Header
-            logoAlt={site.name}
-            logo={branding.logo}
-            navigation={navigation}
-            signIn={site.signIn}
-            register={site.register}
-          />
-          {children}
-          <Footer
-            description={site.description}
-            copyright={branding.copyright}
-            navigation={navigation}
-            legal={[
-              { label: "Privacy", href: "/privacy" },
-              { label: "Terms", href: "/terms" },
-            ]}
-            logo={branding.logo}
-            logoAlt={branding.logo.alt}
-          />
-        </PublicUiProvider>
+        <AppProviders>
+          <PublicUiProvider>
+            <Header
+              logoAlt={site.name}
+              logo={branding.logo}
+              navigation={navigation}
+              signIn={site.signIn}
+              register={site.register}
+            />
+            {children}
+            <Footer
+              description={site.description}
+              copyright={branding.copyright}
+              navigation={navigation}
+              legal={[
+                { label: "Privacy", href: "/privacy" },
+                { label: "Terms", href: "/terms" },
+              ]}
+              logo={branding.logo}
+              logoAlt={branding.logo.alt}
+            />
+          </PublicUiProvider>
+        </AppProviders>
       </body>
     </html>
   );

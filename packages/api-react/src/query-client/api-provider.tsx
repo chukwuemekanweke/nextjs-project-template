@@ -2,6 +2,7 @@
 
 import type { ApiClient } from "@template/api-client";
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createContext, type ReactNode, useContext, useState } from "react";
 import { createApiQueryClient } from "./create-query-client";
 
@@ -21,6 +22,9 @@ export function ApiProvider({
     <ApiClientContext.Provider value={apiClient}>
       <QueryClientProvider client={queryClient ?? ownedQueryClient}>
         {children}
+        {process.env.NODE_ENV === "development" ? (
+          <ReactQueryDevtools initialIsOpen={false} />
+        ) : null}
       </QueryClientProvider>
     </ApiClientContext.Provider>
   );

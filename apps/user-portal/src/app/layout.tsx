@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { CSSProperties, ReactNode } from "react";
+import { AppProviders } from "@/components/app-providers";
 import { UserLayoutShell } from "@/components/user-layout-shell";
 import { branding, env } from "@/config/env";
 import "./globals.css";
@@ -21,7 +22,9 @@ export default function RootLayout({
       <body
         style={{ "--brand-primary": branding.colours.primary } as CSSProperties}
       >
-        <UserLayoutShell>{children}</UserLayoutShell>
+        <AppProviders>
+          <UserLayoutShell>{children}</UserLayoutShell>
+        </AppProviders>
       </body>
     </html>
   );

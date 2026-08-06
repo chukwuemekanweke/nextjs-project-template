@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { CSSProperties, ReactNode } from "react";
+import { AppProviders } from "@/components/app-providers";
 import { AdminLayoutShell } from "@/components/admin-layout-shell";
 import { branding, env } from "@/config/env";
 import "./globals.css";
@@ -20,7 +21,9 @@ export default function RootLayout({
       <body
         style={{ "--brand-primary": branding.colours.primary } as CSSProperties}
       >
-        <AdminLayoutShell>{children}</AdminLayoutShell>
+        <AppProviders>
+          <AdminLayoutShell>{children}</AdminLayoutShell>
+        </AppProviders>
       </body>
     </html>
   );

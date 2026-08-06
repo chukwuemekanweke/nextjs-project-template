@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@template/api-client": "workspace:*",
+    "@template/api-react": "workspace:*",
     "@template/config": "workspace:*",
     "@template/public-ui": "workspace:*",
     "framer-motion": "12.42.2",

@@ -10,25 +10,42 @@ export function FormField({
   label,
   hint,
   error,
+  inputId,
+  descriptionId,
+  required = false,
   children,
 }: Readonly<{
   label: string;
   hint?: string;
   error?: string;
+  inputId?: string;
+  descriptionId?: string;
+  required?: boolean;
   children: ReactNode;
 }>) {
   return (
-    <label className="grid gap-2">
-      <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
+    <div className="grid gap-2">
+      <label
+        className="text-sm font-medium text-gray-700 dark:text-gray-400"
+        htmlFor={inputId}
+      >
         {label}
-      </span>
+        {required ? <span aria-hidden="true"> *</span> : null}
+      </label>
       {children}
       {error ? (
-        <span className="text-sm text-red-500">{error}</span>
+        <span className="text-sm text-red-500" id={descriptionId} role="alert">
+          {error}
+        </span>
       ) : hint ? (
-        <span className="text-sm text-gray-500 dark:text-gray-400">{hint}</span>
+        <span
+          className="text-sm text-gray-500 dark:text-gray-400"
+          id={descriptionId}
+        >
+          {hint}
+        </span>
       ) : null}
-    </label>
+    </div>
   );
 }
 
