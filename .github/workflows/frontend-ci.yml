@@ -1,38 +1,28 @@
-name: Handwritten API client
+name: Frontend CI
 
 on:
   pull_request:
     paths:
       - "apps/**"
-      - "packages/api-client/**"
-      - "packages/api-react/**"
-      - "backendprojecttemplatewebapi.json"
-      - "packages/config/**"
-      - "packages/eslint-config/**"
-      - "packages/typescript-config/**"
+      - "packages/**"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "turbo.json"
-      - ".github/workflows/api-client.yml"
+      - ".github/workflows/frontend-ci.yml"
   push:
     branches: [main]
     paths:
       - "apps/**"
-      - "packages/api-client/**"
-      - "packages/api-react/**"
-      - "backendprojecttemplatewebapi.json"
-      - "packages/config/**"
-      - "packages/eslint-config/**"
-      - "packages/typescript-config/**"
+      - "packages/**"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "turbo.json"
-      - ".github/workflows/api-client.yml"
+      - ".github/workflows/frontend-ci.yml"
 
 jobs:
-  verify-api-client:
+  verify-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

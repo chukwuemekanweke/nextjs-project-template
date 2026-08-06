@@ -2,13 +2,13 @@
 
 Epic 6 implements two reusable packages. `@template/api-client` owns the HTTP boundary and handwritten backend contract; `@template/api-react` owns optional TanStack Query integration. Neither package contains generated code, feature-specific workflows, navigation, forms, or notifications.
 
-The checked-in [`backendprojecttemplatewebapi.json`](../../backendprojecttemplatewebapi.json) and the Web API running at `http://localhost:8080/` are authoritative contract references. The OpenAPI document is inspected and tested, never used to generate or overwrite TypeScript.
+The checked-in [`backendprojecttemplatewebapi.json`](../../backendprojecttemplatewebapi.json) and the Web API running at `http://localhost:8080/` are authoritative contract references. Developers inspect the OpenAPI document when implementing supported operations; it is never used to generate or overwrite TypeScript.
 
 ## Dependency direction and ownership
 
 ```mermaid
 flowchart LR
-  OpenAPI[OpenAPI contract] -. drift tests .-> Client[packages/api-client]
+  OpenAPI[OpenAPI contract] -. reviewed for supported operations .-> Client[packages/api-client]
   Client --> Transport[Fetch transport and ApiError]
   React[packages/api-react] --> Client
   Apps[apps/*] --> React
@@ -70,14 +70,13 @@ Wrap Client Component subtrees with `ApiProvider`, or consume exported options d
 ## Adding, updating, or removing an operation
 
 1. Run the compatible backend and execute `pnpm sync:openapi`, or set `BACKEND_OPENAPI_URL` to another approved controlled source.
-2. Review the OpenAPI diff. Do not accept a changed fingerprint without understanding the schema change.
+2. Review the OpenAPI changes that affect operations consumed by the applications.
 3. Update the domain request/response contracts, operation metadata, domain client method, and HTTP-boundary tests together.
-4. Update `src/contract/operation-registry.ts`. Its schema fingerprints are review gates, not generated client source.
-5. Update query keys/options/hooks only if caching, invalidation, pagination, or React consumption changed.
-6. For removal, first remove consumers, then the React integration, operation/client method, contracts no longer shared, and registry entry.
-7. Run `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build`.
+4. Update query keys/options/hooks only if caching, invalidation, pagination, or React consumption changed.
+5. For removal, first remove consumers, then the React integration, operation/client method, and contracts no longer shared.
+6. Run `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build`.
 
-The current backend document does not emit OpenAPI `operationId` values. Registry entries therefore use stable frontend identifiers and enforce method, path, parameters, schema references, and schema fingerprints. The optional `operationId` field is ready for strict comparison when the backend publishes stable identifiers; inventing values in the frontend would not make them authoritative.
+CI deliberately does not require the frontend to implement or register every backend endpoint. It validates implemented behavior through transport and operation tests, React Query tests, application tests, type checking, linting, and production builds.
 
 ## Server and browser boundaries
 

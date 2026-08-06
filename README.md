@@ -99,7 +99,7 @@ packages/
   typescript-config/  Shared strict TypeScript configuration
 ```
 
-All applications use the `@/*` alias for their local `src/*` directory. `packages/api-client` contains handwritten wire contracts, reusable domain clients, transport, and normalized errors. `packages/api-react` adds reusable TanStack Query policy without moving URLs or HTTP behaviour into React. The checked-in OpenAPI JSON is a reference only: drift tests inspect it, but no task generates client source.
+All applications use the `@/*` alias for their local `src/*` directory. `packages/api-client` contains handwritten wire contracts, reusable domain clients, transport, and normalized errors. `packages/api-react` adds reusable TanStack Query policy without moving URLs or HTTP behaviour into React. The checked-in OpenAPI JSON is a reference for maintaining supported operations; CI tests implemented application behavior rather than requiring coverage of the complete backend contract.
 
 ## Solid Public Portal
 

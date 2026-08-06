@@ -7,7 +7,6 @@
     ".": "./src/index.ts",
     "./authentication": "./src/authentication/index.ts",
     "./browser": "./src/browser/index.ts",
-    "./contract": "./src/contract/index.ts",
     "./payments": "./src/payments/index.ts",
     "./profiles": "./src/profiles/index.ts",
     "./providers": "./src/providers/index.ts",

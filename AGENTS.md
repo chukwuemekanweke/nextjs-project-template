@@ -31,10 +31,10 @@
 
 - The shared API client lives in `packages/api-client` and is handwritten.
 - Do not introduce an API client generator, generated source directory,
-  regeneration command, or any drift check that generates or overwrites client code.
+  regeneration command, or generated contract-coverage test.
 - Treat `backendprojecttemplatewebapi.json` and the running backend as contract
   references. Update the relevant handwritten contract types, operation
-  metadata, operation implementation, HTTP-boundary tests, and drift registry together.
+  metadata, operation implementation, and HTTP-boundary tests together.
 - Keep endpoint contracts grouped with stable domain modules; keep only genuinely
   cross-domain contracts under `shared`. Do not create one file per DTO or one
   enormous whole-API declaration file.
