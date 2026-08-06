@@ -50,4 +50,4 @@ Tailwind v4 is configured with PostCSS in each application. Dashboard `globals.c
 
 ## Build and deployment boundary
 
-Each application Dockerfile builds from the repository root, runs a filtered production build, then copies only its standalone output and static assets into a Node 20.19 Alpine runtime. The runtime uses the non-root `node` user and starts the corresponding `apps/<name>/server.js` on 3000, 3001, or 3002. Independent manifests, output folders, ports, and images make a change to one portal deployable without redeploying the others.
+Each application Dockerfile builds from the repository root, runs a filtered production build, then copies only its standalone output and static assets into a Node 22.13 Alpine runtime. The runtime uses the non-root `node` user and starts the corresponding `apps/<name>/server.js` on 3000, 3001, or 3002. Independent manifests, output folders, ports, and images make a change to one portal deployable without redeploying the others.

@@ -14,9 +14,9 @@ Each application owns its package manifest, build output, runtime command, and d
 
 ## Prerequisites
 
-- Node.js 20.19.0 or later
+- Node.js 22.13.0 or later
 - Corepack (included with supported Node.js distributions)
-- pnpm 11.12.0, pinned through the root `packageManager` field
+- pnpm 11.20.0, pinned through the root `packageManager` field
 
 Enable the pinned package manager and install dependencies:
 

@@ -5,7 +5,7 @@ import {
   CardDescription,
   CardTitle,
   DataTable,
-  Skeleton,
+  Pagination,
 } from "@template/ui-core";
 import { portalName } from "@/lib/portal";
 
@@ -56,10 +56,11 @@ export default function Home() {
             keyField={(row: Activity) => row.id}
             rows={activity}
           />
-          <div aria-label="Loading state example" className="grid gap-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-12 w-full" />
-          </div>
+          <Pagination
+            currentPage={1}
+            getHref={(page) => `/?page=${page}`}
+            totalPages={1}
+          />
         </CardContent>
       </Card>
     </section>
