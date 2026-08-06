@@ -2,7 +2,7 @@ import {
   createAuthenticationClient,
   type AuthenticationClient,
 } from "./authentication";
-import { createFetchApiTransport } from "./client/request";
+import { createFetchApiTransport } from "./transport/fetch-api-transport";
 import type { ApiClientConfiguration, ApiTransport } from "./client/types";
 import { createPaymentsClient, type PaymentsClient } from "./payments";
 import { createProfilesClient, type ProfilesClient } from "./profiles";

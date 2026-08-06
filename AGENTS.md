@@ -1,5 +1,11 @@
 # Repository Instructions
 
+## Control-flow style
+
+- Always use curly braces for `if`, `else`, `try`, `catch`, `finally`, `while`,
+  `do`, `for`, `for...in`, and `for...of` bodies, including single-statement bodies.
+- Apply this rule to new and modified code without reformatting unrelated files.
+
 ## Backend API reference
 
 - The compatible backend repository is `C:\Work\Chidelu\BackendProjectTemplate`.

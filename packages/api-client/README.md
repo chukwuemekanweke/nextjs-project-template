@@ -4,6 +4,8 @@ This is the handwritten, framework-independent client for the compatible .NET We
 
 There is no API client generator and no generated source. `backendprojecttemplatewebapi.json` is a reference that developers inspect when maintaining each domain's colocated `contracts.ts`; only cross-domain contracts live under `src/shared`.
 
+The Fetch implementation is decomposed under `src/transport` into request building, response parsing, error normalization, cancellation, and orchestration modules. Keep new transport behaviour in the smallest module that owns that responsibility.
+
 Useful commands:
 
 ```bash

@@ -2,11 +2,12 @@ import { isApiError } from "@template/api-client";
 import { NextResponse } from "next/server";
 
 export function apiRouteError(error: unknown): NextResponse {
-  if (!isApiError(error))
+  if (!isApiError(error)) {
     return NextResponse.json(
       { title: "Unexpected error", status: 500 },
       { status: 500 },
     );
+  }
   return NextResponse.json(
     {
       code: error.code,

@@ -28,8 +28,12 @@ type OpenApiDocument = {
 
 const schemaName = (reference?: string) => reference?.split("/").at(-1);
 const sortObject = (value: unknown): unknown => {
-  if (Array.isArray(value)) return value.map(sortObject);
-  if (!value || typeof value !== "object") return value;
+  if (Array.isArray(value)) {
+    return value.map(sortObject);
+  }
+  if (!value || typeof value !== "object") {
+    return value;
+  }
   return Object.fromEntries(
     Object.entries(value)
       .sort(([left], [right]) => left.localeCompare(right))
@@ -75,13 +79,18 @@ describe("checked-in OpenAPI contract", async () => {
         actual,
         `${expected.method} ${expected.path} was removed or renamed`,
       ).toBeDefined();
-      if (!actual) return;
-      if (expected.operationId)
+      if (!actual) {
+        return;
+      }
+      if (expected.operationId) {
         expect(actual.operationId).toBe(expected.operationId);
-      if (expected.requestSchema)
+      }
+      if (expected.requestSchema) {
         expect(requestSchema(actual)).toBe(expected.requestSchema);
-      if (expected.responseSchema)
+      }
+      if (expected.responseSchema) {
         expect(successSchema(actual)).toBe(expected.responseSchema);
+      }
       for (const parameter of expected.parameters ?? []) {
         const actualParameter = actual.parameters?.find(
           (candidate) =>

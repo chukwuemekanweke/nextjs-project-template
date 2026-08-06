@@ -1,5 +1,5 @@
 export * from "../client/api-error";
-export { createFetchApiTransport } from "../client/request";
+export { createFetchApiTransport } from "./fetch-api-transport";
 export type {
   ApiClientConfiguration as FetchApiTransportOptions,
   ApiOperationOptions as ApiRequestOptions,

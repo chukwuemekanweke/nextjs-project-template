@@ -37,6 +37,16 @@ The aggregate client exposes `authentication`, `payments`, `profiles`, `provider
 
 The default transport supports GET, POST, PUT, PATCH, DELETE, native `FormData`, caller headers, cookies, bearer tokens, generated or propagated correlation IDs, `AbortSignal`, timeouts, empty responses, and safe parsing. It does not redirect on authorization errors and does not retry requests.
 
+Transport responsibilities are split under `packages/api-client/src/transport`:
+
+- `fetch-api-transport.ts` orchestrates each request and exposes the HTTP methods.
+- `build-request.ts` builds URLs, headers, authentication, correlation metadata, and bodies.
+- `parse-response.ts` handles JSON, text, empty, and unreadable responses.
+- `normalize-api-error.ts` maps backend and HTTP failures into `ApiError`.
+- `request-cancellation.ts` composes caller cancellation with configured timeouts.
+
+`src/client/request.ts` is only a compatibility export for existing consumers; new transport behaviour belongs in the focused transport modules.
+
 ## Error consumption
 
 Every transport failure becomes `ApiError`. `kind` distinguishes cancellation, timeout, network failures, validation, authorization, missing resources, conflicts, rate limiting, server failures, and unreadable responses. The error retains status, title, safe message, backend detail/code, trace and correlation IDs, validation errors, `Retry-After`, selected response metadata, and a cause without exposing it as user-facing text.
