@@ -1,11 +1,11 @@
-FROM node:20.19.0-alpine AS builder
+FROM node:22.13.0-alpine AS builder
 WORKDIR /workspace
 RUN npm install --global corepack@0.34.5 && corepack enable
 COPY . .
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter @template/admin-portal build
 
-FROM node:20.19.0-alpine AS runner
+FROM node:22.13.0-alpine AS runner
 ENV NODE_ENV=production
 ENV PORT=3001
 ENV HOSTNAME=0.0.0.0

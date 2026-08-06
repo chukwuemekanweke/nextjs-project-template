@@ -1,5 +1,19 @@
 # Repository Instructions
 
+## Control-flow style
+
+- Always use curly braces for `if`, `else`, `try`, `catch`, `finally`, `while`,
+  `do`, `for`, `for...in`, and `for...of` bodies, including single-statement bodies.
+- Apply this rule to new and modified code without reformatting unrelated files.
+
+## Backend API reference
+
+- The compatible backend repository is `C:\Work\Chidelu\BackendProjectTemplate`.
+- Its Web API project is `C:\Work\Chidelu\BackendProjectTemplate\src\BackendProjectTemplate.WebAPI`.
+- The checked-in frontend OpenAPI source is `backendprojecttemplatewebapi.json` at the repository root.
+- During local development, the Web API runs at `http://localhost:8080/`.
+- Treat the OpenAPI document and the running Web API as the authoritative contract when implementing or regenerating the frontend API client.
+
 ## Third-party license notices
 
 - Keep required third-party copyright and license notices in the relevant
@@ -12,6 +26,30 @@
   copying, adapting, packaging, or distributing third-party-derived work.
 - Add a source-file notice only when the upstream license expressly requires
   one in that file or when legal guidance for the repository requires it.
+
+## API client architecture
+
+- The shared API client lives in `packages/api-client` and is handwritten.
+- Do not introduce an API client generator, generated source directory,
+  regeneration command, or generated contract-coverage test.
+- Treat `backendprojecttemplatewebapi.json` and the running backend as contract
+  references. Update the relevant handwritten contract types, operation
+  metadata, operation implementation, and HTTP-boundary tests together.
+- Keep endpoint contracts grouped with stable domain modules; keep only genuinely
+  cross-domain contracts under `shared`. Do not create one file per DTO or one
+  enormous whole-API declaration file.
+- Reusable operations belong in `packages/api-client`, not in application
+  features. They must remain independent of React and TanStack Query.
+- Reusable TanStack Query keys, options, hooks, cache policies, and invalidation
+  belong in `packages/api-react`. Application-specific workflows, view models,
+  forms, notifications, navigation, and UI error behaviour remain in apps.
+- Browser code must never import `@template/api-client/server`, private
+  environment variables, cookie readers, access tokens, or refresh tokens.
+- Consumers must use package exports and must not import API-client internals.
+- Features and UI components must not construct raw backend URLs or implement
+  their own HTTP transport.
+- Update `docs/architecture/07-api-client.md` when API ownership, transport,
+  authentication, routing, package exports, or extension points change.
 
 ## Pull request descriptions
 

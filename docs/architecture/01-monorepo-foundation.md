@@ -35,13 +35,13 @@ Applications depend downward on reusable packages; packages do not depend on an 
 
 [`pnpm-workspace.yaml`](../../pnpm-workspace.yaml) includes `apps/*` and `packages/*`. Application manifests name local dependencies with `workspace:*`, for example `@template/user-portal` depends on `@template/dashboard-ui` and `@template/ui-core`. pnpm resolves those names to local workspaces. Each UI package has an `exports` entry for `.` pointing to its TypeScript root barrel (`src/index.ts`), so consumers use stable imports such as `@template/ui-core` rather than deep relative paths.
 
-The same file has a `catalog` for the core dependency versions. Manifests use `catalog:` for Next.js, React, TypeScript, ESLint, Tailwind, and related dependencies. The committed [`pnpm-lock.yaml`](../../pnpm-lock.yaml) is lockfile version 9 and records the resolved dependency graph. The root manifest is the authority for the package manager: `pnpm@11.12.0` and Node `>=20.19.0`.
+The same file has a `catalog` for the core dependency versions. Manifests use `catalog:` for Next.js, React, TypeScript, ESLint, Tailwind, and related dependencies. The committed [`pnpm-lock.yaml`](../../pnpm-lock.yaml) is lockfile version 9 and records the resolved dependency graph. The root manifest is the authority for the package manager: `pnpm@11.20.0` and Node `>=22.13.0`.
 
 ## Shared standards
 
 `@template/typescript-config` supplies strict, no-emit compiler defaults in [`base.json`](../../packages/typescript-config/base.json); its Next.js variant adds JSX preservation, DOM libraries, incremental compilation, and the Next TypeScript plugin. Applications and UI packages extend it.
 
-`@template/eslint-config/next` combines `eslint-config-next` Core Web Vitals and TypeScript configurations and ignores Next output, coverage, and the reserved generated API-client path. Application and UI-package ESLint files re-export that configuration. Root Prettier 3.9.5 and `prettier-plugin-tailwindcss` provide formatting via `pnpm format` and `pnpm format:check`.
+`@template/eslint-config/next` combines `eslint-config-next` Core Web Vitals and TypeScript configurations and ignores Next output and coverage. Application and package ESLint files re-export that configuration. Root Prettier 3.9.5 and `prettier-plugin-tailwindcss` provide formatting via `pnpm format` and `pnpm format:check`.
 
 ## Turborepo execution
 

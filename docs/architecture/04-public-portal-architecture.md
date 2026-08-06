@@ -31,4 +31,4 @@ The landing page composes Hero, logo cloud, features, CTA, FAQ, testimonials, pr
 
 The Public Portal global stylesheet imports Tailwind and declares `@source "../../../../packages/public-ui/src"`, allowing Tailwind to generate classes found in shared section source. It defines the app's Solid-derived tokens and dark variant. The public app’s `env.ts` normalizes `NEXT_PUBLIC_API_BASE_URL` and `NEXT_PUBLIC_USER_PORTAL_URL`; `userPortalHref` builds the Header sign-in/register destinations. The current unit test verifies that helper rather than a real authentication flow.
 
-The current plans, legal text, testimonials, and contact content are explicitly configurable placeholders. No checkout, form submission, blog backend, account registration, API client, or authentication implementation exists in this epic scope.
+The current plans, legal text, testimonials, and contact content are explicitly configurable placeholders. No checkout, form submission, blog backend, account registration, or authentication implementation exists in this epic scope. The portal can use the shared handwritten API client, but no public-portal workflow consumes it yet.

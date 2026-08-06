@@ -34,6 +34,8 @@ sequenceDiagram
 
 Route pages and root layouts have no `"use client"` directive, so they can remain Server Components. The dashboard app-specific shells are Client Components because they use `usePathname` to choose active navigation and breadcrumbs. The interactive shared dashboard shell, sidebar context/sidebar, mobile navigation, and modal are also Client Components because they use React state, context, browser APIs, effects, or click handlers. The public provider and header are Client Components: `next-themes`, `useTheme`, `usePathname`, state, and scroll listeners require browser execution. A component being reusable does not by itself make it client-side.
 
+The dashboard portals also own same-origin Route Handlers under `src/app/api/auth`. They translate authentication requests into handwritten `@template/api-client` operations and store access and refresh tokens in app-specific HttpOnly cookies. `src/lib/server-api.ts` creates a request-scoped server client, forwards only selected tracing metadata, reads the access token server-side, and defaults authenticated requests to `cache: "no-store"`. Browser components never import the server entry point or receive backend tokens. Public, CORS-approved browser calls can use the browser-safe `src/lib/api.ts` adapter.
+
 ## Local configuration, branding, and aliases
 
 Each `tsconfig.json` maps `@/*` to that application's `src/*`; `@/config/site` in Public Portal and `@/config/navigation` in a dashboard app are local imports. `@template/*` imports name workspace-package public APIs. Every app's `src/config/env.ts` extends the shared `@template/config` browser schema with local values. `src/instrumentation.ts` validates the shared server schema at Next.js startup. See [shared configuration](./06-shared-configuration.md) for the exact variables and boundary rules.
@@ -48,4 +50,4 @@ Tailwind v4 is configured with PostCSS in each application. Dashboard `globals.c
 
 ## Build and deployment boundary
 
-Each application Dockerfile builds from the repository root, runs a filtered production build, then copies only its standalone output and static assets into a Node 20.19 Alpine runtime. The runtime uses the non-root `node` user and starts the corresponding `apps/<name>/server.js` on 3000, 3001, or 3002. Independent manifests, output folders, ports, and images make a change to one portal deployable without redeploying the others.
+Each application Dockerfile builds from the repository root, runs a filtered production build, then copies only its standalone output and static assets into a Node 22.13 Alpine runtime. The runtime uses the non-root `node` user and starts the corresponding `apps/<name>/server.js` on 3000, 3001, or 3002. Independent manifests, output folders, ports, and images make a change to one portal deployable without redeploying the others.

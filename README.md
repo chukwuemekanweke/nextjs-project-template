@@ -14,9 +14,9 @@ Each application owns its package manifest, build output, runtime command, and d
 
 ## Prerequisites
 
-- Node.js 20.19.0 or later
+- Node.js 22.13.0 or later
 - Corepack (included with supported Node.js distributions)
-- pnpm 10.34.5, pinned through the root `packageManager` field
+- pnpm 11.20.0, pinned through the root `packageManager` field
 
 Enable the pinned package manager and install dependencies:
 
@@ -55,7 +55,7 @@ cp apps/admin-portal/.env.example apps/admin-portal/.env.local
 cp apps/public-portal/.env.example apps/public-portal/.env.local
 ```
 
-The authenticated portals configure `NEXT_PUBLIC_API_BASE_URL`. The Public Portal additionally configures its canonical URL, product branding, contact details, and `NEXT_PUBLIC_USER_PORTAL_URL`, which is used for registration and sign-in calls to action. Example values are safe local defaults; secrets must never use the `NEXT_PUBLIC_` prefix.
+Every application configures the private server-side `API_BASE_URL` and the intentionally public `NEXT_PUBLIC_API_BASE_URL`. Authenticated server calls and session BFF handlers use the private value. The Public Portal additionally configures its canonical URL, product branding, contact details, and `NEXT_PUBLIC_USER_PORTAL_URL`, which is used for registration and sign-in calls to action. Example values are safe local defaults; secrets must never use the `NEXT_PUBLIC_` prefix.
 
 ## Independent Containers
 
@@ -78,6 +78,7 @@ The images run their standalone Next.js servers on ports 3000, 3001, and 3002 re
 | `pnpm lint`         | Run the shared ESLint rules                   |
 | `pnpm typecheck`    | Run strict TypeScript checks                  |
 | `pnpm test`         | Run each application's test suite             |
+| `pnpm sync:openapi` | Refresh the OpenAPI reference document        |
 | `pnpm format`       | Format supported files with Prettier          |
 | `pnpm format:check` | Verify formatting without changing files      |
 
@@ -90,13 +91,15 @@ apps/
   user-portal/        User application with an app-specific dashboard layout
 packages/
   dashboard-ui/       Shared TailAdmin-derived dashboard primitives
+  api-client/         Handwritten contracts, domain clients, and API transport
+  api-react/          Reusable TanStack Query options, keys, and hooks
   eslint-config/      Shared Next.js ESLint flat configuration
   public-ui/          Typed Solid-derived public-site sections
   ui-core/            Shared TailAdmin-derived UI primitives
   typescript-config/  Shared strict TypeScript configuration
 ```
 
-All applications use the `@/*` alias for their local `src/*` directory. Generated API client code under `packages/api-client/generated` is reserved for a later epic and excluded from formatting and linting.
+All applications use the `@/*` alias for their local `src/*` directory. `packages/api-client` contains handwritten wire contracts, reusable domain clients, transport, and normalized errors. `packages/api-react` adds reusable TanStack Query policy without moving URLs or HTTP behaviour into React. The checked-in OpenAPI JSON is a reference for maintaining supported operations; CI tests implemented application behavior rather than requiring coverage of the complete backend contract.
 
 ## Solid Public Portal
 

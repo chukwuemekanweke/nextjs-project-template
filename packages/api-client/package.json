@@ -1,0 +1,35 @@
+{
+  "name": "@template/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./authentication": "./src/authentication/index.ts",
+    "./browser": "./src/browser/index.ts",
+    "./payments": "./src/payments/index.ts",
+    "./profiles": "./src/profiles/index.ts",
+    "./providers": "./src/providers/index.ts",
+    "./reference-data": "./src/reference-data/index.ts",
+    "./server": "./src/server/index.ts",
+    "./transport": "./src/transport/index.ts"
+  },
+  "scripts": {
+    "sync:openapi": "node scripts/sync-openapi.mjs",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "server-only": "0.0.1"
+  },
+  "devDependencies": {
+    "@template/eslint-config": "workspace:*",
+    "@template/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "msw": "2.15.0",
+    "typescript": "5.9.3",
+    "vitest": "catalog:"
+  }
+}

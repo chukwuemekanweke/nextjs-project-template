@@ -1,0 +1,33 @@
+{
+  "name": "@template/api-react",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./authentication": "./src/authentication/index.ts",
+    "./payments": "./src/payments/index.ts",
+    "./profiles": "./src/profiles/index.ts",
+    "./providers": "./src/providers/index.ts",
+    "./query-client": "./src/query-client/index.ts",
+    "./reference-data": "./src/reference-data/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "catalog:",
+    "@template/api-client": "workspace:*",
+    "react": "catalog:"
+  },
+  "devDependencies": {
+    "@template/eslint-config": "workspace:*",
+    "@template/typescript-config": "workspace:*",
+    "@types/react": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

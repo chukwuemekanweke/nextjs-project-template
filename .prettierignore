@@ -5,4 +5,4 @@ dist
 node_modules
 out
 pnpm-lock.yaml
-packages/api-client/generated
+backendprojecttemplatewebapi.json

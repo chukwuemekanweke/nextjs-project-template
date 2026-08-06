@@ -2,9 +2,9 @@
   "name": "frontend-project-template",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@11.12.0",
+  "packageManager": "pnpm@11.20.0",
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.13.0"
   },
   "scripts": {
     "dev": "turbo dev",
@@ -12,6 +12,7 @@
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
+    "sync:openapi": "pnpm --filter @template/api-client sync:openapi",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
