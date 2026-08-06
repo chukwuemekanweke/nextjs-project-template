@@ -1,9 +1,9 @@
 import type { GetCountriesQueryResponse } from "./contracts";
 import { referenceDataOperations } from "./contracts";
-import type { ApiClient, ApiOperationOptions } from "../client";
+import type { ApiOperationOptions, ApiTransport } from "../client";
 
 export const getCountries = (
-  client: ApiClient,
+  client: ApiTransport,
   options?: ApiOperationOptions,
 ) =>
   client.request<GetCountriesQueryResponse>({

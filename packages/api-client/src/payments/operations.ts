@@ -10,10 +10,10 @@ import type {
   SetPaymentProviderActivationPathParams,
 } from "./contracts";
 import { paymentsOperations } from "./contracts";
-import type { ApiClient, ApiOperationOptions } from "../client";
+import type { ApiOperationOptions, ApiTransport } from "../client";
 
 export const getWalletTransactions = (
-  client: ApiClient,
+  client: ApiTransport,
   query: GetWalletTransactionsQueryParams = {},
   options?: ApiOperationOptions,
 ) =>
@@ -24,7 +24,7 @@ export const getWalletTransactions = (
   });
 
 export const getWalletTopUpTransaction = (
-  client: ApiClient,
+  client: ApiTransport,
   pathParams: GetWalletTopUpTransactionPathParams,
   options?: ApiOperationOptions,
 ) =>
@@ -35,7 +35,7 @@ export const getWalletTopUpTransaction = (
   });
 
 export const setPaymentProviderActivation = (
-  client: ApiClient,
+  client: ApiTransport,
   pathParams: SetPaymentProviderActivationPathParams,
   request: SetPaymentProviderActivationMutationRequest,
   options?: ApiOperationOptions,
@@ -48,7 +48,7 @@ export const setPaymentProviderActivation = (
   });
 
 export const initiatePayment = (
-  client: ApiClient,
+  client: ApiTransport,
   request: InitiatePaymentMutationRequest,
   options?: ApiOperationOptions,
 ) =>

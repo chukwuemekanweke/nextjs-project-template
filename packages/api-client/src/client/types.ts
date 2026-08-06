@@ -62,9 +62,6 @@ export interface ApiTransport {
   ): Promise<TResponse>;
 }
 
-/** @deprecated Prefer ApiTransport. */
-export type ApiClient = ApiTransport;
-
 export interface ApiClientConfiguration {
   baseUrl: string;
   credentials?: RequestCredentials;

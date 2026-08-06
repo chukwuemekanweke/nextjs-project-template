@@ -3,10 +3,10 @@ import type {
   SetActiveProviderMutationResponse,
 } from "./contracts";
 import { providersOperations } from "./contracts";
-import type { ApiClient, ApiOperationOptions } from "../client";
+import type { ApiOperationOptions, ApiTransport } from "../client";
 
 export const setActiveProvider = (
-  client: ApiClient,
+  client: ApiTransport,
   request: SetActiveProviderMutationRequest,
   options?: ApiOperationOptions,
 ) =>

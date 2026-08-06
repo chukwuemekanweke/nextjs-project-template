@@ -5,10 +5,10 @@ import type {
   UploadAvatarMutationResponse,
 } from "./contracts";
 import { profilesOperations } from "./contracts";
-import type { ApiClient, ApiOperationOptions } from "../client";
+import type { ApiOperationOptions, ApiTransport } from "../client";
 
 export const updateProfile = (
-  client: ApiClient,
+  client: ApiTransport,
   request: UpdateProfileMutationRequest,
   options?: ApiOperationOptions,
 ) =>
@@ -19,7 +19,7 @@ export const updateProfile = (
   });
 
 export const uploadAvatar = (
-  client: ApiClient,
+  client: ApiTransport,
   request: UploadAvatarMutationRequest,
   options?: ApiOperationOptions,
 ) => {

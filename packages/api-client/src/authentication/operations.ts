@@ -18,10 +18,10 @@ import type {
   SignUpWithGoogleMutationResponse,
 } from "./contracts";
 import { authenticationOperations } from "./contracts";
-import type { ApiClient, ApiOperationOptions } from "../client";
+import type { ApiOperationOptions, ApiTransport } from "../client";
 
 export const signIn = (
-  client: ApiClient,
+  client: ApiTransport,
   request: SignInMutationRequest,
   options?: ApiOperationOptions,
 ) =>
@@ -32,7 +32,7 @@ export const signIn = (
   });
 
 export const signInWithGoogle = (
-  client: ApiClient,
+  client: ApiTransport,
   request: SignInWithGoogleMutationRequest,
   options?: ApiOperationOptions,
 ) =>
@@ -43,7 +43,7 @@ export const signInWithGoogle = (
   });
 
 export const refreshSession = (
-  client: ApiClient,
+  client: ApiTransport,
   request: RefreshSessionMutationRequest,
   options?: ApiOperationOptions,
 ) =>
@@ -53,14 +53,14 @@ export const refreshSession = (
     body: request,
   });
 
-export const logout = (client: ApiClient, options?: ApiOperationOptions) =>
+export const logout = (client: ApiTransport, options?: ApiOperationOptions) =>
   client.request<LogoutMutationResponse>({
     ...authenticationOperations.logout,
     ...options,
   });
 
 export const signUp = (
-  client: ApiClient,
+  client: ApiTransport,
   request: SignUpMutationRequest,
   options?: ApiOperationOptions,
 ) =>
@@ -71,7 +71,7 @@ export const signUp = (
   });
 
 export const signUpWithGoogle = (
-  client: ApiClient,
+  client: ApiTransport,
   request: SignUpWithGoogleMutationRequest,
   options?: ApiOperationOptions,
 ) =>
@@ -82,7 +82,7 @@ export const signUpWithGoogle = (
   });
 
 export const requestPasswordReset = (
-  client: ApiClient,
+  client: ApiTransport,
   request: RequestPasswordResetMutationRequest,
   options?: ApiOperationOptions,
 ) =>
@@ -93,7 +93,7 @@ export const requestPasswordReset = (
   });
 
 export const completePasswordReset = (
-  client: ApiClient,
+  client: ApiTransport,
   request: CompletePasswordResetMutationRequest,
   options?: ApiOperationOptions,
 ) =>
@@ -104,7 +104,7 @@ export const completePasswordReset = (
   });
 
 export const confirmEmail = (
-  client: ApiClient,
+  client: ApiTransport,
   request: ConfirmEmailMutationRequest,
   options?: ApiOperationOptions,
 ) =>
