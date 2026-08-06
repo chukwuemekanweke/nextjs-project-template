@@ -93,13 +93,14 @@ packages/
   dashboard-ui/       Shared TailAdmin-derived dashboard primitives
   api-client/         Handwritten contracts, domain clients, and API transport
   api-react/          Reusable TanStack Query options, keys, and hooks
+  forms/              Reusable React Hook Form and Zod composition
   eslint-config/      Shared Next.js ESLint flat configuration
   public-ui/          Typed Solid-derived public-site sections
   ui-core/            Shared TailAdmin-derived UI primitives
   typescript-config/  Shared strict TypeScript configuration
 ```
 
-All applications use the `@/*` alias for their local `src/*` directory. `packages/api-client` contains handwritten wire contracts, reusable domain clients, transport, and normalized errors. `packages/api-react` adds reusable TanStack Query policy without moving URLs or HTTP behaviour into React. The checked-in OpenAPI JSON is a reference for maintaining supported operations; CI tests implemented application behavior rather than requiring coverage of the complete backend contract.
+All applications use the `@/*` alias for their local `src/*` directory. `packages/api-client` contains handwritten wire contracts, reusable domain clients, transport, and normalized errors. `packages/api-react` adds reusable TanStack Query policy without moving URLs or HTTP behaviour into React. `packages/forms` composes React Hook Form, Zod, accessible fields, pending submission handling, and explicit backend field-error mapping while leaving schemas and workflows in applications. The checked-in OpenAPI JSON is a reference for maintaining supported operations; CI tests implemented application behavior rather than requiring coverage of the complete backend contract.
 
 ## Solid Public Portal
 

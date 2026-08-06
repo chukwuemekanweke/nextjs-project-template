@@ -4,7 +4,10 @@ import { QueryClient } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
 import {
   initiatePaymentMutationOptions,
+  getQueryOptions,
   paymentKeys,
+  queryClientDefaults,
+  shouldRetryQuery,
   walletTopUpQueryOptions,
   walletTransactionsQueryOptions,
 } from ".";
@@ -95,5 +98,47 @@ describe("API React integration", () => {
     expect(invalidate).toHaveBeenCalledWith({
       queryKey: paymentKeys.walletTransactions(),
     });
+  });
+
+  it("centralizes cache defaults and avoids retrying client errors", () => {
+    expect(queryClientDefaults.staleTime).toBe(30_000);
+    expect(
+      shouldRetryQuery(
+        0,
+        new ApiError({
+          kind: "validation",
+          safeMessage: "Invalid",
+          status: 422,
+        }),
+      ),
+    ).toBe(false);
+    expect(
+      shouldRetryQuery(
+        0,
+        new ApiError({
+          kind: "server",
+          safeMessage: "Unavailable",
+          status: 503,
+        }),
+      ),
+    ).toBe(true);
+    expect(shouldRetryQuery(2, new Error("network"))).toBe(false);
+  });
+
+  it("rejects write operations from retryable query options", () => {
+    expect(() =>
+      getQueryOptions(
+        {
+          method: "POST",
+          path: "/api/v1/payments/initiate",
+        } as unknown as { method: "GET"; path: string },
+        {
+          queryKey: ["unsafe-write"],
+          queryFn: () => Promise.resolve(null),
+        },
+      ),
+    ).toThrow(
+      "TanStack Query retries are restricted to GET operations; received POST /api/v1/payments/initiate.",
+    );
   });
 });

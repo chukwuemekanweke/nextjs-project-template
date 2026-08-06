@@ -9,6 +9,7 @@ export * from "./profiles/profiles";
 export * from "./providers/providers";
 export * from "./query-client/api-provider";
 export * from "./query-client/create-query-client";
+export * from "./query-client/get-query-options";
 export * from "./reference-data/reference-data.hooks";
 export * from "./reference-data/reference-data.keys";
 export * from "./reference-data/reference-data.queries";
