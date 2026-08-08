@@ -89,6 +89,9 @@ importers:
       '@template/dashboard-ui':
         specifier: workspace:*
         version: link:../../packages/dashboard-ui
+      '@template/forms':
+        specifier: workspace:*
+        version: link:../../packages/forms
       '@template/ui-core':
         specifier: workspace:*
         version: link:../../packages/ui-core
@@ -223,6 +226,9 @@ importers:
       '@template/dashboard-ui':
         specifier: workspace:*
         version: link:../../packages/dashboard-ui
+      '@template/forms':
+        specifier: workspace:*
+        version: link:../../packages/forms
       '@template/ui-core':
         specifier: workspace:*
         version: link:../../packages/ui-core

@@ -19,6 +19,10 @@ export function UserLayoutShell({
 }: Readonly<{ children: ReactNode }>) {
   const pathname = usePathname();
 
+  if (pathname === "/sign-in") {
+    return children;
+  }
+
   return (
     <DashboardShell
       mobileNav={

@@ -7,11 +7,11 @@ RUN pnpm --filter @template/user-portal build
 
 FROM node:22.13.0-alpine AS runner
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=9000
 ENV HOSTNAME=0.0.0.0
 WORKDIR /app
 COPY --from=builder /workspace/apps/user-portal/.next/standalone ./
 COPY --from=builder /workspace/apps/user-portal/.next/static ./apps/user-portal/.next/static
 USER node
-EXPOSE 3000
+EXPOSE 9000
 CMD ["node", "apps/user-portal/server.js"]

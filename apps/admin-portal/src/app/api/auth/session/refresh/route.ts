@@ -1,6 +1,7 @@
 import { refreshSession } from "@template/api-client/authentication";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { rejectUnauthorizedAdminSession } from "@/lib/admin-session-authorization";
 import { apiRouteError } from "@/lib/api-route-error";
 import { createAppServerApiClient } from "@/lib/server-api";
 import {
@@ -20,6 +21,10 @@ export async function POST() {
   try {
     const client = await createAppServerApiClient({ authenticated: false });
     const session = await refreshSession(client, { refreshToken });
+    const rejection = await rejectUnauthorizedAdminSession(client, session);
+    if (rejection) {
+      return rejection;
+    }
     const response = NextResponse.json({
       expiresAtUtc: session.expiresAtUtc,
       tokenType: session.tokenType,

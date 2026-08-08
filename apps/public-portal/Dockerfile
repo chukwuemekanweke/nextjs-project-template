@@ -7,11 +7,11 @@ RUN pnpm --filter @template/public-portal build
 
 FROM node:22.13.0-alpine AS runner
 ENV NODE_ENV=production
-ENV PORT=3002
+ENV PORT=9002
 ENV HOSTNAME=0.0.0.0
 WORKDIR /app
 COPY --from=builder /workspace/apps/public-portal/.next/standalone ./
 COPY --from=builder /workspace/apps/public-portal/.next/static ./apps/public-portal/.next/static
 USER node
-EXPOSE 3002
+EXPOSE 9002
 CMD ["node", "apps/public-portal/server.js"]

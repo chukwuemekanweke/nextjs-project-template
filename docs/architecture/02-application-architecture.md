@@ -4,13 +4,13 @@ The `apps/` directory holds three App Router applications. A route's `page.tsx` 
 
 | Application   | Package / port                   | Current responsibility                           | Shared UI                                     |
 | ------------- | -------------------------------- | ------------------------------------------------ | --------------------------------------------- |
-| User Portal   | `@template/user-portal` / 3000   | Self-service account and activity placeholders   | `@template/dashboard-ui`, `@template/ui-core` |
-| Admin Portal  | `@template/admin-portal` / 3001  | Privileged operational placeholders              | `@template/dashboard-ui`, `@template/ui-core` |
-| Public Portal | `@template/public-portal` / 3002 | Marketing routes and configurable public content | `@template/public-ui`                         |
+| User Portal   | `@template/user-portal` / 9000   | Self-service account and activity placeholders   | `@template/dashboard-ui`, `@template/ui-core` |
+| Admin Portal  | `@template/admin-portal` / 9001  | Privileged operational placeholders              | `@template/dashboard-ui`, `@template/ui-core` |
+| Public Portal | `@template/public-portal` / 9002 | Marketing routes and configurable public content | `@template/public-ui`                         |
 
 ## Routing, layouts, and request flow
 
-The User and Admin portals presently have only `src/app/page.tsx`, although their navigation configurations list future destinations. A navigation link such as `/profile` or `/users` is not yet backed by a route file. The Public Portal implements `/`, `/features`, `/pricing`, `/about`, `/contact`, `/blog`, `/privacy`, and `/terms`, plus `not-found.tsx`, `robots.ts`, and `sitemap.ts`.
+The User and Admin portals implement `src/app/page.tsx` and separate `/sign-in` routes, although their navigation configurations list additional future destinations. A navigation link such as `/profile` or `/users` is not yet backed by a route file. The dashboard shells omit their authenticated navigation frame on `/sign-in`. The Public Portal implements `/`, `/features`, `/pricing`, `/about`, `/contact`, `/blog`, `/privacy`, and `/terms`, plus `not-found.tsx`, `robots.ts`, and `sitemap.ts`.
 
 ```mermaid
 sequenceDiagram
@@ -34,7 +34,7 @@ sequenceDiagram
 
 Route pages and root layouts have no `"use client"` directive, so they can remain Server Components. The dashboard app-specific shells are Client Components because they use `usePathname` to choose active navigation and breadcrumbs. The interactive shared dashboard shell, sidebar context/sidebar, mobile navigation, and modal are also Client Components because they use React state, context, browser APIs, effects, or click handlers. The public provider and header are Client Components: `next-themes`, `useTheme`, `usePathname`, state, and scroll listeners require browser execution. A component being reusable does not by itself make it client-side.
 
-The dashboard portals also own same-origin Route Handlers under `src/app/api/auth`. They translate authentication requests into handwritten `@template/api-client` operations and store access and refresh tokens in app-specific HttpOnly cookies. `src/lib/server-api.ts` creates a request-scoped server client, forwards only selected tracing metadata, reads the access token server-side, and defaults authenticated requests to `cache: "no-store"`. Browser components never import the server entry point or receive backend tokens. Public, CORS-approved browser calls can use the browser-safe `src/lib/api.ts` adapter.
+The dashboard portals also own same-origin Route Handlers under `src/app/api/auth`. Their sign-in forms post credentials to `/api/auth/session`; the handlers translate those requests into handwritten `@template/api-client` operations and store access and refresh tokens in app-specific HttpOnly cookies. The Admin handler additionally requires the configured role claim before it writes cookies. `src/lib/server-api.ts` creates a request-scoped server client, forwards only selected tracing metadata, reads the access token server-side, and defaults authenticated requests to `cache: "no-store"`. Browser components never import the server entry point or receive backend tokens. Public, CORS-approved browser calls can use the browser-safe `src/lib/api.ts` adapter.
 
 ## Local configuration, branding, and aliases
 
@@ -50,4 +50,4 @@ Tailwind v4 is configured with PostCSS in each application. Dashboard `globals.c
 
 ## Build and deployment boundary
 
-Each application Dockerfile builds from the repository root, runs a filtered production build, then copies only its standalone output and static assets into a Node 22.13 Alpine runtime. The runtime uses the non-root `node` user and starts the corresponding `apps/<name>/server.js` on 3000, 3001, or 3002. Independent manifests, output folders, ports, and images make a change to one portal deployable without redeploying the others.
+Each application Dockerfile builds from the repository root, runs a filtered production build, then copies only its standalone output and static assets into a Node 22.13 Alpine runtime. The runtime uses the non-root `node` user and starts the corresponding `apps/<name>/server.js` on 9000, 9001, or 9002. Independent manifests, output folders, ports, and images make a change to one portal deployable without redeploying the others.

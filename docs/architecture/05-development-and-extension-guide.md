@@ -43,9 +43,9 @@ Put a component in an **app** when it contains product wording, a route destinat
 
 ## Current architecture versus future work
 
-Implemented now: pnpm/Turbo workspace orchestration; strict shared TypeScript/ESLint; three standalone Next applications; TailAdmin-derived dashboard primitives and shell; Solid-derived typed public sections; application-owned navigation, configuration, metadata, static assets, and containers; a handwritten, strongly typed API package; centralized TanStack Query providers and policy; reusable React Hook Form/Zod composition; and User/Admin same-origin authentication endpoints that keep backend tokens in secure HttpOnly cookies.
+Implemented now: pnpm/Turbo workspace orchestration; strict shared TypeScript/ESLint; three standalone Next applications; TailAdmin-derived dashboard primitives and shell; Solid-derived typed public sections; application-owned navigation, configuration, metadata, static assets, and containers; a handwritten, strongly typed API package; centralized TanStack Query providers and policy; reusable React Hook Form/Zod composition; and separate User/Admin credential sign-in flows whose same-origin endpoints keep backend tokens in secure HttpOnly cookies.
 
-Future or deliberately absent: authentication UI and frontend authorization policy; application-specific query and form workflows; domain workflows for accounts/admin operations; checkout/contact processing; and observability. Shared query and form infrastructure is not evidence that these product workflows or screens exist. The dashboard pages' empty tables and the Public Portal's marketing/legal content remain extension points.
+Future or deliberately absent: authenticated-route enforcement, refresh coordination, logout UI, permission-based controls, application-specific query and form workflows beyond sign-in, domain workflows for accounts/admin operations, checkout/contact processing, and observability. Shared query and form infrastructure is not evidence that these product workflows or screens exist. The dashboard pages' empty tables and the Public Portal's marketing/legal content remain extension points.
 
 ## Validate a change
 

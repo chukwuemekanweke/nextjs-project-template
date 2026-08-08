@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     "@template/api-client",
     "@template/dashboard-ui",
+    "@template/forms",
     "@template/ui-core",
   ],
   typescript: { ignoreBuildErrors: false },

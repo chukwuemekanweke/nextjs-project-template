@@ -4,6 +4,7 @@ import {
   type SignInMutationRequest,
 } from "@template/api-client/authentication";
 import { NextResponse } from "next/server";
+import { rejectUnauthorizedAdminSession } from "@/lib/admin-session-authorization";
 import { apiRouteError } from "@/lib/api-route-error";
 import { createAppServerApiClient } from "@/lib/server-api";
 import { clearSessionCookies, setSessionCookies } from "@/lib/session-cookies";
@@ -15,6 +16,10 @@ export async function POST(request: Request) {
       client,
       (await request.json()) as SignInMutationRequest,
     );
+    const rejection = await rejectUnauthorizedAdminSession(client, session);
+    if (rejection) {
+      return rejection;
+    }
     const response = NextResponse.json({
       expiresAtUtc: session.expiresAtUtc,
       tokenType: session.tokenType,
