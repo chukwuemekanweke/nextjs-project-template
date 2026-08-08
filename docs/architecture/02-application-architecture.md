@@ -10,7 +10,7 @@ The `apps/` directory holds three App Router applications. A route's `page.tsx` 
 
 ## Routing, layouts, and request flow
 
-The User and Admin portals presently have only `src/app/page.tsx`, although their navigation configurations list future destinations. A navigation link such as `/profile` or `/users` is not yet backed by a route file. The Public Portal implements `/`, `/features`, `/pricing`, `/about`, `/contact`, `/blog`, `/privacy`, and `/terms`, plus `not-found.tsx`, `robots.ts`, and `sitemap.ts`.
+The User and Admin portals implement `src/app/page.tsx` and separate `/sign-in` routes, although their navigation configurations list additional future destinations. A navigation link such as `/profile` or `/users` is not yet backed by a route file. The dashboard shells omit their authenticated navigation frame on `/sign-in`. The Public Portal implements `/`, `/features`, `/pricing`, `/about`, `/contact`, `/blog`, `/privacy`, and `/terms`, plus `not-found.tsx`, `robots.ts`, and `sitemap.ts`.
 
 ```mermaid
 sequenceDiagram
@@ -34,7 +34,7 @@ sequenceDiagram
 
 Route pages and root layouts have no `"use client"` directive, so they can remain Server Components. The dashboard app-specific shells are Client Components because they use `usePathname` to choose active navigation and breadcrumbs. The interactive shared dashboard shell, sidebar context/sidebar, mobile navigation, and modal are also Client Components because they use React state, context, browser APIs, effects, or click handlers. The public provider and header are Client Components: `next-themes`, `useTheme`, `usePathname`, state, and scroll listeners require browser execution. A component being reusable does not by itself make it client-side.
 
-The dashboard portals also own same-origin Route Handlers under `src/app/api/auth`. They translate authentication requests into handwritten `@template/api-client` operations and store access and refresh tokens in app-specific HttpOnly cookies. `src/lib/server-api.ts` creates a request-scoped server client, forwards only selected tracing metadata, reads the access token server-side, and defaults authenticated requests to `cache: "no-store"`. Browser components never import the server entry point or receive backend tokens. Public, CORS-approved browser calls can use the browser-safe `src/lib/api.ts` adapter.
+The dashboard portals also own same-origin Route Handlers under `src/app/api/auth`. Their sign-in forms post credentials to `/api/auth/session`; the handlers translate those requests into handwritten `@template/api-client` operations and store access and refresh tokens in app-specific HttpOnly cookies. The Admin handler additionally requires the configured role claim before it writes cookies. `src/lib/server-api.ts` creates a request-scoped server client, forwards only selected tracing metadata, reads the access token server-side, and defaults authenticated requests to `cache: "no-store"`. Browser components never import the server entry point or receive backend tokens. Public, CORS-approved browser calls can use the browser-safe `src/lib/api.ts` adapter.
 
 ## Local configuration, branding, and aliases
 

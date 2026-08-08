@@ -3,5 +3,9 @@ import { z } from "zod";
 
 /** Runs when the Next.js server starts, before requests are handled. */
 export async function register() {
-  createServerEnvironment(z.object({}));
+  createServerEnvironment(
+    z.object({
+      ADMIN_REQUIRED_ROLE: z.string().trim().min(1).default("Administrator"),
+    }),
+  );
 }

@@ -15,6 +15,7 @@
     "@template/api-react": "workspace:*",
     "@template/config": "workspace:*",
     "@template/dashboard-ui": "workspace:*",
+    "@template/forms": "workspace:*",
     "@template/ui-core": "workspace:*",
     "next": "catalog:",
     "react": "catalog:",
