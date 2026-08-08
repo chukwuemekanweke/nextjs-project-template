@@ -5,9 +5,9 @@ The repository is a pnpm workspace containing three independently deployable Nex
 ```mermaid
 flowchart TB
   rootPkg["Root package.json: pnpm and Turbo scripts"]
-  userApp["User Portal: @template/user-portal (3000)"]
-  adminApp["Admin Portal: @template/admin-portal (3001)"]
-  publicApp["Public Portal: @template/public-portal (3002)"]
+  userApp["User Portal: @template/user-portal (9000)"]
+  adminApp["Admin Portal: @template/admin-portal (9001)"]
+  publicApp["Public Portal: @template/public-portal (9002)"]
   dashboardUi["@template/dashboard-ui"]
   uiCore["@template/ui-core"]
   publicUi["@template/public-ui"]

@@ -4,9 +4,9 @@ The `apps/` directory holds three App Router applications. A route's `page.tsx` 
 
 | Application   | Package / port                   | Current responsibility                           | Shared UI                                     |
 | ------------- | -------------------------------- | ------------------------------------------------ | --------------------------------------------- |
-| User Portal   | `@template/user-portal` / 3000   | Self-service account and activity placeholders   | `@template/dashboard-ui`, `@template/ui-core` |
-| Admin Portal  | `@template/admin-portal` / 3001  | Privileged operational placeholders              | `@template/dashboard-ui`, `@template/ui-core` |
-| Public Portal | `@template/public-portal` / 3002 | Marketing routes and configurable public content | `@template/public-ui`                         |
+| User Portal   | `@template/user-portal` / 9000   | Self-service account and activity placeholders   | `@template/dashboard-ui`, `@template/ui-core` |
+| Admin Portal  | `@template/admin-portal` / 9001  | Privileged operational placeholders              | `@template/dashboard-ui`, `@template/ui-core` |
+| Public Portal | `@template/public-portal` / 9002 | Marketing routes and configurable public content | `@template/public-ui`                         |
 
 ## Routing, layouts, and request flow
 
@@ -50,4 +50,4 @@ Tailwind v4 is configured with PostCSS in each application. Dashboard `globals.c
 
 ## Build and deployment boundary
 
-Each application Dockerfile builds from the repository root, runs a filtered production build, then copies only its standalone output and static assets into a Node 22.13 Alpine runtime. The runtime uses the non-root `node` user and starts the corresponding `apps/<name>/server.js` on 3000, 3001, or 3002. Independent manifests, output folders, ports, and images make a change to one portal deployable without redeploying the others.
+Each application Dockerfile builds from the repository root, runs a filtered production build, then copies only its standalone output and static assets into a Node 22.13 Alpine runtime. The runtime uses the non-root `node` user and starts the corresponding `apps/<name>/server.js` on 9000, 9001, or 9002. Independent manifests, output folders, ports, and images make a change to one portal deployable without redeploying the others.

@@ -19,8 +19,8 @@ describe("userPortalHref", () => {
     vi.stubEnv("NEXT_PUBLIC_USER_PORTAL_NAME", "Customer Portal");
     vi.stubEnv("NEXT_PUBLIC_ADMIN_PORTAL_NAME", "Operations Portal");
     vi.stubEnv("NEXT_PUBLIC_PUBLIC_PORTAL_NAME", "Acme Platform");
-    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "http://localhost:3002");
-    vi.stubEnv("NEXT_PUBLIC_USER_PORTAL_URL", "http://localhost:3000");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "http://localhost:9002");
+    vi.stubEnv("NEXT_PUBLIC_USER_PORTAL_URL", "http://localhost:9000");
     vi.stubEnv("NEXT_PUBLIC_PRODUCT_DESCRIPTION", "Description");
     vi.stubEnv("NEXT_PUBLIC_CONTACT_ADDRESS", "Address");
   });

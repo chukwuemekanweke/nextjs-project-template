@@ -6,9 +6,9 @@ A pnpm and Turborepo monorepo for three independently deployable Next.js applica
 
 | Application   | Workspace package         | Development URL       |
 | ------------- | ------------------------- | --------------------- |
-| User Portal   | `@template/user-portal`   | http://localhost:3000 |
-| Admin Portal  | `@template/admin-portal`  | http://localhost:3001 |
-| Public Portal | `@template/public-portal` | http://localhost:3002 |
+| User Portal   | `@template/user-portal`   | http://localhost:9000 |
+| Admin Portal  | `@template/admin-portal`  | http://localhost:9001 |
+| Public Portal | `@template/public-portal` | http://localhost:9002 |
 
 Each application owns its package manifest, build output, runtime command, and deployment lifecycle. A change to one application does not require deploying the others.
 
@@ -67,7 +67,7 @@ docker build -f apps/admin-portal/Dockerfile -t admin-portal .
 docker build -f apps/public-portal/Dockerfile -t public-portal .
 ```
 
-The images run their standalone Next.js servers on ports 3000, 3001, and 3002 respectively, use a non-root runtime user, and contain only the selected application's production output.
+The images run their standalone Next.js servers on ports 9000, 9001, and 9002 respectively, use a non-root runtime user, and contain only the selected application's production output.
 
 ## Workspace Commands
 
