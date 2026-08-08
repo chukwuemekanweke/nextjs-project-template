@@ -34,7 +34,7 @@ Every session cookie is `HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, and high
 
 Both cookies use the corresponding expiry returned by the backend minus a 60-second safety window. This avoids sending a token at the edge of its backend validity period and gives refresh coordination a consistent early-expiry signal. In particular, the refresh cookie is persistent rather than browser-session-only, so it remains available to the server-side refresh endpoint after a browser reload or restart until 60 seconds before the backend-defined refresh expiry. No authentication token is written to `localStorage` or `sessionStorage`; the dashboard theme is the only current `localStorage` consumer. FE-023 owns the request coordination that proactively refreshes an access token; the safety window alone does not initiate a refresh.
 
-`src/lib/session-cookies.ts` centralizes creation and deletion. Login, Google login, and refresh rotation all call the same setter, while logout and terminal refresh failures call the same clearer. The setter and clearer also expire the pre-FE-022 `template.*` cookie names to migrate browsers safely. Local development uses secure cookies on `localhost`; non-local deployments must terminate HTTPS for browsers to accept the `Secure` cookies.
+`src/lib/session-cookies.ts` centralizes creation and deletion. Login, Google login, and refresh rotation all call the same setter, while logout and terminal refresh failures call the same clearer. Local development uses secure cookies on `localhost`; non-local deployments must terminate HTTPS for browsers to accept the `Secure` cookies.
 
 Later Epic 08 stories own route guards, refresh coordination, logout presentation, and permission-aware controls.
 

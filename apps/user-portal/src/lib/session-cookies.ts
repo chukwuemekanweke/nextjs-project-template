@@ -5,7 +5,6 @@ import type { NextResponse } from "next/server";
 import {
   ACCESS_TOKEN_COOKIE,
   expiredSessionCookie,
-  LEGACY_SESSION_COOKIES,
   persistentSessionCookie,
   REFRESH_TOKEN_COOKIE,
 } from "./session-cookie-policy";
@@ -26,18 +25,10 @@ export function setSessionCookies(
     session.refreshToken,
     persistentSessionCookie(session.refreshTokenExpiresAtUtc),
   );
-  clearLegacySessionCookies(response);
 }
 
 export function clearSessionCookies(response: NextResponse): void {
   for (const cookieName of [ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE]) {
-    response.cookies.set(cookieName, "", expiredSessionCookie);
-  }
-  clearLegacySessionCookies(response);
-}
-
-function clearLegacySessionCookies(response: NextResponse): void {
-  for (const cookieName of LEGACY_SESSION_COOKIES) {
     response.cookies.set(cookieName, "", expiredSessionCookie);
   }
 }

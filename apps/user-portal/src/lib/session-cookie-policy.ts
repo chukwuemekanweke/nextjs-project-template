@@ -1,11 +1,6 @@
 export const ACCESS_TOKEN_COOKIE = "__Host-user-session";
 export const REFRESH_TOKEN_COOKIE = "__Host-user-refresh-session";
 
-export const LEGACY_SESSION_COOKIES = [
-  "template.access-token",
-  "template.refresh-token",
-] as const;
-
 export const TOKEN_EXPIRY_SAFETY_WINDOW_SECONDS = 60;
 
 const HOST_COOKIE_POLICY = {
