@@ -60,3 +60,29 @@ pnpm build
 ```
 
 Use `pnpm --filter @template/<application> <task>` for a focused application check. A full build is especially useful after changing a workspace package, application Next configuration, Tailwind sources, or container assumptions.
+
+## Git and pull-request workflow
+
+`scripts/git-workflow.ps1` owns the repository's optional Windows PowerShell
+workflow automation. Its `start` command fast-forwards local `main` from
+`origin/main` and creates branches named
+`epic-{number}/fe-{number}-{kebab-case-label}`. It refuses to start from a dirty
+working tree or overwrite an existing local or remote branch.
+
+Developers stage their intended files explicitly. The `publish` command runs the
+root lint, type-check, and test tasks before invoking Codex in a read-only,
+non-interactive session. Codex returns a schema-constrained commit subject, PR
+title, and PR body based on the staged diff, repository instructions, and
+`.github/pull_request_template.md`. Human approval remains required before the
+commit and before `gh pr create`; the AI session itself cannot edit, commit,
+push, or create the PR. Draft PRs are the default.
+
+`publish` also supports recovery after a partial run. When there are no staged
+changes but the feature branch contains commits ahead of `origin/main`, it
+regenerates the PR metadata from the committed branch diff and resumes the push
+and PR-creation steps without creating another commit.
+
+After GitHub confirms that the branch PR is merged, `finish` switches to `main`,
+fetches and prunes remote references, and pulls with `--ff-only`. It deliberately
+keeps the merged local feature branch. This makes branch deletion a separate,
+explicit developer choice rather than an automated side effect.
