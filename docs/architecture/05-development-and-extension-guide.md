@@ -77,6 +77,20 @@ title, and PR body based on the staged diff, repository instructions, and
 commit and before `gh pr create`; the AI session itself cannot edit, commit,
 push, or create the PR. Draft PRs are the default.
 
+On Windows, the script discovers a Codex executable with its matching sandbox
+helper and adds that directory to the nested process path. This allows it to use
+the Codex version bundled with the VS Code extension when another installation
+is missing the Windows helper, while keeping metadata inspection read-only.
+
+The workflow uses the `chukwuemekanweke` GitHub account for this repository. Git
+pushes go through the `github-chukwuemekanweke` SSH host alias. GitHub API calls
+use a PAT saved by the one-time `setup-auth` command. PowerShell stores the
+credential under `%LOCALAPPDATA%\FrontendProjectTemplate` with Windows
+user-and-machine encryption, and the script verifies that the token belongs to
+the expected account before it continues. A process-level
+`CHUKWUEMEKANWEKE_GITHUB_TOKEN` can override the saved credential. The workflow
+does not switch or fall back to the globally active `gh` account.
+
 `publish` also supports recovery after a partial run. When there are no staged
 changes but the feature branch contains commits ahead of `origin/main`, it
 regenerates the PR metadata from the committed branch diff and resumes the push

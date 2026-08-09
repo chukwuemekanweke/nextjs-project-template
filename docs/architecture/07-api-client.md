@@ -35,7 +35,7 @@ const countries = await api.referenceData.getCountries({ signal });
 
 The aggregate client exposes `authentication`, `payments`, `profiles`, `providers`, and `referenceData`, plus the injected transport. Consumers needing one domain can import its interface and factory from a controlled subpath such as `@template/api-client/payments`. Low-level consumers can import `ApiTransport`, `ApiRequestOptions`, and `createFetchApiTransport` from `@template/api-client/transport`.
 
-The default transport supports GET, POST, PUT, PATCH, DELETE, native `FormData`, caller headers, cookies, bearer tokens, generated or propagated correlation IDs, `AbortSignal`, timeouts, empty responses, and safe parsing. It does not redirect on authorization errors and does not retry requests.
+The default transport supports GET, POST, PUT, PATCH, DELETE, native `FormData`, caller headers, cookies, bearer tokens, generated or propagated correlation IDs, `AbortSignal`, timeouts, empty responses, and safe parsing. It does not redirect or retry on its own. Browser applications can opt into `createRefreshCoordinatedFetch` and supply their own refresh, session-expiry, and request-eligibility callbacks.
 
 Transport responsibilities are split under `packages/api-client/src/transport`:
 
@@ -81,5 +81,7 @@ CI deliberately does not require the frontend to implement or register every bac
 ## Server and browser boundaries
 
 The `@template/api-client/server` entrypoint is marked `server-only`; the browser entrypoint cannot read private environment variables, cookies, or tokens. Dashboard Route Handlers keep backend tokens in portal-specific HttpOnly cookies and use request-scoped server clients. This is a narrow BFF boundary, not a catch-all proxy. Public CORS-approved calls may use the browser client.
+
+The browser entrypoint also exports `createRefreshCoordinatedFetch`. It handles the part of refresh coordination that is the same in both portals: one in-flight refresh promise, one retry per failed request, a session version for late 401 responses, and one session-expiry callback. It does not know any portal route or redirect. Each dashboard app supplies those details in `src/lib/session-fetch.ts` and limits refresh handling to its own same-origin BFF requests.
 
 Public package exports are the supported extension points. Consumers must not import package internals or construct backend URLs in application features.

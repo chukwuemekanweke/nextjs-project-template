@@ -87,7 +87,38 @@ The images run their standalone Next.js servers on ports 9000, 9001, and 9002 re
 The Windows PowerShell workflow command automates branch creation, validation,
 AI-assisted commit and pull-request drafting, publishing, and returning to an
 updated `main` after merge. It requires Git, GitHub CLI (`gh`), and an installed
-and authenticated Codex CLI.
+and authenticated Codex CLI. On Windows, the workflow selects a Codex executable
+that has its matching sandbox helper, including the version bundled with the
+Codex VS Code extension.
+
+This repository publishes through the `chukwuemekanweke` GitHub account without
+switching the globally active `gh` login. Git pushes use the
+`github-chukwuemekanweke` SSH host alias. Pull-request commands read the
+account-specific token from an encrypted local credential and verify the account
+before doing any remote work.
+
+Configure the SSH alias in `%USERPROFILE%\.ssh\config`:
+
+```sshconfig
+Host github-chukwuemekanweke
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_chukwuemekanweke
+    IdentitiesOnly yes
+```
+
+Save the PAT once after cloning the repository:
+
+```powershell
+.\scripts\git-workflow.ps1 setup-auth
+```
+
+The command validates the account before saving the credential under
+`%LOCALAPPDATA%\FrontendProjectTemplate`. Windows encrypts the token for the
+current user on the current computer, so it is loaded automatically on later
+workflow runs. `CHUKWUEMEKANWEKE_GITHUB_TOKEN` remains available as a temporary
+override for the current shell. Do not add the private key, token, or encrypted
+credential file to this repository.
 
 Start a feature branch from the latest `origin/main`:
 
