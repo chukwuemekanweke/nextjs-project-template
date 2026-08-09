@@ -82,6 +82,45 @@ The images run their standalone Next.js servers on ports 9000, 9001, and 9002 re
 | `pnpm format`       | Format supported files with Prettier          |
 | `pnpm format:check` | Verify formatting without changing files      |
 
+## Git workflow automation
+
+The Windows PowerShell workflow command automates branch creation, validation,
+AI-assisted commit and pull-request drafting, publishing, and returning to an
+updated `main` after merge. It requires Git, GitHub CLI (`gh`), and an installed
+and authenticated Codex CLI.
+
+Start a feature branch from the latest `origin/main`:
+
+```powershell
+.\scripts\git-workflow.ps1 start -Epic 12 -Feature 34 -Label "user-profile"
+```
+
+After making changes, stage only the intended files and publish them:
+
+```powershell
+git add apps/user-portal packages/api-react
+git diff --cached
+.\scripts\git-workflow.ps1 publish
+```
+
+`publish` runs lint, type checking, and tests. Codex then inspects the staged diff
+in a read-only session and drafts a Conventional Commit message, PR title, and a
+completed `.github/pull_request_template.md`. The command pauses for approval of
+the commit message and again for editing or approval of the PR. PRs are drafts by
+default; pass `-Ready` to create a ready-for-review PR, or `-SkipChecks` only when
+the checks have already been run separately.
+If a push or PR creation is interrupted, run `publish` again; with no staged
+changes, it resumes PR creation from the commits already on the feature branch.
+
+Once GitHub reports the current branch's PR as merged, update `main` with:
+
+```powershell
+.\scripts\git-workflow.ps1 finish
+```
+
+The local feature branch is deliberately preserved. Use `status` for Git and PR
+status, or `check` to run the repository validation suite without publishing.
+
 ## Repository Structure
 
 ```text
