@@ -1,7 +1,11 @@
 "use client";
 
 import type { ApiClient } from "@template/api-client";
-import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
+import {
+  QueryClientProvider,
+  type QueryClient,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createContext, type ReactNode, useContext, useState } from "react";
 import { createApiQueryClient } from "./create-query-client";
@@ -36,4 +40,8 @@ export function useApiClient(): ApiClient {
     throw new Error("useApiClient must be used within ApiProvider.");
   }
   return client;
+}
+
+export function useApiQueryClient(): QueryClient {
+  return useQueryClient();
 }

@@ -1,6 +1,6 @@
 # Authentication and session management
 
-FE-021 added sign-in to the User and Admin portals. FE-022 tightens how those portals store the resulting session. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
+FE-021 added sign-in to the User and Admin portals, FE-022 tightened session storage, FE-023 added coordinated refresh, and FE-024 added explicit logout. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
 
 ## Sign-in flow
 
@@ -48,7 +48,32 @@ If refresh fails for any reason, the refresh Route Handler clears both cookies. 
 
 Authenticated client-side features must use `authenticatedFetch` for their same-origin Route Handler calls. The existing `browserApi` remains for approved public or CORS requests and does not receive authentication cookies.
 
-Later Epic 08 stories own route guards, logout presentation, and permission-aware controls.
+## Logout flow
+
+```mermaid
+sequenceDiagram
+  participant Browser
+  participant Cache as TanStack Query
+  participant Portal as Portal /api/auth/session
+  participant Backend as .NET Web API
+  Browser->>Cache: cancel active private queries
+  Browser->>Portal: DELETE /api/auth/session
+  Portal->>Backend: POST /api/v1/authentication/sessions/logout
+  alt Backend logout succeeds
+    Backend-->>Portal: 204
+  else Session expired or backend unavailable
+    Backend-->>Portal: error
+  end
+  Portal-->>Browser: expire both cookies + 204
+  Browser->>Cache: clear all cached server state
+  Browser->>Browser: full navigation to local /sign-in
+```
+
+Each portal adds an app-owned `LogoutButton` to its profile menu. `src/lib/logout.ts` cancels active queries, calls the same-origin session endpoint, clears the Query Client, and navigates to the current portal's `/sign-in` page. The full navigation resets React authentication and refresh-coordination state as well as the in-memory cache.
+
+The Route Handler always attempts the backend logout operation. It also always expires that portal's access and refresh cookies and returns `204`, including when the backend reports an already-expired session or cannot complete the request. Local sign-out therefore does not depend on a usable access token or backend availability. The reusable `@template/api-react` logout mutation clears a supplied Query Client in `onSettled` for consumers that call the API client directly; portal navigation and safe error behaviour remain application-owned.
+
+Later Epic 08 stories own route guards and permission-aware controls.
 
 ## Admin authorization boundary
 

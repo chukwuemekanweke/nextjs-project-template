@@ -13,6 +13,7 @@ import {
 import type { ReactNode } from "react";
 import { adminNavigation } from "@/config/navigation";
 import { branding } from "@/config/env";
+import { LogoutButton } from "./logout-button";
 
 export function AdminLayoutShell({
   children,
@@ -74,6 +75,7 @@ export function AdminLayoutShell({
               <Link href="/" key="audit">
                 Review audit events
               </Link>,
+              <LogoutButton key="logout" />,
             ]}
             meta="Privileged session"
             name="Signed-in administrator"

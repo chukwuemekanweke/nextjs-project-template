@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   initiatePaymentMutationOptions,
   getQueryOptions,
+  logoutMutationOptions,
   paymentKeys,
   queryClientDefaults,
   shouldRetryQuery,
@@ -98,6 +99,17 @@ describe("API React integration", () => {
     expect(invalidate).toHaveBeenCalledWith({
       queryKey: paymentKeys.walletTransactions(),
     });
+  });
+
+  it("clears cached server state when logout fails", async () => {
+    const logout = vi.fn().mockRejectedValue(new Error("Session expired"));
+    const queryClient = new QueryClient();
+    const clear = vi.spyOn(queryClient, "clear");
+    const options = logoutMutationOptions({ logout } as never, queryClient);
+    const mutation = queryClient.getMutationCache().build(queryClient, options);
+
+    await expect(mutation.execute()).rejects.toThrow("Session expired");
+    expect(clear).toHaveBeenCalledOnce();
   });
 
   it("centralizes cache defaults and avoids retrying client errors", () => {

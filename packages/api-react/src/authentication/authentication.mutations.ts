@@ -53,5 +53,5 @@ export const logoutMutationOptions = (
   mutationOptions({
     mutationKey: authenticationKeys.mutation("logout"),
     mutationFn: () => client.logout(),
-    onSuccess: () => queryClient?.clear(),
+    onSettled: () => queryClient?.clear(),
   });

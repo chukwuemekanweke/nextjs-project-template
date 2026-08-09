@@ -43,9 +43,9 @@ Put a component in an **app** when it contains product wording, a route destinat
 
 ## Current architecture versus future work
 
-Implemented now: pnpm/Turbo workspace orchestration; strict shared TypeScript/ESLint; three standalone Next applications; TailAdmin-derived dashboard primitives and shell; Solid-derived typed public sections; application-owned navigation, configuration, metadata, static assets, and containers; a handwritten, strongly typed API package; centralized TanStack Query providers and policy; reusable React Hook Form/Zod composition; and separate User/Admin credential sign-in flows whose same-origin endpoints keep backend tokens in secure HttpOnly cookies.
+Implemented now: pnpm/Turbo workspace orchestration; strict shared TypeScript/ESLint; three standalone Next applications; TailAdmin-derived dashboard primitives and shell; Solid-derived typed public sections; application-owned navigation, configuration, metadata, static assets, and containers; a handwritten, strongly typed API package; centralized TanStack Query providers and policy; reusable React Hook Form/Zod composition; and separate User/Admin sign-in, secure cookie storage, coordinated refresh, and logout flows.
 
-Future or deliberately absent: authenticated-route enforcement, refresh coordination, logout UI, permission-based controls, application-specific query and form workflows beyond sign-in, domain workflows for accounts/admin operations, checkout/contact processing, and observability. Shared query and form infrastructure is not evidence that these product workflows or screens exist. The dashboard pages' empty tables and the Public Portal's marketing/legal content remain extension points.
+Future or deliberately absent: authenticated-route enforcement, permission-based controls, application-specific query and form workflows beyond authentication, domain workflows for accounts/admin operations, checkout/contact processing, and observability. Shared query and form infrastructure is not evidence that these product workflows or screens exist. The dashboard pages' empty tables and the Public Portal's marketing/legal content remain extension points.
 
 ## Validate a change
 
@@ -70,17 +70,20 @@ workflow automation. Its `start` command fast-forwards local `main` from
 working tree or overwrite an existing local or remote branch.
 
 Developers stage their intended files explicitly. The `publish` command runs the
-root lint, type-check, and test tasks before invoking Codex in a read-only,
-non-interactive session. Codex returns a schema-constrained commit subject, PR
-title, and PR body based on the staged diff, repository instructions, and
-`.github/pull_request_template.md`. Human approval remains required before the
-commit and before `gh pr create`; the AI session itself cannot edit, commit,
-push, or create the PR. Draft PRs are the default.
+root lint, type-check, and test tasks before creating a disposable detached
+worktree with the branch history and staged snapshot. Codex inspects that
+worktree in a non-interactive session and returns a schema-constrained commit
+subject, PR title, and PR body based on the repository instructions and
+`.github/pull_request_template.md`. The worktree is removed before human
+approval of the commit and `gh pr create`; Codex does not receive those workflow
+actions. Draft PRs are the default.
 
-On Windows, the script discovers a Codex executable with its matching sandbox
-helper and adds that directory to the nested process path. This allows it to use
-the Codex version bundled with the VS Code extension when another installation
-is missing the Windows helper, while keeping metadata inspection read-only.
+On Windows, the script discovers the newest Codex executable with its matching
+sandbox helper, including versions bundled with stable or Insiders VS Code. The
+Codex process runs against the disposable worktree because native Windows
+sandbox logon sessions are not reliable in every local setup. The prompt limits
+Codex to read-only inspection, and its normal repository context is the
+temporary worktree that is removed immediately afterward.
 
 The workflow uses the `chukwuemekanweke` GitHub account for this repository. Git
 pushes go through the `github-chukwuemekanweke` SSH host alias. GitHub API calls

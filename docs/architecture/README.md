@@ -1,6 +1,6 @@
 # Architecture documentation
 
-This guide explains the frontend architecture implemented through FE-021: the monorepo foundation, application bootstrapping, dashboard and public-portal infrastructure, shared configuration, the handwritten API client, reusable query and form infrastructure, and portal sign-in flow. It is for developers who know Next.js routes such as `page.tsx` and want to understand how this repository composes three deployable applications from workspace packages.
+This guide explains the frontend architecture implemented through FE-024: the monorepo foundation, application bootstrapping, dashboard and public-portal infrastructure, shared configuration, the handwritten API client, reusable query and form infrastructure, and portal authentication/session flows. It is for developers who know Next.js routes such as `page.tsx` and want to understand how this repository composes three deployable applications from workspace packages.
 
 Read in this order:
 
@@ -18,4 +18,4 @@ Read in this order:
 
 `apps/user-portal`, `apps/admin-portal`, and `apps/public-portal` are separate Next.js applications. They share tooling, presentation infrastructure, validated configuration, the handwritten `@template/api-client`, `@template/api-react` server-state policy, and `@template/forms` composition—not route or feature composition. The two dashboard applications consume `@template/ui-core`, `@template/dashboard-ui`, and `@template/config`; the marketing application consumes `@template/public-ui` and `@template/config`. pnpm links these workspace packages, Turborepo runs their tasks in dependency order, and each application builds a standalone container on its own port.
 
-The documents describe implemented structure, including the dashboard portals' sign-in pages and session BFF endpoints, query providers, form primitives, and placeholder pages. Credential sign-in is implemented; route protection, refresh coordination, logout UI, permission-based controls, business workflows, and observability remain future work.
+The documents describe implemented structure, including the dashboard portals' sign-in, secure session cookies, coordinated refresh, explicit logout, session BFF endpoints, query providers, form primitives, and placeholder pages. Route protection, permission-based controls, business workflows, and observability remain future work.

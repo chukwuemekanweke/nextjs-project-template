@@ -34,15 +34,42 @@ function Assert-CommandExists {
 
 function Get-CodexExecutable {
     $codexCommands = @(Get-Command "codex" -All -ErrorAction SilentlyContinue)
-    foreach ($codexCommand in $codexCommands) {
-        if ($codexCommand.CommandType -ne "Application") {
+    $codexPaths = @(
+        $codexCommands |
+            Where-Object { $_.CommandType -eq "Application" } |
+            ForEach-Object { $_.Source }
+    )
+
+    $userProfile = [Environment]::GetFolderPath("UserProfile")
+    $extensionRoots = @(
+        (Join-Path $userProfile ".vscode\extensions"),
+        (Join-Path $userProfile ".vscode-insiders\extensions")
+    )
+    foreach ($extensionRoot in $extensionRoots) {
+        if (-not (Test-Path -LiteralPath $extensionRoot -PathType Container)) {
             continue
         }
 
-        $codexDirectory = Split-Path -Parent $codexCommand.Source
+        $extensionCodexPaths = @(
+            Get-ChildItem -Path (Join-Path $extensionRoot "openai.chatgpt-*\bin\windows-*\codex.exe") -File -ErrorAction SilentlyContinue |
+                Sort-Object LastWriteTime -Descending |
+                ForEach-Object { $_.FullName }
+        )
+        $codexPaths += $extensionCodexPaths
+    }
+
+    $orderedCodexPaths = @(
+        $codexPaths |
+            Select-Object -Unique |
+            ForEach-Object { Get-Item -LiteralPath $_ -ErrorAction SilentlyContinue } |
+            Sort-Object LastWriteTime -Descending |
+            ForEach-Object { $_.FullName }
+    )
+    foreach ($codexPath in $orderedCodexPaths) {
+        $codexDirectory = Split-Path -Parent $codexPath
         $sandboxHelper = Join-Path $codexDirectory "codex-windows-sandbox-setup.exe"
         if (Test-Path -LiteralPath $sandboxHelper -PathType Leaf) {
-            return $codexCommand.Source
+            return $codexPath
         }
     }
 
@@ -231,6 +258,7 @@ Context:
 
 Inspect AGENTS.md, .github/pull_request_template.md, git status, relevant recent
 commits, and $changeDescription. You may run read-only Git and file-inspection commands.
+This is a disposable review worktree. Do not access paths outside this worktree.
 Do not edit files, stage changes, commit, push, or contact GitHub.
 
 Return JSON matching the supplied schema with:
@@ -246,13 +274,30 @@ Base every claim on repository evidence. Do not wrap the JSON in Markdown fences
 
     Write-Host "Asking Codex to inspect the proposed change..." -ForegroundColor Cyan
     $previousPath = $env:PATH
+    $reviewRoot = Join-Path ([System.IO.Path]::GetTempPath()) "frontend-project-template-review-$([guid]::NewGuid().ToString('N'))"
+    $stagedPatchPath = [System.IO.Path]::GetTempFileName()
+    $worktreeCreated = $false
     try {
+        Invoke-NativeCommand "git" @("worktree", "add", "--detach", $reviewRoot, "HEAD") | Out-Host
+        $worktreeCreated = $true
+        if ($HasStagedChanges) {
+            Invoke-NativeCommand "git" @("diff", "--cached", "--binary", "--output=$stagedPatchPath")
+            Invoke-NativeCommand "git" @("-C", $reviewRoot, "apply", "--index", "--whitespace=nowarn", $stagedPatchPath)
+        }
+
         $env:PATH = "$codexDirectory$([System.IO.Path]::PathSeparator)$previousPath"
-        $prompt | & $codexExecutable --ask-for-approval never exec --sandbox read-only --ephemeral --color never --cd $script:RepositoryRoot --output-schema $schemaPath --output-last-message $OutputPath - | Out-Host
+        $prompt | & $codexExecutable --ask-for-approval never exec --sandbox danger-full-access --ephemeral --color never --cd $reviewRoot --output-schema $schemaPath --output-last-message $OutputPath - | Out-Host
         $codexExitCode = $LASTEXITCODE
     }
     finally {
         $env:PATH = $previousPath
+        if ($worktreeCreated) {
+            & git worktree remove --force $reviewRoot | Out-Host
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warning "Temporary Codex review worktree could not be removed: $reviewRoot"
+            }
+        }
+        Remove-Item -LiteralPath $stagedPatchPath -Force -ErrorAction SilentlyContinue
     }
 
     if ($codexExitCode -ne 0) {

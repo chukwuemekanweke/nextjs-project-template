@@ -13,6 +13,7 @@ import {
 import type { ReactNode } from "react";
 import { userNavigation } from "@/config/navigation";
 import { branding } from "@/config/env";
+import { LogoutButton } from "./logout-button";
 
 export function UserLayoutShell({
   children,
@@ -76,6 +77,7 @@ export function UserLayoutShell({
               <Link href="/" key="sessions">
                 Manage sessions
               </Link>,
+              <LogoutButton key="logout" />,
             ]}
             meta="Verified account"
             name="Signed-in user"
