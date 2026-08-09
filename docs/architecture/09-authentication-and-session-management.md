@@ -1,6 +1,6 @@
 # Authentication and session management
 
-FE-021 and FE-022 add application-owned credential sign-in and secure session storage to the independently deployed User and Admin portals. Both applications expose `/sign-in`, validate email/password input with `@template/forms`, and post only to their own `/api/auth/session` Route Handler. The browser never receives an access token or refresh token through JavaScript.
+FE-021 added sign-in to the User and Admin portals. FE-022 tightens how those portals store the resulting session. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
 
 ## Sign-in flow
 
@@ -23,18 +23,18 @@ The form maps response status to application-owned, safe messages. It does not r
 
 ## Session cookie policy
 
-Each portal stores the access and refresh token in separate cookies and reads them only from server-side Route Handlers or server API clients:
+Each portal keeps the access and refresh token in separate cookies. Only Route Handlers and server API clients read them.
 
 | Portal | Access token           | Refresh token                  |
 | ------ | ---------------------- | ------------------------------ |
 | User   | `__Host-user-session`  | `__Host-user-refresh-session`  |
 | Admin  | `__Host-admin-session` | `__Host-admin-refresh-session` |
 
-Every session cookie is `HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, and high priority. The `__Host-` prefix requires `Secure` and `Path=/` and prevents a `Domain` attribute, so a deployment cannot broaden a cookie to sibling subdomains. User and Admin cookie names remain distinct even during local development, where ports do not isolate cookies.
+All four cookies are `HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, and high priority. The `__Host-` prefix also prevents a `Domain` attribute, so these cookies cannot be widened to sibling subdomains. The User and Admin names are deliberately different because browser cookies are not isolated by port during local development.
 
-Both cookies use the corresponding expiry returned by the backend minus a 60-second safety window. This avoids sending a token at the edge of its backend validity period and gives refresh coordination a consistent early-expiry signal. In particular, the refresh cookie is persistent rather than browser-session-only, so it remains available to the server-side refresh endpoint after a browser reload or restart until 60 seconds before the backend-defined refresh expiry. No authentication token is written to `localStorage` or `sessionStorage`; the dashboard theme is the only current `localStorage` consumer. FE-023 owns the request coordination that proactively refreshes an access token; the safety window alone does not initiate a refresh.
+Cookie expiry is the backend token expiry minus 60 seconds. That buffer stops the portals from using a token right at the edge of its validity and gives FE-023 a clear point to refresh early. The refresh cookie is persistent, so reloading or reopening the browser does not lose it before that adjusted expiry. Authentication tokens are never written to `localStorage` or `sessionStorage`; the dashboard theme is the only current `localStorage` consumer. The safety window does not refresh anything by itself—FE-023 will add that coordination.
 
-`src/lib/session-cookies.ts` centralizes creation and deletion. Login, Google login, and refresh rotation all call the same setter, while logout and terminal refresh failures call the same clearer. Local development uses secure cookies on `localhost`; non-local deployments must terminate HTTPS for browsers to accept the `Secure` cookies.
+`src/lib/session-cookies.ts` is the single place that creates and clears these cookies. Login, Google login, and refresh rotation use the same setter. Logout and terminal refresh failures use the same clearer. Secure cookies work on `localhost` during development; every non-local deployment must use HTTPS.
 
 Later Epic 08 stories own route guards, refresh coordination, logout presentation, and permission-aware controls.
 
