@@ -64,6 +64,17 @@
 - Prefer a title that clearly states the main change and affected area, such as
   `feat(scope): summary of the change`.
 
+## Documentation voice
+
+- Write documentation and pull request descriptions in the maintainer's human
+  tone: direct, natural, concise, and grounded in the work that actually changed.
+- Write as an engineer explaining the implementation to another engineer. Use
+  plain language, concrete details, and normal sentence structure.
+- Avoid generic filler, marketing language, exaggerated claims, repetitive
+  summaries, and wording that sounds automated or generated.
+- Keep important technical details and tradeoffs, but do not make the writing
+  formal or elaborate when a simpler explanation is clearer.
+
 ## Architecture documentation
 
 - Treat the Markdown files under `docs/architecture/` as living descriptions of
