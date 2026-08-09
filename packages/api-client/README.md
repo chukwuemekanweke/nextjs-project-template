@@ -6,7 +6,7 @@ There is no API client generator and no generated source. `backendprojecttemplat
 
 The Fetch implementation is decomposed under `src/transport` into request building, response parsing, error normalization, cancellation, and orchestration modules. Keep new transport behaviour in the smallest module that owns that responsibility.
 
-Browser applications can use `createRefreshCoordinatedFetch` from `@template/api-client/browser` when they need single-flight refresh handling. The helper owns concurrency and one-time retry behaviour; the application still decides which requests qualify, how to refresh, and where to send the user when the session ends.
+Browser applications can use `createRefreshCoordinatedFetch` from `@template/api-client/browser` when they need single-flight refresh handling. The helper owns concurrency and one-time retry behaviour; the application still decides which requests qualify, how to refresh, and how to expire the session. Dashboard portals use `createBffSessionFetch` to compose those callbacks from explicit same-origin route configuration and browser dependencies.
 
 Useful commands:
 
