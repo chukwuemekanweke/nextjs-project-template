@@ -55,7 +55,7 @@ cp apps/admin-portal/.env.example apps/admin-portal/.env.local
 cp apps/public-portal/.env.example apps/public-portal/.env.local
 ```
 
-Every application configures the private server-side `API_BASE_URL` and the intentionally public `NEXT_PUBLIC_API_BASE_URL`. Authenticated server calls and session BFF handlers use the private value. The Public Portal additionally configures its canonical URL, product branding, contact details, and `NEXT_PUBLIC_USER_PORTAL_URL`, which is used for registration and sign-in calls to action. Example values are safe local defaults; secrets must never use the `NEXT_PUBLIC_` prefix.
+Every application configures the private server-side `API_BASE_URL` and the intentionally public `NEXT_PUBLIC_API_BASE_URL`. Authenticated server calls and session BFF handlers use the private value. `TENANT_ID` and `NEXT_PUBLIC_TENANT_ID` select the backend tenant for server and browser requests; both default to the template tenant shown in the example files. Keep the two tenant values aligned unless a deployment deliberately routes them differently. The Public Portal additionally configures its canonical URL, product branding, contact details, and `NEXT_PUBLIC_USER_PORTAL_URL`, which is used for registration and sign-in calls to action. Example values are safe local defaults; secrets must never use the `NEXT_PUBLIC_` prefix.
 
 ## Independent Containers
 

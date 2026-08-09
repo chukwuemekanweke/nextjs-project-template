@@ -6,12 +6,12 @@
 
 `packages/config/src/index.ts` defines separate Zod schemas:
 
-- `serverEnvironmentSchema` validates `API_BASE_URL`, `APP_ENVIRONMENT`, `APPLICATION_NAME`, and `APPLICATION_VERSION`. These are server-only values; secrets must use this boundary and must never have a `NEXT_PUBLIC_` prefix.
+- `serverEnvironmentSchema` validates `API_BASE_URL`, `TENANT_ID`, `APP_ENVIRONMENT`, `APPLICATION_NAME`, and `APPLICATION_VERSION`. These are server-side values; secrets must use this boundary and must never have a `NEXT_PUBLIC_` prefix.
 - `browserEnvironmentSchema` validates the equivalent intentional browser values with `NEXT_PUBLIC_` prefixes. A browser bundle can only receive values listed in each app's explicit mapping in `src/config/env.ts`.
 
 Every app calls `createServerEnvironment` from `src/instrumentation.ts`, which Next.js runs on server startup. Its local `src/config/env.ts` extends the shared browser schema with the values that particular portal needs. Invalid or missing values produce a Zod error before the server accepts requests.
 
-Copy the application-specific `.env.example` file to `.env.local` for local development. Production deployments must supply the same values through their deployment environment. The public and server values are intentionally separate even when they currently contain the same API URL, so a future private API endpoint or secret cannot accidentally be exposed to the browser.
+Copy the application-specific `.env.example` file to `.env.local` for local development. Production deployments must supply the same values through their deployment environment. The public and server values are intentionally separate even when they currently contain the same API URL and tenant ID, so a future private endpoint or secret cannot accidentally be exposed to the browser. Tenant IDs are validated UUIDs and default to `1203d9d1-2a6b-48ef-9cc1-e561a23aff72`; unlike an authentication token, this identifier is safe browser routing context.
 
 ## Branding composition
 

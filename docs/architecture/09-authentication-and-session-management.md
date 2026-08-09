@@ -1,6 +1,6 @@
 # Authentication and session management
 
-FE-021 added sign-in to the User and Admin portals, FE-022 tightened session storage, FE-023 added coordinated refresh, and FE-024 added explicit logout. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
+FE-021 added sign-in to the User and Admin portals, FE-022 tightened session storage, FE-023 added coordinated refresh, FE-024 added explicit logout, and FE-025 protected dashboard routes. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
 
 ## Sign-in flow
 
@@ -10,7 +10,7 @@ sequenceDiagram
   participant Portal as Portal /api/auth/session
   participant Backend as .NET Web API
   Browser->>Portal: POST email + password
-  Portal->>Backend: POST /api/v1/authentication/sessions
+  Portal->>Backend: POST /api/v1/authentication/sessions + X-Tenant-Id
   Backend-->>Portal: access + refresh tokens
   alt Admin Portal
     Portal->>Portal: require configured role claim
@@ -20,6 +20,8 @@ sequenceDiagram
 ```
 
 The form maps response status to application-owned, safe messages. It does not render backend details, account identifiers, tokens, or exception text. `returnTo` accepts only a same-origin absolute path beginning with one slash; missing, external, protocol-relative, and malformed values fall back to `/`. This supplies destination restoration for route guards without creating an open redirect.
+
+The portal's server API client adds the configured `X-Tenant-Id` header to sign-in, refresh, logout, registration, and every other backend operation. Route protection uses the same server tenant setting. The shared configuration defaults to the template tenant and still allows a deployment-specific override.
 
 ## Session cookie policy
 
@@ -73,7 +75,29 @@ Each portal adds an app-owned `LogoutButton` to its profile menu. `src/lib/logou
 
 The Route Handler always attempts the backend logout operation. It also always expires that portal's access and refresh cookies and returns `204`, including when the backend reports an already-expired session or cannot complete the request. Local sign-out therefore does not depend on a usable access token or backend availability. The reusable `@template/api-react` logout mutation clears a supplied Query Client in `onSettled` for consumers that call the API client directly; portal navigation and safe error behaviour remain application-owned.
 
-Later Epic 08 stories own route guards and permission-aware controls.
+## Protected routes
+
+Each dashboard app exports a Next.js `proxy` from `src/proxy.ts`. The matcher runs it for portal page requests while excluding authentication APIs, Next.js assets, and application static files. `/sign-in` is explicitly public. Every other matched page is resolved before React rendering, so an unauthenticated request cannot briefly render the dashboard shell or page content.
+
+```mermaid
+flowchart TD
+  Request[Portal page request] --> Public{Sign-in page?}
+  Public -->|Yes| Allow[Continue request]
+  Public -->|No| Access{Active access cookie?}
+  Access -->|Yes| Allow
+  Access -->|No| Refresh{Refresh cookie present?}
+  Refresh -->|No| Redirect[Clear cookies and redirect to sign-in]
+  Refresh -->|Yes| Backend[Rotate token through backend]
+  Backend -->|Valid session| Cookies[Set rotated cookies]
+  Cookies --> Allow
+  Backend -->|Invalid, expired, or unauthorized| Redirect
+```
+
+`resolveRouteSession`, `hasActiveAccessToken`, and `createSignInRedirectUrl` live with the reusable authentication client. The access-token check rejects malformed tokens and tokens outside their `nbf`/`exp` window. Because the backend refresh token is opaque and rotating, the proxy sends it to `/api/v1/authentication/sessions/refresh` before admitting a request that no longer has an active access cookie. Concurrent guards in one portal process share that rotation through `createSessionRefreshCoordinator`; Admin renewal also repeats the configured role check before persisting the rotated session.
+
+Redirects use the current portal origin and preserve the requested pathname and query in `returnTo`; URL fragments are not available in an HTTP request. The sign-in page applies its existing local-path validation before restoring that value. Failed guards clear both portal cookies. This proxy check prevents normal unauthenticated page rendering, but it does not replace backend authentication or authorization: private data must still come from backend endpoints that validate the signed access token and enforce the relevant policy.
+
+Later Epic 08 stories own permission-aware controls.
 
 ## Admin authorization boundary
 
@@ -83,6 +107,6 @@ This frontend check is an admission control for the Admin Portal, not a replacem
 
 ## Extension points
 
-- Add route protection by redirecting unauthenticated requests to `/sign-in?returnTo=<encoded local path>`; reuse the destination validation before redirecting back.
-- Keep refresh and logout calls behind the existing same-origin session Route Handlers so token material stays server-only.
+- Keep browser-initiated refresh and logout calls behind the existing same-origin session Route Handlers. Server route guards may use the handwritten server client directly; neither path exposes token material to browser JavaScript.
+- Keep new public portal pages outside the proxy matcher or add an explicit public-path decision before rendering them.
 - Derive permission-based presentation from backend-authoritative session data when that contract is available, while continuing to enforce every privileged operation in the backend.

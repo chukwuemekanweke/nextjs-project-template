@@ -6,7 +6,11 @@ There is no API client generator and no generated source. `backendprojecttemplat
 
 The Fetch implementation is decomposed under `src/transport` into request building, response parsing, error normalization, cancellation, and orchestration modules. Keep new transport behaviour in the smallest module that owns that responsibility.
 
+Applications targeting the compatible backend add `X-Tenant-Id` through the client's `defaultHeaders`. The exported `TENANT_ID_HEADER` constant keeps the backend header name consistent across browser clients, server clients, and route guards; tenant selection remains application configuration.
+
 Browser applications can use `createRefreshCoordinatedFetch` from `@template/api-client/browser` when they need single-flight refresh handling. The helper owns concurrency and one-time retry behaviour; the application still decides which requests qualify, how to refresh, and how to expire the session. Dashboard portals use `createBffSessionFetch` to compose those callbacks from explicit same-origin route configuration and browser dependencies.
+
+Server routing code can use the framework-independent authentication helpers to resolve an active, refreshed, or unauthenticated route session and build a same-origin sign-in redirect. Applications still own their cookie names, refresh callback, public routes, and authorization policy.
 
 Useful commands:
 

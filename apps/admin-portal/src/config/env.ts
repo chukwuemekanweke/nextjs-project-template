@@ -11,6 +11,7 @@ const environment = createBrowserEnvironment(
   }),
   {
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+    NEXT_PUBLIC_TENANT_ID: process.env.NEXT_PUBLIC_TENANT_ID,
     NEXT_PUBLIC_APP_ENVIRONMENT: process.env.NEXT_PUBLIC_APP_ENVIRONMENT,
     NEXT_PUBLIC_APPLICATION_NAME: process.env.NEXT_PUBLIC_APPLICATION_NAME,
     NEXT_PUBLIC_APPLICATION_VERSION:
@@ -36,6 +37,7 @@ const environment = createBrowserEnvironment(
 
 export const env = Object.freeze({
   apiBaseUrl: environment.NEXT_PUBLIC_API_BASE_URL,
+  tenantId: environment.NEXT_PUBLIC_TENANT_ID,
   appEnvironment: environment.NEXT_PUBLIC_APP_ENVIRONMENT,
   applicationName: environment.NEXT_PUBLIC_APPLICATION_NAME,
   applicationVersion: environment.NEXT_PUBLIC_APPLICATION_VERSION,

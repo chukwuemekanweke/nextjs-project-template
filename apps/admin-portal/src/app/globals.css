@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "../../../../packages/dashboard-ui/src/tailadmin-theme.css";
 @source "../../../../packages/dashboard-ui/src";
+@source "../../../../packages/forms/src";
 @source "../../../../packages/ui-core/src";
 
 body {
