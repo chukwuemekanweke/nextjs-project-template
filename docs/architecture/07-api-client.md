@@ -65,7 +65,7 @@ function Wallet() {
 }
 ```
 
-Wrap Client Component subtrees with `ApiProvider`, or consume exported options directly for prefetching and hydration. Query functions pass TanStack Query's signal to the client. Reference data has a long stale time; wallet data uses the shared default. Payment, profile, and provider mutations invalidate related key hierarchies. Authentication mutations do not own navigation or notifications, and logout clears cached server state only when given a `QueryClient`.
+Wrap Client Component subtrees with `ApiProvider`, or consume exported options directly for prefetching and hydration. Query functions pass TanStack Query's signal to the client. Reference data has a long stale time; wallet data uses the shared default. Payment, profile, and provider mutations invalidate related key hierarchies. Authentication mutations do not own navigation or notifications, and logout clears cached server state after either success or failure when given a `QueryClient`. Applications can access that provider-owned client through `useApiQueryClient` for app-specific workflows such as portal logout.
 
 ## Adding, updating, or removing an operation
 

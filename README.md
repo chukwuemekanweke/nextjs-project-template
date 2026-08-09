@@ -134,12 +134,14 @@ git diff --cached
 .\scripts\git-workflow.ps1 publish
 ```
 
-`publish` runs lint, type checking, and tests. Codex then inspects the staged diff
-in a read-only session and drafts a Conventional Commit message, PR title, and a
-completed `.github/pull_request_template.md`. The command pauses for approval of
-the commit message and again for editing or approval of the PR. PRs are drafts by
-default; pass `-Ready` to create a ready-for-review PR, or `-SkipChecks` only when
-the checks have already been run separately.
+`publish` runs lint, type checking, and tests. Codex then inspects a disposable
+Git worktree containing the branch history and staged diff, and drafts a
+Conventional Commit message, PR title, and completed
+`.github/pull_request_template.md`. The temporary worktree is removed before the
+command pauses for approval of the commit message and again for editing or
+approval of the PR. PRs are drafts by default; pass `-Ready` to create a
+ready-for-review PR, or `-SkipChecks` only when the checks have already been run
+separately.
 If a push or PR creation is interrupted, run `publish` again; with no staged
 changes, it resumes PR creation from the commits already on the feature branch.
 

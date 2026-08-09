@@ -27,15 +27,13 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE() {
+  const response = new NextResponse(null, { status: 204 });
   try {
     const client = await createAppServerApiClient();
     await logout(client);
-    const response = new NextResponse(null, { status: 204 });
-    clearSessionCookies(response);
-    return response;
-  } catch (error) {
-    const response = apiRouteError(error);
-    clearSessionCookies(response);
-    return response;
+  } catch {
+    // Local logout still succeeds when the backend session has already ended.
   }
+  clearSessionCookies(response);
+  return response;
 }
