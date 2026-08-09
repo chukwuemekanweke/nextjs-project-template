@@ -4,6 +4,20 @@ import { createRefreshCoordinatedFetch } from "./refresh-coordinated-fetch";
 const protectedRequest = "http://portal.test/api/account";
 
 describe("createRefreshCoordinatedFetch", () => {
+  it("passes successful requests through unchanged", async () => {
+    const response = Response.json({ ok: true });
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(response);
+    const coordinatedFetch = createRefreshCoordinatedFetch({
+      fetch,
+      onSessionExpired: vi.fn(),
+      refreshSession: vi.fn().mockResolvedValue(true),
+      shouldRefreshRequest: () => true,
+    });
+
+    await expect(coordinatedFetch(protectedRequest)).resolves.toBe(response);
+    expect(fetch).toHaveBeenCalledOnce();
+  });
+
   it("retries a 401 once after a successful refresh", async () => {
     const fetch = vi
       .fn<typeof globalThis.fetch>()
@@ -125,6 +139,65 @@ describe("createRefreshCoordinatedFetch", () => {
     await coordinatedFetch("http://portal.test/api/third");
 
     expect(refreshSession).toHaveBeenCalledOnce();
+    expect(onSessionExpired).toHaveBeenCalledOnce();
+  });
+
+  it("treats a thrown refresh error as a failed refresh", async () => {
+    const response = new Response(null, { status: 401 });
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(response);
+    const onSessionExpired = vi.fn();
+    const coordinatedFetch = createRefreshCoordinatedFetch({
+      fetch,
+      onSessionExpired,
+      refreshSession: vi.fn().mockRejectedValue(new Error("unavailable")),
+      shouldRefreshRequest: () => true,
+    });
+
+    await expect(coordinatedFetch(protectedRequest)).resolves.toBe(response);
+    expect(onSessionExpired).toHaveBeenCalledOnce();
+  });
+
+  it("clears the active refresh when refresh throws synchronously", async () => {
+    const fetch = vi
+      .fn<typeof globalThis.fetch>()
+      .mockResolvedValue(new Response(null, { status: 401 }));
+    const refreshSession = vi.fn<() => Promise<boolean>>(() => {
+      throw new Error("synchronous adapter failure");
+    });
+    const coordinatedFetch = createRefreshCoordinatedFetch({
+      fetch,
+      onSessionExpired: vi.fn(),
+      refreshSession,
+      shouldRefreshRequest: () => true,
+    });
+
+    await coordinatedFetch(protectedRequest);
+    await coordinatedFetch(protectedRequest);
+
+    expect(refreshSession).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it("swallows expiration errors and expires concurrently only once", async () => {
+    const fetch = vi
+      .fn<typeof globalThis.fetch>()
+      .mockResolvedValue(new Response(null, { status: 401 }));
+    const onSessionExpired = vi
+      .fn()
+      .mockRejectedValue(new Error("logout unavailable"));
+    const coordinatedFetch = createRefreshCoordinatedFetch({
+      fetch,
+      onSessionExpired,
+      refreshSession: vi.fn().mockResolvedValue(false),
+      shouldRefreshRequest: () => true,
+    });
+
+    await expect(
+      Promise.all([
+        coordinatedFetch("http://portal.test/api/first"),
+        coordinatedFetch("http://portal.test/api/second"),
+      ]),
+    ).resolves.toHaveLength(2);
     expect(onSessionExpired).toHaveBeenCalledOnce();
   });
 

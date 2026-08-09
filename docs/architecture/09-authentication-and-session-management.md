@@ -38,7 +38,7 @@ Cookie expiry is the backend token expiry minus 60 seconds. That buffer stops th
 
 ## Refresh coordination
 
-Both portals export `authenticatedFetch` from `src/lib/api.ts` for client workflows that call a same-origin BFF endpoint. It wraps the reusable `createRefreshCoordinatedFetch` helper from `@template/api-client/browser`; it does not replace the global `fetch` function or attach portal cookies to the backend API origin.
+Both portals export `authenticatedFetch` from `src/lib/api.ts` for client workflows that call a same-origin BFF endpoint. Each portal configures the reusable `createBffSessionFetch` helper from `@template/api-client/browser` with its authentication, session, and sign-in paths. The helper delegates concurrency and retry decisions to `createRefreshCoordinatedFetch`; neither helper replaces the global `fetch` function or attaches portal cookies to the backend API origin.
 
 When an eligible request returns 401, the wrapper posts to `/api/auth/session/refresh`. Requests that fail together wait on the same refresh promise. A successful refresh rotates the cookies, increments an in-memory session version, and lets every waiting request retry once. The version check also covers a late 401 from a request sent before another request completed the refresh.
 

@@ -6,6 +6,31 @@
   `do`, `for`, `for...in`, and `for...of` bodies, including single-statement bodies.
 - Apply this rule to new and modified code without reformatting unrelated files.
 
+## TypeScript readability
+
+- Prefer `async`/`await` over `.then()`, `.catch()`, and `.finally()` chains when
+  it makes the control flow easier to follow.
+- Use `try`, `catch`, and `finally` for asynchronous error handling and cleanup
+  unless Promise composition is materially clearer or required for concurrency.
+- Prefer named functions for multi-step workflows, callbacks containing business
+  logic, and reusable asynchronous operations.
+- Keep the main workflow procedural and readable from top to bottom. Extract
+  details into functions whose names communicate intent. A developer should be
+  able to understand the happy path by reading one function from top to bottom.
+- Use names that distinguish active asynchronous operations from completed
+  values, such as `activeRefresh`, `refreshResult`, and `sessionExpired`.
+- Avoid placing substantial workflows inside configuration objects, returned
+  anonymous functions, or deeply nested callbacks.
+- Keep dependency injection behind small interfaces or factory boundaries so
+  normal production usage remains easy to read.
+- Prefer ordinary functions and small interfaces over classes or generic
+  frameworks unless lifecycle or shared mutable state makes a class clearer.
+- Preserve necessary concurrency coordination explicitly. Do not remove active
+  operation promises, version checks, request cloning, locking, or idempotency
+  guards merely to shorten code.
+- Use Promise combinators such as `Promise.all` when operations are intentionally
+  concurrent. Do not serialize independent work solely to avoid Promise APIs.
+
 ## Backend API reference
 
 - The compatible backend repository is `C:\Work\Chidelu\BackendProjectTemplate`.
