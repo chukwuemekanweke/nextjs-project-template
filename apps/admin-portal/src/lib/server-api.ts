@@ -1,5 +1,6 @@
 import "server-only";
 
+import { TENANT_ID_HEADER } from "@template/api-client";
 import { createServerApiClient } from "@template/api-client/server";
 import { cookies, headers } from "next/headers";
 import { serverEnv } from "@/config/server-env";
@@ -14,6 +15,7 @@ export async function createAppServerApiClient(
     baseUrl: serverEnv.API_BASE_URL,
     defaultCache: options.authenticated === false ? undefined : "no-store",
     defaultHeaders: {
+      [TENANT_ID_HEADER]: serverEnv.TENANT_ID,
       ...(requestHeaders.get("traceparent")
         ? { traceparent: requestHeaders.get("traceparent")! }
         : {}),

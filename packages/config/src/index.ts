@@ -3,8 +3,12 @@ import { z } from "zod";
 const url = z.url().transform((value) => value.replace(/\/$/, ""));
 const nonEmpty = z.string().trim().min(1);
 
+export const DEFAULT_TENANT_ID = "1203d9d1-2a6b-48ef-9cc1-e561a23aff72";
+const tenantId = z.uuid().default(DEFAULT_TENANT_ID);
+
 export const serverEnvironmentSchema = z.object({
   API_BASE_URL: url,
+  TENANT_ID: tenantId,
   APP_ENVIRONMENT: z.enum(["development", "test", "staging", "production"]),
   APPLICATION_NAME: nonEmpty,
   APPLICATION_VERSION: nonEmpty,
@@ -12,6 +16,7 @@ export const serverEnvironmentSchema = z.object({
 
 export const browserEnvironmentSchema = z.object({
   NEXT_PUBLIC_API_BASE_URL: url,
+  NEXT_PUBLIC_TENANT_ID: tenantId,
   NEXT_PUBLIC_APP_ENVIRONMENT: z.enum([
     "development",
     "test",

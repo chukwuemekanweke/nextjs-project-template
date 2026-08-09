@@ -37,6 +37,8 @@ The aggregate client exposes `authentication`, `payments`, `profiles`, `provider
 
 The default transport supports GET, POST, PUT, PATCH, DELETE, native `FormData`, caller headers, cookies, bearer tokens, generated or propagated correlation IDs, `AbortSignal`, timeouts, empty responses, and safe parsing. It does not redirect or retry on its own. Browser applications can opt into `createRefreshCoordinatedFetch` and supply their own refresh, session-expiry, and request-eligibility callbacks. Dashboard BFF applications can use `createBffSessionFetch` to build those callbacks from explicit session, authentication, and sign-in paths plus injected browser dependencies.
 
+The compatible backend requires `X-Tenant-Id` on every request. Each application adds it through the API client's `defaultHeaders` option instead of repeating it in domain operations. Server clients and route guards read `TENANT_ID`; browser clients read `NEXT_PUBLIC_TENANT_ID`. Both values are validated as UUIDs by `@template/config` and default to `1203d9d1-2a6b-48ef-9cc1-e561a23aff72`. Deployments can override them together when they target another tenant.
+
 Transport responsibilities are split under `packages/api-client/src/transport`:
 
 - `fetch-api-transport.ts` orchestrates each request and exposes the HTTP methods.
@@ -80,9 +82,11 @@ CI deliberately does not require the frontend to implement or register every bac
 
 ## Server and browser boundaries
 
-The `@template/api-client/server` entrypoint is marked `server-only`; the browser entrypoint cannot read private environment variables, cookies, or tokens. Dashboard Route Handlers keep backend tokens in portal-specific HttpOnly cookies and use request-scoped server clients. This is a narrow BFF boundary, not a catch-all proxy. Public CORS-approved calls may use the browser client.
+The `@template/api-client/server` entrypoint is marked `server-only`; the browser entrypoint cannot read private environment variables, cookies, or tokens. Dashboard Route Handlers keep backend tokens in portal-specific HttpOnly cookies and use request-scoped server clients. This is a narrow BFF boundary, not a catch-all proxy. Public CORS-approved calls may use the browser client. The tenant identifier is routing context rather than a credential, so the browser-safe copy is intentionally public.
 
 The browser entrypoint exports two procedural factories. `createRefreshCoordinatedFetch` owns one active refresh, one retry per failed request, the session version used by late 401 responses, and one active session expiration. `createBffSessionFetch` supplies the shared same-origin BFF mechanics: refresh and best-effort logout calls, authentication-route exclusions, and safe sign-in destinations. It receives every route and browser dependency explicitly and does not read application configuration.
+
+The authentication entrypoint also exports framework-independent route-session helpers. `resolveRouteSession` accepts application-owned access validation and refresh callbacks, `hasActiveAccessToken` performs structural and time-window checks, `createSessionRefreshCoordinator` shares a rotating refresh operation between concurrent guards, and `createSignInRedirectUrl` builds a same-origin login redirect with the intended path and query. Each dashboard `proxy.ts` supplies its own cookie names, backend client, sign-in path, and Admin admission policy. The helpers do not read cookies, environment variables, or Next.js request state.
 
 Each dashboard app keeps its authentication prefix, session path, sign-in path, and default browser bindings in `src/lib/session-fetch.ts`. That small app-owned wrapper is also the test boundary for injected Fetch, location, and redirect implementations. The Public Portal has no authenticated BFF session workflow and does not use either factory.
 

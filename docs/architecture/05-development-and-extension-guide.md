@@ -43,9 +43,9 @@ Put a component in an **app** when it contains product wording, a route destinat
 
 ## Current architecture versus future work
 
-Implemented now: pnpm/Turbo workspace orchestration; strict shared TypeScript/ESLint; three standalone Next applications; TailAdmin-derived dashboard primitives and shell; Solid-derived typed public sections; application-owned navigation, configuration, metadata, static assets, and containers; a handwritten, strongly typed API package; centralized TanStack Query providers and policy; reusable React Hook Form/Zod composition; and separate User/Admin sign-in, secure cookie storage, coordinated refresh, and logout flows.
+Implemented now: pnpm/Turbo workspace orchestration; strict shared TypeScript/ESLint; three standalone Next applications; TailAdmin-derived dashboard primitives and shell; Solid-derived typed public sections; application-owned navigation, configuration, metadata, static assets, and containers; a handwritten, strongly typed API package; centralized TanStack Query providers and policy; reusable React Hook Form/Zod composition; and separate User/Admin sign-in, secure cookie storage, coordinated refresh, logout, and protected-route flows.
 
-Future or deliberately absent: authenticated-route enforcement, permission-based controls, application-specific query and form workflows beyond authentication, domain workflows for accounts/admin operations, checkout/contact processing, and observability. Shared query and form infrastructure is not evidence that these product workflows or screens exist. The dashboard pages' empty tables and the Public Portal's marketing/legal content remain extension points.
+Future or deliberately absent: permission-based controls, application-specific query and form workflows beyond authentication, domain workflows for accounts/admin operations, checkout/contact processing, and observability. Shared query and form infrastructure is not evidence that these product workflows or screens exist. The dashboard pages' empty tables and the Public Portal's marketing/legal content remain extension points.
 
 ## Validate a change
 

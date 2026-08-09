@@ -1,4 +1,5 @@
 export * from "./api-client";
+export const TENANT_ID_HEADER = "X-Tenant-Id";
 export { ApiError, isApiError } from "./client/api-error";
 export type {
   ApiErrorKind,
