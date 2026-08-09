@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Position = 0, Mandatory = $true)]
-    [ValidateSet("start", "check", "publish", "status", "finish")]
+    [ValidateSet("setup-auth", "start", "check", "publish", "status", "finish")]
     [string]$Command,
 
     [ValidateRange(1, 999999)]
@@ -20,6 +20,9 @@ param(
 $ErrorActionPreference = "Stop"
 $script:RepositoryRoot = Split-Path -Parent $PSScriptRoot
 $script:BranchPattern = '^epic-(?<epic>\d+)/fe-(?<feature>\d+)-(?<label>[a-z0-9]+(?:-[a-z0-9]+)*)$'
+$script:GitHubAccount = "chukwuemekanweke"
+$script:GitHubTokenEnvironmentVariable = "CHUKWUEMEKANWEKE_GITHUB_TOKEN"
+$script:GitHubCredentialPath = Join-Path $env:LOCALAPPDATA "FrontendProjectTemplate\github-auth.xml"
 
 function Assert-CommandExists {
     param([Parameter(Mandatory = $true)][string]$Name)
@@ -27,6 +30,23 @@ function Assert-CommandExists {
     if ($null -eq (Get-Command $Name -ErrorAction SilentlyContinue)) {
         throw "Required command '$Name' was not found on PATH."
     }
+}
+
+function Get-CodexExecutable {
+    $codexCommands = @(Get-Command "codex" -All -ErrorAction SilentlyContinue)
+    foreach ($codexCommand in $codexCommands) {
+        if ($codexCommand.CommandType -ne "Application") {
+            continue
+        }
+
+        $codexDirectory = Split-Path -Parent $codexCommand.Source
+        $sandboxHelper = Join-Path $codexDirectory "codex-windows-sandbox-setup.exe"
+        if (Test-Path -LiteralPath $sandboxHelper -PathType Leaf) {
+            return $codexCommand.Source
+        }
+    }
+
+    throw "Codex is installed, but no installation with a matching Windows sandbox helper was found. Install or enable the Codex VS Code extension, then try again."
 }
 
 function Invoke-NativeCommand {
@@ -39,6 +59,91 @@ function Invoke-NativeCommand {
     if ($LASTEXITCODE -ne 0) {
         throw "Command failed with exit code ${LASTEXITCODE}: $Executable $($Arguments -join ' ')"
     }
+}
+
+function Test-GitHubToken {
+    param([Parameter(Mandatory = $true)][string]$Token)
+
+    $previousToken = [Environment]::GetEnvironmentVariable("GH_TOKEN", "Process")
+    try {
+        $env:GH_TOKEN = $Token
+        $activeAccount = ((& gh api user --jq .login) -join "").Trim()
+        if ($LASTEXITCODE -ne 0 -or $activeAccount -ne $script:GitHubAccount) {
+            throw "The token authenticates as '$activeAccount', not '$($script:GitHubAccount)'."
+        }
+
+        return $activeAccount
+    }
+    finally {
+        if ($null -eq $previousToken) {
+            Remove-Item Env:GH_TOKEN -ErrorAction SilentlyContinue
+        }
+        else {
+            $env:GH_TOKEN = $previousToken
+        }
+    }
+}
+
+function Save-RepositoryGitHubCredential {
+    Assert-CommandExists "gh"
+
+    if ($env:OS -ne "Windows_NT") {
+        throw "Encrypted GitHub credential storage is supported only on Windows. Set '$($script:GitHubTokenEnvironmentVariable)' in the current shell instead."
+    }
+
+    Write-Host "The token will be encrypted for your Windows account on this computer." -ForegroundColor Cyan
+    $secureToken = Read-Host "Paste the GitHub PAT for '$($script:GitHubAccount)'" -AsSecureString
+    if ($secureToken.Length -eq 0) {
+        throw "No token was entered."
+    }
+
+    $credential = [System.Management.Automation.PSCredential]::new($script:GitHubAccount, $secureToken)
+    $plainTextToken = $credential.GetNetworkCredential().Password
+    try {
+        $activeAccount = Test-GitHubToken -Token $plainTextToken
+        $credentialDirectory = Split-Path -Parent $script:GitHubCredentialPath
+        New-Item -ItemType Directory -Path $credentialDirectory -Force | Out-Null
+        $credential | Export-Clixml -LiteralPath $script:GitHubCredentialPath -Force
+    }
+    finally {
+        $plainTextToken = $null
+    }
+
+    Write-Host "Saved an encrypted GitHub credential for $activeAccount." -ForegroundColor Green
+    Write-Host "Credential file: $($script:GitHubCredentialPath)" -ForegroundColor DarkGray
+}
+
+function Get-RepositoryGitHubToken {
+    $environmentToken = [Environment]::GetEnvironmentVariable($script:GitHubTokenEnvironmentVariable, "Process")
+    if (-not [string]::IsNullOrWhiteSpace($environmentToken)) {
+        return $environmentToken
+    }
+
+    if (-not (Test-Path -LiteralPath $script:GitHubCredentialPath -PathType Leaf)) {
+        throw "No GitHub token is configured. Run '.\scripts\git-workflow.ps1 setup-auth' once, or set '$($script:GitHubTokenEnvironmentVariable)' in the current shell."
+    }
+
+    try {
+        $credential = Import-Clixml -LiteralPath $script:GitHubCredentialPath
+        if ($credential -isnot [System.Management.Automation.PSCredential] -or $credential.UserName -ne $script:GitHubAccount) {
+            throw "The credential file does not contain the expected GitHub account."
+        }
+
+        return $credential.GetNetworkCredential().Password
+    }
+    catch {
+        throw "The encrypted GitHub credential could not be read. Run '.\scripts\git-workflow.ps1 setup-auth' again from the Windows account that will use the workflow. $($_.Exception.Message)"
+    }
+}
+
+function Use-RepositoryGitHubAccount {
+    Assert-CommandExists "gh"
+
+    $accountToken = Get-RepositoryGitHubToken
+    $env:GH_TOKEN = $accountToken
+    $activeAccount = Test-GitHubToken -Token $accountToken
+
+    Write-Host "GitHub API account: $activeAccount" -ForegroundColor Cyan
 }
 
 function Get-CurrentBranch {
@@ -103,7 +208,8 @@ function Get-AiGitMetadata {
         [Parameter(Mandatory = $true)][string]$OutputPath
     )
 
-    Assert-CommandExists "codex"
+    $codexExecutable = Get-CodexExecutable
+    $codexDirectory = Split-Path -Parent $codexExecutable
 
     $schemaPath = Join-Path $PSScriptRoot "git-workflow-output.schema.json"
     if ($HasStagedChanges) {
@@ -139,10 +245,18 @@ Base every claim on repository evidence. Do not wrap the JSON in Markdown fences
 "@
 
     Write-Host "Asking Codex to inspect the proposed change..." -ForegroundColor Cyan
-    $prompt | & codex --ask-for-approval never exec --sandbox read-only --ephemeral --color never --cd $script:RepositoryRoot --output-schema $schemaPath --output-last-message $OutputPath - | Out-Host
-    $codexExitCode = $LASTEXITCODE
+    $previousPath = $env:PATH
+    try {
+        $env:PATH = "$codexDirectory$([System.IO.Path]::PathSeparator)$previousPath"
+        $prompt | & $codexExecutable --ask-for-approval never exec --sandbox read-only --ephemeral --color never --cd $script:RepositoryRoot --output-schema $schemaPath --output-last-message $OutputPath - | Out-Host
+        $codexExitCode = $LASTEXITCODE
+    }
+    finally {
+        $env:PATH = $previousPath
+    }
+
     if ($codexExitCode -ne 0) {
-        throw "Codex could not generate the commit and PR metadata. Confirm that Codex is installed and authenticated, then try again."
+        throw "Codex could not generate the commit and PR metadata. Confirm that Codex is authenticated, then try again."
     }
 
     try {
@@ -241,6 +355,7 @@ function Start-FeatureBranch {
 
     $branch = "epic-$Epic/fe-$Feature-$normalizedLabel"
     Assert-CleanWorkingTree
+    Use-RepositoryGitHubAccount
 
     Invoke-NativeCommand "git" @("fetch", "origin", "--prune")
     Invoke-NativeCommand "git" @("switch", "main")
@@ -266,6 +381,7 @@ function Show-WorkflowStatus {
     Invoke-NativeCommand "git" @("status", "--short", "--branch")
 
     if ($branch -ne "main" -and $null -ne (Get-Command "gh" -ErrorAction SilentlyContinue)) {
+        Use-RepositoryGitHubAccount
         & gh pr status
         if ($LASTEXITCODE -ne 0) {
             Write-Warning "GitHub PR status could not be loaded."
@@ -280,6 +396,7 @@ function Publish-FeatureBranch {
     $branch = Get-CurrentBranch
     $branchParts = Assert-FeatureBranch $branch
 
+    Use-RepositoryGitHubAccount
     Invoke-NativeCommand "gh" @("auth", "status")
     Invoke-NativeCommand "git" @("fetch", "origin", "--prune")
 
@@ -309,11 +426,11 @@ function Publish-FeatureBranch {
 
     if ($hasStagedChanges) {
         Write-Host "Staged files:" -ForegroundColor Cyan
-        Invoke-NativeCommand "git" @("diff", "--cached", "--name-status")
+        Invoke-NativeCommand "git" @("--no-pager", "diff", "--cached", "--name-status")
     }
     else {
         Write-Host "Committed files:" -ForegroundColor Cyan
-        Invoke-NativeCommand "git" @("diff", "--name-status", "origin/main...HEAD")
+        Invoke-NativeCommand "git" @("--no-pager", "diff", "--name-status", "origin/main...HEAD")
     }
     Write-Host "`nWorking tree status:" -ForegroundColor Cyan
     Invoke-NativeCommand "git" @("status", "--short")
@@ -360,6 +477,7 @@ function Finish-FeatureBranch {
     $branch = Get-CurrentBranch
     [void](Assert-FeatureBranch $branch)
     Assert-CleanWorkingTree
+    Use-RepositoryGitHubAccount
 
     $prJson = & gh pr view --json state,mergedAt,url
     if ($LASTEXITCODE -ne 0) {
@@ -383,6 +501,9 @@ try {
     Assert-CommandExists "git"
 
     switch ($Command) {
+        "setup-auth" {
+            Save-RepositoryGitHubCredential
+        }
         "start" {
             Start-FeatureBranch
         }

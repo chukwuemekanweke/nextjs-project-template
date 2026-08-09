@@ -12,10 +12,12 @@ import {
 export async function POST() {
   const refreshToken = (await cookies()).get(REFRESH_TOKEN_COOKIE)?.value;
   if (!refreshToken) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { title: "Authentication required", status: 401 },
       { status: 401 },
     );
+    clearSessionCookies(response);
+    return response;
   }
   try {
     const client = await createAppServerApiClient({ authenticated: false });
@@ -28,9 +30,7 @@ export async function POST() {
     return response;
   } catch (error) {
     const response = apiRouteError(error);
-    if (response.status === 401 || response.status === 403) {
-      clearSessionCookies(response);
-    }
+    clearSessionCookies(response);
     return response;
   }
 }
