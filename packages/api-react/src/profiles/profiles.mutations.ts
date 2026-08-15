@@ -1,18 +1,7 @@
-"use client";
-
 import type { ProfilesClient } from "@template/api-client/profiles";
-import {
-  mutationOptions,
-  useMutation,
-  useQueryClient,
-  type QueryClient,
-} from "@tanstack/react-query";
-import { useApiClient } from "../query-client/api-provider";
+import { mutationOptions, type QueryClient } from "@tanstack/react-query";
+import { profileKeys } from "./profiles.keys";
 
-export const profileKeys = {
-  all: ["profiles"] as const,
-  current: () => ["profiles", "current"] as const,
-};
 export const updateProfileMutationOptions = (
   client: ProfilesClient,
   queryClient?: QueryClient,
@@ -24,6 +13,7 @@ export const updateProfileMutationOptions = (
     onSuccess: () =>
       queryClient?.invalidateQueries({ queryKey: profileKeys.current() }),
   });
+
 export const uploadAvatarMutationOptions = (
   client: ProfilesClient,
   queryClient?: QueryClient,
@@ -35,13 +25,3 @@ export const uploadAvatarMutationOptions = (
     onSuccess: () =>
       queryClient?.invalidateQueries({ queryKey: profileKeys.current() }),
   });
-export function useUpdateProfile() {
-  const api = useApiClient();
-  const queryClient = useQueryClient();
-  return useMutation(updateProfileMutationOptions(api.profiles, queryClient));
-}
-export function useUploadAvatar() {
-  const api = useApiClient();
-  const queryClient = useQueryClient();
-  return useMutation(uploadAvatarMutationOptions(api.profiles, queryClient));
-}

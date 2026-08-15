@@ -11,7 +11,7 @@ describe("safeSignInDestination", () => {
   it.each([undefined, "", "https://attacker.test", "//attacker.test/path"])(
     "rejects an unsafe destination: %s",
     (destination) => {
-      expect(safeSignInDestination(destination)).toBe("/");
+      expect(safeSignInDestination(destination)).toBe("/dashboard");
     },
   );
 });

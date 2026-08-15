@@ -1,12 +1,14 @@
 import type { ApiOperationOptions, ApiTransport } from "../client";
 import type {
+  GetProfileQueryResponse,
   UpdateProfileMutationRequest,
   UploadAvatarMutationRequest,
   UploadAvatarMutationResponse,
 } from "./contracts";
-import { updateProfile, uploadAvatar } from "./operations";
+import { getProfile, updateProfile, uploadAvatar } from "./operations";
 
 export interface ProfilesClient {
+  getProfile(options?: ApiOperationOptions): Promise<GetProfileQueryResponse>;
   updateProfile(
     request: UpdateProfileMutationRequest,
     options?: ApiOperationOptions,
@@ -19,6 +21,7 @@ export interface ProfilesClient {
 
 export function createProfilesClient(transport: ApiTransport): ProfilesClient {
   return {
+    getProfile: (options) => getProfile(transport, options),
     updateProfile: (request, options) =>
       updateProfile(transport, request, options),
     uploadAvatar: (request, options) =>

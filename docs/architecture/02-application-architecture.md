@@ -2,15 +2,15 @@
 
 The `apps/` directory holds three App Router applications. A route's `page.tsx` supplies page content; its root `layout.tsx` supplies document metadata, global CSS, and the app-specific composition shell. The shared packages do not decide which routes, navigation items, labels, or profile actions an application has.
 
-| Application   | Package / port                   | Current responsibility                           | Shared UI                                     |
-| ------------- | -------------------------------- | ------------------------------------------------ | --------------------------------------------- |
-| User Portal   | `@template/user-portal` / 9000   | Self-service account and activity placeholders   | `@template/dashboard-ui`, `@template/ui-core` |
-| Admin Portal  | `@template/admin-portal` / 9001  | Privileged operational placeholders              | `@template/dashboard-ui`, `@template/ui-core` |
-| Public Portal | `@template/public-portal` / 9002 | Marketing routes and configurable public content | `@template/public-ui`                         |
+| Application   | Package / port                   | Current responsibility                                            | Shared UI                                     |
+| ------------- | -------------------------------- | ----------------------------------------------------------------- | --------------------------------------------- |
+| User Portal   | `@template/user-portal` / 9000   | Authenticated account dashboard and self-service extension points | `@template/dashboard-ui`, `@template/ui-core` |
+| Admin Portal  | `@template/admin-portal` / 9001  | Privileged operational placeholders                               | `@template/dashboard-ui`, `@template/ui-core` |
+| Public Portal | `@template/public-portal` / 9002 | Marketing routes and configurable public content                  | `@template/public-ui`                         |
 
 ## Routing, layouts, and request flow
 
-The User and Admin portals implement `src/app/page.tsx` and separate `/sign-in` routes, although their navigation configurations list additional future destinations. A navigation link such as `/profile` or `/users` is not yet backed by a route file. The dashboard shells omit their authenticated navigation frame on `/sign-in`. The Public Portal implements `/`, `/features`, `/pricing`, `/about`, `/contact`, `/blog`, `/privacy`, and `/terms`, plus `not-found.tsx`, `robots.ts`, and `sitemap.ts`.
+The User Portal uses `/dashboard` as its authenticated landing route and keeps `/` as a compatibility redirect. The dashboard reads the current stakeholder profile through the server-only API client, displays identity and verification status, and leaves explicit empty metric slots for later user-portal features. Its route-level `loading.tsx` and `error.tsx` own pending and failure presentation. The Admin portal implements `src/app/page.tsx`; both dashboard applications have separate `/sign-in` routes and navigation entries for some future destinations. A navigation link such as `/profile` or `/users` is not yet backed by a route file. The dashboard shells omit their authenticated navigation frame on `/sign-in`. The Public Portal implements `/`, `/features`, `/pricing`, `/about`, `/contact`, `/blog`, `/privacy`, and `/terms`, plus `not-found.tsx`, `robots.ts`, and `sitemap.ts`.
 
 ```mermaid
 sequenceDiagram
@@ -19,12 +19,15 @@ sequenceDiagram
   participant Layout as src/app/layout.tsx
   participant Shell as UserLayoutShell
   participant Shared as DashboardShell + shared primitives
-  participant Page as src/app/page.tsx
-  Browser->>Next: GET /
+  participant Page as src/app/dashboard/page.tsx
+  participant API as .NET Web API
+  Browser->>Next: GET /dashboard
   Next->>Layout: apply metadata, globals.css, RootLayout
   Layout->>Shell: render children inside app-specific shell
   Shell->>Shared: provide navigation, breadcrumbs, profile slots
-  Next->>Page: render Home content
+  Next->>Page: render Dashboard content
+  Page->>API: GET /api/v1/stakeholders/me/profile with bearer token
+  API-->>Page: current stakeholder profile
   Shared-->>Browser: dashboard frame around page content
 ```
 

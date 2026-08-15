@@ -40,7 +40,7 @@ export function UserLayoutShell({
             <div>
               <Link
                 className="text-xl font-semibold text-gray-800 dark:text-white/90"
-                href="/"
+                href="/dashboard"
               >
                 {branding.productName}
               </Link>
@@ -65,7 +65,7 @@ export function UserLayoutShell({
         <div className="flex items-center justify-between gap-4">
           <Breadcrumbs
             items={[
-              { href: "/", label: branding.portals.user },
+              { href: "/dashboard", label: branding.portals.user },
               { label: currentLabel(pathname) },
             ]}
           />
