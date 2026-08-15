@@ -32,6 +32,9 @@ Keys are arrays rooted in a stable domain name and become more specific from lef
 ```ts
 paymentKeys.walletTransactionList({ Limit: 25 });
 // ["payments", "wallet-transactions", "list", { Limit: 25 }]
+
+profileKeys.current();
+// ["profiles", "current"]
 ```
 
 Key factories live with their domains under `packages/api-react/src`. Every reusable query is created through `getQueryOptions`, which accepts only operation metadata whose method is `GET` and repeats that check at runtime. This prevents POST, PUT, PATCH, or DELETE operations from inheriting query retries through an accidental query wrapper. Mutations invalidate the narrowest useful parent hierarchy. Logout clears all cached server state. TanStack Query Devtools render only when `NODE_ENV` is `development`.

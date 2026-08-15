@@ -1,4 +1,5 @@
 import type {
+  GetProfileQueryResponse,
   UpdateProfileMutationRequest,
   UpdateProfileMutationResponse,
   UploadAvatarMutationRequest,
@@ -6,6 +7,15 @@ import type {
 } from "./contracts";
 import { profilesOperations } from "./contracts";
 import type { ApiOperationOptions, ApiTransport } from "../client";
+
+export const getProfile = (
+  client: ApiTransport,
+  options?: ApiOperationOptions,
+) =>
+  client.request<GetProfileQueryResponse>({
+    ...profilesOperations.getProfile,
+    ...options,
+  });
 
 export const updateProfile = (
   client: ApiTransport,

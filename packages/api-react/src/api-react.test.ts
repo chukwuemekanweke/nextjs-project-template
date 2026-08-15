@@ -4,9 +4,11 @@ import { QueryClient } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
 import {
   initiatePaymentMutationOptions,
+  currentProfileQueryOptions,
   getQueryOptions,
   logoutMutationOptions,
   paymentKeys,
+  profileKeys,
   queryClientDefaults,
   shouldRetryQuery,
   walletTopUpQueryOptions,
@@ -15,6 +17,16 @@ import {
 
 const createClient = () =>
   ({
+    profiles: {
+      getProfile: vi.fn().mockResolvedValue({
+        stakeholderId: "stakeholder-1",
+        emailAddress: "user@example.com",
+        firstName: "Ada",
+        lastName: "Lovelace",
+        avatarUrl: null,
+        isVerified: true,
+      }),
+    },
     payments: {
       getWalletTransactions: vi
         .fn()
@@ -30,6 +42,7 @@ const createClient = () =>
 
 describe("API React integration", () => {
   it("creates stable hierarchical keys", () => {
+    expect(profileKeys.current()).toEqual(["profiles", "current"]);
     expect(paymentKeys.walletTransactionList({ Limit: 25 })).toEqual([
       "payments",
       "wallet-transactions",
@@ -43,6 +56,19 @@ describe("API React integration", () => {
       "top-up",
       "wallet-1",
     ]);
+  });
+
+  it("loads the current profile with query cancellation", async () => {
+    const client = createClient();
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    await queryClient.fetchQuery(currentProfileQueryOptions(client.profiles));
+
+    expect(client.profiles.getProfile).toHaveBeenCalledWith({
+      signal: expect.any(AbortSignal),
+    });
   });
 
   it("calls the domain client and propagates TanStack Query cancellation", async () => {

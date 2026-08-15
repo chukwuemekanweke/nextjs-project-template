@@ -4,7 +4,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { signIn } from "./authentication";
 import { createApiClient } from "./client";
 import { getWalletTopUpTransaction, getWalletTransactions } from "./payments";
-import { uploadAvatar } from "./profiles";
+import { getProfile, uploadAvatar } from "./profiles";
 
 const server = setupServer();
 
@@ -103,5 +103,25 @@ describe("handwritten API operations", () => {
     ).resolves.toEqual({
       avatarUrl: "https://cdn.test/avatar.png",
     });
+  });
+
+  it("gets the authenticated stakeholder profile", async () => {
+    const profile = {
+      stakeholderId: "stakeholder-1",
+      emailAddress: "user@example.com",
+      firstName: "Ada",
+      lastName: "Lovelace",
+      avatarUrl: null,
+      isVerified: true,
+    };
+    server.use(
+      http.get("http://api.test/api/v1/stakeholders/me/profile", () =>
+        HttpResponse.json(profile),
+      ),
+    );
+
+    await expect(
+      getProfile(createApiClient({ baseUrl: "http://api.test" })),
+    ).resolves.toEqual(profile);
   });
 });

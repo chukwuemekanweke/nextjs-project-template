@@ -1,4 +1,4 @@
-export const DEFAULT_SIGN_IN_DESTINATION = "/";
+export const DEFAULT_SIGN_IN_DESTINATION = "/dashboard";
 
 export function safeSignInDestination(value: string | undefined): string {
   if (!value || !value.startsWith("/") || value.startsWith("//")) {
