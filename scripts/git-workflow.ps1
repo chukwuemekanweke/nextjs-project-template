@@ -12,6 +12,10 @@ param(
 
     [string]$Label,
 
+    [Parameter(Position = 1)]
+    [Alias("BranchName")]
+    [string]$Branch,
+
     [switch]$SkipChecks,
 
     [switch]$Ready
@@ -193,17 +197,28 @@ function Assert-CleanWorkingTree {
     }
 }
 
-function Assert-FeatureBranch {
+function Get-BranchParts {
     param([Parameter(Mandatory = $true)][string]$Branch)
 
-    if ($Branch -notmatch $script:BranchPattern) {
-        throw "Branch '$Branch' does not match epic-{number}/fe-{number}-{label}."
+    if ($Branch -eq "main") {
+        throw "This command must be run from a feature branch, not 'main'."
+    }
+
+    & git check-ref-format --branch $Branch 2>$null | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Branch name '$Branch' is not a valid Git branch name."
+    }
+
+    if ($Branch -match $script:BranchPattern) {
+        return @{
+            Context = "- Epic: $($Matches.epic)`n- Feature: FE-$($Matches.feature)`n- Label: $($Matches.label)"
+            PullRequestContextInstruction = "Mention FE-$($Matches.feature) in Context."
+        }
     }
 
     return @{
-        Epic = $Matches.epic
-        Feature = $Matches.feature
-        Label = $Matches.label
+        Context = "- Branch name: $Branch"
+        PullRequestContextInstruction = "Mention the branch name in Context when it helps explain the work."
     }
 }
 
@@ -218,6 +233,49 @@ function Test-StagedChanges {
     }
 
     return $true
+}
+
+function Get-FeatureCommitsFromBranchCreation {
+    param([Parameter(Mandatory = $true)][string]$Branch)
+
+    $reflogLines = @(& git reflog show "--format=%H%x09%gs" $Branch)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to inspect the creation history for branch '$Branch'."
+    }
+
+    $creationLine = $reflogLines |
+        Where-Object { $_ -match ([char]9 + "branch: Created from ") } |
+        Select-Object -First 1
+    if ([string]::IsNullOrWhiteSpace($creationLine)) {
+        return $null
+    }
+
+    $creationCommit = ($creationLine -split [char]9, 2)[0].Trim()
+    & git merge-base --is-ancestor $creationCommit HEAD
+    if ($LASTEXITCODE -eq 1) {
+        return $null
+    }
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to validate branch creation commit '$creationCommit'."
+    }
+
+    $commitRange = "$creationCommit..HEAD"
+    $commitCountText = (& git rev-list --count $commitRange).Trim()
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to inspect feature commits from '$creationCommit'."
+    }
+
+    $commitCount = [int]$commitCountText
+    if ($commitCount -eq 0) {
+        return $null
+    }
+
+    return @{
+        BaseCommit = $creationCommit
+        CommitCount = $commitCount
+        CommitRange = $commitRange
+        DiffRange = "$creationCommit...HEAD"
+    }
 }
 
 function Invoke-Checks {
@@ -251,9 +309,7 @@ Generate Git metadata for a change in this repository.
 
 Context:
 - Current branch: $Branch
-- Epic: $($BranchParts.Epic)
-- Feature: FE-$($BranchParts.Feature)
-- Label: $($BranchParts.Label)
+$($BranchParts.Context)
 - Base branch: origin/main
 
 Inspect AGENTS.md, .github/pull_request_template.md, git status, relevant recent
@@ -267,7 +323,7 @@ Return JSON matching the supplied schema with:
 - prBody: complete Markdown using .github/pull_request_template.md exactly as the
   section structure. Replace comments and placeholders with concrete details,
   preserve every checklist item, check only items supported by the change, and
-  use "None" where appropriate. Mention FE-$($BranchParts.Feature) in Context.
+  use "None" where appropriate. $($BranchParts.PullRequestContextInstruction)
 
 Base every claim on repository evidence. Do not wrap the JSON in Markdown fences.
 "@
@@ -388,17 +444,30 @@ function Confirm-PullRequest {
 }
 
 function Start-FeatureBranch {
-    if ($Epic -lt 1 -or $Feature -lt 1 -or [string]::IsNullOrWhiteSpace($Label)) {
-        throw "start requires -Epic, -Feature, and -Label."
+    $hasExplicitBranch = -not [string]::IsNullOrWhiteSpace($Branch)
+    $hasTicketArguments = $Epic -gt 0 -or $Feature -gt 0 -or -not [string]::IsNullOrWhiteSpace($Label)
+    if ($hasExplicitBranch -and $hasTicketArguments) {
+        throw "start accepts either -Branch or -Epic, -Feature, and -Label, not both."
     }
 
-    $normalizedLabel = $Label.Trim().ToLowerInvariant() -replace '[^a-z0-9]+', '-'
-    $normalizedLabel = $normalizedLabel.Trim('-')
-    if ($normalizedLabel -notmatch '^[a-z0-9]+(?:-[a-z0-9]+)*$') {
-        throw "Label must contain letters or numbers and produce a non-empty kebab-case label."
+    if ($hasExplicitBranch) {
+        $targetBranch = $Branch.Trim()
+    }
+    else {
+        if ($Epic -lt 1 -or $Feature -lt 1 -or [string]::IsNullOrWhiteSpace($Label)) {
+            throw "start requires -Branch, or all of -Epic, -Feature, and -Label."
+        }
+
+        $normalizedLabel = $Label.Trim().ToLowerInvariant() -replace '[^a-z0-9]+', '-'
+        $normalizedLabel = $normalizedLabel.Trim('-')
+        if ($normalizedLabel -notmatch '^[a-z0-9]+(?:-[a-z0-9]+)*$') {
+            throw "Label must contain letters or numbers and produce a non-empty kebab-case label."
+        }
+
+        $targetBranch = "epic-$Epic/fe-$Feature-$normalizedLabel"
     }
 
-    $branch = "epic-$Epic/fe-$Feature-$normalizedLabel"
+    [void](Get-BranchParts -Branch $targetBranch)
     Assert-CleanWorkingTree
     Use-RepositoryGitHubAccount
 
@@ -406,18 +475,18 @@ function Start-FeatureBranch {
     Invoke-NativeCommand "git" @("switch", "main")
     Invoke-NativeCommand "git" @("pull", "--ff-only", "origin", "main")
 
-    & git show-ref --verify --quiet "refs/heads/$branch"
+    & git show-ref --verify --quiet "refs/heads/$targetBranch"
     if ($LASTEXITCODE -eq 0) {
-        throw "Local branch '$branch' already exists. It was preserved; choose another feature or label."
+        throw "Local branch '$targetBranch' already exists. It was preserved; choose another branch name."
     }
 
-    & git show-ref --verify --quiet "refs/remotes/origin/$branch"
+    & git show-ref --verify --quiet "refs/remotes/origin/$targetBranch"
     if ($LASTEXITCODE -eq 0) {
-        throw "Remote branch 'origin/$branch' already exists. Choose another feature or resume that branch."
+        throw "Remote branch 'origin/$targetBranch' already exists. Choose another branch name or resume that branch."
     }
 
-    Invoke-NativeCommand "git" @("switch", "--create", $branch, "origin/main")
-    Write-Host "Ready on $branch" -ForegroundColor Green
+    Invoke-NativeCommand "git" @("switch", "--no-track", "--create", $targetBranch, "origin/main")
+    Write-Host "Ready on $targetBranch" -ForegroundColor Green
 }
 
 function Show-WorkflowStatus {
@@ -439,7 +508,7 @@ function Publish-FeatureBranch {
     Assert-CommandExists "pnpm"
 
     $branch = Get-CurrentBranch
-    $branchParts = Assert-FeatureBranch $branch
+    $branchParts = Get-BranchParts $branch
 
     Use-RepositoryGitHubAccount
     Invoke-NativeCommand "gh" @("auth", "status")
@@ -453,7 +522,28 @@ function Publish-FeatureBranch {
     $aheadCount = [int]$aheadCountText
 
     if (-not $hasStagedChanges -and $aheadCount -eq 0) {
-        throw "No staged or committed feature changes were found. Stage the intended files, review them with 'git diff --cached', and run publish again."
+        $featureCommits = Get-FeatureCommitsFromBranchCreation -Branch $branch
+        if ($null -eq $featureCommits) {
+            throw "No staged or committed feature changes were found. Stage the intended files, review them with 'git diff --cached', and run publish again."
+        }
+
+        & git merge-base --is-ancestor HEAD "origin/main"
+        if ($LASTEXITCODE -eq 0) {
+            Assert-CleanWorkingTree
+            Write-Host "Feature commits found from branch creation point $($featureCommits.BaseCommit):" -ForegroundColor Cyan
+            Invoke-NativeCommand "git" @("--no-pager", "log", "--oneline", $featureCommits.CommitRange)
+            Write-Host ""
+            Write-Host "Committed files:" -ForegroundColor Cyan
+            Invoke-NativeCommand "git" @("--no-pager", "diff", "--name-status", $featureCommits.DiffRange)
+            Write-Host ""
+            Write-Host "$($featureCommits.CommitCount) feature commit(s) are already present on origin/main. There is nothing left to push, and GitHub cannot create a pull request with no difference from main." -ForegroundColor Green
+            return
+        }
+        if ($LASTEXITCODE -ne 1) {
+            throw "Unable to determine whether the feature commits are already present on origin/main."
+        }
+
+        throw "Feature commits were found from branch creation, but they are not ahead of or contained in origin/main. Inspect 'git log --graph --oneline --decorate --all' before publishing."
     }
 
     if (-not $hasStagedChanges) {
@@ -520,7 +610,7 @@ function Finish-FeatureBranch {
     Assert-CommandExists "gh"
 
     $branch = Get-CurrentBranch
-    [void](Assert-FeatureBranch $branch)
+    [void](Get-BranchParts $branch)
     Assert-CleanWorkingTree
     Use-RepositoryGitHubAccount
 
