@@ -127,6 +127,14 @@ created without an upstream so a later plain `git push` cannot target `main`:
 .\scripts\git-workflow.ps1 start -Epic 12 -Feature 34 -Label "user-profile"
 ```
 
+You can also supply an existing naming convention directly, either by name or
+as the second positional argument:
+
+```powershell
+.\scripts\git-workflow.ps1 start -Branch "feature/user-profile"
+.\scripts\git-workflow.ps1 start "feature/user-profile"
+```
+
 After making changes, stage only the intended files and publish them:
 
 ```powershell

@@ -12,6 +12,10 @@ param(
 
     [string]$Label,
 
+    [Parameter(Position = 1)]
+    [Alias("BranchName")]
+    [string]$Branch,
+
     [switch]$SkipChecks,
 
     [switch]$Ready
@@ -193,17 +197,28 @@ function Assert-CleanWorkingTree {
     }
 }
 
-function Assert-FeatureBranch {
+function Get-BranchParts {
     param([Parameter(Mandatory = $true)][string]$Branch)
 
-    if ($Branch -notmatch $script:BranchPattern) {
-        throw "Branch '$Branch' does not match epic-{number}/fe-{number}-{label}."
+    if ($Branch -eq "main") {
+        throw "This command must be run from a feature branch, not 'main'."
+    }
+
+    & git check-ref-format --branch $Branch 2>$null | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw "Branch name '$Branch' is not a valid Git branch name."
+    }
+
+    if ($Branch -match $script:BranchPattern) {
+        return @{
+            Context = "- Epic: $($Matches.epic)`n- Feature: FE-$($Matches.feature)`n- Label: $($Matches.label)"
+            PullRequestContextInstruction = "Mention FE-$($Matches.feature) in Context."
+        }
     }
 
     return @{
-        Epic = $Matches.epic
-        Feature = $Matches.feature
-        Label = $Matches.label
+        Context = "- Branch name: $Branch"
+        PullRequestContextInstruction = "Mention the branch name in Context when it helps explain the work."
     }
 }
 
@@ -294,9 +309,7 @@ Generate Git metadata for a change in this repository.
 
 Context:
 - Current branch: $Branch
-- Epic: $($BranchParts.Epic)
-- Feature: FE-$($BranchParts.Feature)
-- Label: $($BranchParts.Label)
+$($BranchParts.Context)
 - Base branch: origin/main
 
 Inspect AGENTS.md, .github/pull_request_template.md, git status, relevant recent
@@ -310,7 +323,7 @@ Return JSON matching the supplied schema with:
 - prBody: complete Markdown using .github/pull_request_template.md exactly as the
   section structure. Replace comments and placeholders with concrete details,
   preserve every checklist item, check only items supported by the change, and
-  use "None" where appropriate. Mention FE-$($BranchParts.Feature) in Context.
+  use "None" where appropriate. $($BranchParts.PullRequestContextInstruction)
 
 Base every claim on repository evidence. Do not wrap the JSON in Markdown fences.
 "@
@@ -431,17 +444,30 @@ function Confirm-PullRequest {
 }
 
 function Start-FeatureBranch {
-    if ($Epic -lt 1 -or $Feature -lt 1 -or [string]::IsNullOrWhiteSpace($Label)) {
-        throw "start requires -Epic, -Feature, and -Label."
+    $hasExplicitBranch = -not [string]::IsNullOrWhiteSpace($Branch)
+    $hasTicketArguments = $Epic -gt 0 -or $Feature -gt 0 -or -not [string]::IsNullOrWhiteSpace($Label)
+    if ($hasExplicitBranch -and $hasTicketArguments) {
+        throw "start accepts either -Branch or -Epic, -Feature, and -Label, not both."
     }
 
-    $normalizedLabel = $Label.Trim().ToLowerInvariant() -replace '[^a-z0-9]+', '-'
-    $normalizedLabel = $normalizedLabel.Trim('-')
-    if ($normalizedLabel -notmatch '^[a-z0-9]+(?:-[a-z0-9]+)*$') {
-        throw "Label must contain letters or numbers and produce a non-empty kebab-case label."
+    if ($hasExplicitBranch) {
+        $targetBranch = $Branch.Trim()
+    }
+    else {
+        if ($Epic -lt 1 -or $Feature -lt 1 -or [string]::IsNullOrWhiteSpace($Label)) {
+            throw "start requires -Branch, or all of -Epic, -Feature, and -Label."
+        }
+
+        $normalizedLabel = $Label.Trim().ToLowerInvariant() -replace '[^a-z0-9]+', '-'
+        $normalizedLabel = $normalizedLabel.Trim('-')
+        if ($normalizedLabel -notmatch '^[a-z0-9]+(?:-[a-z0-9]+)*$') {
+            throw "Label must contain letters or numbers and produce a non-empty kebab-case label."
+        }
+
+        $targetBranch = "epic-$Epic/fe-$Feature-$normalizedLabel"
     }
 
-    $branch = "epic-$Epic/fe-$Feature-$normalizedLabel"
+    [void](Get-BranchParts -Branch $targetBranch)
     Assert-CleanWorkingTree
     Use-RepositoryGitHubAccount
 
@@ -449,18 +475,18 @@ function Start-FeatureBranch {
     Invoke-NativeCommand "git" @("switch", "main")
     Invoke-NativeCommand "git" @("pull", "--ff-only", "origin", "main")
 
-    & git show-ref --verify --quiet "refs/heads/$branch"
+    & git show-ref --verify --quiet "refs/heads/$targetBranch"
     if ($LASTEXITCODE -eq 0) {
-        throw "Local branch '$branch' already exists. It was preserved; choose another feature or label."
+        throw "Local branch '$targetBranch' already exists. It was preserved; choose another branch name."
     }
 
-    & git show-ref --verify --quiet "refs/remotes/origin/$branch"
+    & git show-ref --verify --quiet "refs/remotes/origin/$targetBranch"
     if ($LASTEXITCODE -eq 0) {
-        throw "Remote branch 'origin/$branch' already exists. Choose another feature or resume that branch."
+        throw "Remote branch 'origin/$targetBranch' already exists. Choose another branch name or resume that branch."
     }
 
-    Invoke-NativeCommand "git" @("switch", "--no-track", "--create", $branch, "origin/main")
-    Write-Host "Ready on $branch" -ForegroundColor Green
+    Invoke-NativeCommand "git" @("switch", "--no-track", "--create", $targetBranch, "origin/main")
+    Write-Host "Ready on $targetBranch" -ForegroundColor Green
 }
 
 function Show-WorkflowStatus {
@@ -482,7 +508,7 @@ function Publish-FeatureBranch {
     Assert-CommandExists "pnpm"
 
     $branch = Get-CurrentBranch
-    $branchParts = Assert-FeatureBranch $branch
+    $branchParts = Get-BranchParts $branch
 
     Use-RepositoryGitHubAccount
     Invoke-NativeCommand "gh" @("auth", "status")
@@ -584,7 +610,7 @@ function Finish-FeatureBranch {
     Assert-CommandExists "gh"
 
     $branch = Get-CurrentBranch
-    [void](Assert-FeatureBranch $branch)
+    [void](Get-BranchParts $branch)
     Assert-CleanWorkingTree
     Use-RepositoryGitHubAccount
 

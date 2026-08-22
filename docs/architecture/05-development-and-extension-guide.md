@@ -66,11 +66,11 @@ Use `pnpm --filter @template/<application> <task>` for a focused application che
 `scripts/git-workflow.ps1` owns the repository's optional Windows PowerShell
 workflow automation. Its `start` command fast-forwards local `main` from
 `origin/main` and creates branches named
-`epic-{number}/fe-{number}-{kebab-case-label}`. It refuses to start from a dirty
-working tree or overwrite an existing local or remote branch. New feature
-branches intentionally have no upstream until `publish` pushes them to their
-same-named remote branch, preventing a plain `git push` from targeting
-`origin/main`.
+`epic-{number}/fe-{number}-{kebab-case-label}`, or accepts an explicit valid Git
+branch name. It refuses to start from a dirty working tree or overwrite an
+existing local or remote branch. New feature branches intentionally have no
+upstream until `publish` pushes them to their same-named remote branch,
+preventing a plain `git push` from targeting `origin/main`.
 
 Developers stage their intended files explicitly. The `publish` command runs the
 root lint, type-check, and test tasks before creating a disposable detached
