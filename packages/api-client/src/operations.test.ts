@@ -1,7 +1,12 @@
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { checkEmailExistence, signIn, signUp } from "./authentication";
+import {
+  checkEmailExistence,
+  requestEmailConfirmationCode,
+  signIn,
+  signUp,
+} from "./authentication";
 import { createApiClient } from "./client";
 import { getWalletTopUpTransaction, getWalletTransactions } from "./payments";
 import { getProfile, uploadAvatar } from "./profiles";
@@ -46,7 +51,11 @@ describe("handwritten API operations", () => {
         async ({ request }) => {
           expect(await request.json()).toEqual(registration);
           return HttpResponse.json(
-            { email: registration.email, message: "Confirmation sent" },
+            {
+              email: registration.email,
+              message: "Confirmation sent",
+              retryAtUtc: "2026-08-22T10:05:00Z",
+            },
             { status: 202 },
           );
         },
@@ -58,6 +67,32 @@ describe("handwritten API operations", () => {
     ).resolves.toEqual({
       email: registration.email,
       message: "Confirmation sent",
+      retryAtUtc: "2026-08-22T10:05:00Z",
+    });
+  });
+
+  it("requests another email confirmation code", async () => {
+    server.use(
+      http.post(
+        "http://api.test/api/v1/authentication/email-confirmations/confirmation-code",
+        async ({ request }) => {
+          expect(await request.json()).toEqual({ email: "user@example.com" });
+          return HttpResponse.json({
+            message: "Confirmation code requested",
+            retryAtUtc: "2026-08-22T10:10:00Z",
+          });
+        },
+      ),
+    );
+
+    await expect(
+      requestEmailConfirmationCode(
+        createApiClient({ baseUrl: "http://api.test" }),
+        { email: "user@example.com" },
+      ),
+    ).resolves.toEqual({
+      message: "Confirmation code requested",
+      retryAtUtc: "2026-08-22T10:10:00Z",
     });
   });
 

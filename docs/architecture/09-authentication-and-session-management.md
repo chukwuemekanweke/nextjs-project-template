@@ -21,6 +21,8 @@ sequenceDiagram
 
 The form maps response status to application-owned, safe messages. It does not render backend details, account identifiers, tokens, or exception text. `returnTo` accepts only a same-origin absolute path beginning with one slash; missing, external, protocol-relative, and malformed values fall back to `/`. This supplies destination restoration for route guards without creating an open redirect.
 
+When credential sign-in reports that the email is not confirmed, the User Portal does not leave the customer on an error state. It requests a confirmation code, carries the returned resend cooldown and validated `returnTo` destination into `/confirm-email`, and lets the customer complete verification before returning to sign-in.
+
 The portal's server API client adds the configured `X-Tenant-Id` header to sign-in, refresh, logout, registration, and every other backend operation. Route protection uses the same server tenant setting. The shared configuration defaults to the template tenant and still allows a deployment-specific override.
 
 ## Registration and email confirmation
@@ -29,7 +31,7 @@ The User Portal implements registration as an app-owned three-step workflow. It 
 
 The password schema mirrors the Web API rules: at least eight characters with an uppercase letter, lowercase letter, digit, and non-alphanumeric character. Confirmation must match. This gives immediate guidance, while backend validation remains authoritative and is mapped back to the known fields.
 
-The completed payload is sent through the handwritten `authentication.signUp` operation. An accepted registration navigates to `/confirm-email` with the email address; that page submits the six-character code through `authentication.confirmEmail`. Successful confirmation returns to sign-in with the email pre-filled and a completion message. A conflict during the final registration request is treated like an existing-email result, covering the race between the initial check and submission.
+The completed payload is sent through the handwritten `authentication.signUp` operation. An accepted registration navigates to `/confirm-email` with the email address and the backend's `retryAtUtc` cooldown. The page presents the six-character code as six coordinated inputs and submits their combined value through `authentication.confirmEmail`. Its resend action remains disabled until the backend timestamp, then calls `authentication.requestEmailConfirmationCode` and replaces the cooldown with the returned `retryAtUtc`. Successful confirmation returns to sign-in with the email pre-filled and a completion message. A conflict during the final registration request is treated like an existing-email result, covering the race between the initial check and submission.
 
 ## Session cookie policy
 

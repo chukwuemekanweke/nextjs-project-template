@@ -55,6 +55,17 @@ export const confirmEmailMutationOptions = (client: AuthenticationClient) =>
       request: Parameters<AuthenticationClient["confirmEmail"]>[0],
     ) => client.confirmEmail(request),
   });
+export const requestEmailConfirmationCodeMutationOptions = (
+  client: AuthenticationClient,
+) =>
+  mutationOptions({
+    mutationKey: authenticationKeys.mutation("request-email-confirmation-code"),
+    mutationFn: (
+      request: Parameters<
+        AuthenticationClient["requestEmailConfirmationCode"]
+      >[0],
+    ) => client.requestEmailConfirmationCode(request),
+  });
 export const logoutMutationOptions = (
   client: AuthenticationClient,
   queryClient?: QueryClient,

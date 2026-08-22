@@ -18,9 +18,19 @@ describe("User Portal browser API", () => {
       }
       if (path.endsWith("/registrations")) {
         return Response.json(
-          { email: "user@example.com", message: "Confirmation sent" },
+          {
+            email: "user@example.com",
+            message: "Confirmation sent",
+            retryAtUtc: "2026-08-22T10:05:00Z",
+          },
           { status: 202 },
         );
+      }
+      if (path.endsWith("/confirmation-code")) {
+        return Response.json({
+          message: "Confirmation code requested",
+          retryAtUtc: "2026-08-22T10:10:00Z",
+        });
       }
       return Response.json({ message: "Email confirmed" });
     });
@@ -46,8 +56,11 @@ describe("User Portal browser API", () => {
       email: "user@example.com",
       otp: "123456",
     });
+    await client.authentication.requestEmailConfirmationCode({
+      email: "user@example.com",
+    });
 
-    expect(requests).toHaveLength(4);
+    expect(requests).toHaveLength(5);
     for (const request of requests) {
       expect(new Headers(request.headers).get(TENANT_ID_HEADER)).toBe(
         TENANT_ID,

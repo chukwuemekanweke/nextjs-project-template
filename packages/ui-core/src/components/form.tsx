@@ -5,6 +5,7 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
+import { forwardRef } from "react";
 
 export function FormField({
   label,
@@ -73,12 +74,12 @@ function fieldClasses(className: string) {
   ].join(" ");
 }
 
-export function Input({
-  className = "",
-  ...props
-}: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={fieldClasses(className)} {...props} />;
-}
+export const Input = forwardRef<
+  HTMLInputElement,
+  InputHTMLAttributes<HTMLInputElement>
+>(function Input({ className = "", ...props }, ref) {
+  return <input className={fieldClasses(className)} ref={ref} {...props} />;
+});
 
 export function Select({
   className = "",

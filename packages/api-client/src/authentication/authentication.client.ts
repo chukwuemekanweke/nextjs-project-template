@@ -8,6 +8,8 @@ import type {
   ConfirmEmailMutationResponse,
   RefreshSessionMutationRequest,
   RefreshSessionMutationResponse,
+  RequestEmailConfirmationCodeMutationRequest,
+  RequestEmailConfirmationCodeMutationResponse,
   RequestPasswordResetMutationRequest,
   RequestPasswordResetMutationResponse,
   SignInMutationRequest,
@@ -25,6 +27,7 @@ import {
   confirmEmail,
   logout,
   refreshSession,
+  requestEmailConfirmationCode,
   requestPasswordReset,
   signIn,
   signInWithGoogle,
@@ -70,6 +73,10 @@ export interface AuthenticationClient {
     request: ConfirmEmailMutationRequest,
     options?: ApiOperationOptions,
   ): Promise<ConfirmEmailMutationResponse>;
+  requestEmailConfirmationCode(
+    request: RequestEmailConfirmationCodeMutationRequest,
+    options?: ApiOperationOptions,
+  ): Promise<RequestEmailConfirmationCodeMutationResponse>;
 }
 
 export function createAuthenticationClient(
@@ -93,5 +100,7 @@ export function createAuthenticationClient(
       completePasswordReset(transport, request, options),
     confirmEmail: (request, options) =>
       confirmEmail(transport, request, options),
+    requestEmailConfirmationCode: (request, options) =>
+      requestEmailConfirmationCode(transport, request, options),
   };
 }

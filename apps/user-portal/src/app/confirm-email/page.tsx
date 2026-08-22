@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Card, CardContent } from "@template/ui-core";
 import { branding } from "@/config/env";
-import { safeEmailParameter } from "@/lib/sign-in";
+import { safeRetryAtUtc } from "@/lib/registration";
+import { safeEmailParameter, safeSignInDestination } from "@/lib/sign-in";
 import { ConfirmEmailForm } from "./confirm-email-form";
 
 export const metadata: Metadata = { title: "Confirm email" };
@@ -9,11 +10,28 @@ export const metadata: Metadata = { title: "Confirm email" };
 export default async function ConfirmEmailPage({
   searchParams,
 }: Readonly<{
-  searchParams: Promise<{ email?: string | string[] }>;
+  searchParams: Promise<{
+    email?: string | string[];
+    returnTo?: string | string[];
+    retryAtUtc?: string | string[];
+  }>;
 }>) {
-  const suppliedEmail = (await searchParams).email;
+  const parameters = await searchParams;
+  const suppliedEmail = parameters.email;
   const email = safeEmailParameter(
     Array.isArray(suppliedEmail) ? suppliedEmail[0] : suppliedEmail,
+  );
+  const suppliedRetryAtUtc = parameters.retryAtUtc;
+  const retryAtUtc = safeRetryAtUtc(
+    Array.isArray(suppliedRetryAtUtc)
+      ? suppliedRetryAtUtc[0]
+      : suppliedRetryAtUtc,
+  );
+  const suppliedDestination = parameters.returnTo;
+  const destination = safeSignInDestination(
+    Array.isArray(suppliedDestination)
+      ? suppliedDestination[0]
+      : suppliedDestination,
   );
 
   return (
@@ -32,7 +50,12 @@ export default async function ConfirmEmailPage({
         </div>
         <Card>
           <CardContent>
-            <ConfirmEmailForm initialEmail={email} />
+            <ConfirmEmailForm
+              initialEmail={email}
+              initialNowUtc={new Date().toISOString()}
+              initialRetryAtUtc={retryAtUtc}
+              signInDestination={destination}
+            />
           </CardContent>
         </Card>
       </div>

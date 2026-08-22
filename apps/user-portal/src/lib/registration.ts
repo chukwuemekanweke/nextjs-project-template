@@ -44,3 +44,22 @@ export const confirmationSchema = z.object({
 export function normalizeRegistrationEmail(email: string): string {
   return email.trim().toLowerCase();
 }
+
+export function safeRetryAtUtc(value: string | undefined): string {
+  if (!value) {
+    return "";
+  }
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) ? new Date(timestamp).toISOString() : "";
+}
+
+export function retrySecondsRemaining(
+  retryAtUtc: string,
+  nowMilliseconds = Date.now(),
+): number {
+  const retryTimestamp = Date.parse(retryAtUtc);
+  if (!Number.isFinite(retryTimestamp)) {
+    return 0;
+  }
+  return Math.max(0, Math.ceil((retryTimestamp - nowMilliseconds) / 1_000));
+}

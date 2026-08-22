@@ -6,6 +6,7 @@ import {
   checkEmailExistenceMutationOptions,
   confirmEmailMutationOptions,
   logoutMutationOptions,
+  requestEmailConfirmationCodeMutationOptions,
   signInMutationOptions,
   signUpMutationOptions,
 } from "./authentication.mutations";
@@ -20,6 +21,10 @@ export const useSignUp = () =>
   useMutation(signUpMutationOptions(useApiClient().authentication));
 export const useConfirmEmail = () =>
   useMutation(confirmEmailMutationOptions(useApiClient().authentication));
+export const useRequestEmailConfirmationCode = () =>
+  useMutation(
+    requestEmailConfirmationCodeMutationOptions(useApiClient().authentication),
+  );
 export function useLogout() {
   const api = useApiClient();
   const queryClient = useQueryClient();

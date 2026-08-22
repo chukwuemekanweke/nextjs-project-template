@@ -33,7 +33,11 @@ export type GoogleSignUpRequest = {
   lastName: string;
 };
 
-export type SignUpResponse = { email: string; message: string };
+export type SignUpResponse = {
+  email: string;
+  message: string;
+  retryAtUtc: string;
+};
 export type GoogleSignUpResponse = { email: string; message: string };
 export type PasswordResetRequest = { email: string };
 export type RequestPasswordResetResponse = { message: string };
@@ -46,6 +50,11 @@ export type CompletePasswordResetRequest = {
 export type CompletePasswordResetResponse = { message: string };
 export type SignUpOtpRequest = { email: string; otp: string };
 export type SignUpOtpResponse = { message: string };
+export type RequestEmailConfirmationCodeRequest = { email: string };
+export type RequestEmailConfirmationCodeResponse = {
+  message: string;
+  retryAtUtc: string;
+};
 
 export type SignInMutationRequest = SignInRequest;
 export type SignInMutationResponse = SignInResponse;
@@ -67,6 +76,10 @@ export type CompletePasswordResetMutationResponse =
   CompletePasswordResetResponse;
 export type ConfirmEmailMutationRequest = SignUpOtpRequest;
 export type ConfirmEmailMutationResponse = SignUpOtpResponse;
+export type RequestEmailConfirmationCodeMutationRequest =
+  RequestEmailConfirmationCodeRequest;
+export type RequestEmailConfirmationCodeMutationResponse =
+  RequestEmailConfirmationCodeResponse;
 
 export const authenticationOperations = {
   checkEmailExistence: {
@@ -80,6 +93,10 @@ export const authenticationOperations = {
   confirmEmail: {
     method: "POST",
     path: "/api/v1/authentication/email-confirmations",
+  },
+  requestEmailConfirmationCode: {
+    method: "POST",
+    path: "/api/v1/authentication/email-confirmations/confirmation-code",
   },
   logout: { method: "POST", path: "/api/v1/authentication/sessions/logout" },
   refreshSession: {

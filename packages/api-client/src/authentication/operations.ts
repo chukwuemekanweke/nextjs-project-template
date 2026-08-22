@@ -8,6 +8,8 @@ import type {
   LogoutMutationResponse,
   RefreshSessionMutationRequest,
   RefreshSessionMutationResponse,
+  RequestEmailConfirmationCodeMutationRequest,
+  RequestEmailConfirmationCodeMutationResponse,
   RequestPasswordResetMutationRequest,
   RequestPasswordResetMutationResponse,
   SignInMutationRequest,
@@ -123,6 +125,17 @@ export const confirmEmail = (
 ) =>
   client.request<ConfirmEmailMutationResponse>({
     ...authenticationOperations.confirmEmail,
+    ...options,
+    body: request,
+  });
+
+export const requestEmailConfirmationCode = (
+  client: ApiTransport,
+  request: RequestEmailConfirmationCodeMutationRequest,
+  options?: ApiOperationOptions,
+) =>
+  client.request<RequestEmailConfirmationCodeMutationResponse>({
+    ...authenticationOperations.requestEmailConfirmationCode,
     ...options,
     body: request,
   });

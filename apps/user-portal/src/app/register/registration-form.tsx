@@ -101,8 +101,11 @@ export function RegistrationForm() {
         firstName: values.firstName.trim(),
         lastName: values.lastName.trim(),
       });
+      const retryAtUtc = response.retryAtUtc
+        ? `&retryAtUtc=${encodeURIComponent(response.retryAtUtc)}`
+        : "";
       router.replace(
-        `/confirm-email?email=${encodeURIComponent(response.email || email)}`,
+        `/confirm-email?email=${encodeURIComponent(response.email || email)}${retryAtUtc}`,
       );
     } catch (caughtError) {
       if (isApiError(caughtError) && caughtError.kind === "conflict") {
