@@ -1,6 +1,6 @@
 # Authentication and session management
 
-FE-021 added sign-in to the User and Admin portals, FE-022 tightened session storage, FE-023 added coordinated refresh, FE-024 added explicit logout, and FE-025 protected dashboard routes. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
+FE-021 added sign-in to the User and Admin portals, FE-022 tightened session storage, FE-023 added coordinated refresh, FE-024 added explicit logout, and FE-025 protected dashboard routes. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. The User Portal also owns the public `/register` and `/confirm-email` routes. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
 
 ## Sign-in flow
 
@@ -22,6 +22,14 @@ sequenceDiagram
 The form maps response status to application-owned, safe messages. It does not render backend details, account identifiers, tokens, or exception text. `returnTo` accepts only a same-origin absolute path beginning with one slash; missing, external, protocol-relative, and malformed values fall back to `/`. This supplies destination restoration for route guards without creating an open redirect.
 
 The portal's server API client adds the configured `X-Tenant-Id` header to sign-in, refresh, logout, registration, and every other backend operation. Route protection uses the same server tenant setting. The shared configuration defaults to the template tenant and still allows a deployment-specific override.
+
+## Registration and email confirmation
+
+The User Portal implements registration as an app-owned three-step workflow. It first posts the normalized email to `/api/v1/authentication/email-existence-checks`. Existing accounts are sent to `/sign-in` with a validated email query value, which pre-populates the email field and leaves the password field ready. New accounts continue to password entry, then first name, last name, and a searchable country selector. The selector reads public reference data and submits the selected country's UUID as `countryId`.
+
+The password schema mirrors the Web API rules: at least eight characters with an uppercase letter, lowercase letter, digit, and non-alphanumeric character. Confirmation must match. This gives immediate guidance, while backend validation remains authoritative and is mapped back to the known fields.
+
+The completed payload is sent through the handwritten `authentication.signUp` operation. An accepted registration navigates to `/confirm-email` with the email address; that page submits the six-character code through `authentication.confirmEmail`. Successful confirmation returns to sign-in with the email pre-filled and a completion message. A conflict during the final registration request is treated like an existing-email result, covering the race between the initial check and submission.
 
 ## Session cookie policy
 
@@ -77,11 +85,11 @@ The Route Handler always attempts the backend logout operation. It also always e
 
 ## Protected routes
 
-Each dashboard app exports a Next.js `proxy` from `src/proxy.ts`. The matcher runs it for portal page requests while excluding authentication APIs, Next.js assets, and application static files. `/sign-in` is explicitly public. Every other matched page is resolved before React rendering, so an unauthenticated request cannot briefly render the dashboard shell or page content.
+Each dashboard app exports a Next.js `proxy` from `src/proxy.ts`. The matcher runs it for portal page requests while excluding authentication APIs, Next.js assets, and application static files. `/sign-in` is explicitly public in both portals; `/register` and `/confirm-email` are also public in the User Portal. Every other matched page is resolved before React rendering, so an unauthenticated request cannot briefly render the dashboard shell or page content.
 
 ```mermaid
 flowchart TD
-  Request[Portal page request] --> Public{Sign-in page?}
+  Request[Portal page request] --> Public{Public auth page?}
   Public -->|Yes| Allow[Continue request]
   Public -->|No| Access{Active access cookie?}
   Access -->|Yes| Allow

@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { signIn } from "./authentication";
+import { checkEmailExistence, signIn, signUp } from "./authentication";
 import { createApiClient } from "./client";
 import { getWalletTopUpTransaction, getWalletTransactions } from "./payments";
 import { getProfile, uploadAvatar } from "./profiles";
@@ -13,6 +13,54 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe("handwritten API operations", () => {
+  it("checks whether an email is already registered", async () => {
+    server.use(
+      http.post(
+        "http://api.test/api/v1/authentication/email-existence-checks",
+        async ({ request }) => {
+          expect(await request.json()).toEqual({ email: "user@example.com" });
+          return HttpResponse.json({ exists: true });
+        },
+      ),
+    );
+
+    await expect(
+      checkEmailExistence(createApiClient({ baseUrl: "http://api.test" }), {
+        email: "user@example.com",
+      }),
+    ).resolves.toEqual({ exists: true });
+  });
+
+  it("submits the complete registration contract", async () => {
+    const registration = {
+      confirmPassword: "Password1!",
+      countryId: "country-id",
+      email: "user@example.com",
+      firstName: "Ada",
+      lastName: "Lovelace",
+      password: "Password1!",
+    };
+    server.use(
+      http.post(
+        "http://api.test/api/v1/authentication/registrations",
+        async ({ request }) => {
+          expect(await request.json()).toEqual(registration);
+          return HttpResponse.json(
+            { email: registration.email, message: "Confirmation sent" },
+            { status: 202 },
+          );
+        },
+      ),
+    );
+
+    await expect(
+      signUp(createApiClient({ baseUrl: "http://api.test" }), registration),
+    ).resolves.toEqual({
+      email: registration.email,
+      message: "Confirmation sent",
+    });
+  });
+
   it("signs in with the contract request and response", async () => {
     server.use(
       http.post(

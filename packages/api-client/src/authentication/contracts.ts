@@ -2,6 +2,8 @@
 export type SignInRequest = { email: string; password: string };
 export type GoogleSignInRequest = { idToken: string };
 export type RefreshSessionRequest = { refreshToken: string };
+export type CheckEmailExistenceRequest = { email: string };
+export type CheckEmailExistenceResponse = { exists: boolean };
 
 export type SessionTokenResponse = {
   accessToken: string;
@@ -51,6 +53,8 @@ export type SignInWithGoogleMutationRequest = GoogleSignInRequest;
 export type SignInWithGoogleMutationResponse = GoogleSignInResponse;
 export type RefreshSessionMutationRequest = RefreshSessionRequest;
 export type RefreshSessionMutationResponse = RefreshSessionResponse;
+export type CheckEmailExistenceMutationRequest = CheckEmailExistenceRequest;
+export type CheckEmailExistenceMutationResponse = CheckEmailExistenceResponse;
 export type LogoutMutationResponse = void;
 export type SignUpMutationRequest = SignUpRequest;
 export type SignUpMutationResponse = SignUpResponse;
@@ -65,6 +69,10 @@ export type ConfirmEmailMutationRequest = SignUpOtpRequest;
 export type ConfirmEmailMutationResponse = SignUpOtpResponse;
 
 export const authenticationOperations = {
+  checkEmailExistence: {
+    method: "POST",
+    path: "/api/v1/authentication/email-existence-checks",
+  },
   completePasswordReset: {
     method: "POST",
     path: "/api/v1/authentication/password-resets/completions",

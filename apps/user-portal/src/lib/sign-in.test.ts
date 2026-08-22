@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { safeSignInDestination, safeSignInError } from "./sign-in";
+import {
+  safeEmailParameter,
+  safeSignInDestination,
+  safeSignInError,
+} from "./sign-in";
+
+describe("safeEmailParameter", () => {
+  it("normalizes valid emails and rejects invalid query values", () => {
+    expect(safeEmailParameter(" Ada@Example.COM ")).toBe("ada@example.com");
+    expect(safeEmailParameter("not-an-email")).toBe("");
+    expect(safeEmailParameter(undefined)).toBe("");
+  });
+});
 
 describe("safeSignInDestination", () => {
   it("preserves local paths including their query and fragment", () => {

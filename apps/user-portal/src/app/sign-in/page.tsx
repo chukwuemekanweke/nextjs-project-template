@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Card, CardContent } from "@template/ui-core";
 import { branding } from "@/config/env";
-import { safeSignInDestination } from "@/lib/sign-in";
+import { safeEmailParameter, safeSignInDestination } from "@/lib/sign-in";
 import { SignInForm } from "./sign-in-form";
 
 export const metadata: Metadata = { title: "Sign in" };
@@ -9,14 +9,28 @@ export const metadata: Metadata = { title: "Sign in" };
 export default async function SignInPage({
   searchParams,
 }: Readonly<{
-  searchParams: Promise<{ returnTo?: string | string[] }>;
+  searchParams: Promise<{
+    confirmed?: string | string[];
+    email?: string | string[];
+    returnTo?: string | string[];
+  }>;
 }>) {
-  const requestedDestination = (await searchParams).returnTo;
+  const parameters = await searchParams;
+  const requestedDestination = parameters.returnTo;
   const destination = safeSignInDestination(
     Array.isArray(requestedDestination)
       ? requestedDestination[0]
       : requestedDestination,
   );
+  const requestedEmail = parameters.email;
+  const initialEmail = safeEmailParameter(
+    Array.isArray(requestedEmail) ? requestedEmail[0] : requestedEmail,
+  );
+  const suppliedConfirmed = parameters.confirmed;
+  const confirmed =
+    (Array.isArray(suppliedConfirmed)
+      ? suppliedConfirmed[0]
+      : suppliedConfirmed) === "true";
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-gray-950">
@@ -34,7 +48,15 @@ export default async function SignInPage({
         </div>
         <Card>
           <CardContent>
-            <SignInForm destination={destination} />
+            {confirmed ? (
+              <div
+                className="mb-5 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-300"
+                role="status"
+              >
+                Your email is confirmed. Enter your password to sign in.
+              </div>
+            ) : null}
+            <SignInForm destination={destination} initialEmail={initialEmail} />
           </CardContent>
         </Card>
       </div>

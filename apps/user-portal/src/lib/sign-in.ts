@@ -1,5 +1,13 @@
 export const DEFAULT_SIGN_IN_DESTINATION = "/dashboard";
 
+export function safeEmailParameter(value: string | undefined): string {
+  if (!value) {
+    return "";
+  }
+  const normalized = value.trim().toLowerCase();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized) ? normalized : "";
+}
+
 export function safeSignInDestination(value: string | undefined): string {
   if (!value || !value.startsWith("/") || value.startsWith("//")) {
     return DEFAULT_SIGN_IN_DESTINATION;

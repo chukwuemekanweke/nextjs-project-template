@@ -20,7 +20,7 @@ export function UserLayoutShell({
 }: Readonly<{ children: ReactNode }>) {
   const pathname = usePathname();
 
-  if (pathname === "/sign-in") {
+  if (["/sign-in", "/register", "/confirm-email"].includes(pathname)) {
     return children;
   }
 

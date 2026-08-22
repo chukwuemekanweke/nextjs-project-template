@@ -19,11 +19,12 @@ import {
 } from "@/lib/session-cookies";
 
 const SIGN_IN_PATH = "/sign-in";
+const PUBLIC_PATHS = new Set([SIGN_IN_PATH, "/register", "/confirm-email"]);
 const coordinateSessionRefresh =
   createSessionRefreshCoordinator<SignInMutationResponse>();
 
 export async function proxy(request: NextRequest) {
-  if (request.nextUrl.pathname === SIGN_IN_PATH) {
+  if (PUBLIC_PATHS.has(request.nextUrl.pathname)) {
     return NextResponse.next();
   }
 

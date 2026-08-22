@@ -1,4 +1,6 @@
 import type {
+  CheckEmailExistenceMutationRequest,
+  CheckEmailExistenceMutationResponse,
   CompletePasswordResetMutationRequest,
   CompletePasswordResetMutationResponse,
   ConfirmEmailMutationRequest,
@@ -19,6 +21,17 @@ import type {
 } from "./contracts";
 import { authenticationOperations } from "./contracts";
 import type { ApiOperationOptions, ApiTransport } from "../client";
+
+export const checkEmailExistence = (
+  client: ApiTransport,
+  request: CheckEmailExistenceMutationRequest,
+  options?: ApiOperationOptions,
+) =>
+  client.request<CheckEmailExistenceMutationResponse>({
+    ...authenticationOperations.checkEmailExistence,
+    ...options,
+    body: request,
+  });
 
 export const signIn = (
   client: ApiTransport,

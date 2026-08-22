@@ -8,6 +8,7 @@ import {
   useValidatedForm,
 } from "@template/forms";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
 import { z } from "zod";
 import { safeSignInError } from "@/lib/sign-in";
@@ -19,11 +20,14 @@ const signInSchema = z.object({
 
 type SignInValues = z.infer<typeof signInSchema>;
 
-export function SignInForm({ destination }: Readonly<{ destination: string }>) {
+export function SignInForm({
+  destination,
+  initialEmail,
+}: Readonly<{ destination: string; initialEmail: string }>) {
   const router = useRouter();
   const [error, setError] = useState<string>();
   const form = useValidatedForm(signInSchema, {
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: initialEmail, password: "" },
   });
 
   async function submit(values: SignInValues) {
@@ -59,7 +63,7 @@ export function SignInForm({ destination }: Readonly<{ destination: string }>) {
       ) : null}
       <TextField<SignInValues>
         autoComplete="email"
-        autoFocus
+        autoFocus={!initialEmail}
         inputMode="email"
         label="Email address"
         name="email"
@@ -68,6 +72,7 @@ export function SignInForm({ destination }: Readonly<{ destination: string }>) {
       />
       <PasswordField<SignInValues>
         autoComplete="current-password"
+        autoFocus={Boolean(initialEmail)}
         label="Password"
         name="password"
         required
@@ -78,6 +83,15 @@ export function SignInForm({ destination }: Readonly<{ destination: string }>) {
       >
         {form.formState.isSubmitting ? "Signing in…" : "Sign in"}
       </SubmitButton>
+      <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+        Need an account?{" "}
+        <Link
+          className="text-brand-600 hover:text-brand-700 dark:text-brand-400 font-medium"
+          href="/register"
+        >
+          Register
+        </Link>
+      </p>
     </ValidatedForm>
   );
 }

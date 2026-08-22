@@ -8,6 +8,15 @@ export const signInMutationOptions = (client: AuthenticationClient) =>
     mutationFn: (request: Parameters<AuthenticationClient["signIn"]>[0]) =>
       client.signIn(request),
   });
+export const checkEmailExistenceMutationOptions = (
+  client: AuthenticationClient,
+) =>
+  mutationOptions({
+    mutationKey: authenticationKeys.mutation("check-email-existence"),
+    mutationFn: (
+      request: Parameters<AuthenticationClient["checkEmailExistence"]>[0],
+    ) => client.checkEmailExistence(request),
+  });
 export const refreshSessionMutationOptions = (client: AuthenticationClient) =>
   mutationOptions({
     mutationKey: authenticationKeys.mutation("refresh-session"),

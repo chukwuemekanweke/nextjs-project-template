@@ -3,6 +3,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApiClient } from "../query-client/api-provider";
 import {
+  checkEmailExistenceMutationOptions,
+  confirmEmailMutationOptions,
   logoutMutationOptions,
   signInMutationOptions,
   signUpMutationOptions,
@@ -10,8 +12,14 @@ import {
 
 export const useSignIn = () =>
   useMutation(signInMutationOptions(useApiClient().authentication));
+export const useCheckEmailExistence = () =>
+  useMutation(
+    checkEmailExistenceMutationOptions(useApiClient().authentication),
+  );
 export const useSignUp = () =>
   useMutation(signUpMutationOptions(useApiClient().authentication));
+export const useConfirmEmail = () =>
+  useMutation(confirmEmailMutationOptions(useApiClient().authentication));
 export function useLogout() {
   const api = useApiClient();
   const queryClient = useQueryClient();
