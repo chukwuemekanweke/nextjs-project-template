@@ -67,7 +67,10 @@ Use `pnpm --filter @template/<application> <task>` for a focused application che
 workflow automation. Its `start` command fast-forwards local `main` from
 `origin/main` and creates branches named
 `epic-{number}/fe-{number}-{kebab-case-label}`. It refuses to start from a dirty
-working tree or overwrite an existing local or remote branch.
+working tree or overwrite an existing local or remote branch. New feature
+branches intentionally have no upstream until `publish` pushes them to their
+same-named remote branch, preventing a plain `git push` from targeting
+`origin/main`.
 
 Developers stage their intended files explicitly. The `publish` command runs the
 root lint, type-check, and test tasks before creating a disposable detached
@@ -97,7 +100,10 @@ does not switch or fall back to the globally active `gh` account.
 `publish` also supports recovery after a partial run. When there are no staged
 changes but the feature branch contains commits ahead of `origin/main`, it
 regenerates the PR metadata from the committed branch diff and resumes the push
-and PR-creation steps without creating another commit.
+and PR-creation steps without creating another commit. If the branch's commits
+have already landed on `origin/main`, it recovers the feature range from the
+branch-creation reflog, displays those commits and files, and exits successfully.
+GitHub cannot create a PR once the branch has no difference from `main`.
 
 After GitHub confirms that the branch PR is merged, `finish` switches to `main`,
 fetches and prunes remote references, and pulls with `--ff-only`. It deliberately

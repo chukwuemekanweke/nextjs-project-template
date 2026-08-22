@@ -220,6 +220,49 @@ function Test-StagedChanges {
     return $true
 }
 
+function Get-FeatureCommitsFromBranchCreation {
+    param([Parameter(Mandatory = $true)][string]$Branch)
+
+    $reflogLines = @(& git reflog show "--format=%H%x09%gs" $Branch)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to inspect the creation history for branch '$Branch'."
+    }
+
+    $creationLine = $reflogLines |
+        Where-Object { $_ -match ([char]9 + "branch: Created from ") } |
+        Select-Object -First 1
+    if ([string]::IsNullOrWhiteSpace($creationLine)) {
+        return $null
+    }
+
+    $creationCommit = ($creationLine -split [char]9, 2)[0].Trim()
+    & git merge-base --is-ancestor $creationCommit HEAD
+    if ($LASTEXITCODE -eq 1) {
+        return $null
+    }
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to validate branch creation commit '$creationCommit'."
+    }
+
+    $commitRange = "$creationCommit..HEAD"
+    $commitCountText = (& git rev-list --count $commitRange).Trim()
+    if ($LASTEXITCODE -ne 0) {
+        throw "Unable to inspect feature commits from '$creationCommit'."
+    }
+
+    $commitCount = [int]$commitCountText
+    if ($commitCount -eq 0) {
+        return $null
+    }
+
+    return @{
+        BaseCommit = $creationCommit
+        CommitCount = $commitCount
+        CommitRange = $commitRange
+        DiffRange = "$creationCommit...HEAD"
+    }
+}
+
 function Invoke-Checks {
     Write-Host "Running repository checks..." -ForegroundColor Cyan
     Invoke-NativeCommand "pnpm" @("lint")
@@ -416,7 +459,7 @@ function Start-FeatureBranch {
         throw "Remote branch 'origin/$branch' already exists. Choose another feature or resume that branch."
     }
 
-    Invoke-NativeCommand "git" @("switch", "--create", $branch, "origin/main")
+    Invoke-NativeCommand "git" @("switch", "--no-track", "--create", $branch, "origin/main")
     Write-Host "Ready on $branch" -ForegroundColor Green
 }
 
@@ -453,7 +496,28 @@ function Publish-FeatureBranch {
     $aheadCount = [int]$aheadCountText
 
     if (-not $hasStagedChanges -and $aheadCount -eq 0) {
-        throw "No staged or committed feature changes were found. Stage the intended files, review them with 'git diff --cached', and run publish again."
+        $featureCommits = Get-FeatureCommitsFromBranchCreation -Branch $branch
+        if ($null -eq $featureCommits) {
+            throw "No staged or committed feature changes were found. Stage the intended files, review them with 'git diff --cached', and run publish again."
+        }
+
+        & git merge-base --is-ancestor HEAD "origin/main"
+        if ($LASTEXITCODE -eq 0) {
+            Assert-CleanWorkingTree
+            Write-Host "Feature commits found from branch creation point $($featureCommits.BaseCommit):" -ForegroundColor Cyan
+            Invoke-NativeCommand "git" @("--no-pager", "log", "--oneline", $featureCommits.CommitRange)
+            Write-Host ""
+            Write-Host "Committed files:" -ForegroundColor Cyan
+            Invoke-NativeCommand "git" @("--no-pager", "diff", "--name-status", $featureCommits.DiffRange)
+            Write-Host ""
+            Write-Host "$($featureCommits.CommitCount) feature commit(s) are already present on origin/main. There is nothing left to push, and GitHub cannot create a pull request with no difference from main." -ForegroundColor Green
+            return
+        }
+        if ($LASTEXITCODE -ne 1) {
+            throw "Unable to determine whether the feature commits are already present on origin/main."
+        }
+
+        throw "Feature commits were found from branch creation, but they are not ahead of or contained in origin/main. Inspect 'git log --graph --oneline --decorate --all' before publishing."
     }
 
     if (-not $hasStagedChanges) {

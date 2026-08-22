@@ -120,7 +120,8 @@ workflow runs. `CHUKWUEMEKANWEKE_GITHUB_TOKEN` remains available as a temporary
 override for the current shell. Do not add the private key, token, or encrypted
 credential file to this repository.
 
-Start a feature branch from the latest `origin/main`:
+Start a feature branch from the latest `origin/main`. The feature branch is
+created without an upstream so a later plain `git push` cannot target `main`:
 
 ```powershell
 .\scripts\git-workflow.ps1 start -Epic 12 -Feature 34 -Label "user-profile"
@@ -144,6 +145,9 @@ ready-for-review PR, or `-SkipChecks` only when the checks have already been run
 separately.
 If a push or PR creation is interrupted, run `publish` again; with no staged
 changes, it resumes PR creation from the commits already on the feature branch.
+If those commits are already present on `origin/main`, `publish` lists the
+commits and changed files, then exits successfully because there is no remaining
+branch difference from which GitHub can create a PR.
 
 Once GitHub reports the current branch's PR as merged, update `main` with:
 
