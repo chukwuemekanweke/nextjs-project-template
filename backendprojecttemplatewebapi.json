@@ -2374,11 +2374,29 @@
       },
       "SignUpOtpResponse": {
         "required": [
-          "message"
+          "accessToken",
+          "expiresAtUtc",
+          "refreshToken",
+          "refreshTokenExpiresAtUtc",
+          "tokenType"
         ],
         "type": "object",
         "properties": {
-          "message": {
+          "accessToken": {
+            "type": "string"
+          },
+          "expiresAtUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "refreshToken": {
+            "type": "string"
+          },
+          "refreshTokenExpiresAtUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tokenType": {
             "type": "string"
           }
         }
