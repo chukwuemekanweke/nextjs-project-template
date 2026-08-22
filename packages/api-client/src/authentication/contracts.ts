@@ -49,7 +49,7 @@ export type CompletePasswordResetRequest = {
 };
 export type CompletePasswordResetResponse = { message: string };
 export type SignUpOtpRequest = { email: string; otp: string };
-export type SignUpOtpResponse = { message: string };
+export type SignUpOtpResponse = SessionTokenResponse;
 export type RequestEmailConfirmationCodeRequest = { email: string };
 export type RequestEmailConfirmationCodeResponse = {
   message: string;

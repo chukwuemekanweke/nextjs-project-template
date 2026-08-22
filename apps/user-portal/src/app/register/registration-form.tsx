@@ -29,7 +29,7 @@ import {
 type EmailValues = z.infer<typeof emailSchema>;
 type PasswordValues = z.infer<typeof passwordSchema>;
 type ProfileValues = z.infer<typeof profileSchema>;
-type RegistrationStep = "email" | "password" | "profile";
+type RegistrationStep = "email" | "profile" | "password";
 
 export function RegistrationForm() {
   const router = useRouter();
@@ -40,16 +40,16 @@ export function RegistrationForm() {
   const refetchCountries = countries.refetch;
   const [step, setStep] = useState<RegistrationStep>("email");
   const [email, setEmail] = useState("");
-  const [passwordValues, setPasswordValues] = useState<PasswordValues>();
+  const [profileValues, setProfileValues] = useState<ProfileValues>();
   const [error, setError] = useState<string>();
   const emailForm = useValidatedForm(emailSchema, {
     defaultValues: { email: "" },
   });
-  const passwordForm = useValidatedForm(passwordSchema, {
-    defaultValues: { confirmPassword: "", password: "" },
-  });
   const profileForm = useValidatedForm(profileSchema, {
     defaultValues: { countryId: "", firstName: "", lastName: "" },
+  });
+  const passwordForm = useValidatedForm(passwordSchema, {
+    defaultValues: { confirmPassword: "", password: "" },
   });
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export function RegistrationForm() {
         return;
       }
       setEmail(normalizedEmail);
-      setStep("password");
+      setStep("profile");
     } catch (caughtError) {
       const generalErrors = applyBackendValidation(
         caughtError,
@@ -80,26 +80,26 @@ export function RegistrationForm() {
     }
   }
 
-  function submitPassword(values: PasswordValues) {
+  function submitProfile(values: ProfileValues) {
     setError(undefined);
-    setPasswordValues(values);
-    setStep("profile");
+    setProfileValues(values);
+    setStep("password");
   }
 
-  async function submitProfile(values: ProfileValues) {
-    if (!passwordValues) {
-      setStep("password");
+  async function submitPassword(values: PasswordValues) {
+    if (!profileValues) {
+      setStep("profile");
       return;
     }
     setError(undefined);
 
     try {
       const response = await signUp.mutateAsync({
-        ...passwordValues,
+        ...profileValues,
         ...values,
         email,
-        firstName: values.firstName.trim(),
-        lastName: values.lastName.trim(),
+        firstName: profileValues.firstName.trim(),
+        lastName: profileValues.lastName.trim(),
       });
       const retryAtUtc = response.retryAtUtc
         ? `&retryAtUtc=${encodeURIComponent(response.retryAtUtc)}`
@@ -114,8 +114,8 @@ export function RegistrationForm() {
       }
       const generalErrors = applyBackendValidation(
         caughtError,
-        profileForm.setError,
-        ["countryId", "firstName", "lastName"],
+        passwordForm.setError,
+        ["confirmPassword", "password"],
       );
       setError(generalErrors[0]);
     }
@@ -149,32 +149,6 @@ export function RegistrationForm() {
             required
           />
           <PrimarySubmit pending={checkEmail.isPending}>Continue</PrimarySubmit>
-        </ValidatedForm>
-      ) : null}
-      {step === "password" ? (
-        <ValidatedForm
-          className="space-y-5"
-          form={passwordForm}
-          onSubmit={submitPassword}
-        >
-          <StepHeading
-            description={`Create a secure password for ${email}.`}
-            title="Secure your account"
-          />
-          <PasswordField<PasswordValues>
-            autoComplete="new-password"
-            autoFocus
-            label="Password"
-            name="password"
-            required
-          />
-          <PasswordField<PasswordValues>
-            autoComplete="new-password"
-            label="Confirm password"
-            name="confirmPassword"
-            required
-          />
-          <StepActions onBack={() => setStep("email")} />
         </ValidatedForm>
       ) : null}
       {step === "profile" ? (
@@ -217,8 +191,34 @@ export function RegistrationForm() {
             placeholder="Search for a country"
             required
           />
+          <StepActions onBack={() => setStep("email")} />
+        </ValidatedForm>
+      ) : null}
+      {step === "password" ? (
+        <ValidatedForm
+          className="space-y-5"
+          form={passwordForm}
+          onSubmit={submitPassword}
+        >
+          <StepHeading
+            description={`Create a secure password for ${email}.`}
+            title="Secure your account"
+          />
+          <PasswordField<PasswordValues>
+            autoComplete="new-password"
+            autoFocus
+            label="Password"
+            name="password"
+            required
+          />
+          <PasswordField<PasswordValues>
+            autoComplete="new-password"
+            label="Confirm password"
+            name="confirmPassword"
+            required
+          />
           <StepActions
-            onBack={() => setStep("password")}
+            onBack={() => setStep("profile")}
             pending={signUp.isPending}
             submitLabel="Create account"
           />
@@ -242,8 +242,8 @@ export function RegistrationForm() {
 function StepIndicator({ current }: Readonly<{ current: RegistrationStep }>) {
   const stepNumber: Record<RegistrationStep, number> = {
     email: 1,
-    password: 2,
-    profile: 3,
+    password: 3,
+    profile: 2,
   };
   const currentStep = stepNumber[current];
 

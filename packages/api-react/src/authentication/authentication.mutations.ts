@@ -48,13 +48,6 @@ export const completePasswordResetMutationOptions = (
       request: Parameters<AuthenticationClient["completePasswordReset"]>[0],
     ) => client.completePasswordReset(request),
   });
-export const confirmEmailMutationOptions = (client: AuthenticationClient) =>
-  mutationOptions({
-    mutationKey: authenticationKeys.mutation("confirm-email"),
-    mutationFn: (
-      request: Parameters<AuthenticationClient["confirmEmail"]>[0],
-    ) => client.confirmEmail(request),
-  });
 export const requestEmailConfirmationCodeMutationOptions = (
   client: AuthenticationClient,
 ) =>

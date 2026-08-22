@@ -52,15 +52,11 @@ describe("User Portal browser API", () => {
       lastName: "Lovelace",
       password: "Password1!",
     });
-    await client.authentication.confirmEmail({
-      email: "user@example.com",
-      otp: "123456",
-    });
     await client.authentication.requestEmailConfirmationCode({
       email: "user@example.com",
     });
 
-    expect(requests).toHaveLength(5);
+    expect(requests).toHaveLength(4);
     for (const request of requests) {
       expect(new Headers(request.headers).get(TENANT_ID_HEADER)).toBe(
         TENANT_ID,

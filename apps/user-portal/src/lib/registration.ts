@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const RESEND_CLOCK_SKEW_TOLERANCE_MS = 5_000;
+
 export const emailSchema = z.object({
   email: z.email("Enter a valid email address."),
 });
@@ -61,5 +63,11 @@ export function retrySecondsRemaining(
   if (!Number.isFinite(retryTimestamp)) {
     return 0;
   }
-  return Math.max(0, Math.ceil((retryTimestamp - nowMilliseconds) / 1_000));
+  return Math.max(
+    0,
+    Math.ceil(
+      (retryTimestamp + RESEND_CLOCK_SKEW_TOLERANCE_MS - nowMilliseconds) /
+        1_000,
+    ),
+  );
 }

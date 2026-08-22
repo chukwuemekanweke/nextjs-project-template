@@ -61,7 +61,19 @@ describe("registration validation", () => {
         "2026-08-22T10:05:00Z",
         Date.parse("2026-08-22T10:04:30Z"),
       ),
-    ).toBe(30);
+    ).toBe(35);
+    expect(
+      retrySecondsRemaining(
+        "2026-08-22T10:05:00Z",
+        Date.parse("2026-08-22T10:05:00Z"),
+      ),
+    ).toBe(5);
+    expect(
+      retrySecondsRemaining(
+        "2026-08-22T10:05:00Z",
+        Date.parse("2026-08-22T10:05:05Z"),
+      ),
+    ).toBe(0);
     expect(
       retrySecondsRemaining(
         "2026-08-22T10:05:00Z",

@@ -3,6 +3,7 @@ import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
   checkEmailExistence,
+  confirmEmail,
   requestEmailConfirmationCode,
   signIn,
   signUp,
@@ -94,6 +95,35 @@ describe("handwritten API operations", () => {
       message: "Confirmation code requested",
       retryAtUtc: "2026-08-22T10:10:00Z",
     });
+  });
+
+  it("returns a session after confirming an email", async () => {
+    const session = {
+      accessToken: "access",
+      expiresAtUtc: "2026-08-22T13:00:00Z",
+      refreshToken: "refresh",
+      refreshTokenExpiresAtUtc: "2026-09-21T13:00:00Z",
+      tokenType: "Bearer",
+    };
+    server.use(
+      http.post(
+        "http://api.test/api/v1/authentication/email-confirmations",
+        async ({ request }) => {
+          expect(await request.json()).toEqual({
+            email: "user@example.com",
+            otp: "123456",
+          });
+          return HttpResponse.json(session);
+        },
+      ),
+    );
+
+    await expect(
+      confirmEmail(createApiClient({ baseUrl: "http://api.test" }), {
+        email: "user@example.com",
+        otp: "123456",
+      }),
+    ).resolves.toEqual(session);
   });
 
   it("signs in with the contract request and response", async () => {

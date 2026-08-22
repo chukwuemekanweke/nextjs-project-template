@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  useConfirmEmail,
-  useRequestEmailConfirmationCode,
-} from "@template/api-react/authentication";
+import { useRequestEmailConfirmationCode } from "@template/api-react/authentication";
 import {
   applyBackendValidation,
   ConfirmationCodeField,
@@ -22,7 +19,7 @@ import {
   normalizeRegistrationEmail,
   retrySecondsRemaining,
 } from "@/lib/registration";
-import { DEFAULT_SIGN_IN_DESTINATION } from "@/lib/sign-in";
+import { confirmEmailSession } from "@/lib/email-confirmation-session";
 
 const confirmEmailSchema = emailSchema.extend(confirmationSchema.shape);
 type ConfirmEmailValues = z.infer<typeof confirmEmailSchema>;
@@ -39,7 +36,6 @@ export function ConfirmEmailForm({
   signInDestination: string;
 }>) {
   const router = useRouter();
-  const confirmEmail = useConfirmEmail();
   const requestConfirmationCode = useRequestEmailConfirmationCode();
   const [error, setError] = useState<string>();
   const [retryAtUtc, setRetryAtUtc] = useState(initialRetryAtUtc);
@@ -65,15 +61,9 @@ export function ConfirmEmailForm({
     setError(undefined);
     const email = normalizeRegistrationEmail(values.email);
     try {
-      await confirmEmail.mutateAsync({ email, otp: values.otp.trim() });
-      const parameters = new URLSearchParams({
-        confirmed: "true",
-        email,
-      });
-      if (signInDestination !== DEFAULT_SIGN_IN_DESTINATION) {
-        parameters.set("returnTo", signInDestination);
-      }
-      router.replace(`/sign-in?${parameters.toString()}`);
+      await confirmEmailSession({ email, otp: values.otp.trim() });
+      router.replace(signInDestination);
+      router.refresh();
     } catch (caughtError) {
       const generalErrors = applyBackendValidation(caughtError, form.setError, [
         "email",
@@ -81,6 +71,10 @@ export function ConfirmEmailForm({
       ]);
       setError(generalErrors[0]);
     }
+  }
+
+  function submitCompletedCode() {
+    void form.handleSubmit(submit)();
   }
 
   async function resendCode() {
@@ -124,6 +118,7 @@ export function ConfirmEmailForm({
         autoFocus={Boolean(initialEmail)}
         label="Confirmation code"
         name="otp"
+        onComplete={submitCompletedCode}
         required
       />
       <div className="flex justify-end">
@@ -142,9 +137,9 @@ export function ConfirmEmailForm({
       </div>
       <SubmitButton
         className="bg-brand-500 hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
-        pending={confirmEmail.isPending}
+        pending={form.formState.isSubmitting}
       >
-        {confirmEmail.isPending ? "Confirming…" : "Confirm email"}
+        {form.formState.isSubmitting ? "Confirming…" : "Confirm email"}
       </SubmitButton>
       <p className="text-center text-sm text-gray-500 dark:text-gray-400">
         <Link

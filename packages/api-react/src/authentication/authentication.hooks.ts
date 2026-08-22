@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApiClient } from "../query-client/api-provider";
 import {
   checkEmailExistenceMutationOptions,
-  confirmEmailMutationOptions,
   logoutMutationOptions,
   requestEmailConfirmationCodeMutationOptions,
   signInMutationOptions,
@@ -19,8 +18,6 @@ export const useCheckEmailExistence = () =>
   );
 export const useSignUp = () =>
   useMutation(signUpMutationOptions(useApiClient().authentication));
-export const useConfirmEmail = () =>
-  useMutation(confirmEmailMutationOptions(useApiClient().authentication));
 export const useRequestEmailConfirmationCode = () =>
   useMutation(
     requestEmailConfirmationCodeMutationOptions(useApiClient().authentication),
