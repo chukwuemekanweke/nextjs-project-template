@@ -1,5 +1,6 @@
 "use client";
 
+import { useRequestEmailConfirmationCode } from "@template/api-react/authentication";
 import {
   PasswordField,
   SubmitButton,
@@ -11,7 +12,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { z } from "zod";
-import { safeSignInError } from "@/lib/sign-in";
+import {
+  createEmailConfirmationDestination,
+  safeSignInError,
+} from "@/lib/sign-in";
 
 const signInSchema = z.object({
   email: z.email("Enter a valid email address."),
@@ -25,6 +29,7 @@ export function SignInForm({
   initialEmail,
 }: Readonly<{ destination: string; initialEmail: string }>) {
   const router = useRouter();
+  const requestConfirmationCode = useRequestEmailConfirmationCode();
   const [error, setError] = useState<string>();
   const form = useValidatedForm(signInSchema, {
     defaultValues: { email: initialEmail, password: "" },
@@ -40,6 +45,26 @@ export function SignInForm({
         method: "POST",
       });
       if (!response.ok) {
+        if (response.status === 403) {
+          const email = values.email.trim().toLowerCase();
+          let retryAtUtc: string | undefined;
+          try {
+            const result = await requestConfirmationCode.mutateAsync({
+              email,
+            });
+            retryAtUtc = result.retryAtUtc;
+          } catch {
+            // The confirmation page keeps resend available if this attempt fails.
+          }
+          router.replace(
+            createEmailConfirmationDestination({
+              email,
+              retryAtUtc,
+              returnTo: destination,
+            }),
+          );
+          return;
+        }
         setError(safeSignInError(response.status));
         return;
       }

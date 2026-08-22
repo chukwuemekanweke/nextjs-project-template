@@ -1,9 +1,34 @@
 import { describe, expect, it } from "vitest";
 import {
+  createEmailConfirmationDestination,
   safeEmailParameter,
   safeSignInDestination,
   safeSignInError,
 } from "./sign-in";
+
+describe("createEmailConfirmationDestination", () => {
+  it("carries safe email, cooldown, and return destinations", () => {
+    expect(
+      createEmailConfirmationDestination({
+        email: " User@Example.COM ",
+        retryAtUtc: "2026-08-22T11:00:00Z",
+        returnTo: "/payments?page=2",
+      }),
+    ).toBe(
+      "/confirm-email?email=user%40example.com&returnTo=%2Fpayments%3Fpage%3D2&retryAtUtc=2026-08-22T11%3A00%3A00Z",
+    );
+  });
+
+  it("drops invalid timestamps and external destinations", () => {
+    expect(
+      createEmailConfirmationDestination({
+        email: "user@example.com",
+        retryAtUtc: "invalid",
+        returnTo: "https://attacker.test",
+      }),
+    ).toBe("/confirm-email?email=user%40example.com&returnTo=%2Fdashboard");
+  });
+});
 
 describe("safeEmailParameter", () => {
   it("normalizes valid emails and rejects invalid query values", () => {

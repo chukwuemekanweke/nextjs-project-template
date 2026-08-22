@@ -1,5 +1,24 @@
 export const DEFAULT_SIGN_IN_DESTINATION = "/dashboard";
 
+export function createEmailConfirmationDestination({
+  email,
+  retryAtUtc,
+  returnTo,
+}: Readonly<{
+  email: string;
+  retryAtUtc?: string;
+  returnTo: string;
+}>): string {
+  const parameters = new URLSearchParams({
+    email: safeEmailParameter(email),
+    returnTo: safeSignInDestination(returnTo),
+  });
+  if (retryAtUtc && Number.isFinite(Date.parse(retryAtUtc))) {
+    parameters.set("retryAtUtc", retryAtUtc);
+  }
+  return `/confirm-email?${parameters.toString()}`;
+}
+
 export function safeEmailParameter(value: string | undefined): string {
   if (!value) {
     return "";
@@ -27,9 +46,6 @@ export function safeSignInDestination(value: string | undefined): string {
 export function safeSignInError(status: number): string {
   if (status === 401) {
     return "The email or password is incorrect.";
-  }
-  if (status === 403) {
-    return "Confirm your email address before signing in.";
   }
   if (status === 423) {
     return "This account is temporarily locked. Try again later.";
