@@ -1,6 +1,6 @@
 # Shared dashboard architecture
 
-The dashboard applications share two packages with different responsibilities. `@template/ui-core` provides low-level, reusable dashboard primitives: cards, form controls, modal, pagination, skeleton, and generic `DataTable`. `@template/dashboard-ui` provides the dashboard frame and navigation-oriented components: `DashboardShell`, sidebars, mobile controls, breadcrumbs, header, and profile menu. Both expose these APIs from `src/index.ts` and retain TailAdmin attribution.
+The dashboard applications share two packages with different responsibilities. `@template/ui-core` provides low-level, reusable dashboard primitives: alerts, cards, form controls, modal, pagination, skeleton, and generic `DataTable`. `Alert` centralizes success, error, warning, and informational presentation, optional dismissal, timed exit animation, and reduced-motion behaviour while leaving message state and copy in the consuming feature. `@template/dashboard-ui` provides the dashboard frame and navigation-oriented components: `DashboardShell`, sidebars, mobile controls, breadcrumbs, header, and profile menu. Both expose these APIs from `src/index.ts` and retain TailAdmin attribution.
 
 Neither package owns User Portal or Admin Portal navigation. `userNavigation` and `adminNavigation` remain in their respective `apps/*/src/config/navigation.ts` files; the apps pass them to shared components as typed `DashboardNavItem[]`. That is what prevents a privileged admin destination from leaking into user navigation. Their focused Vitest tests check that distinction.
 
@@ -17,7 +17,7 @@ flowchart TD
   shell --> crumbs[Breadcrumbs from pathname]
   shell --> profile[ProfileMenu slots]
   ds --> page[page.tsx children]
-  page --> core[ui-core Card, DataTable, Skeleton]
+  page --> core[ui-core Alert, Card, DataTable, Skeleton]
 ```
 
 Admin Portal follows the same shape through `AdminLayoutShell`, but supplies its own navigation, labels, sidebar copy, breadcrumbs, and profile action slots. The architecture deliberately shares the frame while keeping product-specific composition local.

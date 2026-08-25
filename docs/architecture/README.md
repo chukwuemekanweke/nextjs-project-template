@@ -1,6 +1,6 @@
 # Architecture documentation
 
-This guide explains the frontend architecture implemented through FE-028: the monorepo foundation, application bootstrapping, dashboard and public-portal infrastructure, shared configuration, the handwritten API client, reusable query and form infrastructure, portal authentication/session flows, and the current-user profile route. It is for developers who know Next.js routes such as `page.tsx` and want to understand how this repository composes three deployable applications from workspace packages.
+This guide explains the frontend architecture implemented through FE-029: the monorepo foundation, application bootstrapping, dashboard and public-portal infrastructure, shared configuration, the handwritten API client, reusable query and form infrastructure, portal authentication/session flows, and current-user profile display and editing. It is for developers who know Next.js routes such as `page.tsx` and want to understand how this repository composes three deployable applications from workspace packages.
 
 Read in this order:
 

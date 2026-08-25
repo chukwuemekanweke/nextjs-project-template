@@ -63,4 +63,31 @@ describe("User Portal browser API", () => {
       );
     }
   });
+
+  it("routes authenticated profile updates through the same-origin BFF", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(new Response(null, { status: 204 }));
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+
+    await client.profiles.updateProfile({
+      firstName: "Ada",
+      lastName: "Byron",
+    });
+
+    expect(fetchImplementation).toHaveBeenCalledOnce();
+    const [input, init] = fetchImplementation.mock.calls[0]!;
+    expect(input.toString()).toBe("/api/profile");
+    expect(init).toMatchObject({
+      credentials: "same-origin",
+      method: "PUT",
+    });
+    expect(init?.body).toBe(
+      JSON.stringify({ firstName: "Ada", lastName: "Byron" }),
+    );
+  });
 });

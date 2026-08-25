@@ -58,7 +58,7 @@ The retry uses the underlying Fetch implementation instead of calling the wrappe
 
 If refresh fails for any reason, the refresh Route Handler clears both cookies. The browser then makes a best-effort `DELETE /api/auth/session` call and redirects to `/sign-in` with the current local path in `returnTo`. Concurrent failures share that cleanup and redirect as well as the refresh request.
 
-Authenticated client-side features must use `authenticatedFetch` for their same-origin Route Handler calls. The existing `browserApi` remains for approved public or CORS requests and does not receive authentication cookies.
+Authenticated client-side features must use `authenticatedFetch` for their same-origin Route Handler calls. The User Portal supplies that fetch implementation to its `browserApi` adapter and rewrites the profile update operation to `/api/profile`; public and CORS-approved operations retain their backend URLs. The local handler uses the server client to attach the HttpOnly access token, so browser JavaScript never receives authentication cookies or token material.
 
 ## Logout flow
 

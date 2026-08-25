@@ -10,7 +10,7 @@ import {
 } from "./authentication";
 import { createApiClient } from "./client";
 import { getWalletTopUpTransaction, getWalletTransactions } from "./payments";
-import { getProfile, uploadAvatar } from "./profiles";
+import { getProfile, updateProfile, uploadAvatar } from "./profiles";
 
 const server = setupServer();
 
@@ -236,5 +236,25 @@ describe("handwritten API operations", () => {
     await expect(
       getProfile(createApiClient({ baseUrl: "http://api.test" })),
     ).resolves.toEqual(profile);
+  });
+
+  it("updates the authenticated stakeholder profile", async () => {
+    const profileUpdate = { firstName: "Ada", lastName: "Byron" };
+    server.use(
+      http.put(
+        "http://api.test/api/v1/stakeholders/me/profile",
+        async ({ request }) => {
+          expect(await request.json()).toEqual(profileUpdate);
+          return new HttpResponse(null, { status: 204 });
+        },
+      ),
+    );
+
+    await expect(
+      updateProfile(
+        createApiClient({ baseUrl: "http://api.test" }),
+        profileUpdate,
+      ),
+    ).resolves.toBeUndefined();
   });
 });
