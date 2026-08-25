@@ -71,8 +71,8 @@ export function UserLayoutShell({
           />
           <ProfileMenu
             actions={[
-              <Link href="/" key="profile">
-                Edit profile
+              <Link href="/profile" key="profile">
+                View profile
               </Link>,
               <Link href="/" key="sessions">
                 Manage sessions

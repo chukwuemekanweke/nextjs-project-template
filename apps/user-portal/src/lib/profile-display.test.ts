@@ -4,6 +4,7 @@ import {
   hasProfileIdentity,
   profileInitials,
   profileName,
+  toProfileDisplay,
 } from "./profile-display";
 
 const profile: GetProfileQueryResponse = {
@@ -38,5 +39,16 @@ describe("profile display", () => {
         lastName: " ",
       }),
     ).toBe(false);
+  });
+
+  it("projects only user-facing profile fields", () => {
+    expect(toProfileDisplay(profile)).toEqual({
+      avatarUrl: null,
+      emailAddress: "ada@example.com",
+      firstName: " Ada ",
+      isVerified: true,
+      lastName: " Lovelace ",
+    });
+    expect(toProfileDisplay(profile)).not.toHaveProperty("stakeholderId");
   });
 });
