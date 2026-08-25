@@ -11,6 +11,7 @@ import {
   profileKeys,
   queryClientDefaults,
   shouldRetryQuery,
+  updateProfileMutationOptions,
   walletTopUpQueryOptions,
   walletTransactionsQueryOptions,
 } from ".";
@@ -26,6 +27,7 @@ const createClient = () =>
         avatarUrl: null,
         isVerified: true,
       }),
+      updateProfile: vi.fn().mockResolvedValue(undefined),
     },
     payments: {
       getWalletTransactions: vi
@@ -68,6 +70,24 @@ describe("API React integration", () => {
 
     expect(client.profiles.getProfile).toHaveBeenCalledWith({
       signal: expect.any(AbortSignal),
+    });
+  });
+
+  it("invalidates the current profile after an update", async () => {
+    const client = createClient();
+    const queryClient = new QueryClient();
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+    const options = updateProfileMutationOptions(client.profiles, queryClient);
+    const mutation = queryClient.getMutationCache().build(queryClient, options);
+
+    await mutation.execute({ firstName: "Ada", lastName: "Byron" });
+
+    expect(client.profiles.updateProfile).toHaveBeenCalledWith({
+      firstName: "Ada",
+      lastName: "Byron",
+    });
+    expect(invalidate).toHaveBeenCalledWith({
+      queryKey: profileKeys.current(),
     });
   });
 

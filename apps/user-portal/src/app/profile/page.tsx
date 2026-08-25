@@ -16,6 +16,7 @@ import {
   type ProfileDisplay,
 } from "@/lib/profile-display";
 import { createAppServerApiClient } from "@/lib/server-api";
+import { ProfileEditForm } from "./profile-edit-form";
 
 export const metadata: Metadata = { title: "Profile" };
 
@@ -55,13 +56,15 @@ export default async function ProfilePage() {
             <div className="mt-6">
               <CardTitle>Personal information</CardTitle>
               <CardDescription>
-                These details are loaded from your current account profile.
+                Update the names associated with your account. Your email
+                address is read-only.
               </CardDescription>
-              <dl className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
-                <ProfileField label="First name" value={profile.firstName} />
-                <ProfileField label="Last name" value={profile.lastName} />
+              <ProfileEditForm
+                firstName={profile.firstName}
+                lastName={profile.lastName}
+              />
+              <dl className="mt-6 border-t border-gray-100 pt-5 dark:border-gray-800">
                 <ProfileField
-                  className="sm:col-span-2"
                   label="Email address"
                   value={profile.emailAddress}
                 />
