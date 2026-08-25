@@ -10,7 +10,7 @@ The `apps/` directory holds three App Router applications. A route's `page.tsx` 
 
 ## Routing, layouts, and request flow
 
-The User Portal uses `/dashboard` as its authenticated landing route and keeps `/` as a compatibility redirect. The dashboard reads the current stakeholder profile through the server-only API client, displays identity and verification status, and leaves explicit empty metric slots for later user-portal features. Its route-level `loading.tsx` and `error.tsx` own pending and failure presentation. The User Portal exposes `/register` and `/confirm-email` alongside `/sign-in`; all three render without the authenticated dashboard frame. Registration owns its multi-step form state and public API mutations in the application. The Admin portal implements `src/app/page.tsx`; both dashboard applications have separate `/sign-in` routes and navigation entries for some future destinations. A navigation link such as `/profile` or `/users` is not yet backed by a route file. The Public Portal implements `/`, `/features`, `/pricing`, `/about`, `/contact`, `/blog`, `/privacy`, and `/terms`, plus `not-found.tsx`, `robots.ts`, and `sitemap.ts`.
+The User Portal uses `/dashboard` as its authenticated landing route and keeps `/` as a compatibility redirect. The dashboard reads the current stakeholder profile through the server-only API client, displays identity and verification status, and leaves explicit empty metric slots for later user-portal features. `/profile` uses the same request-scoped client to present only the user-facing name, email, avatar, and verification fields; the backend stakeholder identifier stays out of its display model. Both routes own `loading.tsx` and `error.tsx` files for pending and failure presentation. The User Portal exposes `/register` and `/confirm-email` alongside `/sign-in`; all three render without the authenticated dashboard frame. Registration owns its multi-step form state and public API mutations in the application. The Admin portal implements `src/app/page.tsx`; both dashboard applications have separate `/sign-in` routes and navigation entries for some future destinations. Navigation links such as `/security`, `/settings`, or `/users` are not yet backed by route files. The Public Portal implements `/`, `/features`, `/pricing`, `/about`, `/contact`, `/blog`, `/privacy`, and `/terms`, plus `not-found.tsx`, `robots.ts`, and `sitemap.ts`.
 
 ```mermaid
 sequenceDiagram
@@ -19,13 +19,13 @@ sequenceDiagram
   participant Layout as src/app/layout.tsx
   participant Shell as UserLayoutShell
   participant Shared as DashboardShell + shared primitives
-  participant Page as src/app/dashboard/page.tsx
+  participant Page as dashboard or profile page
   participant API as .NET Web API
-  Browser->>Next: GET /dashboard
+  Browser->>Next: GET /dashboard or /profile
   Next->>Layout: apply metadata, globals.css, RootLayout
   Layout->>Shell: render children inside app-specific shell
   Shell->>Shared: provide navigation, breadcrumbs, profile slots
-  Next->>Page: render Dashboard content
+  Next->>Page: render route content
   Page->>API: GET /api/v1/stakeholders/me/profile with bearer token
   API-->>Page: current stakeholder profile
   Shared-->>Browser: dashboard frame around page content
