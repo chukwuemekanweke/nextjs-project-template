@@ -90,4 +90,31 @@ describe("User Portal browser API", () => {
       JSON.stringify({ firstName: "Ada", lastName: "Byron" }),
     );
   });
+
+  it("routes password changes through the authenticated same-origin BFF", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(new Response(null, { status: 204 }));
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+    const request = {
+      confirmNewPassword: "NewPassword2!",
+      currentPassword: "CurrentPassword1!",
+      newPassword: "NewPassword2!",
+    };
+
+    await client.authentication.changePassword(request);
+
+    expect(fetchImplementation).toHaveBeenCalledOnce();
+    const [input, init] = fetchImplementation.mock.calls[0]!;
+    expect(input.toString()).toBe("/api/security/password");
+    expect(init).toMatchObject({
+      credentials: "same-origin",
+      method: "PUT",
+    });
+    expect(init?.body).toBe(JSON.stringify(request));
+  });
 });

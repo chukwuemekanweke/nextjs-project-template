@@ -48,6 +48,11 @@ export type CompletePasswordResetRequest = {
   password: string;
 };
 export type CompletePasswordResetResponse = { message: string };
+export type ChangePasswordRequest = {
+  confirmNewPassword: string;
+  currentPassword: string;
+  newPassword: string;
+};
 export type SignUpOtpRequest = { email: string; otp: string };
 export type SignUpOtpResponse = SessionTokenResponse;
 export type RequestEmailConfirmationCodeRequest = { email: string };
@@ -74,6 +79,8 @@ export type RequestPasswordResetMutationResponse = RequestPasswordResetResponse;
 export type CompletePasswordResetMutationRequest = CompletePasswordResetRequest;
 export type CompletePasswordResetMutationResponse =
   CompletePasswordResetResponse;
+export type ChangePasswordMutationRequest = ChangePasswordRequest;
+export type ChangePasswordMutationResponse = void;
 export type ConfirmEmailMutationRequest = SignUpOtpRequest;
 export type ConfirmEmailMutationResponse = SignUpOtpResponse;
 export type RequestEmailConfirmationCodeMutationRequest =
@@ -82,6 +89,10 @@ export type RequestEmailConfirmationCodeMutationResponse =
   RequestEmailConfirmationCodeResponse;
 
 export const authenticationOperations = {
+  changePassword: {
+    method: "PUT",
+    path: "/api/v1/authentication/password",
+  },
   checkEmailExistence: {
     method: "POST",
     path: "/api/v1/authentication/email-existence-checks",

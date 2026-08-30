@@ -2,6 +2,7 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
+  changePassword,
   checkEmailExistence,
   confirmEmail,
   requestEmailConfirmationCode,
@@ -19,6 +20,30 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe("handwritten API operations", () => {
+  it("changes the authenticated user's password", async () => {
+    const passwordChange = {
+      confirmNewPassword: "NewPassword2!",
+      currentPassword: "CurrentPassword1!",
+      newPassword: "NewPassword2!",
+    };
+    server.use(
+      http.put(
+        "http://api.test/api/v1/authentication/password",
+        async ({ request }) => {
+          expect(await request.json()).toEqual(passwordChange);
+          return new HttpResponse(null, { status: 204 });
+        },
+      ),
+    );
+
+    await expect(
+      changePassword(
+        createApiClient({ baseUrl: "http://api.test" }),
+        passwordChange,
+      ),
+    ).resolves.toBeUndefined();
+  });
+
   it("checks whether an email is already registered", async () => {
     server.use(
       http.post(

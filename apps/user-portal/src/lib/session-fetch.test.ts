@@ -30,6 +30,35 @@ describe("createPortalSessionFetch", () => {
     });
   });
 
+  it("refreshes and retries the password-change BFF request", async () => {
+    const fetch = vi
+      .fn<typeof globalThis.fetch>()
+      .mockResolvedValueOnce(new Response(null, { status: 401 }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    const sessionFetch = createPortalSessionFetch({
+      fetch,
+      getLocation: () => location,
+      redirect: vi.fn(),
+    });
+
+    await expect(
+      sessionFetch("http://portal.test/api/security/password", {
+        body: JSON.stringify({
+          confirmNewPassword: "NewPassword2!",
+          currentPassword: "CurrentPassword1!",
+          newPassword: "NewPassword2!",
+        }),
+        method: "PUT",
+      }),
+    ).resolves.toMatchObject({ status: 204 });
+    expect(fetch).toHaveBeenNthCalledWith(2, "/api/auth/session/refresh", {
+      credentials: "same-origin",
+      method: "POST",
+    });
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+
   it.each([
     "http://api.test/api/account",
     "http://portal.test/api/auth/session/refresh",

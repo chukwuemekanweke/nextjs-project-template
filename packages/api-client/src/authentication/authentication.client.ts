@@ -1,5 +1,7 @@
 import type { ApiOperationOptions, ApiTransport } from "../client";
 import type {
+  ChangePasswordMutationRequest,
+  ChangePasswordMutationResponse,
   CheckEmailExistenceMutationRequest,
   CheckEmailExistenceMutationResponse,
   CompletePasswordResetMutationRequest,
@@ -22,6 +24,7 @@ import type {
   SignUpWithGoogleMutationResponse,
 } from "./contracts";
 import {
+  changePassword,
   checkEmailExistence,
   completePasswordReset,
   confirmEmail,
@@ -36,6 +39,10 @@ import {
 } from "./operations";
 
 export interface AuthenticationClient {
+  changePassword(
+    request: ChangePasswordMutationRequest,
+    options?: ApiOperationOptions,
+  ): Promise<ChangePasswordMutationResponse>;
   checkEmailExistence(
     request: CheckEmailExistenceMutationRequest,
     options?: ApiOperationOptions,
@@ -83,6 +90,8 @@ export function createAuthenticationClient(
   transport: ApiTransport,
 ): AuthenticationClient {
   return {
+    changePassword: (request, options) =>
+      changePassword(transport, request, options),
     checkEmailExistence: (request, options) =>
       checkEmailExistence(transport, request, options),
     signIn: (request, options) => signIn(transport, request, options),
