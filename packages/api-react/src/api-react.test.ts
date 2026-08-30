@@ -3,6 +3,7 @@ import { ApiError } from "@template/api-client";
 import { QueryClient } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
 import {
+  changePasswordMutationOptions,
   initiatePaymentMutationOptions,
   currentProfileQueryOptions,
   getQueryOptions,
@@ -18,6 +19,9 @@ import {
 
 const createClient = () =>
   ({
+    authentication: {
+      changePassword: vi.fn().mockResolvedValue(undefined),
+    },
     profiles: {
       getProfile: vi.fn().mockResolvedValue({
         stakeholderId: "stakeholder-1",
@@ -43,6 +47,23 @@ const createClient = () =>
   }) as unknown as ApiClient;
 
 describe("API React integration", () => {
+  it("submits password changes without retaining them in cached query data", async () => {
+    const client = createClient();
+    const queryClient = new QueryClient();
+    const options = changePasswordMutationOptions(client.authentication);
+    const mutation = queryClient.getMutationCache().build(queryClient, options);
+    const request = {
+      confirmNewPassword: "NewPassword2!",
+      currentPassword: "CurrentPassword1!",
+      newPassword: "NewPassword2!",
+    };
+
+    await mutation.execute(request);
+
+    expect(client.authentication.changePassword).toHaveBeenCalledWith(request);
+    expect(queryClient.getQueryCache().getAll()).toHaveLength(0);
+  });
+
   it("creates stable hierarchical keys", () => {
     expect(profileKeys.current()).toEqual(["profiles", "current"]);
     expect(paymentKeys.walletTransactionList({ Limit: 25 })).toEqual([

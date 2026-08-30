@@ -1,4 +1,6 @@
 import type {
+  ChangePasswordMutationRequest,
+  ChangePasswordMutationResponse,
   CheckEmailExistenceMutationRequest,
   CheckEmailExistenceMutationResponse,
   CompletePasswordResetMutationRequest,
@@ -23,6 +25,17 @@ import type {
 } from "./contracts";
 import { authenticationOperations } from "./contracts";
 import type { ApiOperationOptions, ApiTransport } from "../client";
+
+export const changePassword = (
+  client: ApiTransport,
+  request: ChangePasswordMutationRequest,
+  options?: ApiOperationOptions,
+) =>
+  client.request<ChangePasswordMutationResponse>({
+    ...authenticationOperations.changePassword,
+    ...options,
+    body: request,
+  });
 
 export const checkEmailExistence = (
   client: ApiTransport,

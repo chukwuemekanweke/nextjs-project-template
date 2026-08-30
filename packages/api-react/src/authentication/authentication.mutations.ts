@@ -2,6 +2,13 @@ import type { AuthenticationClient } from "@template/api-client/authentication";
 import { mutationOptions, type QueryClient } from "@tanstack/react-query";
 import { authenticationKeys } from "./authentication.keys";
 
+export const changePasswordMutationOptions = (client: AuthenticationClient) =>
+  mutationOptions({
+    mutationKey: authenticationKeys.mutation("change-password"),
+    mutationFn: (
+      request: Parameters<AuthenticationClient["changePassword"]>[0],
+    ) => client.changePassword(request),
+  });
 export const signInMutationOptions = (client: AuthenticationClient) =>
   mutationOptions({
     mutationKey: authenticationKeys.mutation("sign-in"),
