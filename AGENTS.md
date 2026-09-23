@@ -1,134 +1,65 @@
-# Repository Instructions
+# AGENTS
 
-## Control-flow style
+This repository is a pnpm/Turborepo frontend monorepo with three independently
+deployable Next.js applications and reusable workspace packages. Durable
+architecture, infrastructure, convention, workflow, testing, and domain
+knowledge lives in the small OKF knowledge base at `.okf/knowledge/`; this file
+routes agents into it rather than duplicating it.
 
-- Always use curly braces for `if`, `else`, `try`, `catch`, `finally`, `while`,
-  `do`, `for`, `for...in`, and `for...of` bodies, including single-statement bodies.
-- Apply this rule to new and modified code without reformatting unrelated files.
+## Before non-trivial repository work
 
-## TypeScript readability
+1. Identify the paths and concerns likely to change.
+2. Query OKF before broad exploration: use the OKF MCP server (`okf_load_bundle`
+   once per session, then a short `okf_query`/`okf_search`) or
+   `okf search -q "<topic>"` / `okf show -detail` from the repository root.
+3. Load only the few relevant concepts. Follow `governance: constraint`
+   concepts; load `governance: context` concepts when their reasoning is useful.
+   Do not enumerate or inject the entire bundle for normal work.
+4. Inspect the relevant implementation. Source code is authoritative when it
+   conflicts with OKF.
+5. Implement and verify the change.
+6. Whenever `apps/`, `packages/`, build/testing/deployment configuration, or PR
+   workflow changes materially, perform the mandatory OKF check in
+   `.okf/knowledge/workflows/okf-maintenance.md` before considering the work
+   done.
 
-- Prefer `async`/`await` over `.then()`, `.catch()`, and `.finally()` chains when
-  it makes the control flow easier to follow.
-- Use `try`, `catch`, and `finally` for asynchronous error handling and cleanup
-  unless Promise composition is materially clearer or required for concurrency.
-- Prefer named functions for multi-step workflows, callbacks containing business
-  logic, and reusable asynchronous operations.
-- Keep the main workflow procedural and readable from top to bottom. Extract
-  details into functions whose names communicate intent. A developer should be
-  able to understand the happy path by reading one function from top to bottom.
-- Use names that distinguish active asynchronous operations from completed
-  values, such as `activeRefresh`, `refreshResult`, and `sessionExpired`.
-- Avoid placing substantial workflows inside configuration objects, returned
-  anonymous functions, or deeply nested callbacks.
-- Keep dependency injection behind small interfaces or factory boundaries so
-  normal production usage remains easy to read.
-- Prefer ordinary functions and small interfaces over classes or generic
-  frameworks unless lifecycle or shared mutable state makes a class clearer.
-- Preserve necessary concurrency coordination explicitly. Do not remove active
-  operation promises, version checks, request cloning, locking, or idempotency
-  guards merely to shorten code.
-- Use Promise combinators such as `Promise.all` when operations are intentionally
-  concurrent. Do not serialize independent work solely to avoid Promise APIs.
+`docs/architecture/` is detailed, human-facing documentation. Do not routinely
+load it as agent context. Update it when an architecture-affecting change makes
+it inaccurate; keep OKF concise and retrieval-oriented.
 
-## Backend API reference
+## Verification
 
-- The compatible backend repository is `C:\Work\Chidelu\BackendProjectTemplate`.
-- Its Web API project is `C:\Work\Chidelu\BackendProjectTemplate\src\BackendProjectTemplate.WebAPI`.
-- The checked-in frontend OpenAPI source is `backendprojecttemplatewebapi.json` at the repository root.
-- During local development, the Web API runs at `http://localhost:8080/`.
-- Treat the OpenAPI document and the running Web API as the authoritative contract when implementing or regenerating the frontend API client.
+Run, in order:
 
-## Third-party license notices
+1. `pnpm format:check`
+2. `pnpm lint`
+3. `pnpm typecheck`
+4. `pnpm test`
+5. `pnpm build`
 
-- Keep required third-party copyright and license notices in the relevant
-  package-level license or notices file, such as `LICENSE.tailadmin` or
+Filtered workspace checks are useful during development, but shared-package or
+repository-wide changes must finish with repository-level verification.
+
+## Git output
+
+- Commit messages must use Conventional Commit format.
+- Keep the commit subject concise.
+- Add at most one short explanatory body sentence when the subject alone is
+  insufficient.
+- For pull-request work, retrieve the applicable OKF workflow before drafting.
+
+## Always
+
+- Never commit or print secrets, credentials, access tokens, refresh tokens, or
+  API keys. Never expose secrets through `NEXT_PUBLIC_*`.
+- Browser code must not import `@template/api-client/server`, server cookie
+  readers, private environment values, access tokens, or refresh tokens.
+- Keep the API client handwritten; do not introduce client/DTO generation from
+  OpenAPI.
+- Use public package exports. Features must not construct backend URLs or
+  implement HTTP transport.
+- Keep product workflows and application composition in `apps/*`; reusable
+  infrastructure and UI primitives belong in `packages/*`.
+- Preserve package-level third-party notices such as `LICENSE.tailadmin` and
   `LICENSE.solid`.
-- Do not add repetitive copyright, attribution, provenance, or license banners
-  to individual source files when the applicable package-level notice already
-  satisfies the dependency's license requirements.
-- Preserve existing package-level third-party license and notices files when
-  copying, adapting, packaging, or distributing third-party-derived work.
-- Add a source-file notice only when the upstream license expressly requires
-  one in that file or when legal guidance for the repository requires it.
-
-## API client architecture
-
-- The shared API client lives in `packages/api-client` and is handwritten.
-- Do not introduce an API client generator, generated source directory,
-  regeneration command, or generated contract-coverage test.
-- Treat `backendprojecttemplatewebapi.json` and the running backend as contract
-  references. Update the relevant handwritten contract types, operation
-  metadata, operation implementation, and HTTP-boundary tests together.
-- Keep endpoint contracts grouped with stable domain modules; keep only genuinely
-  cross-domain contracts under `shared`. Do not create one file per DTO or one
-  enormous whole-API declaration file.
-- Reusable operations belong in `packages/api-client`, not in application
-  features. They must remain independent of React and TanStack Query.
-- Reusable TanStack Query keys, options, hooks, cache policies, and invalidation
-  belong in `packages/api-react`. Application-specific workflows, view models,
-  forms, notifications, navigation, and UI error behaviour remain in apps.
-- Browser code must never import `@template/api-client/server`, private
-  environment variables, cookie readers, access tokens, or refresh tokens.
-- Consumers must use package exports and must not import API-client internals.
-- Features and UI components must not construct raw backend URLs or implement
-  their own HTTP transport.
-- Update `docs/architecture/07-api-client.md` when API ownership, transport,
-  authentication, routing, package exports, or extension points change.
-
-## Pull request descriptions
-
-- When generating a pull request title or description, always use the repository
-  pull request template from `.github/pull_request_template.md` as the structure.
-- Always return the description as Markdown and keep it ready to paste directly
-  into GitHub or a PR editor.
-- When summarizing changes for a branch, review all commits on that branch and
-  reflect the full scope of work in the PR content.
-- Use concise, professional language and tailor the summary to the actual files,
-  features, and impact introduced by the branch.
-- Prefer a title that clearly states the main change and affected area, such as
-  `feat(scope): summary of the change`.
-
-## Documentation voice
-
-- Write documentation and pull request descriptions in the maintainer's human
-  tone: direct, natural, concise, and grounded in the work that actually changed.
-- Write as an engineer explaining the implementation to another engineer. Use
-  plain language, concrete details, and normal sentence structure.
-- Avoid generic filler, marketing language, exaggerated claims, repetitive
-  summaries, and wording that sounds automated or generated.
-- Keep important technical details and tradeoffs, but do not make the writing
-  formal or elaborate when a simpler explanation is clearer.
-
-## Architecture documentation
-
-- Treat the Markdown files under `docs/architecture/` as living descriptions of
-  the architecture that is actually implemented in the repository.
-- When implementing or materially changing an epic, review the affected
-  architecture documents and update them in the same change when component
-  ownership, package boundaries, runtime flow, configuration, dependencies,
-  deployment boundaries, or developer extension points have changed.
-- Describe current behaviour from the source code. Do not present planned epic
-  work, placeholder navigation, or unimplemented integrations as existing
-  architecture.
-- When a later epic extends an earlier architectural area, refine the existing
-  document instead of creating a competing explanation. Add a new document only
-  when the epic introduces a genuinely separate architectural concern.
-- Preserve historical reasoning that remains relevant, but remove or rewrite
-  statements that the implementation has made inaccurate.
-- Keep `docs/architecture/README.md` as the index and recommended reading order.
-  Update it whenever an architecture document is added, removed, or renamed.
-- Architecture documentation should explain responsibilities and interactions,
-  not merely list files. Include concrete repository paths and short code
-  examples where they make an abstraction easier to understand.
-- Use Mermaid diagrams when they materially clarify application boundaries,
-  dependency direction, composition, or runtime flow. Keep diagrams consistent
-  with the source and avoid decorative diagrams.
-- Record important constraints and ownership rules, including the distinction
-  between application-specific composition under `apps/` and reusable
-  infrastructure under `packages/`.
-- For each completed epic, document the implemented outcome, major decisions,
-  extension points, and any deliberate placeholders owned by future epics.
-- Before finishing architecture-documentation changes, verify referenced paths,
-  commands, package names, ports, and dependency relationships against the
-  repository. Run relevant checks when documentation accompanies code changes.
+- Keep this router small; durable knowledge belongs in OKF.
