@@ -43,6 +43,10 @@ pnpm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# OKF derived indexes (rebuild with `okf metadata rebuild` / `okf vector index`)
+.okf/knowledge/.metadata.json
+.okf/vector/
+
 # Editors
 .idea/
 .vscode/*
