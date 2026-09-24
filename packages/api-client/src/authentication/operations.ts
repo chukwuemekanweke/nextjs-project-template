@@ -8,6 +8,8 @@ import type {
   ConfirmEmailMutationRequest,
   ConfirmEmailMutationResponse,
   LogoutMutationResponse,
+  LinkGoogleAccountMutationRequest,
+  LinkGoogleAccountMutationResponse,
   RefreshSessionMutationRequest,
   RefreshSessionMutationResponse,
   RequestEmailConfirmationCodeMutationRequest,
@@ -22,6 +24,7 @@ import type {
   SignUpMutationResponse,
   SignUpWithGoogleMutationRequest,
   SignUpWithGoogleMutationResponse,
+  StartGoogleAuthenticationFlowMutationResponse,
 } from "./contracts";
 import { authenticationOperations } from "./contracts";
 import type { ApiOperationOptions, ApiTransport } from "../client";
@@ -66,6 +69,26 @@ export const signInWithGoogle = (
 ) =>
   client.request<SignInWithGoogleMutationResponse>({
     ...authenticationOperations.signInWithGoogle,
+    ...options,
+    body: request,
+  });
+
+export const startGoogleAuthenticationFlow = (
+  client: ApiTransport,
+  options?: ApiOperationOptions,
+) =>
+  client.request<StartGoogleAuthenticationFlowMutationResponse>({
+    ...authenticationOperations.startGoogleAuthenticationFlow,
+    ...options,
+  });
+
+export const linkGoogleAccount = (
+  client: ApiTransport,
+  request: LinkGoogleAccountMutationRequest,
+  options?: ApiOperationOptions,
+) =>
+  client.request<LinkGoogleAccountMutationResponse>({
+    ...authenticationOperations.linkGoogleAccount,
     ...options,
     body: request,
   });

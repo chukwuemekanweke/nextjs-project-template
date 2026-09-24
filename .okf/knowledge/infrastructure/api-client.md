@@ -43,3 +43,9 @@ under `shared`.
 Features must not construct backend URLs, duplicate transport, or import package
 internals. Use declared package/domain exports. Server and browser factories are
 separate boundaries.
+
+Google authentication operations are also handwritten: start the opaque flow,
+authenticate an ID credential with a flow token, link an existing password
+account, and finish profile-only registration. Preserve backend `outcome` and
+stable error-code fields at the wire boundary; applications own cookie and UI
+continuation behavior.

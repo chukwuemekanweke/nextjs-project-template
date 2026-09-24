@@ -39,6 +39,17 @@ Logout clears local cookies even if backend logout is unavailable. Backend
 validation is mapped onto known fields while unmapped messages remain
 form-level.
 
+The User Portal also has one GIS-based `Continue with Google` entry on sign-in
+and registration. The backend selects immediate authentication, existing
+password-account linking, or profile-only Google registration. A short-lived
+HttpOnly BFF flow cookie carries the opaque continuation; every successful path
+uses the normal application session cookies and validated post-authentication
+destination. The browser creates that flow only after the customer explicitly
+activates `Continue with Google`, so rendering an authentication page never
+consumes the backend sign-in rate limit. Once the flow is ready, the portal
+renders Google's official GIS button; it does not use the One Tap prompt as a
+button substitute.
+
 The Admin Portal implements sign-in and logout but adds an admission boundary:
 the returned access token must contain the configured admin role. A rejected
 session is best-effort logged out, cleared, and never stored. Role checks are

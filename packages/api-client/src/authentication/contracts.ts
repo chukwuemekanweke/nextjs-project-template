@@ -1,6 +1,12 @@
 /** Wire contracts owned by the authentication domain. */
 export type SignInRequest = { email: string; password: string };
-export type GoogleSignInRequest = { idToken: string };
+export type GoogleSignInRequest = { flowToken: string; idToken: string };
+export type GoogleAuthenticationFlowResponse = {
+  expiresAtUtc: string;
+  flowToken: string;
+  nonce: string;
+};
+export type GoogleLinkRequest = { flowToken: string; password: string };
 export type RefreshSessionRequest = { refreshToken: string };
 export type CheckEmailExistenceRequest = { email: string };
 export type CheckEmailExistenceResponse = { exists: boolean };
@@ -14,7 +20,14 @@ export type SessionTokenResponse = {
 };
 
 export type SignInResponse = SessionTokenResponse;
-export type GoogleSignInResponse = SessionTokenResponse;
+export type GoogleAuthenticatedResponse = SessionTokenResponse & {
+  outcome: "authenticated";
+};
+export type GoogleSignInResponse =
+  | GoogleAuthenticatedResponse
+  | { outcome: "link_required" }
+  | { outcome: "registration_required" };
+export type GoogleLinkResponse = GoogleAuthenticatedResponse;
 export type RefreshSessionResponse = SessionTokenResponse;
 
 export type SignUpRequest = {
@@ -29,7 +42,7 @@ export type SignUpRequest = {
 export type GoogleSignUpRequest = {
   countryId: string;
   firstName: string;
-  idToken: string;
+  flowToken: string;
   lastName: string;
 };
 
@@ -38,7 +51,9 @@ export type SignUpResponse = {
   message: string;
   retryAtUtc: string;
 };
-export type GoogleSignUpResponse = { email: string; message: string };
+export type GoogleSignUpResponse = GoogleAuthenticatedResponse & {
+  email: string;
+};
 export type PasswordResetRequest = { email: string };
 export type RequestPasswordResetResponse = { message: string };
 export type CompletePasswordResetRequest = {
@@ -65,6 +80,10 @@ export type SignInMutationRequest = SignInRequest;
 export type SignInMutationResponse = SignInResponse;
 export type SignInWithGoogleMutationRequest = GoogleSignInRequest;
 export type SignInWithGoogleMutationResponse = GoogleSignInResponse;
+export type StartGoogleAuthenticationFlowMutationResponse =
+  GoogleAuthenticationFlowResponse;
+export type LinkGoogleAccountMutationRequest = GoogleLinkRequest;
+export type LinkGoogleAccountMutationResponse = GoogleLinkResponse;
 export type RefreshSessionMutationRequest = RefreshSessionRequest;
 export type RefreshSessionMutationResponse = RefreshSessionResponse;
 export type CheckEmailExistenceMutationRequest = CheckEmailExistenceRequest;
@@ -97,6 +116,10 @@ export const authenticationOperations = {
     method: "POST",
     path: "/api/v1/authentication/email-existence-checks",
   },
+  linkGoogleAccount: {
+    method: "POST",
+    path: "/api/v1/authentication/google-links",
+  },
   completePasswordReset: {
     method: "POST",
     path: "/api/v1/authentication/password-resets/completions",
@@ -122,6 +145,10 @@ export const authenticationOperations = {
   signInWithGoogle: {
     method: "POST",
     path: "/api/v1/authentication/sessions/google",
+  },
+  startGoogleAuthenticationFlow: {
+    method: "POST",
+    path: "/api/v1/authentication/google/flows",
   },
   signUp: { method: "POST", path: "/api/v1/authentication/registrations" },
   signUpWithGoogle: {

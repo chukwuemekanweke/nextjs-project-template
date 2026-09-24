@@ -8,6 +8,8 @@ import type {
   CompletePasswordResetMutationResponse,
   ConfirmEmailMutationRequest,
   ConfirmEmailMutationResponse,
+  LinkGoogleAccountMutationRequest,
+  LinkGoogleAccountMutationResponse,
   RefreshSessionMutationRequest,
   RefreshSessionMutationResponse,
   RequestEmailConfirmationCodeMutationRequest,
@@ -22,6 +24,7 @@ import type {
   SignUpMutationResponse,
   SignUpWithGoogleMutationRequest,
   SignUpWithGoogleMutationResponse,
+  StartGoogleAuthenticationFlowMutationResponse,
 } from "./contracts";
 import {
   changePassword,
@@ -29,6 +32,7 @@ import {
   completePasswordReset,
   confirmEmail,
   logout,
+  linkGoogleAccount,
   refreshSession,
   requestEmailConfirmationCode,
   requestPasswordReset,
@@ -36,6 +40,7 @@ import {
   signInWithGoogle,
   signUp,
   signUpWithGoogle,
+  startGoogleAuthenticationFlow,
 } from "./operations";
 
 export interface AuthenticationClient {
@@ -55,6 +60,13 @@ export interface AuthenticationClient {
     request: SignInWithGoogleMutationRequest,
     options?: ApiOperationOptions,
   ): Promise<SignInWithGoogleMutationResponse>;
+  startGoogleAuthenticationFlow(
+    options?: ApiOperationOptions,
+  ): Promise<StartGoogleAuthenticationFlowMutationResponse>;
+  linkGoogleAccount(
+    request: LinkGoogleAccountMutationRequest,
+    options?: ApiOperationOptions,
+  ): Promise<LinkGoogleAccountMutationResponse>;
   refreshSession(
     request: RefreshSessionMutationRequest,
     options?: ApiOperationOptions,
@@ -97,6 +109,10 @@ export function createAuthenticationClient(
     signIn: (request, options) => signIn(transport, request, options),
     signInWithGoogle: (request, options) =>
       signInWithGoogle(transport, request, options),
+    startGoogleAuthenticationFlow: (options) =>
+      startGoogleAuthenticationFlow(transport, options),
+    linkGoogleAccount: (request, options) =>
+      linkGoogleAccount(transport, request, options),
     refreshSession: (request, options) =>
       refreshSession(transport, request, options),
     logout: (options) => logout(transport, options),

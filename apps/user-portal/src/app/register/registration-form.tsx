@@ -17,8 +17,15 @@ import {
 } from "@template/forms";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { z } from "zod";
+import { GoogleAuthenticationButton } from "@/components/google-authentication-button";
+import { GoogleLinkForm } from "@/components/google-link-form";
+import type {
+  GoogleAuthenticationError,
+  GoogleAuthenticationOutcome,
+} from "@/lib/google-authentication";
+import { googleErrorFromResponse } from "@/lib/google-authentication";
 import {
   emailSchema,
   normalizeRegistrationEmail,
@@ -30,8 +37,17 @@ type EmailValues = z.infer<typeof emailSchema>;
 type PasswordValues = z.infer<typeof passwordSchema>;
 type ProfileValues = z.infer<typeof profileSchema>;
 type RegistrationStep = "email" | "profile" | "password";
+type GoogleStep = "entry" | "link" | "profile";
 
-export function RegistrationForm() {
+export function RegistrationForm({
+  destination,
+  googleClientId,
+  googleContinuation,
+}: Readonly<{
+  destination: string;
+  googleClientId: string;
+  googleContinuation: boolean;
+}>) {
   const router = useRouter();
   const checkEmail = useCheckEmailExistence();
   const signUp = useSignUp();
@@ -39,11 +55,15 @@ export function RegistrationForm() {
   const countriesFailed = countries.isError;
   const refetchCountries = countries.refetch;
   const [step, setStep] = useState<RegistrationStep>("email");
+  const [googleStep, setGoogleStep] = useState<GoogleStep>(
+    googleContinuation ? "profile" : "entry",
+  );
   const [email, setEmail] = useState("");
   const [profileValues, setProfileValues] = useState<ProfileValues>();
   const [error, setError] = useState<string>();
   const emailForm = useValidatedForm(emailSchema, {
     defaultValues: { email: "" },
+    mode: "onSubmit",
   });
   const profileForm = useValidatedForm(profileSchema, {
     defaultValues: { countryId: "", firstName: "", lastName: "" },
@@ -53,10 +73,36 @@ export function RegistrationForm() {
   });
 
   useEffect(() => {
-    if (step === "profile" && countriesFailed) {
+    if ((step === "profile" || googleStep === "profile") && countriesFailed) {
       void refetchCountries();
     }
-  }, [countriesFailed, refetchCountries, step]);
+  }, [countriesFailed, googleStep, refetchCountries, step]);
+
+  const completeAuthentication = useCallback(() => {
+    router.replace(destination);
+    router.refresh();
+  }, [destination, router]);
+
+  const handleGoogleError = useCallback(
+    (failure: GoogleAuthenticationError) => {
+      setError(failure.message);
+    },
+    [],
+  );
+
+  const handleGoogleOutcome = useCallback(
+    (outcome: GoogleAuthenticationOutcome) => {
+      setError(undefined);
+      if (outcome.status === "authenticated") {
+        completeAuthentication();
+      } else if (outcome.status === "link_required") {
+        setGoogleStep("link");
+      } else {
+        setGoogleStep("profile");
+      }
+    },
+    [completeAuthentication],
+  );
 
   async function submitEmail(values: EmailValues) {
     setError(undefined);
@@ -121,35 +167,153 @@ export function RegistrationForm() {
     }
   }
 
+  async function submitGoogleProfile(values: ProfileValues) {
+    setError(undefined);
+    try {
+      const response = await fetch("/api/auth/registrations/google", {
+        body: JSON.stringify({
+          ...values,
+          firstName: values.firstName.trim(),
+          lastName: values.lastName.trim(),
+        }),
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+        method: "POST",
+      });
+      if (!response.ok) {
+        const failure = await googleErrorFromResponse(response);
+        const fieldErrors = failure.validationErrors ?? {};
+        for (const [field, messages] of Object.entries(fieldErrors)) {
+          const normalizedField = field.toLowerCase();
+          if (
+            normalizedField === "countryid" ||
+            normalizedField === "firstname" ||
+            normalizedField === "lastname"
+          ) {
+            profileForm.setError(
+              normalizedField === "countryid"
+                ? "countryId"
+                : normalizedField === "firstname"
+                  ? "firstName"
+                  : "lastName",
+              { message: messages[0] },
+            );
+          }
+        }
+        setError(
+          Object.keys(fieldErrors).length > 0 ? undefined : failure.message,
+        );
+        return;
+      }
+      completeAuthentication();
+    } catch {
+      setError("Registration is temporarily unavailable. Try again later.");
+    }
+  }
+
+  if (googleStep === "link") {
+    return (
+      <GoogleLinkForm
+        onRestart={() => {
+          setError(undefined);
+          setGoogleStep("entry");
+          setStep("email");
+        }}
+        onSuccess={completeAuthentication}
+      />
+    );
+  }
+
+  if (googleStep === "profile") {
+    return (
+      <div className="space-y-6">
+        {error ? <FormError message={error} /> : null}
+        <ValidatedForm
+          className="space-y-5"
+          form={profileForm}
+          onSubmit={submitGoogleProfile}
+        >
+          <StepHeading
+            description="Google has verified your identity. Add the profile details required by this application."
+            title="Complete your profile"
+          />
+          <div className="grid gap-5 sm:grid-cols-2">
+            <TextField<ProfileValues>
+              autoComplete="given-name"
+              autoFocus
+              label="First name"
+              maxLength={100}
+              name="firstName"
+              required
+            />
+            <TextField<ProfileValues>
+              autoComplete="family-name"
+              label="Last name"
+              maxLength={100}
+              name="lastName"
+              required
+            />
+          </div>
+          <SearchableSelectField<ProfileValues>
+            disabled={countries.isError}
+            label="Country"
+            loading={countries.isPending}
+            name="countryId"
+            options={(countries.data ?? []).map((country) => ({
+              label: country.name,
+              secondaryLabel: country.shortCode,
+              value: country.countryId,
+            }))}
+            placeholder="Search for a country"
+            required
+          />
+          <PrimarySubmit pending={profileForm.formState.isSubmitting}>
+            Create account
+          </PrimarySubmit>
+        </ValidatedForm>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <StepIndicator current={step} />
       {error ? <FormError message={error} /> : null}
       {step === "email" ? (
-        <ValidatedForm
-          className="space-y-5"
-          form={emailForm}
-          onSubmit={submitEmail}
-        >
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Start with your email
-            </h2>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              We’ll check whether you already have an account.
-            </p>
-          </div>
-          <TextField<EmailValues>
-            autoComplete="email"
-            autoFocus
-            inputMode="email"
-            label="Email address"
-            name="email"
-            placeholder="you@example.com"
-            required
+        <div className="space-y-5">
+          <GoogleAuthenticationButton
+            clientId={googleClientId}
+            onError={handleGoogleError}
+            onOutcome={handleGoogleOutcome}
           />
-          <PrimarySubmit pending={checkEmail.isPending}>Continue</PrimarySubmit>
-        </ValidatedForm>
+          <AuthDivider />
+          <ValidatedForm
+            className="space-y-5"
+            form={emailForm}
+            onSubmit={submitEmail}
+          >
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Start with your email
+              </h2>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                We’ll check whether you already have an account.
+              </p>
+            </div>
+            <TextField<EmailValues>
+              autoComplete="email"
+              autoFocus
+              inputMode="email"
+              label="Email address"
+              name="email"
+              placeholder="you@example.com"
+              required
+            />
+            <PrimarySubmit pending={checkEmail.isPending}>
+              Continue
+            </PrimarySubmit>
+          </ValidatedForm>
+        </div>
       ) : null}
       {step === "profile" ? (
         <ValidatedForm
@@ -235,6 +399,18 @@ export function RegistrationForm() {
           Sign in
         </Link>
       </p>
+    </div>
+  );
+}
+
+function AuthDivider() {
+  return (
+    <div className="flex items-center gap-3" role="separator">
+      <span className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
+      <span className="text-xs font-medium tracking-wide text-gray-400 uppercase">
+        or use email
+      </span>
+      <span className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
     </div>
   );
 }
