@@ -4,6 +4,8 @@ import { QueryClient } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
 import {
   changePasswordMutationOptions,
+  completeAvatarUploadMutationOptions,
+  createAvatarUploadMutationOptions,
   initiatePaymentMutationOptions,
   currentProfileQueryOptions,
   getQueryOptions,
@@ -32,6 +34,16 @@ const createClient = () =>
         isVerified: true,
       }),
       updateProfile: vi.fn().mockResolvedValue(undefined),
+      createAvatarUpload: vi.fn().mockResolvedValue({
+        uploadId: "upload-1",
+        uploadUrl: "https://signed-storage.test/avatar",
+        method: "PUT",
+        headers: { "Content-Type": "image/png" },
+        expiresAtUtc: "2026-09-24T10:05:00Z",
+      }),
+      completeAvatarUpload: vi.fn().mockResolvedValue({
+        avatarUrl: "https://cdn.test/avatar.png",
+      }),
     },
     payments: {
       getWalletTransactions: vi
@@ -112,6 +124,41 @@ describe("API React integration", () => {
     });
   });
 
+  it("creates an avatar upload session through the profile client", async () => {
+    const client = createClient();
+    const queryClient = new QueryClient();
+    const options = createAvatarUploadMutationOptions(client.profiles);
+    const mutation = queryClient.getMutationCache().build(queryClient, options);
+    const request = {
+      fileName: "portrait.png",
+      contentType: "image/png",
+      contentLength: 128,
+    };
+
+    await mutation.execute(request);
+
+    expect(client.profiles.createAvatarUpload).toHaveBeenCalledWith(request);
+  });
+
+  it("invalidates the current profile after completing an avatar upload", async () => {
+    const client = createClient();
+    const queryClient = new QueryClient();
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+    const options = completeAvatarUploadMutationOptions(
+      client.profiles,
+      queryClient,
+    );
+    const mutation = queryClient.getMutationCache().build(queryClient, options);
+
+    await mutation.execute({ uploadId: "upload-1" });
+
+    expect(client.profiles.completeAvatarUpload).toHaveBeenCalledWith({
+      uploadId: "upload-1",
+    });
+    expect(invalidate).toHaveBeenCalledWith({
+      queryKey: profileKeys.current(),
+    });
+  });
   it("calls the domain client and propagates TanStack Query cancellation", async () => {
     const client = createClient();
     const queryClient = new QueryClient({

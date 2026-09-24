@@ -16,6 +16,7 @@ import {
   type ProfileDisplay,
 } from "@/lib/profile-display";
 import { createAppServerApiClient } from "@/lib/server-api";
+import { AvatarUploadControl } from "./avatar-upload-control";
 import { ProfileEditForm } from "./profile-edit-form";
 
 export const metadata: Metadata = { title: "Profile" };
@@ -50,6 +51,7 @@ export default async function ProfilePage() {
                 <p className="mt-1 text-sm break-all text-gray-500 dark:text-gray-400">
                   {profile.emailAddress.trim()}
                 </p>
+                <AvatarUploadControl />
               </div>
             </div>
 

@@ -4,7 +4,10 @@ import { authenticationOperations } from "@template/api-client/authentication";
 import { profilesOperations } from "@template/api-client/profiles";
 
 const PROFILE_BFF_PATH = "/api/profile";
+const AVATAR_UPLOADS_BFF_PATH = "/api/profile/avatar/uploads";
 const PASSWORD_BFF_PATH = "/api/security/password";
+const COMPLETE_AVATAR_UPLOAD_PATH =
+  /^\/api\/v1\/stakeholders\/me\/profile\/avatar\/uploads\/([^/]+)\/complete$/;
 
 export function createUserPortalBrowserApi({
   apiBaseUrl,
@@ -39,6 +42,28 @@ export function createUserPortalBrowserApi({
           ...init,
           credentials: "same-origin",
         });
+      }
+      if (
+        init?.method === profilesOperations.createAvatarUpload.method &&
+        requestUrl.pathname === profilesOperations.createAvatarUpload.path
+      ) {
+        return fetchImplementation(AVATAR_UPLOADS_BFF_PATH, {
+          ...init,
+          credentials: "same-origin",
+        });
+      }
+
+      const completeAvatarMatch = requestUrl.pathname.match(
+        COMPLETE_AVATAR_UPLOAD_PATH,
+      );
+      if (
+        init?.method === profilesOperations.completeAvatarUpload.method &&
+        completeAvatarMatch
+      ) {
+        return fetchImplementation(
+          `${AVATAR_UPLOADS_BFF_PATH}/${completeAvatarMatch[1]}/complete`,
+          { ...init, credentials: "same-origin" },
+        );
       }
 
       return fetchImplementation(input, init);

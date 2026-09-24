@@ -117,4 +117,70 @@ describe("User Portal browser API", () => {
     });
     expect(init?.body).toBe(JSON.stringify(request));
   });
+
+  it("routes avatar upload session calls through authenticated BFF routes", async () => {
+    const uploadId = "1d130feb-40d9-4ec9-9957-3827dfe02dc5";
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(
+        Response.json({
+          uploadId,
+          uploadUrl: "https://signed-storage.test/avatar",
+          method: "PUT",
+          headers: { "Content-Type": "image/png" },
+          expiresAtUtc: "2026-09-24T10:05:00Z",
+        }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({ avatarUrl: "https://cdn.test/avatar.png" }),
+      );
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+    const createRequest = {
+      fileName: "portrait.png",
+      contentType: "image/png",
+      contentLength: 128,
+    };
+
+    await client.profiles.createAvatarUpload(createRequest);
+    await client.profiles.completeAvatarUpload({ uploadId });
+
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      1,
+      "/api/profile/avatar/uploads",
+      expect.objectContaining({
+        body: JSON.stringify(createRequest),
+        credentials: "same-origin",
+        method: "POST",
+      }),
+    );
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      2,
+      `/api/profile/avatar/uploads/${uploadId}/complete`,
+      expect.objectContaining({
+        credentials: "same-origin",
+        method: "POST",
+      }),
+    );
+  });
+
+  it("leaves unrelated API calls on the configured backend URL", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json([]));
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+
+    await client.referenceData.getCountries();
+
+    expect(fetchImplementation.mock.calls[0]?.[0].toString()).toBe(
+      "http://api.test/api/v1/reference-data/countries",
+    );
+  });
 });

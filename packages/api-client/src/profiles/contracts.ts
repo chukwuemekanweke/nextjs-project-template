@@ -8,20 +8,37 @@ export type GetProfileResponse = {
   isVerified: boolean;
 };
 export type UpdateProfileRequest = { firstName: string; lastName: string };
-export type UploadAvatarRequest = { Avatar: Blob };
-export type UploadAvatarResponse = { avatarUrl: string };
+export type CreateAvatarUploadRequest = {
+  fileName: string;
+  contentType: string;
+  contentLength: number;
+};
+export type CreateAvatarUploadResponse = {
+  uploadId: string;
+  uploadUrl: string;
+  method: string;
+  headers: Record<string, string>;
+  expiresAtUtc: string;
+};
+export type CompleteAvatarUploadPathParams = { uploadId: string };
+export type CompleteAvatarUploadResponse = { avatarUrl: string };
 
 export type GetProfileQueryResponse = GetProfileResponse;
 export type UpdateProfileMutationRequest = UpdateProfileRequest;
 export type UpdateProfileMutationResponse = void;
-export type UploadAvatarMutationRequest = UploadAvatarRequest;
-export type UploadAvatarMutationResponse = UploadAvatarResponse;
+export type CreateAvatarUploadMutationRequest = CreateAvatarUploadRequest;
+export type CreateAvatarUploadMutationResponse = CreateAvatarUploadResponse;
+export type CompleteAvatarUploadMutationResponse = CompleteAvatarUploadResponse;
 
 export const profilesOperations = {
   getProfile: { method: "GET", path: "/api/v1/stakeholders/me/profile" },
   updateProfile: { method: "PUT", path: "/api/v1/stakeholders/me/profile" },
-  uploadAvatar: {
+  createAvatarUpload: {
     method: "POST",
-    path: "/api/v1/stakeholders/me/profile/avatar",
+    path: "/api/v1/stakeholders/me/profile/avatar/uploads",
+  },
+  completeAvatarUpload: {
+    method: "POST",
+    path: "/api/v1/stakeholders/me/profile/avatar/uploads/{uploadId}/complete",
   },
 } as const;

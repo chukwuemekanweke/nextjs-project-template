@@ -1,11 +1,18 @@
 import type { ApiOperationOptions, ApiTransport } from "../client";
 import type {
+  CompleteAvatarUploadMutationResponse,
+  CompleteAvatarUploadPathParams,
+  CreateAvatarUploadMutationRequest,
+  CreateAvatarUploadMutationResponse,
   GetProfileQueryResponse,
   UpdateProfileMutationRequest,
-  UploadAvatarMutationRequest,
-  UploadAvatarMutationResponse,
 } from "./contracts";
-import { getProfile, updateProfile, uploadAvatar } from "./operations";
+import {
+  completeAvatarUpload,
+  createAvatarUpload,
+  getProfile,
+  updateProfile,
+} from "./operations";
 
 export interface ProfilesClient {
   getProfile(options?: ApiOperationOptions): Promise<GetProfileQueryResponse>;
@@ -13,10 +20,14 @@ export interface ProfilesClient {
     request: UpdateProfileMutationRequest,
     options?: ApiOperationOptions,
   ): Promise<void>;
-  uploadAvatar(
-    request: UploadAvatarMutationRequest,
+  createAvatarUpload(
+    request: CreateAvatarUploadMutationRequest,
     options?: ApiOperationOptions,
-  ): Promise<UploadAvatarMutationResponse>;
+  ): Promise<CreateAvatarUploadMutationResponse>;
+  completeAvatarUpload(
+    pathParams: CompleteAvatarUploadPathParams,
+    options?: ApiOperationOptions,
+  ): Promise<CompleteAvatarUploadMutationResponse>;
 }
 
 export function createProfilesClient(transport: ApiTransport): ProfilesClient {
@@ -24,7 +35,9 @@ export function createProfilesClient(transport: ApiTransport): ProfilesClient {
     getProfile: (options) => getProfile(transport, options),
     updateProfile: (request, options) =>
       updateProfile(transport, request, options),
-    uploadAvatar: (request, options) =>
-      uploadAvatar(transport, request, options),
+    createAvatarUpload: (request, options) =>
+      createAvatarUpload(transport, request, options),
+    completeAvatarUpload: (pathParams, options) =>
+      completeAvatarUpload(transport, pathParams, options),
   };
 }
