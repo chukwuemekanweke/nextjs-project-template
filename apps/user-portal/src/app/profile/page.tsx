@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { DashboardHeader } from "@template/dashboard-ui";
 import {
@@ -13,9 +12,9 @@ import {
   profileInitials,
   profileName,
   toProfileDisplay,
-  type ProfileDisplay,
 } from "@/lib/profile-display";
 import { createAppServerApiClient } from "@/lib/server-api";
+import { AvatarUploadControl } from "./avatar-upload-control";
 import { ProfileEditForm } from "./profile-edit-form";
 
 export const metadata: Metadata = { title: "Profile" };
@@ -41,16 +40,13 @@ export default async function ProfilePage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(17rem,1fr)]">
         <Card>
           <CardContent>
-            <div className="flex flex-col gap-5 border-b border-gray-100 pb-6 sm:flex-row sm:items-center dark:border-gray-800">
-              <ProfileAvatar profile={profile} />
-              <div className="min-w-0">
-                <p className="text-xl font-semibold break-words text-gray-900 dark:text-white">
-                  {displayName}
-                </p>
-                <p className="mt-1 text-sm break-all text-gray-500 dark:text-gray-400">
-                  {profile.emailAddress.trim()}
-                </p>
-              </div>
+            <div className="border-b border-gray-100 pb-6 dark:border-gray-800">
+              <AvatarUploadControl
+                avatarUrl={profile.avatarUrl}
+                emailAddress={profile.emailAddress}
+                initials={profileInitials(profile)}
+                name={displayName}
+              />
             </div>
 
             <div className="mt-6">
@@ -98,25 +94,6 @@ export default async function ProfilePage() {
         </Card>
       </div>
     </section>
-  );
-}
-
-function ProfileAvatar({ profile }: Readonly<{ profile: ProfileDisplay }>) {
-  const avatarUrl = profile.avatarUrl?.trim();
-  const avatarStyle = avatarUrl
-    ? ({
-        backgroundImage: `url(${JSON.stringify(avatarUrl)})`,
-      } as CSSProperties)
-    : undefined;
-
-  return (
-    <div
-      aria-hidden="true"
-      className="bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400 flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-cover bg-center text-2xl font-semibold"
-      style={avatarStyle}
-    >
-      {avatarUrl ? null : profileInitials(profile)}
-    </div>
   );
 }
 

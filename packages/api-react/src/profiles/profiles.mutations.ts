@@ -14,14 +14,23 @@ export const updateProfileMutationOptions = (
       queryClient?.invalidateQueries({ queryKey: profileKeys.current() }),
   });
 
-export const uploadAvatarMutationOptions = (
+export const createAvatarUploadMutationOptions = (client: ProfilesClient) =>
+  mutationOptions({
+    mutationKey: [...profileKeys.current(), "avatar", "create"],
+    mutationFn: (
+      request: Parameters<ProfilesClient["createAvatarUpload"]>[0],
+    ) => client.createAvatarUpload(request),
+  });
+
+export const completeAvatarUploadMutationOptions = (
   client: ProfilesClient,
   queryClient?: QueryClient,
 ) =>
   mutationOptions({
-    mutationKey: [...profileKeys.current(), "avatar"],
-    mutationFn: (request: Parameters<ProfilesClient["uploadAvatar"]>[0]) =>
-      client.uploadAvatar(request),
+    mutationKey: [...profileKeys.current(), "avatar", "complete"],
+    mutationFn: (
+      pathParams: Parameters<ProfilesClient["completeAvatarUpload"]>[0],
+    ) => client.completeAvatarUpload(pathParams),
     onSuccess: () =>
       queryClient?.invalidateQueries({ queryKey: profileKeys.current() }),
   });

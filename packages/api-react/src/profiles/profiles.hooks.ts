@@ -3,8 +3,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useApiClient } from "../query-client/api-provider";
 import {
+  completeAvatarUploadMutationOptions,
+  createAvatarUploadMutationOptions,
   updateProfileMutationOptions,
-  uploadAvatarMutationOptions,
 } from "./profiles.mutations";
 import { currentProfileQueryOptions } from "./profiles.queries";
 
@@ -17,8 +18,15 @@ export function useUpdateProfile() {
   return useMutation(updateProfileMutationOptions(api.profiles, queryClient));
 }
 
-export function useUploadAvatar() {
+export function useCreateAvatarUpload() {
+  const api = useApiClient();
+  return useMutation(createAvatarUploadMutationOptions(api.profiles));
+}
+
+export function useCompleteAvatarUpload() {
   const api = useApiClient();
   const queryClient = useQueryClient();
-  return useMutation(uploadAvatarMutationOptions(api.profiles, queryClient));
+  return useMutation(
+    completeAvatarUploadMutationOptions(api.profiles, queryClient),
+  );
 }

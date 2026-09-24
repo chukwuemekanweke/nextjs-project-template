@@ -1,9 +1,11 @@
 import type {
+  CompleteAvatarUploadMutationResponse,
+  CompleteAvatarUploadPathParams,
+  CreateAvatarUploadMutationRequest,
+  CreateAvatarUploadMutationResponse,
   GetProfileQueryResponse,
   UpdateProfileMutationRequest,
   UpdateProfileMutationResponse,
-  UploadAvatarMutationRequest,
-  UploadAvatarMutationResponse,
 } from "./contracts";
 import { profilesOperations } from "./contracts";
 import type { ApiOperationOptions, ApiTransport } from "../client";
@@ -28,16 +30,24 @@ export const updateProfile = (
     body: request,
   });
 
-export const uploadAvatar = (
+export const createAvatarUpload = (
   client: ApiTransport,
-  request: UploadAvatarMutationRequest,
+  request: CreateAvatarUploadMutationRequest,
   options?: ApiOperationOptions,
-) => {
-  const body = new FormData();
-  body.append("Avatar", request.Avatar);
-  return client.request<UploadAvatarMutationResponse>({
-    ...profilesOperations.uploadAvatar,
+) =>
+  client.request<CreateAvatarUploadMutationResponse>({
+    ...profilesOperations.createAvatarUpload,
     ...options,
-    body,
+    body: request,
   });
-};
+
+export const completeAvatarUpload = (
+  client: ApiTransport,
+  pathParams: CompleteAvatarUploadPathParams,
+  options?: ApiOperationOptions,
+) =>
+  client.request<CompleteAvatarUploadMutationResponse>({
+    ...profilesOperations.completeAvatarUpload,
+    ...options,
+    pathParams,
+  });

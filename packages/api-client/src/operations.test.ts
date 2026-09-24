@@ -11,7 +11,12 @@ import {
 } from "./authentication";
 import { createApiClient } from "./client";
 import { getWalletTopUpTransaction, getWalletTransactions } from "./payments";
-import { getProfile, updateProfile, uploadAvatar } from "./profiles";
+import {
+  completeAvatarUpload,
+  createAvatarUpload,
+  getProfile,
+  updateProfile,
+} from "./profiles";
 
 const server = setupServer();
 
@@ -220,25 +225,50 @@ describe("handwritten API operations", () => {
     ).resolves.toMatchObject({ walletTransactionId: "transaction-id" });
   });
 
-  it("uploads an avatar as multipart form data", async () => {
+  it("creates and completes an avatar upload session", async () => {
+    const uploadId = "1d130feb-40d9-4ec9-9957-3827dfe02dc5";
+    const createRequest = {
+      fileName: "portrait.png",
+      contentType: "image/png",
+      contentLength: 128,
+    };
     server.use(
       http.post(
-        "http://api.test/api/v1/stakeholders/me/profile/avatar",
+        "http://api.test/api/v1/stakeholders/me/profile/avatar/uploads",
         async ({ request }) => {
-          const form = await request.formData();
-          expect(form.get("Avatar")).toBeTruthy();
+          expect(request.headers.get("content-type")).toContain(
+            "application/json",
+          );
+          expect(await request.json()).toEqual(createRequest);
+          return HttpResponse.json({
+            uploadId,
+            uploadUrl: "https://signed-storage.test/avatar",
+            method: "PUT",
+            headers: { "Content-Type": "image/png" },
+            expiresAtUtc: "2026-09-24T10:05:00Z",
+          });
+        },
+      ),
+      http.post(
+        "http://api.test/api/v1/stakeholders/me/profile/avatar/uploads/:uploadId/complete",
+        ({ params }) => {
+          expect(params.uploadId).toBe(uploadId);
           return HttpResponse.json({
             avatarUrl: "https://cdn.test/avatar.png",
           });
         },
       ),
     );
-    const avatar = new Blob(["avatar"], { type: "image/png" });
-    await expect(
-      uploadAvatar(createApiClient({ baseUrl: "http://api.test" }), {
-        Avatar: avatar,
-      }),
-    ).resolves.toEqual({
+    const client = createApiClient({ baseUrl: "http://api.test" });
+
+    await expect(createAvatarUpload(client, createRequest)).resolves.toEqual({
+      uploadId,
+      uploadUrl: "https://signed-storage.test/avatar",
+      method: "PUT",
+      headers: { "Content-Type": "image/png" },
+      expiresAtUtc: "2026-09-24T10:05:00Z",
+    });
+    await expect(completeAvatarUpload(client, { uploadId })).resolves.toEqual({
       avatarUrl: "https://cdn.test/avatar.png",
     });
   });
