@@ -3,12 +3,12 @@ import {
   browserBrandingEnvironmentSchema,
   createBrowserEnvironment,
 } from "@template/config";
-import { z } from "zod";
+import { userPortalEnvironmentExtensionSchema } from "./env-schema";
 
 const environment = createBrowserEnvironment(
-  browserBrandingEnvironmentSchema.extend({
-    NEXT_PUBLIC_USER_PORTAL_DESCRIPTION: z.string().trim().min(1),
-  }),
+  browserBrandingEnvironmentSchema.extend(
+    userPortalEnvironmentExtensionSchema.shape,
+  ),
   {
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
     NEXT_PUBLIC_TENANT_ID: process.env.NEXT_PUBLIC_TENANT_ID,
@@ -16,6 +16,7 @@ const environment = createBrowserEnvironment(
     NEXT_PUBLIC_APPLICATION_NAME: process.env.NEXT_PUBLIC_APPLICATION_NAME,
     NEXT_PUBLIC_APPLICATION_VERSION:
       process.env.NEXT_PUBLIC_APPLICATION_VERSION,
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
     NEXT_PUBLIC_PRODUCT_NAME: process.env.NEXT_PUBLIC_PRODUCT_NAME,
     NEXT_PUBLIC_ORGANIZATION_NAME: process.env.NEXT_PUBLIC_ORGANIZATION_NAME,
     NEXT_PUBLIC_LOGO_LIGHT: process.env.NEXT_PUBLIC_LOGO_LIGHT,
@@ -42,5 +43,6 @@ export const env = Object.freeze({
   applicationName: environment.NEXT_PUBLIC_APPLICATION_NAME,
   applicationVersion: environment.NEXT_PUBLIC_APPLICATION_VERSION,
   description: environment.NEXT_PUBLIC_USER_PORTAL_DESCRIPTION,
+  googleClientId: environment.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
 });
 export const branding = brandingFromEnvironment(environment);

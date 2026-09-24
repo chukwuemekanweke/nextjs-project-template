@@ -30,6 +30,15 @@ User and Admin sessions use separate secure, HttpOnly, SameSite=Lax, path-rooted
 Tokens remain server-side; BFF session routes sign in, refresh, log out,
 set/clear cookies, and return only safe session metadata.
 
+User Portal Google authentication starts through a BFF route that stores the
+backend's opaque flow token in the short-lived, secure, HttpOnly
+`__Host-user-google-auth-flow` cookie and returns only nonce/expiry to the
+browser. GIS returns an ID credential that browser memory immediately posts to
+the BFF. Authenticated, password-link, and profile-only registration outcomes
+all issue the existing access/refresh cookies through `setSessionCookies`;
+continuations preserve the flow cookie and successful or terminal flows clear
+it. Neither the flow token nor application tokens enter browser state or URLs.
+
 Protected-route proxies validate access-token time claims and refresh from the
 refresh cookie when needed. Refreshes are deduplicated per refresh token.
 Unauthenticated results clear cookies and redirect to sign-in with `returnTo`.

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Card, CardContent } from "@template/ui-core";
-import { branding } from "@/config/env";
+import { branding, env } from "@/config/env";
 import { safeEmailParameter, safeSignInDestination } from "@/lib/sign-in";
 import { SignInForm } from "./sign-in-form";
 
@@ -56,7 +56,11 @@ export default async function SignInPage({
                 Your email is confirmed. Enter your password to sign in.
               </div>
             ) : null}
-            <SignInForm destination={destination} initialEmail={initialEmail} />
+            <SignInForm
+              destination={destination}
+              googleClientId={env.googleClientId}
+              initialEmail={initialEmail}
+            />
           </CardContent>
         </Card>
       </div>

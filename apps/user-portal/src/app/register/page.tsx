@@ -1,11 +1,31 @@
 import type { Metadata } from "next";
 import { Card, CardContent } from "@template/ui-core";
-import { branding } from "@/config/env";
+import { branding, env } from "@/config/env";
+import { safeSignInDestination } from "@/lib/sign-in";
 import { RegistrationForm } from "./registration-form";
 
 export const metadata: Metadata = { title: "Create account" };
 
-export default function RegisterPage() {
+export default async function RegisterPage({
+  searchParams,
+}: Readonly<{
+  searchParams: Promise<{
+    google?: string | string[];
+    returnTo?: string | string[];
+  }>;
+}>) {
+  const parameters = await searchParams;
+  const requestedDestination = parameters.returnTo;
+  const destination = safeSignInDestination(
+    Array.isArray(requestedDestination)
+      ? requestedDestination[0]
+      : requestedDestination,
+  );
+  const requestedGoogle = parameters.google;
+  const googleContinuation =
+    (Array.isArray(requestedGoogle) ? requestedGoogle[0] : requestedGoogle) ===
+    "continue";
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-gray-950">
       <div className="w-full max-w-lg space-y-6">
@@ -22,7 +42,11 @@ export default function RegisterPage() {
         </div>
         <Card>
           <CardContent>
-            <RegistrationForm />
+            <RegistrationForm
+              destination={destination}
+              googleClientId={env.googleClientId}
+              googleContinuation={googleContinuation}
+            />
           </CardContent>
         </Card>
       </div>

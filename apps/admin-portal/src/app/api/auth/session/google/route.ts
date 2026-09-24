@@ -11,19 +11,22 @@ import { setSessionCookies } from "@/lib/session-cookies";
 export async function POST(request: Request) {
   try {
     const client = await createAppServerApiClient({ authenticated: false });
-    const session = await signInWithGoogle(
+    const result = await signInWithGoogle(
       client,
       (await request.json()) as SignInWithGoogleMutationRequest,
     );
-    const rejection = await rejectUnauthorizedAdminSession(client, session);
+    if (result.outcome !== "authenticated") {
+      return NextResponse.json({ status: result.outcome }, { status: 409 });
+    }
+    const rejection = await rejectUnauthorizedAdminSession(client, result);
     if (rejection) {
       return rejection;
     }
     const response = NextResponse.json({
-      expiresAtUtc: session.expiresAtUtc,
-      tokenType: session.tokenType,
+      expiresAtUtc: result.expiresAtUtc,
+      tokenType: result.tokenType,
     });
-    setSessionCookies(response, session);
+    setSessionCookies(response, result);
     return response;
   } catch (error) {
     return apiRouteError(error);

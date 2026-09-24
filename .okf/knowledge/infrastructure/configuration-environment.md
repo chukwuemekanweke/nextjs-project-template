@@ -25,6 +25,9 @@ app-specific values, and exports app-owned configuration.
 - Browser values are explicitly enumerated `NEXT_PUBLIC_*` fields. They are
   visible in the bundle and must never contain credentials, tokens, private
   endpoints, or secrets.
+- User Portal Google Identity Services requires the validated public
+  `NEXT_PUBLIC_GOOGLE_CLIENT_ID`. It is an OAuth client identifier, not a
+  secret; never add a Google client secret to frontend configuration.
 - Tenant IDs are validated UUIDs and default to the template tenant. Client
   factories add `X-Tenant-Id`; apps choose server or browser configuration
   appropriate to the boundary.

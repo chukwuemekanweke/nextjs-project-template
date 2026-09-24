@@ -5,9 +5,13 @@ import {
   changePassword,
   checkEmailExistence,
   confirmEmail,
+  linkGoogleAccount,
   requestEmailConfirmationCode,
   signIn,
+  signInWithGoogle,
   signUp,
+  signUpWithGoogle,
+  startGoogleAuthenticationFlow,
 } from "./authentication";
 import { createApiClient } from "./client";
 import { getWalletTopUpTransaction, getWalletTransactions } from "./payments";
@@ -183,6 +187,95 @@ describe("handwritten API operations", () => {
       },
     );
     expect(result.accessToken).toBe("access");
+  });
+
+  it("starts and continues the Google authentication flow", async () => {
+    const client = createApiClient({ baseUrl: "http://api.test" });
+    server.use(
+      http.post("http://api.test/api/v1/authentication/google/flows", () =>
+        HttpResponse.json(
+          {
+            expiresAtUtc: "2026-09-24T10:10:00Z",
+            flowToken: "opaque-flow-token",
+            nonce: "google-nonce",
+          },
+          { status: 201 },
+        ),
+      ),
+      http.post(
+        "http://api.test/api/v1/authentication/sessions/google",
+        async ({ request }) => {
+          expect(await request.json()).toEqual({
+            flowToken: "opaque-flow-token",
+            idToken: "google-id-token",
+          });
+          return HttpResponse.json({ outcome: "link_required" });
+        },
+      ),
+    );
+
+    await expect(startGoogleAuthenticationFlow(client)).resolves.toEqual({
+      expiresAtUtc: "2026-09-24T10:10:00Z",
+      flowToken: "opaque-flow-token",
+      nonce: "google-nonce",
+    });
+    await expect(
+      signInWithGoogle(client, {
+        flowToken: "opaque-flow-token",
+        idToken: "google-id-token",
+      }),
+    ).resolves.toEqual({ outcome: "link_required" });
+  });
+
+  it("links Google and completes Google registration with application sessions", async () => {
+    const session = {
+      accessToken: "access",
+      expiresAtUtc: "2026-09-24T11:00:00Z",
+      outcome: "authenticated" as const,
+      refreshToken: "refresh",
+      refreshTokenExpiresAtUtc: "2026-10-24T11:00:00Z",
+      tokenType: "Bearer",
+    };
+    const client = createApiClient({ baseUrl: "http://api.test" });
+    server.use(
+      http.post(
+        "http://api.test/api/v1/authentication/google-links",
+        async ({ request }) => {
+          expect(await request.json()).toEqual({
+            flowToken: "opaque-flow-token",
+            password: "Password1!",
+          });
+          return HttpResponse.json(session);
+        },
+      ),
+      http.post(
+        "http://api.test/api/v1/authentication/registrations/google",
+        async ({ request }) => {
+          expect(await request.json()).toEqual({
+            countryId: "country-id",
+            firstName: "Ada",
+            flowToken: "opaque-flow-token",
+            lastName: "Lovelace",
+          });
+          return HttpResponse.json({ ...session, email: "ada@example.com" });
+        },
+      ),
+    );
+
+    await expect(
+      linkGoogleAccount(client, {
+        flowToken: "opaque-flow-token",
+        password: "Password1!",
+      }),
+    ).resolves.toEqual(session);
+    await expect(
+      signUpWithGoogle(client, {
+        countryId: "country-id",
+        firstName: "Ada",
+        flowToken: "opaque-flow-token",
+        lastName: "Lovelace",
+      }),
+    ).resolves.toEqual({ ...session, email: "ada@example.com" });
   });
 
   it("serializes wallet query and path parameters", async () => {

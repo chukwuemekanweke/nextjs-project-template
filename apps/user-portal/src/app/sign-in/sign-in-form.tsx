@@ -10,8 +10,14 @@ import {
 } from "@template/forms";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { z } from "zod";
+import { GoogleAuthenticationButton } from "@/components/google-authentication-button";
+import { GoogleLinkForm } from "@/components/google-link-form";
+import type {
+  GoogleAuthenticationError,
+  GoogleAuthenticationOutcome,
+} from "@/lib/google-authentication";
 import {
   createEmailConfirmationDestination,
   safeSignInError,
@@ -26,14 +32,53 @@ type SignInValues = z.infer<typeof signInSchema>;
 
 export function SignInForm({
   destination,
+  googleClientId,
   initialEmail,
-}: Readonly<{ destination: string; initialEmail: string }>) {
+}: Readonly<{
+  destination: string;
+  googleClientId: string;
+  initialEmail: string;
+}>) {
   const router = useRouter();
   const requestConfirmationCode = useRequestEmailConfirmationCode();
   const [error, setError] = useState<string>();
+  const [googleStep, setGoogleStep] = useState<"entry" | "link">("entry");
   const form = useValidatedForm(signInSchema, {
     defaultValues: { email: initialEmail, password: "" },
+    mode: "onSubmit",
   });
+
+  const completeAuthentication = useCallback(() => {
+    router.replace(destination);
+    router.refresh();
+  }, [destination, router]);
+
+  const handleGoogleError = useCallback(
+    (failure: GoogleAuthenticationError) => {
+      setError(failure.message);
+    },
+    [],
+  );
+
+  const handleGoogleOutcome = useCallback(
+    (outcome: GoogleAuthenticationOutcome) => {
+      setError(undefined);
+      if (outcome.status === "authenticated") {
+        completeAuthentication();
+        return;
+      }
+      if (outcome.status === "link_required") {
+        setGoogleStep("link");
+        return;
+      }
+      const parameters = new URLSearchParams({
+        google: "continue",
+        returnTo: destination,
+      });
+      router.replace(`/register?${parameters.toString()}`);
+    },
+    [completeAuthentication, destination, router],
+  );
 
   async function submit(values: SignInValues) {
     setError(undefined);
@@ -76,8 +121,20 @@ export function SignInForm({
     }
   }
 
+  if (googleStep === "link") {
+    return (
+      <GoogleLinkForm
+        onRestart={() => {
+          setError(undefined);
+          setGoogleStep("entry");
+        }}
+        onSuccess={completeAuthentication}
+      />
+    );
+  }
+
   return (
-    <ValidatedForm className="space-y-5" form={form} onSubmit={submit}>
+    <div className="space-y-5">
       {error ? (
         <div
           className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300"
@@ -86,28 +143,36 @@ export function SignInForm({
           {error}
         </div>
       ) : null}
-      <TextField<SignInValues>
-        autoComplete="email"
-        autoFocus={!initialEmail}
-        inputMode="email"
-        label="Email address"
-        name="email"
-        placeholder="you@example.com"
-        required
+      <GoogleAuthenticationButton
+        clientId={googleClientId}
+        onError={handleGoogleError}
+        onOutcome={handleGoogleOutcome}
       />
-      <PasswordField<SignInValues>
-        autoComplete="current-password"
-        autoFocus={Boolean(initialEmail)}
-        label="Password"
-        name="password"
-        required
-      />
-      <SubmitButton
-        className="bg-brand-500 hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
-        pending={form.formState.isSubmitting}
-      >
-        {form.formState.isSubmitting ? "Signing in…" : "Sign in"}
-      </SubmitButton>
+      <AuthDivider />
+      <ValidatedForm className="space-y-5" form={form} onSubmit={submit}>
+        <TextField<SignInValues>
+          autoComplete="email"
+          autoFocus={!initialEmail}
+          inputMode="email"
+          label="Email address"
+          name="email"
+          placeholder="you@example.com"
+          required
+        />
+        <PasswordField<SignInValues>
+          autoComplete="current-password"
+          autoFocus={Boolean(initialEmail)}
+          label="Password"
+          name="password"
+          required
+        />
+        <SubmitButton
+          className="bg-brand-500 hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
+          pending={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? "Signing in…" : "Sign in"}
+        </SubmitButton>
+      </ValidatedForm>
       <p className="text-center text-sm text-gray-500 dark:text-gray-400">
         Need an account?{" "}
         <Link
@@ -117,6 +182,18 @@ export function SignInForm({
           Register
         </Link>
       </p>
-    </ValidatedForm>
+    </div>
+  );
+}
+
+function AuthDivider() {
+  return (
+    <div className="flex items-center gap-3" role="separator">
+      <span className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
+      <span className="text-xs font-medium tracking-wide text-gray-400 uppercase">
+        or use email
+      </span>
+      <span className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
+    </div>
   );
 }

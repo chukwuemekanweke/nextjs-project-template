@@ -11,6 +11,8 @@
 
 Every app calls `createServerEnvironment` from `src/instrumentation.ts`, which Next.js runs on server startup. Its local `src/config/env.ts` extends the shared browser schema with the values that particular portal needs. Invalid or missing values produce a Zod error before the server accepts requests.
 
+The User Portal requires `NEXT_PUBLIC_GOOGLE_CLIENT_ID` because its authentication pages enable Google Identity Services. This is the public OAuth client identifier supplied to GIS and is safe to bundle. A Google client secret is neither required nor permitted in browser/Next.js public configuration; credential validation and all confidential provider/backend work remain server-side.
+
 Copy the application-specific `.env.example` file to `.env.local` for local development. Production deployments must supply the same values through their deployment environment. The public and server values are intentionally separate even when they currently contain the same API URL and tenant ID, so a future private endpoint or secret cannot accidentally be exposed to the browser. Tenant IDs are validated UUIDs and default to `1203d9d1-2a6b-48ef-9cc1-e561a23aff72`; unlike an authentication token, this identifier is safe browser routing context.
 
 ## Branding composition

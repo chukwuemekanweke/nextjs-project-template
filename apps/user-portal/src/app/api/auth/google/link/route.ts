@@ -1,5 +1,5 @@
-import { signUpWithGoogle } from "@template/api-client/authentication";
 import { isApiError } from "@template/api-client";
+import { linkGoogleAccount } from "@template/api-client/authentication";
 import { NextResponse } from "next/server";
 import { apiRouteError } from "@/lib/api-route-error";
 import {
@@ -23,17 +23,11 @@ export async function POST(request: Request) {
   }
 
   try {
+    const body = (await request.json()) as { password?: unknown };
     const client = await createAppServerApiClient({ authenticated: false });
-    const body = (await request.json()) as {
-      countryId?: unknown;
-      firstName?: unknown;
-      lastName?: unknown;
-    };
-    const session = await signUpWithGoogle(client, {
-      countryId: typeof body.countryId === "string" ? body.countryId : "",
-      firstName: typeof body.firstName === "string" ? body.firstName : "",
+    const session = await linkGoogleAccount(client, {
       flowToken,
-      lastName: typeof body.lastName === "string" ? body.lastName : "",
+      password: typeof body.password === "string" ? body.password : "",
     });
     const response = NextResponse.json(safeGoogleSessionResponse(session));
     setSessionCookies(response, session);

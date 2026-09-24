@@ -25,6 +25,48 @@ When credential sign-in reports that the email is not confirmed, the User Portal
 
 The portal's server API client adds the configured `X-Tenant-Id` header to sign-in, refresh, logout, registration, and every other backend operation. Route protection uses the same server tenant setting. The shared configuration defaults to the template tenant and still allows a deployment-specific override.
 
+## Google authentication
+
+The User Portal exposes one `Continue with Google` entry on both `/sign-in` and `/register`. Both entries use the same Google Identity Services (GIS) flow; the page on which it starts does not decide whether the customer is signing in or registering. The .NET backend verifies the Google credential and returns the authoritative `authenticated`, `link_required`, or `registration_required` outcome.
+
+Rendering either page only loads GIS. The same-origin flow-start request is deferred until the customer explicitly activates `Continue with Google`; the returned nonce is then supplied to GIS before the official Google button is rendered. The customer activates that GIS-owned button to open Google's popup. This explicit preparation step prevents passive page visits, React development remounts, or unrelated form interaction from consuming the backend sign-in rate limit. The portal does not use the Google One Tap prompt as a substitute for the button because its FedCM lifecycle and status callbacks do not match this server-issued, per-attempt nonce flow.
+
+```mermaid
+sequenceDiagram
+  participant Browser
+  participant BFF as User Portal BFF
+  participant Google as Google Identity Services
+  participant Backend as .NET Web API
+  Browser->>BFF: POST /api/auth/google/flow
+  BFF->>Backend: POST /api/v1/authentication/google/flows
+  Backend-->>BFF: opaque flow token + nonce + expiry
+  BFF-->>Browser: nonce + expiry; flow token in HttpOnly cookie
+  Browser->>Google: GIS request with public client ID + nonce
+  Google-->>Browser: ID credential
+  Browser->>BFF: POST credential to /api/auth/session/google
+  BFF->>Backend: ID token + cookie-held flow token
+  alt authenticated
+    Backend-->>BFF: application access + refresh tokens
+    BFF-->>Browser: normal session cookies + safe metadata
+  else link_required
+    Backend-->>BFF: stable continuation outcome
+    Browser->>BFF: existing password to /api/auth/google/link
+    BFF->>Backend: password + cookie-held flow token
+    Backend-->>BFF: application access + refresh tokens
+    BFF-->>Browser: normal session cookies + safe metadata
+  else registration_required
+    Backend-->>BFF: stable continuation outcome
+    Browser->>BFF: first name + last name + country
+    BFF->>Backend: profile + cookie-held flow token
+    Backend-->>BFF: application access + refresh tokens
+    BFF-->>Browser: normal session cookies + safe metadata
+  end
+```
+
+The temporary `__Host-user-google-auth-flow` cookie is `HttpOnly`, `Secure`, `SameSite=Lax`, host-only, path-rooted, and expires with the backend's five-to-ten-minute flow lifetime. Browser JavaScript receives the nonce but never the opaque flow token. The Google ID credential exists only in the GIS callback long enough to post to the same-origin BFF; it is not decoded as trusted identity, persisted, or put in a URL. The BFF clears the flow cookie after successful authentication/linking/registration and on terminal invalid, expired, or consumed flow errors. It deliberately preserves the cookie for the two continuation outcomes.
+
+An existing Google link creates the normal application session immediately. An existing password account switches to a password-confirmation form and links through the backend before issuing that same session. A new account collects only editable first name, last name, and country values; it does not ask for the Google email or a password. All three successful paths use `setSessionCookies(...)`, return only expiry/token-type metadata, and apply the existing validated `returnTo` redirect. Stable backend codes drive invalid-credential, expired/invalid flow, locked-account, email-verification, and rate-limit presentation; UI code never parses ProblemDetails English text.
+
 ## Registration and email confirmation
 
 The User Portal implements registration as an app-owned three-step workflow. It first posts the normalized email to `/api/v1/authentication/email-existence-checks`. Existing accounts are sent to `/sign-in` with a validated email query value, which pre-populates the email field and leaves the password field ready. New accounts continue to first name, last name, and a searchable country selector before creating their password on the final step. The selector reads public reference data and submits the selected country's UUID as `countryId`.
@@ -43,6 +85,8 @@ Each portal keeps the access and refresh token in separate cookies. Only Route H
 | Admin  | `__Host-admin-session` | `__Host-admin-refresh-session` |
 
 All four cookies are `HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, and high priority. The `__Host-` prefix also prevents a `Domain` attribute, so these cookies cannot be widened to sibling subdomains. The User and Admin names are deliberately different because browser cookies are not isolated by port during local development.
+
+Google authentication additionally uses the short-lived `__Host-user-google-auth-flow` continuation cookie described above. It is not an application session and cannot authorize protected requests.
 
 Cookie expiry is the backend token expiry minus 60 seconds. That buffer stops the portals from using a token right at the edge of its validity and gives refresh coordination a clear point to refresh early. The refresh cookie is persistent, so reloading or reopening the browser does not lose it before that adjusted expiry. Authentication tokens are never written to `localStorage` or `sessionStorage`; the dashboard theme is the only current `localStorage` consumer.
 
