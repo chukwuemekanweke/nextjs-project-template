@@ -5,7 +5,7 @@ import {
   hasActiveAccessToken,
   refreshSession,
   resolveRouteSession,
-  type SignInMutationResponse,
+  type RefreshSessionMutationResponse,
 } from "@template/api-client/authentication";
 import { createServerApiClient } from "@template/api-client/server";
 import type { NextRequest } from "next/server";
@@ -19,9 +19,14 @@ import {
 } from "@/lib/session-cookies";
 
 const SIGN_IN_PATH = "/sign-in";
-const PUBLIC_PATHS = new Set([SIGN_IN_PATH, "/register", "/confirm-email"]);
+const PUBLIC_PATHS = new Set([
+  SIGN_IN_PATH,
+  "/sign-in/two-factor",
+  "/register",
+  "/confirm-email",
+]);
 const coordinateSessionRefresh =
-  createSessionRefreshCoordinator<SignInMutationResponse>();
+  createSessionRefreshCoordinator<RefreshSessionMutationResponse>();
 
 export async function proxy(request: NextRequest) {
   if (PUBLIC_PATHS.has(request.nextUrl.pathname)) {

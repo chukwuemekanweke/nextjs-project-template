@@ -1,6 +1,6 @@
 # Authentication and session management
 
-FE-021 added sign-in to the User and Admin portals, FE-022 tightened session storage, FE-023 added coordinated refresh, FE-024 added explicit logout, FE-025 protected dashboard routes, and FE-030 added authenticated password changes to the User Portal. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. The User Portal also owns the public `/register` and `/confirm-email` routes. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
+FE-021 added sign-in to the User and Admin portals, FE-022 tightened session storage, FE-023 added coordinated refresh, FE-024 added explicit logout, FE-025 protected dashboard routes, FE-030 added authenticated password changes, and CAF-FE-004 added authenticator two-factor authentication to the User Portal. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. The User Portal also owns the public `/register`, `/confirm-email`, and `/sign-in/two-factor` routes. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
 
 ## Sign-in flow
 
@@ -11,11 +11,17 @@ sequenceDiagram
   participant Backend as .NET Web API
   Browser->>Portal: POST email + password
   Portal->>Backend: POST /api/v1/authentication/sessions + X-Tenant-Id
-  Backend-->>Portal: access + refresh tokens
-  alt Admin Portal
-    Portal->>Portal: require configured role claim
+  alt authenticated
+    Backend-->>Portal: access + refresh tokens
+    Portal-->>Browser: HttpOnly session cookies + safe metadata
+  else two_factor_required (User Portal)
+    Backend-->>Portal: opaque challenge + expiry
+    Portal-->>Browser: HttpOnly challenge cookie + safe expiry
+    Browser->>Portal: POST code to /api/auth/session/two-factor
+    Portal->>Backend: code + cookie-held challenge
+    Backend-->>Portal: access + refresh tokens
+    Portal-->>Browser: expire challenge; set session cookies
   end
-  Portal-->>Browser: HttpOnly cookies + token metadata
   Browser->>Browser: replace with validated returnTo path
 ```
 
@@ -27,7 +33,7 @@ The portal's server API client adds the configured `X-Tenant-Id` header to sign-
 
 ## Google authentication
 
-The User Portal exposes one `Continue with Google` entry on both `/sign-in` and `/register`. Both entries use the same Google Identity Services (GIS) flow; the page on which it starts does not decide whether the customer is signing in or registering. The .NET backend verifies the Google credential and returns the authoritative `authenticated`, `link_required`, or `registration_required` outcome.
+The User Portal exposes one `Continue with Google` entry on both `/sign-in` and `/register`. Both entries use the same Google Identity Services (GIS) flow; the page on which it starts does not decide whether the customer is signing in or registering. The .NET backend verifies the Google credential and returns the authoritative `authenticated`, `two_factor_required`, `link_required`, or `registration_required` outcome.
 
 Rendering either page only loads GIS. The same-origin flow-start request is deferred until the customer explicitly activates `Continue with Google`; the returned nonce is then supplied to GIS before the official Google button is rendered. The customer activates that GIS-owned button to open Google's popup. This explicit preparation step prevents passive page visits, React development remounts, or unrelated form interaction from consuming the backend sign-in rate limit. The portal does not use the Google One Tap prompt as a substitute for the button because its FedCM lifecycle and status callbacks do not match this server-issued, per-attempt nonce flow.
 
@@ -48,6 +54,10 @@ sequenceDiagram
   alt authenticated
     Backend-->>BFF: application access + refresh tokens
     BFF-->>Browser: normal session cookies + safe metadata
+  else two_factor_required
+    Backend-->>BFF: opaque MFA challenge + expiry
+    BFF-->>Browser: HttpOnly MFA cookie + safe expiry
+    Note over BFF: Google flow cookie is cleared
   else link_required
     Backend-->>BFF: stable continuation outcome
     Browser->>BFF: existing password to /api/auth/google/link
@@ -63,9 +73,19 @@ sequenceDiagram
   end
 ```
 
-The temporary `__Host-user-google-auth-flow` cookie is `HttpOnly`, `Secure`, `SameSite=Lax`, host-only, path-rooted, and expires with the backend's five-to-ten-minute flow lifetime. Browser JavaScript receives the nonce but never the opaque flow token. The Google ID credential exists only in the GIS callback long enough to post to the same-origin BFF; it is not decoded as trusted identity, persisted, or put in a URL. The BFF clears the flow cookie after successful authentication/linking/registration and on terminal invalid, expired, or consumed flow errors. It deliberately preserves the cookie for the two continuation outcomes.
+The temporary `__Host-user-google-auth-flow` cookie is `HttpOnly`, `Secure`, `SameSite=Lax`, host-only, path-rooted, and expires with the backend's five-to-ten-minute flow lifetime. Browser JavaScript receives the nonce but never the opaque flow token. The Google ID credential exists only in the GIS callback long enough to post to the same-origin BFF; it is not decoded as trusted identity, persisted, or put in a URL. The BFF clears the flow cookie after successful authentication, after ownership passes to an MFA challenge, and on terminal invalid, expired, or consumed flow errors. It preserves the cookie only for the link and registration continuation outcomes.
 
 An existing Google link creates the normal application session immediately. An existing password account switches to a password-confirmation form and links through the backend before issuing that same session. A new account collects only editable first name, last name, and country values; it does not ask for the Google email or a password. All three successful paths use `setSessionCookies(...)`, return only expiry/token-type metadata, and apply the existing validated `returnTo` redirect. Stable backend codes drive invalid-credential, expired/invalid flow, locked-account, email-verification, and rate-limit presentation; UI code never parses ProblemDetails English text.
+
+## Authenticator two-factor authentication
+
+Password and Google authentication now share the same boundary between a successful first factor and a fully authenticated application session. The backend returns a discriminated `authenticated` result with tokens or `two_factor_required` with an opaque challenge and expiry. For the latter, the User Portal BFF clears any stale session cookies, stores the challenge and its expiry in the short-lived `__Host-user-two-factor-challenge` cookie, and returns only `{ status, expiresAtUtc }` to browser JavaScript. The challenge is never placed in React state, TanStack Query, browser storage, logs, or a URL.
+
+`/sign-in/two-factor` is a public continuation page. It reads only safe challenge metadata through `GET /api/auth/session/two-factor`; authenticator and recovery-code submissions contain only the verification method and code. `POST /api/auth/session/two-factor` adds the cookie-held challenge before calling the backend. A successful response creates the normal access and refresh cookies and expires the challenge cookie. Incorrect codes preserve the challenge while attempts remain; expired, consumed, invalid, or exhausted challenges clear it. `DELETE` cancels locally and lets the customer restart. The validated `returnTo` path is preserved, but no sensitive continuation value is included in it.
+
+The `/security` page owns authenticator management. Its browser API adapter maps the handwritten authenticated operations to same-origin BFF routes for status, setup, enrollment verification, recovery-code regeneration, and disable. Setup secrets and generated recovery codes exist only in the mounted UI/mutation result; the sensitive mutations use zero cache retention and are reset when their one-time result is dismissed. QR rendering uses the backend-provided `otpauth://` URI, and the manual key is never copied into storage or analytics. Regeneration and disable require a current authenticator or recovery-code proof and invalidate the shared two-factor status query.
+
+ASP.NET Core Identity remains the owner of authenticator secrets and single-use recovery codes. The frontend never persists either value and cannot redisplay recovery codes after the user dismisses them; regeneration is the only way to obtain a new set.
 
 ## Registration and email confirmation
 
@@ -86,7 +106,7 @@ Each portal keeps the access and refresh token in separate cookies. Only Route H
 
 All four cookies are `HttpOnly`, `Secure`, `SameSite=Lax`, `Path=/`, and high priority. The `__Host-` prefix also prevents a `Domain` attribute, so these cookies cannot be widened to sibling subdomains. The User and Admin names are deliberately different because browser cookies are not isolated by port during local development.
 
-Google authentication additionally uses the short-lived `__Host-user-google-auth-flow` continuation cookie described above. It is not an application session and cannot authorize protected requests.
+Google authentication and MFA additionally use the short-lived `__Host-user-google-auth-flow` and `__Host-user-two-factor-challenge` continuation cookies described above. Neither is an application session and neither can authorize protected requests.
 
 Cookie expiry is the backend token expiry minus 60 seconds. That buffer stops the portals from using a token right at the edge of its validity and gives refresh coordination a clear point to refresh early. The refresh cookie is persistent, so reloading or reopening the browser does not lose it before that adjusted expiry. Authentication tokens are never written to `localStorage` or `sessionStorage`; the dashboard theme is the only current `localStorage` consumer.
 
@@ -101,6 +121,8 @@ When an eligible request returns 401, the wrapper posts to `/api/auth/session/re
 The retry uses the underlying Fetch implementation instead of calling the wrapper again. If that retry also returns 401, the session ends without another refresh attempt. Authentication routes, the sign-in page, and cross-origin requests never enter refresh coordination, which removes the other paths that could create a loop.
 
 If refresh fails for any reason, the refresh Route Handler clears both cookies. The browser then makes a best-effort `DELETE /api/auth/session` call and redirects to `/sign-in` with the current local path in `returnTo`. Concurrent failures share that cleanup and redirect as well as the refresh request.
+
+Refresh rotation never starts or repeats MFA. Once second-factor verification has created a backend `AuthenticationSession`, the existing access/refresh rotation behaves exactly like any other authenticated session. Security-sensitive MFA changes may invalidate that session in the backend; the existing refresh-failure path then clears cookies and returns the user to sign-in.
 
 Authenticated client-side features must use `authenticatedFetch` for their same-origin Route Handler calls. The User Portal supplies that fetch implementation to its `browserApi` adapter and rewrites the profile update operation to `/api/profile`; public and CORS-approved operations retain their backend URLs. The local handler uses the server client to attach the HttpOnly access token, so browser JavaScript never receives authentication cookies or token material.
 
@@ -129,15 +151,17 @@ Each portal adds an app-owned `LogoutButton` to its profile menu. `src/lib/logou
 
 The Route Handler always attempts the backend logout operation. It also always expires that portal's access and refresh cookies and returns `204`, including when the backend reports an already-expired session or cannot complete the request. Local sign-out therefore does not depend on a usable access token or backend availability. The reusable `@template/api-react` logout mutation clears a supplied Query Client in `onSettled` for consumers that call the API client directly; portal navigation and safe error behaviour remain application-owned.
 
-## Password change
+## Security settings
 
 The protected User Portal `/security` page collects the current password, a new password, and its confirmation. Local validation mirrors the registration policy and also requires the new password to differ from the current value. The form clears every password field after a successful change and displays only normalized, safe errors. Structured backend policy errors are mapped to the matching field; the application does not log or cache submitted password values.
 
 Browser requests use the `authentication.changePassword` mutation, which the User Portal adapter rewrites to `PUT /api/security/password`. That same-origin Route Handler sits outside the reserved `/api/auth/` session-management prefix, so an expired access token enters the normal coordinated refresh-and-retry flow. The handler reads the HttpOnly session through the request-scoped server client and forwards `PUT /api/v1/authentication/password` with `{ currentPassword, newPassword, confirmNewPassword }`. The expected backend success response is `204 No Content`. The backend operation is the authoritative source for current-password verification and password-policy outcomes; its implementation and OpenAPI contract must use this shape before the integrated flow can succeed.
 
+Two-factor management follows the same authenticated BFF rule under `/api/security/two-factor/**`; React never attaches or reads the access token directly.
+
 ## Protected routes
 
-Each dashboard app exports a Next.js `proxy` from `src/proxy.ts`. The matcher runs it for portal page requests while excluding authentication APIs, Next.js assets, and application static files. `/sign-in` is explicitly public in both portals; `/register` and `/confirm-email` are also public in the User Portal. Every other matched page is resolved before React rendering, so an unauthenticated request cannot briefly render the dashboard shell or page content.
+Each dashboard app exports a Next.js `proxy` from `src/proxy.ts`. The matcher runs it for portal page requests while excluding authentication APIs, Next.js assets, and application static files. `/sign-in` is explicitly public in both portals; `/register`, `/confirm-email`, and `/sign-in/two-factor` are also public in the User Portal. Every other matched page is resolved before React rendering, so an unauthenticated request cannot briefly render the dashboard shell or page content.
 
 ```mermaid
 flowchart TD

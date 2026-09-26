@@ -18,6 +18,7 @@
     "@template/forms": "workspace:*",
     "@template/ui-core": "workspace:*",
     "next": "catalog:",
+    "qrcode.react": "^4.2.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "server-only": "0.0.1",

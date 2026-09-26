@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createEmailConfirmationDestination,
+  createTwoFactorDestination,
   safeEmailParameter,
   safeSignInDestination,
   safeSignInError,
@@ -51,6 +52,19 @@ describe("safeSignInDestination", () => {
       expect(safeSignInDestination(destination)).toBe("/dashboard");
     },
   );
+});
+
+describe("createTwoFactorDestination", () => {
+  it("preserves only a validated returnTo and never carries a challenge", () => {
+    const destination = createTwoFactorDestination("/payments?page=2");
+    expect(destination).toBe(
+      "/sign-in/two-factor?returnTo=%2Fpayments%3Fpage%3D2",
+    );
+    expect(destination).not.toContain("challenge");
+    expect(createTwoFactorDestination("https://attacker.test")).toBe(
+      "/sign-in/two-factor?returnTo=%2Fdashboard",
+    );
+  });
 });
 
 describe("safeSignInError", () => {

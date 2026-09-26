@@ -9,6 +9,65 @@ export const changePasswordMutationOptions = (client: AuthenticationClient) =>
       request: Parameters<AuthenticationClient["changePassword"]>[0],
     ) => client.changePassword(request),
   });
+
+const invalidateTwoFactorStatus = (queryClient?: QueryClient) =>
+  queryClient?.invalidateQueries({
+    queryKey: authenticationKeys.twoFactorStatus(),
+  });
+
+export const setupTwoFactorMutationOptions = (client: AuthenticationClient) =>
+  mutationOptions({
+    gcTime: 0,
+    mutationKey: authenticationKeys.mutation("setup-two-factor"),
+    mutationFn: () => client.setupTwoFactor(),
+  });
+
+export const verifyTwoFactorEnrollmentMutationOptions = (
+  client: AuthenticationClient,
+  queryClient?: QueryClient,
+) =>
+  mutationOptions({
+    gcTime: 0,
+    mutationKey: authenticationKeys.mutation("verify-two-factor-enrollment"),
+    mutationFn: (
+      request: Parameters<AuthenticationClient["verifyTwoFactorEnrollment"]>[0],
+    ) => client.verifyTwoFactorEnrollment(request),
+    onSuccess: () => invalidateTwoFactorStatus(queryClient),
+  });
+
+export const regenerateRecoveryCodesMutationOptions = (
+  client: AuthenticationClient,
+  queryClient?: QueryClient,
+) =>
+  mutationOptions({
+    gcTime: 0,
+    mutationKey: authenticationKeys.mutation("regenerate-recovery-codes"),
+    mutationFn: (
+      request: Parameters<AuthenticationClient["regenerateRecoveryCodes"]>[0],
+    ) => client.regenerateRecoveryCodes(request),
+    onSuccess: (result) =>
+      queryClient?.setQueryData(authenticationKeys.twoFactorStatus(), {
+        enabled: true,
+        recoveryCodesRemaining: result.recoveryCodes.length,
+      }),
+  });
+
+export const disableTwoFactorMutationOptions = (
+  client: AuthenticationClient,
+  queryClient?: QueryClient,
+) =>
+  mutationOptions({
+    gcTime: 0,
+    mutationKey: authenticationKeys.mutation("disable-two-factor"),
+    mutationFn: (
+      request: Parameters<AuthenticationClient["disableTwoFactor"]>[0],
+    ) => client.disableTwoFactor(request),
+    onSuccess: () =>
+      queryClient?.setQueryData(authenticationKeys.twoFactorStatus(), {
+        enabled: false,
+        recoveryCodesRemaining: 0,
+      }),
+  });
 export const signInMutationOptions = (client: AuthenticationClient) =>
   mutationOptions({
     mutationKey: authenticationKeys.mutation("sign-in"),

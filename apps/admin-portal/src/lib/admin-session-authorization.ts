@@ -3,7 +3,7 @@ import "server-only";
 import type { ApiTransport } from "@template/api-client";
 import {
   logout,
-  type SignInMutationResponse,
+  type SessionTokenResponse,
 } from "@template/api-client/authentication";
 import { NextResponse } from "next/server";
 import { serverEnv } from "@/config/server-env";
@@ -12,7 +12,7 @@ import { clearSessionCookies } from "./session-cookies";
 
 export async function rejectUnauthorizedAdminSession(
   client: ApiTransport,
-  session: SignInMutationResponse,
+  session: SessionTokenResponse,
 ): Promise<NextResponse | undefined> {
   if (
     hasRequiredAdminRole(session.accessToken, serverEnv.ADMIN_REQUIRED_ROLE)

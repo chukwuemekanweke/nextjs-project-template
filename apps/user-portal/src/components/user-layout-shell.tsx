@@ -13,6 +13,7 @@ import {
 import type { ReactNode } from "react";
 import { userNavigation } from "@/config/navigation";
 import { branding } from "@/config/env";
+import { usesDashboardShell } from "@/lib/user-layout";
 import { LogoutButton } from "./logout-button";
 
 export function UserLayoutShell({
@@ -20,7 +21,7 @@ export function UserLayoutShell({
 }: Readonly<{ children: ReactNode }>) {
   const pathname = usePathname();
 
-  if (["/sign-in", "/register", "/confirm-email"].includes(pathname)) {
+  if (!usesDashboardShell(pathname)) {
     return children;
   }
 

@@ -4,14 +4,20 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
   changePassword,
   checkEmailExistence,
+  completeTwoFactorChallenge,
   confirmEmail,
+  disableTwoFactor,
+  getTwoFactorStatus,
   linkGoogleAccount,
   requestEmailConfirmationCode,
+  regenerateRecoveryCodes,
   signIn,
   signInWithGoogle,
   signUp,
   signUpWithGoogle,
   startGoogleAuthenticationFlow,
+  setupTwoFactor,
+  verifyTwoFactorEnrollment,
 } from "./authentication";
 import { createApiClient } from "./client";
 import { getWalletTopUpTransaction, getWalletTransactions } from "./payments";
@@ -172,6 +178,7 @@ describe("handwritten API operations", () => {
           return HttpResponse.json({
             accessToken: "access",
             expiresAtUtc: "2026-08-01T00:00:00Z",
+            outcome: "authenticated",
             refreshToken: "refresh",
             refreshTokenExpiresAtUtc: "2026-08-31T00:00:00Z",
             tokenType: "Bearer",
@@ -186,7 +193,114 @@ describe("handwritten API operations", () => {
         password: "Password1!",
       },
     );
-    expect(result.accessToken).toBe("access");
+    expect(result).toMatchObject({
+      accessToken: "access",
+      outcome: "authenticated",
+    });
+  });
+
+  it("returns an opaque challenge instead of tokens when two-factor authentication is required", async () => {
+    server.use(
+      http.post("http://api.test/api/v1/authentication/sessions", () =>
+        HttpResponse.json({
+          challenge: "opaque-challenge",
+          challengeExpiresAtUtc: "2026-09-25T10:05:00Z",
+          outcome: "two_factor_required",
+        }),
+      ),
+    );
+
+    await expect(
+      signIn(createApiClient({ baseUrl: "http://api.test" }), {
+        email: "user@example.com",
+        password: "Password1!",
+      }),
+    ).resolves.toEqual({
+      challenge: "opaque-challenge",
+      challengeExpiresAtUtc: "2026-09-25T10:05:00Z",
+      outcome: "two_factor_required",
+    });
+  });
+
+  it("completes a two-factor challenge and manages authenticator security", async () => {
+    const client = createApiClient({ baseUrl: "http://api.test" });
+    const proof = {
+      code: "123456",
+      verificationMethod: "authenticator" as const,
+    };
+    server.use(
+      http.post(
+        "http://api.test/api/v1/authentication/sessions/two-factor",
+        async ({ request }) => {
+          expect(await request.json()).toEqual({
+            challenge: "opaque-challenge",
+            ...proof,
+          });
+          return HttpResponse.json({
+            accessToken: "access",
+            expiresAtUtc: "2026-09-25T11:00:00Z",
+            outcome: "authenticated",
+            refreshToken: "refresh",
+            refreshTokenExpiresAtUtc: "2026-10-25T11:00:00Z",
+            tokenType: "Bearer",
+          });
+        },
+      ),
+      http.get(
+        "http://api.test/api/v1/authentication/security/two-factor",
+        () => HttpResponse.json({ enabled: true, recoveryCodesRemaining: 8 }),
+      ),
+      http.post(
+        "http://api.test/api/v1/authentication/security/two-factor/setup",
+        () =>
+          HttpResponse.json({
+            authenticatorUri: "otpauth://totp/Portal:user%40example.com",
+            sharedKey: "SECRET",
+          }),
+      ),
+      http.post(
+        "http://api.test/api/v1/authentication/security/two-factor/verify",
+        async ({ request }) => {
+          expect(await request.json()).toEqual({ code: "123456" });
+          return HttpResponse.json({ recoveryCodes: ["code-one"] });
+        },
+      ),
+      http.post(
+        "http://api.test/api/v1/authentication/security/two-factor/recovery-codes",
+        async ({ request }) => {
+          expect(await request.json()).toEqual(proof);
+          return HttpResponse.json({ recoveryCodes: ["code-two"] });
+        },
+      ),
+      http.post(
+        "http://api.test/api/v1/authentication/security/two-factor/disable",
+        async ({ request }) => {
+          expect(await request.json()).toEqual(proof);
+          return new HttpResponse(null, { status: 204 });
+        },
+      ),
+    );
+
+    await expect(
+      completeTwoFactorChallenge(client, {
+        challenge: "opaque-challenge",
+        ...proof,
+      }),
+    ).resolves.toMatchObject({ outcome: "authenticated" });
+    await expect(getTwoFactorStatus(client)).resolves.toEqual({
+      enabled: true,
+      recoveryCodesRemaining: 8,
+    });
+    await expect(setupTwoFactor(client)).resolves.toMatchObject({
+      sharedKey: "SECRET",
+    });
+    await expect(
+      verifyTwoFactorEnrollment(client, { code: "123456" }),
+    ).resolves.toEqual({ recoveryCodes: ["code-one"] });
+    await expect(regenerateRecoveryCodes(client, proof)).resolves.toEqual({
+      recoveryCodes: ["code-two"],
+    });
+    await expect(disableTwoFactor(client, proof)).resolves.toBeUndefined();
   });
 
   it("starts and continues the Google authentication flow", async () => {

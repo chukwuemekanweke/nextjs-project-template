@@ -238,4 +238,59 @@ describe("createRefreshCoordinatedFetch", () => {
     expect(fetch).toHaveBeenCalledOnce();
     expect(refreshSession).not.toHaveBeenCalled();
   });
+
+  it("passes through a retryable 401 response without refreshing", async () => {
+    const response = Response.json(
+      { code: "invalid_two_factor_code" },
+      { status: 401 },
+    );
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(response);
+    const refreshSession = vi.fn().mockResolvedValue(true);
+    const onSessionExpired = vi.fn();
+    const coordinatedFetch = createRefreshCoordinatedFetch({
+      fetch,
+      onSessionExpired,
+      refreshSession,
+      shouldRefreshRequest: () => true,
+      shouldRefreshResponse: async (candidate) =>
+        ((await candidate.json()) as { code?: string }).code !==
+        "invalid_two_factor_code",
+    });
+
+    await expect(coordinatedFetch(protectedRequest)).resolves.toBe(response);
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(refreshSession).not.toHaveBeenCalled();
+    expect(onSessionExpired).not.toHaveBeenCalled();
+  });
+
+  it("does not expire the session when a retried 401 is retryable", async () => {
+    const fetch = vi
+      .fn<typeof globalThis.fetch>()
+      .mockResolvedValueOnce(new Response(null, { status: 401 }))
+      .mockResolvedValueOnce(
+        Response.json({ code: "invalid_two_factor_code" }, { status: 401 }),
+      );
+    const refreshSession = vi.fn().mockResolvedValue(true);
+    const onSessionExpired = vi.fn();
+    const coordinatedFetch = createRefreshCoordinatedFetch({
+      fetch,
+      onSessionExpired,
+      refreshSession,
+      shouldRefreshRequest: () => true,
+      shouldRefreshResponse: async (candidate) => {
+        if (!candidate.headers.get("content-type")?.includes("json")) {
+          return true;
+        }
+        return (
+          ((await candidate.json()) as { code?: string }).code !==
+          "invalid_two_factor_code"
+        );
+      },
+    });
+
+    await coordinatedFetch(protectedRequest);
+
+    expect(refreshSession).toHaveBeenCalledOnce();
+    expect(onSessionExpired).not.toHaveBeenCalled();
+  });
 });

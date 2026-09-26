@@ -118,6 +118,50 @@ describe("User Portal browser API", () => {
     expect(init?.body).toBe(JSON.stringify(request));
   });
 
+  it("routes MFA management through authenticated same-origin BFF routes", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(
+        Response.json({ enabled: false, recoveryCodesRemaining: 0 }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({
+          authenticatorUri: "otpauth://totp/Portal:user",
+          sharedKey: "SECRET",
+        }),
+      )
+      .mockResolvedValueOnce(Response.json({ recoveryCodes: ["code-one"] }));
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+
+    await client.authentication.getTwoFactorStatus();
+    await client.authentication.setupTwoFactor();
+    await client.authentication.verifyTwoFactorEnrollment({ code: "123456" });
+
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      1,
+      "/api/security/two-factor",
+      expect.objectContaining({ credentials: "same-origin", method: "GET" }),
+    );
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      2,
+      "/api/security/two-factor/setup",
+      expect.objectContaining({ credentials: "same-origin", method: "POST" }),
+    );
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      3,
+      "/api/security/two-factor/verify",
+      expect.objectContaining({
+        body: JSON.stringify({ code: "123456" }),
+        credentials: "same-origin",
+        method: "POST",
+      }),
+    );
+  });
+
   it("routes avatar upload session calls through authenticated BFF routes", async () => {
     const uploadId = "1d130feb-40d9-4ec9-9957-3827dfe02dc5";
     const fetchImplementation = vi

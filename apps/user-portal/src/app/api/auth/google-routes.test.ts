@@ -117,6 +117,34 @@ describe("Google authentication BFF routes", () => {
     },
   );
 
+  it("moves a Google sign-in into the HttpOnly two-factor challenge without creating a session", async () => {
+    mocks.signInWithGoogle.mockResolvedValue({
+      challenge: "mfa-secret",
+      challengeExpiresAtUtc: "2026-09-24T10:15:00Z",
+      outcome: "two_factor_required",
+    });
+
+    const response = await authenticateGoogle(
+      new Request("http://portal.test/api/auth/session/google", {
+        body: JSON.stringify({ credential: "google-id-token" }),
+        method: "POST",
+      }),
+    );
+
+    const payload = await response.json();
+    expect(payload).toEqual({
+      expiresAtUtc: "2026-09-24T10:15:00Z",
+      status: "two_factor_required",
+    });
+    const cookies = response.headers.get("set-cookie") ?? "";
+    expect(cookies).toContain("__Host-user-two-factor-challenge=");
+    expect(cookies).toContain("HttpOnly");
+    expect(cookies).toContain("__Host-user-google-auth-flow=");
+    expect(cookies).not.toContain("__Host-user-session=access-secret");
+    expect(cookies).not.toContain("__Host-user-refresh-session=refresh-secret");
+    expect(JSON.stringify(payload)).not.toContain("mfa-secret");
+  });
+
   it("links with only the browser password and clears the flow", async () => {
     mocks.linkGoogleAccount.mockResolvedValue(session);
 

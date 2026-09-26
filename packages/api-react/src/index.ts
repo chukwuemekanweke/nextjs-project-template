@@ -1,6 +1,7 @@
 export * from "./authentication/authentication.hooks";
 export * from "./authentication/authentication.keys";
 export * from "./authentication/authentication.mutations";
+export * from "./authentication/authentication.queries";
 export * from "./payments/payments.hooks";
 export * from "./payments/payments.keys";
 export * from "./payments/payments.mutations";

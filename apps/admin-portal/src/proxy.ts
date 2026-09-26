@@ -6,7 +6,7 @@ import {
   logout,
   refreshSession,
   resolveRouteSession,
-  type SignInMutationResponse,
+  type RefreshSessionMutationResponse,
 } from "@template/api-client/authentication";
 import { createServerApiClient } from "@template/api-client/server";
 import type { NextRequest } from "next/server";
@@ -22,7 +22,7 @@ import {
 
 const SIGN_IN_PATH = "/sign-in";
 const coordinateSessionRefresh =
-  createSessionRefreshCoordinator<SignInMutationResponse>();
+  createSessionRefreshCoordinator<RefreshSessionMutationResponse>();
 
 export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname === SIGN_IN_PATH) {
@@ -70,7 +70,7 @@ export async function proxy(request: NextRequest) {
 
 async function requireAdminSession(
   client: ApiTransport,
-  session: SignInMutationResponse,
+  session: RefreshSessionMutationResponse,
   requiredRole: string,
 ): Promise<void> {
   if (hasRequiredAdminRole(session.accessToken, requiredRole)) {

@@ -6,10 +6,16 @@ import type {
   CheckEmailExistenceMutationResponse,
   CompletePasswordResetMutationRequest,
   CompletePasswordResetMutationResponse,
+  CompleteTwoFactorChallengeMutationRequest,
+  CompleteTwoFactorChallengeMutationResponse,
   ConfirmEmailMutationRequest,
   ConfirmEmailMutationResponse,
+  DisableTwoFactorMutationRequest,
+  DisableTwoFactorMutationResponse,
   LinkGoogleAccountMutationRequest,
   LinkGoogleAccountMutationResponse,
+  RegenerateRecoveryCodesMutationRequest,
+  RegenerateRecoveryCodesMutationResponse,
   RefreshSessionMutationRequest,
   RefreshSessionMutationResponse,
   RequestEmailConfirmationCodeMutationRequest,
@@ -25,14 +31,22 @@ import type {
   SignUpWithGoogleMutationRequest,
   SignUpWithGoogleMutationResponse,
   StartGoogleAuthenticationFlowMutationResponse,
+  SetupTwoFactorMutationResponse,
+  TwoFactorStatusQueryResponse,
+  VerifyTwoFactorEnrollmentMutationRequest,
+  VerifyTwoFactorEnrollmentMutationResponse,
 } from "./contracts";
 import {
   changePassword,
   checkEmailExistence,
   completePasswordReset,
+  completeTwoFactorChallenge,
   confirmEmail,
+  disableTwoFactor,
+  getTwoFactorStatus,
   logout,
   linkGoogleAccount,
+  regenerateRecoveryCodes,
   refreshSession,
   requestEmailConfirmationCode,
   requestPasswordReset,
@@ -41,6 +55,8 @@ import {
   signUp,
   signUpWithGoogle,
   startGoogleAuthenticationFlow,
+  setupTwoFactor,
+  verifyTwoFactorEnrollment,
 } from "./operations";
 
 export interface AuthenticationClient {
@@ -60,6 +76,28 @@ export interface AuthenticationClient {
     request: SignInWithGoogleMutationRequest,
     options?: ApiOperationOptions,
   ): Promise<SignInWithGoogleMutationResponse>;
+  completeTwoFactorChallenge(
+    request: CompleteTwoFactorChallengeMutationRequest,
+    options?: ApiOperationOptions,
+  ): Promise<CompleteTwoFactorChallengeMutationResponse>;
+  getTwoFactorStatus(
+    options?: ApiOperationOptions,
+  ): Promise<TwoFactorStatusQueryResponse>;
+  setupTwoFactor(
+    options?: ApiOperationOptions,
+  ): Promise<SetupTwoFactorMutationResponse>;
+  verifyTwoFactorEnrollment(
+    request: VerifyTwoFactorEnrollmentMutationRequest,
+    options?: ApiOperationOptions,
+  ): Promise<VerifyTwoFactorEnrollmentMutationResponse>;
+  regenerateRecoveryCodes(
+    request: RegenerateRecoveryCodesMutationRequest,
+    options?: ApiOperationOptions,
+  ): Promise<RegenerateRecoveryCodesMutationResponse>;
+  disableTwoFactor(
+    request: DisableTwoFactorMutationRequest,
+    options?: ApiOperationOptions,
+  ): Promise<DisableTwoFactorMutationResponse>;
   startGoogleAuthenticationFlow(
     options?: ApiOperationOptions,
   ): Promise<StartGoogleAuthenticationFlowMutationResponse>;
@@ -109,6 +147,16 @@ export function createAuthenticationClient(
     signIn: (request, options) => signIn(transport, request, options),
     signInWithGoogle: (request, options) =>
       signInWithGoogle(transport, request, options),
+    completeTwoFactorChallenge: (request, options) =>
+      completeTwoFactorChallenge(transport, request, options),
+    getTwoFactorStatus: (options) => getTwoFactorStatus(transport, options),
+    setupTwoFactor: (options) => setupTwoFactor(transport, options),
+    verifyTwoFactorEnrollment: (request, options) =>
+      verifyTwoFactorEnrollment(transport, request, options),
+    regenerateRecoveryCodes: (request, options) =>
+      regenerateRecoveryCodes(transport, request, options),
+    disableTwoFactor: (request, options) =>
+      disableTwoFactor(transport, request, options),
     startGoogleAuthenticationFlow: (options) =>
       startGoogleAuthenticationFlow(transport, options),
     linkGoogleAccount: (request, options) =>

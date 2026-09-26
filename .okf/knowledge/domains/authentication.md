@@ -2,8 +2,8 @@
 type: domain
 title: Authentication Product Workflows
 description:
-  Implemented customer and administrator authentication flows above session
-  infrastructure
+  Customer and administrator authentication workflows, including User Portal
+  authenticator MFA
 resource: okf://knowledge/domains/authentication
 tags: [context, domain, authentication, workflows]
 governance: context
@@ -39,9 +39,18 @@ Logout clears local cookies even if backend logout is unavailable. Backend
 validation is mapped onto known fields while unmapped messages remain
 form-level.
 
+Password and Google first factors can return `two_factor_required` instead of
+an application session. Both converge on `/sign-in/two-factor`; the browser
+sends only an authenticator or recovery code to the BFF, and only successful
+verification starts normal authenticated navigation. The Security page owns
+setup, enrollment, one-time recovery-code display, regeneration, and disable.
+Sensitive setup and recovery results remain ephemeral UI state and are never
+persisted.
+
 The User Portal also has one GIS-based `Continue with Google` entry on sign-in
-and registration. The backend selects immediate authentication, existing
-password-account linking, or profile-only Google registration. A short-lived
+and registration. The backend selects immediate authentication, MFA
+continuation, existing password-account linking, or profile-only Google
+registration. A short-lived
 HttpOnly BFF flow cookie carries the opaque continuation; every successful path
 uses the normal application session cookies and validated post-authentication
 destination. The browser creates that flow only after the customer explicitly

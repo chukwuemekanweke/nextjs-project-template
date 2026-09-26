@@ -4,6 +4,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
 import {
   changePasswordMutationOptions,
+  disableTwoFactorMutationOptions,
   completeAvatarUploadMutationOptions,
   createAvatarUploadMutationOptions,
   initiatePaymentMutationOptions,
@@ -13,8 +14,11 @@ import {
   paymentKeys,
   profileKeys,
   queryClientDefaults,
+  regenerateRecoveryCodesMutationOptions,
   shouldRetryQuery,
   updateProfileMutationOptions,
+  twoFactorStatusQueryOptions,
+  authenticationKeys,
   walletTopUpQueryOptions,
   walletTransactionsQueryOptions,
 } from ".";
@@ -23,6 +27,13 @@ const createClient = () =>
   ({
     authentication: {
       changePassword: vi.fn().mockResolvedValue(undefined),
+      disableTwoFactor: vi.fn().mockResolvedValue(undefined),
+      getTwoFactorStatus: vi
+        .fn()
+        .mockResolvedValue({ enabled: true, recoveryCodesRemaining: 8 }),
+      regenerateRecoveryCodes: vi
+        .fn()
+        .mockResolvedValue({ recoveryCodes: ["new-code"] }),
     },
     profiles: {
       getProfile: vi.fn().mockResolvedValue({
@@ -77,6 +88,11 @@ describe("API React integration", () => {
   });
 
   it("creates stable hierarchical keys", () => {
+    expect(authenticationKeys.twoFactorStatus()).toEqual([
+      "authentication",
+      "security",
+      "two-factor",
+    ]);
     expect(profileKeys.current()).toEqual(["profiles", "current"]);
     expect(paymentKeys.walletTransactionList({ Limit: 25 })).toEqual([
       "payments",
@@ -91,6 +107,82 @@ describe("API React integration", () => {
       "top-up",
       "wallet-1",
     ]);
+  });
+
+  it("loads MFA status with query cancellation", async () => {
+    const client = createClient();
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    await queryClient.fetchQuery(
+      twoFactorStatusQueryOptions(client.authentication),
+    );
+
+    expect(client.authentication.getTwoFactorStatus).toHaveBeenCalledWith({
+      signal: expect.any(AbortSignal),
+    });
+  });
+
+  it("updates MFA status without refetching after regenerating recovery codes", async () => {
+    const client = createClient();
+    const queryClient = new QueryClient();
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+    queryClient.setQueryData(authenticationKeys.twoFactorStatus(), {
+      enabled: true,
+      recoveryCodesRemaining: 2,
+    });
+    const mutation = queryClient
+      .getMutationCache()
+      .build(
+        queryClient,
+        regenerateRecoveryCodesMutationOptions(
+          client.authentication,
+          queryClient,
+        ),
+      );
+
+    await mutation.execute({
+      code: "123456",
+      verificationMethod: "authenticator",
+    });
+
+    expect(
+      queryClient.getQueryData(authenticationKeys.twoFactorStatus()),
+    ).toEqual({
+      enabled: true,
+      recoveryCodesRemaining: 1,
+    });
+    expect(invalidate).not.toHaveBeenCalled();
+  });
+
+  it("updates MFA status without refetching after disabling it", async () => {
+    const client = createClient();
+    const queryClient = new QueryClient();
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+    queryClient.setQueryData(authenticationKeys.twoFactorStatus(), {
+      enabled: true,
+      recoveryCodesRemaining: 8,
+    });
+    const mutation = queryClient
+      .getMutationCache()
+      .build(
+        queryClient,
+        disableTwoFactorMutationOptions(client.authentication, queryClient),
+      );
+
+    await mutation.execute({
+      code: "123456",
+      verificationMethod: "authenticator",
+    });
+
+    expect(
+      queryClient.getQueryData(authenticationKeys.twoFactorStatus()),
+    ).toEqual({
+      enabled: false,
+      recoveryCodesRemaining: 0,
+    });
+    expect(invalidate).not.toHaveBeenCalled();
   });
 
   it("loads the current profile with query cancellation", async () => {
