@@ -6,6 +6,26 @@ import { profilesOperations } from "@template/api-client/profiles";
 const PROFILE_BFF_PATH = "/api/profile";
 const AVATAR_UPLOADS_BFF_PATH = "/api/profile/avatar/uploads";
 const PASSWORD_BFF_PATH = "/api/security/password";
+const TWO_FACTOR_BFF_PATH = "/api/security/two-factor";
+const TWO_FACTOR_BFF_ROUTES = new Map<string, string>([
+  [authenticationOperations.getTwoFactorStatus.path, TWO_FACTOR_BFF_PATH],
+  [
+    authenticationOperations.setupTwoFactor.path,
+    `${TWO_FACTOR_BFF_PATH}/setup`,
+  ],
+  [
+    authenticationOperations.verifyTwoFactorEnrollment.path,
+    `${TWO_FACTOR_BFF_PATH}/verify`,
+  ],
+  [
+    authenticationOperations.regenerateRecoveryCodes.path,
+    `${TWO_FACTOR_BFF_PATH}/recovery-codes`,
+  ],
+  [
+    authenticationOperations.disableTwoFactor.path,
+    `${TWO_FACTOR_BFF_PATH}/disable`,
+  ],
+]);
 const COMPLETE_AVATAR_UPLOAD_PATH =
   /^\/api\/v1\/stakeholders\/me\/profile\/avatar\/uploads\/([^/]+)\/complete$/;
 
@@ -30,6 +50,13 @@ export function createUserPortalBrowserApi({
         requestUrl.pathname === authenticationOperations.changePassword.path
       ) {
         return fetchImplementation(PASSWORD_BFF_PATH, {
+          ...init,
+          credentials: "same-origin",
+        });
+      }
+      const twoFactorRoute = TWO_FACTOR_BFF_ROUTES.get(requestUrl.pathname);
+      if (twoFactorRoute) {
+        return fetchImplementation(twoFactorRoute, {
           ...init,
           credentials: "same-origin",
         });

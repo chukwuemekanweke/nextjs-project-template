@@ -16,6 +16,18 @@ export async function POST(request: Request) {
       client,
       (await request.json()) as SignInMutationRequest,
     );
+    if (session.outcome !== "authenticated") {
+      return NextResponse.json(
+        {
+          code: "two_factor_required",
+          detail:
+            "Two-factor sign-in is not available in the admin portal yet.",
+          status: 409,
+          title: "Two-factor authentication required",
+        },
+        { status: 409 },
+      );
+    }
     const rejection = await rejectUnauthorizedAdminSession(client, session);
     if (rejection) {
       return rejection;

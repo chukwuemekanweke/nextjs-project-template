@@ -2,6 +2,7 @@ export interface RefreshCoordinatedFetchOptions {
   fetch?: typeof globalThis.fetch;
   onSessionExpired: () => Promise<void> | void;
   refreshSession: () => Promise<boolean>;
+  shouldRefreshResponse?: (response: Response) => Promise<boolean> | boolean;
   shouldRefreshRequest: (
     input: RequestInfo | URL,
     init: RequestInit | undefined,
@@ -12,6 +13,7 @@ export function createRefreshCoordinatedFetch({
   fetch: suppliedFetch = globalThis.fetch.bind(globalThis),
   onSessionExpired: expireSession,
   refreshSession,
+  shouldRefreshResponse = () => true,
   shouldRefreshRequest: shouldRefresh,
 }: RefreshCoordinatedFetchOptions): typeof globalThis.fetch {
   let activeRefresh: Promise<boolean> | undefined;
@@ -77,6 +79,9 @@ export function createRefreshCoordinatedFetch({
     ) {
       return response;
     }
+    if (!(await shouldRefreshResponse(response.clone()))) {
+      return response;
+    }
 
     if (startingSessionVersion === sessionVersion) {
       const refreshSucceeded = await refreshOnce();
@@ -87,7 +92,10 @@ export function createRefreshCoordinatedFetch({
     }
 
     const retryResponse = await suppliedFetch(retryInput, init);
-    if (retryResponse.status === 401) {
+    if (
+      retryResponse.status === 401 &&
+      (await shouldRefreshResponse(retryResponse.clone()))
+    ) {
       await expireOnce();
     }
     return retryResponse;

@@ -43,6 +43,13 @@ export function safeSignInDestination(value: string | undefined): string {
   }
 }
 
+export function createTwoFactorDestination(returnTo: string): string {
+  const parameters = new URLSearchParams({
+    returnTo: safeSignInDestination(returnTo),
+  });
+  return `/sign-in/two-factor?${parameters.toString()}`;
+}
+
 export function safeSignInError(status: number): string {
   if (status === 401) {
     return "The email or password is incorrect.";

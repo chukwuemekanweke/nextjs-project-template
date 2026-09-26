@@ -15,11 +15,15 @@ type GoogleState = "idle" | "preparing" | "ready" | "submitting";
 
 export function GoogleAuthenticationButton({
   clientId,
+  disabled = false,
   onError,
   onOutcome,
+  onPendingChange,
 }: Readonly<{
+  disabled?: boolean;
   onError: (error: GoogleAuthenticationError) => void;
   onOutcome: (outcome: GoogleAuthenticationOutcome) => void;
+  onPendingChange?: (pending: boolean) => void;
   clientId: string;
 }>) {
   const abortController = useRef<AbortController | undefined>(undefined);
@@ -29,6 +33,11 @@ export function GoogleAuthenticationButton({
   const [scriptReady, setScriptReady] = useState(false);
   const [scriptFailed, setScriptFailed] = useState(false);
   const [state, setState] = useState<GoogleState>("idle");
+
+  useEffect(() => {
+    onPendingChange?.(state === "preparing" || state === "submitting");
+    return () => onPendingChange?.(false);
+  }, [onPendingChange, state]);
 
   const reset = useCallback(() => {
     window.google?.accounts.id.cancel();
@@ -179,7 +188,9 @@ export function GoogleAuthenticationButton({
         <button
           aria-busy={state === "preparing"}
           className="flex min-h-10 w-full items-center justify-center gap-3 rounded-sm border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
-          disabled={!scriptReady || scriptFailed || state === "preparing"}
+          disabled={
+            disabled || !scriptReady || scriptFailed || state === "preparing"
+          }
           onClick={() => void prepare()}
           type="button"
         >
@@ -192,11 +203,12 @@ export function GoogleAuthenticationButton({
         </button>
       ) : null}
       <div
+        aria-disabled={disabled || state === "submitting"}
         aria-busy={state === "submitting"}
         className={
-          state === "ready"
+          state === "ready" && !disabled
             ? "flex min-h-10 w-full justify-center"
-            : state === "submitting"
+            : state === "ready" || state === "submitting"
               ? "pointer-events-none flex min-h-10 w-full justify-center opacity-60"
               : "hidden"
         }

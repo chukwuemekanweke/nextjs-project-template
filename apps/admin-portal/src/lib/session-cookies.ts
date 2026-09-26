@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { SignInMutationResponse } from "@template/api-client/authentication";
+import type { SessionTokenResponse } from "@template/api-client/authentication";
 import type { NextResponse } from "next/server";
 import {
   ACCESS_TOKEN_COOKIE,
@@ -13,7 +13,7 @@ export { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE };
 
 export function setSessionCookies(
   response: NextResponse,
-  session: SignInMutationResponse,
+  session: SessionTokenResponse,
 ): void {
   response.cookies.set(
     ACCESS_TOKEN_COOKIE,

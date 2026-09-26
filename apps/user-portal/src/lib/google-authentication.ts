@@ -15,6 +15,7 @@ export type GoogleAuthenticationOutcome =
       status: "authenticated";
       tokenType: string;
     }
+  | { expiresAtUtc: string; status: "two_factor_required" }
   | { status: "link_required" }
   | { status: "registration_required" };
 

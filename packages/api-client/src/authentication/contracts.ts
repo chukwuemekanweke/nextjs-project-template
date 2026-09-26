@@ -19,12 +19,22 @@ export type SessionTokenResponse = {
   tokenType: string;
 };
 
-export type SignInResponse = SessionTokenResponse;
+export type AuthenticatedSessionResponse = SessionTokenResponse & {
+  outcome: "authenticated";
+};
+export type TwoFactorRequiredResponse = {
+  challenge: string;
+  challengeExpiresAtUtc: string;
+  outcome: "two_factor_required";
+};
+export type SignInResponse =
+  AuthenticatedSessionResponse | TwoFactorRequiredResponse;
 export type GoogleAuthenticatedResponse = SessionTokenResponse & {
   outcome: "authenticated";
 };
 export type GoogleSignInResponse =
   | GoogleAuthenticatedResponse
+  | TwoFactorRequiredResponse
   | { outcome: "link_required" }
   | { outcome: "registration_required" };
 export type GoogleLinkResponse = GoogleAuthenticatedResponse;
@@ -68,6 +78,26 @@ export type ChangePasswordRequest = {
   currentPassword: string;
   newPassword: string;
 };
+export type TwoFactorVerificationMethod = "authenticator" | "recovery_code";
+export type CompleteTwoFactorChallengeRequest = {
+  challenge: string;
+  code: string;
+  verificationMethod: TwoFactorVerificationMethod;
+};
+export type TwoFactorStatusResponse = {
+  enabled: boolean;
+  recoveryCodesRemaining: number;
+};
+export type TwoFactorSetupResponse = {
+  authenticatorUri: string;
+  sharedKey: string;
+};
+export type VerifyTwoFactorEnrollmentRequest = { code: string };
+export type RecoveryCodesResponse = { recoveryCodes: string[] };
+export type TwoFactorProofRequest = {
+  code: string;
+  verificationMethod: TwoFactorVerificationMethod;
+};
 export type SignUpOtpRequest = { email: string; otp: string };
 export type SignUpOtpResponse = SessionTokenResponse;
 export type RequestEmailConfirmationCodeRequest = { email: string };
@@ -78,6 +108,19 @@ export type RequestEmailConfirmationCodeResponse = {
 
 export type SignInMutationRequest = SignInRequest;
 export type SignInMutationResponse = SignInResponse;
+export type CompleteTwoFactorChallengeMutationRequest =
+  CompleteTwoFactorChallengeRequest;
+export type CompleteTwoFactorChallengeMutationResponse =
+  AuthenticatedSessionResponse;
+export type TwoFactorStatusQueryResponse = TwoFactorStatusResponse;
+export type SetupTwoFactorMutationResponse = TwoFactorSetupResponse;
+export type VerifyTwoFactorEnrollmentMutationRequest =
+  VerifyTwoFactorEnrollmentRequest;
+export type VerifyTwoFactorEnrollmentMutationResponse = RecoveryCodesResponse;
+export type RegenerateRecoveryCodesMutationRequest = TwoFactorProofRequest;
+export type RegenerateRecoveryCodesMutationResponse = RecoveryCodesResponse;
+export type DisableTwoFactorMutationRequest = TwoFactorProofRequest;
+export type DisableTwoFactorMutationResponse = void;
 export type SignInWithGoogleMutationRequest = GoogleSignInRequest;
 export type SignInWithGoogleMutationResponse = GoogleSignInResponse;
 export type StartGoogleAuthenticationFlowMutationResponse =
@@ -145,6 +188,30 @@ export const authenticationOperations = {
   signInWithGoogle: {
     method: "POST",
     path: "/api/v1/authentication/sessions/google",
+  },
+  completeTwoFactorChallenge: {
+    method: "POST",
+    path: "/api/v1/authentication/sessions/two-factor",
+  },
+  getTwoFactorStatus: {
+    method: "GET",
+    path: "/api/v1/authentication/security/two-factor",
+  },
+  setupTwoFactor: {
+    method: "POST",
+    path: "/api/v1/authentication/security/two-factor/setup",
+  },
+  verifyTwoFactorEnrollment: {
+    method: "POST",
+    path: "/api/v1/authentication/security/two-factor/verify",
+  },
+  regenerateRecoveryCodes: {
+    method: "POST",
+    path: "/api/v1/authentication/security/two-factor/recovery-codes",
+  },
+  disableTwoFactor: {
+    method: "POST",
+    path: "/api/v1/authentication/security/two-factor/disable",
   },
   startGoogleAuthenticationFlow: {
     method: "POST",

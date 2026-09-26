@@ -1,16 +1,30 @@
 "use client";
 
 import { FormField, Input } from "@template/ui-core";
-import { useId, useRef, type ClipboardEvent, type KeyboardEvent } from "react";
+import {
+  Fragment,
+  useEffect,
+  useId,
+  useRef,
+  type ClipboardEvent,
+  type KeyboardEvent,
+} from "react";
 import {
   get,
   useFormContext,
   type FieldPath,
   type FieldValues,
 } from "react-hook-form";
+import {
+  normalizeConfirmationCode,
+  type ConfirmationCodeCharacterSet,
+} from "./confirmation-code";
 
 export function ConfirmationCodeField<TValues extends FieldValues>({
   autoFocus = false,
+  characterSet = "numeric",
+  disabled = false,
+  groupAfter,
   label,
   length = 6,
   name,
@@ -18,6 +32,9 @@ export function ConfirmationCodeField<TValues extends FieldValues>({
   required,
 }: Readonly<{
   autoFocus?: boolean;
+  characterSet?: ConfirmationCodeCharacterSet;
+  disabled?: boolean;
+  groupAfter?: number;
   label: string;
   length?: number;
   name: FieldPath<TValues>;
@@ -26,6 +43,7 @@ export function ConfirmationCodeField<TValues extends FieldValues>({
 }>) {
   const id = useId();
   const descriptionId = `${id}-description`;
+  const lastCompletedValue = useRef<string | undefined>(undefined);
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const {
     formState: { errors },
@@ -37,8 +55,25 @@ export function ConfirmationCodeField<TValues extends FieldValues>({
   const watchedValue = watch(name);
   const value = typeof watchedValue === "string" ? watchedValue : "";
 
+  useEffect(() => {
+    if (value.length !== length) {
+      lastCompletedValue.current = undefined;
+      return;
+    }
+    if (lastCompletedValue.current === value) {
+      return;
+    }
+    lastCompletedValue.current = value;
+    onComplete?.(value);
+  }, [length, onComplete, value]);
+
+  function normalizeCode(code: string) {
+    return normalizeConfirmationCode(code, characterSet);
+  }
+
   function updateCode(nextValue: string) {
-    setValue(name, nextValue as never, {
+    const normalizedValue = normalizeCode(nextValue).slice(0, length);
+    setValue(name, normalizedValue as never, {
       shouldDirty: true,
       shouldValidate: true,
     });
@@ -49,24 +84,22 @@ export function ConfirmationCodeField<TValues extends FieldValues>({
       { length },
       (_, characterIndex) => value[characterIndex] ?? "",
     );
-    characters[index] = nextCharacter.slice(-1);
+    const normalizedCharacter = normalizeCode(nextCharacter).slice(-1);
+    characters[index] = normalizedCharacter;
     updateCode(characters.join(""));
-    if (nextCharacter && index < length - 1) {
+    if (normalizedCharacter && index < length - 1) {
       inputRefs.current[index + 1]?.focus();
     }
   }
 
   function pasteCode(event: ClipboardEvent<HTMLInputElement>) {
     event.preventDefault();
-    const clipboardCode = event.clipboardData
-      .getData("text")
-      .replaceAll(/\s/g, "");
-    const pastedCode = clipboardCode.slice(0, length);
+    const pastedCode = normalizeCode(event.clipboardData.getData("text")).slice(
+      0,
+      length,
+    );
     updateCode(pastedCode);
     inputRefs.current[Math.min(pastedCode.length, length - 1)]?.focus();
-    if (clipboardCode.length === length) {
-      onComplete?.(pastedCode);
-    }
   }
 
   function handleKeyDown(
@@ -101,39 +134,65 @@ export function ConfirmationCodeField<TValues extends FieldValues>({
       required={required}
     >
       <input {...register(name)} type="hidden" />
-      <div className="flex gap-2 sm:gap-3">
+      <div
+        className={
+          groupAfter
+            ? "grid grid-cols-[repeat(5,minmax(0,1fr))_auto_repeat(5,minmax(0,1fr))] items-center gap-2"
+            : "flex gap-2 sm:gap-3"
+        }
+      >
         {Array.from({ length }, (_, index) => (
-          <Input
-            aria-describedby={error ? descriptionId : undefined}
-            aria-invalid={error ? true : undefined}
-            aria-label={`Character ${index + 1} of ${length}`}
-            autoComplete={index === 0 ? "one-time-code" : "off"}
-            autoFocus={autoFocus && index === 0}
-            className="h-12 min-w-0 flex-1 px-0 text-center text-lg font-semibold"
-            id={`${id}-${index}`}
-            inputMode="numeric"
-            key={index}
-            maxLength={length}
-            onChange={(event) => {
-              const nextValue = event.target.value.replaceAll(/\s/g, "");
-              if (nextValue.length > 1) {
-                updateCode(nextValue.slice(0, length));
-                inputRefs.current[
-                  Math.min(nextValue.length, length - 1)
-                ]?.focus();
-                return;
+          <Fragment key={index}>
+            {groupAfter === index ? (
+              <span
+                aria-hidden="true"
+                className="self-center text-gray-400 dark:text-gray-500"
+              >
+                –
+              </span>
+            ) : null}
+            <Input
+              aria-describedby={error ? descriptionId : undefined}
+              aria-invalid={error ? true : undefined}
+              aria-label={`Character ${index + 1} of ${length}`}
+              autoCapitalize={
+                characterSet === "alphanumeric" ? "characters" : undefined
               }
-              updateCharacter(index, nextValue);
-            }}
-            onFocus={(event) => event.currentTarget.select()}
-            onKeyDown={(event) => handleKeyDown(event, index)}
-            onPaste={pasteCode}
-            ref={(element) => {
-              inputRefs.current[index] = element;
-            }}
-            type="text"
-            value={value[index] ?? ""}
-          />
+              autoComplete={
+                index === 0 && characterSet === "numeric"
+                  ? "one-time-code"
+                  : "off"
+              }
+              autoFocus={autoFocus && index === 0}
+              className={[
+                "h-14 min-w-0 px-0 text-center text-lg font-semibold",
+                length <= 6 ? "w-11 flex-none sm:w-12" : "w-full",
+              ].join(" ")}
+              disabled={disabled}
+              id={`${id}-${index}`}
+              inputMode={characterSet === "numeric" ? "numeric" : "text"}
+              maxLength={length}
+              onChange={(event) => {
+                const nextValue = normalizeCode(event.target.value);
+                if (nextValue.length > 1) {
+                  updateCode(nextValue);
+                  inputRefs.current[
+                    Math.min(nextValue.length, length - 1)
+                  ]?.focus();
+                  return;
+                }
+                updateCharacter(index, nextValue);
+              }}
+              onFocus={(event) => event.currentTarget.select()}
+              onKeyDown={(event) => handleKeyDown(event, index)}
+              onPaste={pasteCode}
+              ref={(element) => {
+                inputRefs.current[index] = element;
+              }}
+              type="text"
+              value={value[index] ?? ""}
+            />
+          </Fragment>
         ))}
       </div>
     </FormField>

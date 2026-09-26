@@ -12,7 +12,15 @@ import {
   getGoogleFlowToken,
 } from "@/lib/google-flow-cookies";
 import { createAppServerApiClient } from "@/lib/server-api";
-import { setSessionCookies } from "@/lib/session-cookies";
+import { clearSessionCookies, setSessionCookies } from "@/lib/session-cookies";
+import {
+  clearTwoFactorChallengeCookie,
+  setTwoFactorChallengeCookie,
+} from "@/lib/two-factor-challenge-cookies";
+import {
+  isTwoFactorRequiredResponse,
+  safeTwoFactorRequiredResponse,
+} from "@/lib/two-factor-bff";
 
 export async function POST(request: Request) {
   const flowToken = await getGoogleFlowToken();
@@ -34,12 +42,24 @@ export async function POST(request: Request) {
       flowToken,
       idToken: typeof body.credential === "string" ? body.credential : "",
     });
+    if (isTwoFactorRequiredResponse(result)) {
+      const response = NextResponse.json(safeTwoFactorRequiredResponse(result));
+      clearSessionCookies(response);
+      setTwoFactorChallengeCookie(
+        response,
+        result.challenge,
+        result.challengeExpiresAtUtc,
+      );
+      clearGoogleFlowCookie(response);
+      return response;
+    }
     if (!isAuthenticatedGoogleResponse(result)) {
       return NextResponse.json({ status: result.outcome });
     }
 
     const response = NextResponse.json(safeGoogleSessionResponse(result));
     setSessionCookies(response, result);
+    clearTwoFactorChallengeCookie(response);
     clearGoogleFlowCookie(response);
     return response;
   } catch (error) {

@@ -101,4 +101,27 @@ describe("createPortalSessionFetch", () => {
       "/sign-in?returnTo=%2Faccount%3Ftab%3Dprofile%23security",
     );
   });
+
+  it("keeps an invalid two-factor proof retryable without signing out", async () => {
+    const response = Response.json(
+      { code: "invalid_two_factor_code" },
+      { status: 401 },
+    );
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(response);
+    const redirect = vi.fn();
+    const sessionFetch = createPortalSessionFetch({
+      fetch,
+      getLocation: () => location,
+      redirect,
+    });
+
+    await expect(
+      sessionFetch(
+        "http://portal.test/api/security/two-factor/recovery-codes",
+        { method: "POST" },
+      ),
+    ).resolves.toBe(response);
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(redirect).not.toHaveBeenCalled();
+  });
 });

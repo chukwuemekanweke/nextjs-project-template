@@ -20,6 +20,7 @@ import type {
 } from "@/lib/google-authentication";
 import {
   createEmailConfirmationDestination,
+  createTwoFactorDestination,
   safeSignInError,
 } from "@/lib/sign-in";
 
@@ -42,6 +43,7 @@ export function SignInForm({
   const router = useRouter();
   const requestConfirmationCode = useRequestEmailConfirmationCode();
   const [error, setError] = useState<string>();
+  const [googlePending, setGooglePending] = useState(false);
   const [googleStep, setGoogleStep] = useState<"entry" | "link">("entry");
   const form = useValidatedForm(signInSchema, {
     defaultValues: { email: initialEmail, password: "" },
@@ -67,6 +69,10 @@ export function SignInForm({
         completeAuthentication();
         return;
       }
+      if (outcome.status === "two_factor_required") {
+        router.replace(createTwoFactorDestination(destination));
+        return;
+      }
       if (outcome.status === "link_required") {
         setGoogleStep("link");
         return;
@@ -81,6 +87,7 @@ export function SignInForm({
   );
 
   async function submit(values: SignInValues) {
+    if (googlePending) return;
     setError(undefined);
 
     try {
@@ -114,8 +121,14 @@ export function SignInForm({
         return;
       }
 
-      router.replace(destination);
-      router.refresh();
+      const result = (await response.json()) as {
+        status: "authenticated" | "two_factor_required";
+      };
+      if (result.status === "two_factor_required") {
+        router.replace(createTwoFactorDestination(destination));
+        return;
+      }
+      completeAuthentication();
     } catch {
       setError(safeSignInError(0));
     }
@@ -145,14 +158,17 @@ export function SignInForm({
       ) : null}
       <GoogleAuthenticationButton
         clientId={googleClientId}
+        disabled={form.formState.isSubmitting}
         onError={handleGoogleError}
         onOutcome={handleGoogleOutcome}
+        onPendingChange={setGooglePending}
       />
       <AuthDivider />
       <ValidatedForm className="space-y-5" form={form} onSubmit={submit}>
         <TextField<SignInValues>
           autoComplete="email"
           autoFocus={!initialEmail}
+          disabled={googlePending}
           inputMode="email"
           label="Email address"
           name="email"
@@ -162,15 +178,21 @@ export function SignInForm({
         <PasswordField<SignInValues>
           autoComplete="current-password"
           autoFocus={Boolean(initialEmail)}
+          disabled={googlePending}
           label="Password"
           name="password"
           required
         />
         <SubmitButton
           className="bg-brand-500 hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={googlePending}
           pending={form.formState.isSubmitting}
         >
-          {form.formState.isSubmitting ? "Signing in…" : "Sign in"}
+          {googlePending
+            ? "Google sign-in in progress…"
+            : form.formState.isSubmitting
+              ? "Signing in…"
+              : "Sign in"}
         </SubmitButton>
       </ValidatedForm>
       <p className="text-center text-sm text-gray-500 dark:text-gray-400">

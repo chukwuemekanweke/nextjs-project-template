@@ -12,6 +12,7 @@ export interface BffSessionFetchOptions {
   redirect: (href: string) => void;
   sessionPath: string;
   signInPath: string;
+  shouldRefreshResponse?: (response: Response) => Promise<boolean> | boolean;
 }
 
 export function createBffSessionFetch({
@@ -21,6 +22,7 @@ export function createBffSessionFetch({
   redirect,
   sessionPath,
   signInPath,
+  shouldRefreshResponse,
 }: BffSessionFetchOptions): typeof globalThis.fetch {
   const refreshPath = `${sessionPath}/refresh`;
 
@@ -62,6 +64,7 @@ export function createBffSessionFetch({
     fetch,
     onSessionExpired: expireSession,
     refreshSession,
+    shouldRefreshResponse,
     shouldRefreshRequest: shouldRefresh,
   });
 }
