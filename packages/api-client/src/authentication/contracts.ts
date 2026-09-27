@@ -106,6 +106,45 @@ export type RequestEmailConfirmationCodeResponse = {
   retryAtUtc: string;
 };
 
+export type ActiveSessionResponse = {
+  sessionId: string;
+  deviceName: string | null;
+  devicePlatform: string | null;
+  browserName: string | null;
+  userAgent: string;
+  firstIpAddress: string;
+  lastIpAddress: string;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  createdAtUtc: string;
+  lastActiveAtUtc: string;
+  expiresAtUtc: string;
+  isCurrent: boolean;
+};
+export type RevokeSessionPathParams = { sessionId: string };
+export type LoginActivityType = "InitialLogin" | "TokenRefresh";
+export type LoginActivityResponse = {
+  id: string;
+  activityType: LoginActivityType;
+  occurredAtUtc: string;
+  ipAddress: string;
+  deviceName: string | null;
+  devicePlatform: string | null;
+  browserName: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+};
+export type GetLoginActivityQueryParams = {
+  Cursor?: string;
+  Limit?: number | string;
+};
+export type LoginActivityHistoryResponse = {
+  activities: Array<LoginActivityResponse>;
+  nextCursor: string | null;
+};
+
 export type SignInMutationRequest = SignInRequest;
 export type SignInMutationResponse = SignInResponse;
 export type CompleteTwoFactorChallengeMutationRequest =
@@ -149,6 +188,10 @@ export type RequestEmailConfirmationCodeMutationRequest =
   RequestEmailConfirmationCodeRequest;
 export type RequestEmailConfirmationCodeMutationResponse =
   RequestEmailConfirmationCodeResponse;
+export type ListActiveSessionsQueryResponse = Array<ActiveSessionResponse>;
+export type RevokeSessionMutationResponse = void;
+export type RevokeOtherSessionsMutationResponse = void;
+export type GetLoginActivityQueryResponse = LoginActivityHistoryResponse;
 
 export const authenticationOperations = {
   changePassword: {
@@ -221,5 +264,21 @@ export const authenticationOperations = {
   signUpWithGoogle: {
     method: "POST",
     path: "/api/v1/authentication/registrations/google",
+  },
+  listActiveSessions: {
+    method: "GET",
+    path: "/api/v1/authentication/sessions",
+  },
+  revokeSession: {
+    method: "DELETE",
+    path: "/api/v1/authentication/sessions/{sessionId}",
+  },
+  revokeOtherSessions: {
+    method: "DELETE",
+    path: "/api/v1/authentication/sessions/others",
+  },
+  getLoginActivity: {
+    method: "GET",
+    path: "/api/v1/stakeholders/me/login-activity",
   },
 } as const;

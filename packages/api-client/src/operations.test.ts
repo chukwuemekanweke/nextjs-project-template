@@ -7,10 +7,14 @@ import {
   completeTwoFactorChallenge,
   confirmEmail,
   disableTwoFactor,
+  getLoginActivity,
   getTwoFactorStatus,
   linkGoogleAccount,
+  listActiveSessions,
   requestEmailConfirmationCode,
   regenerateRecoveryCodes,
+  revokeOtherSessions,
+  revokeSession,
   signIn,
   signInWithGoogle,
   signUp,
@@ -498,6 +502,89 @@ describe("handwritten API operations", () => {
     await expect(
       getProfile(createApiClient({ baseUrl: "http://api.test" })),
     ).resolves.toEqual(profile);
+  });
+
+  it("lists active sessions and revokes an individual session", async () => {
+    const client = createApiClient({ baseUrl: "http://api.test" });
+    const session = {
+      sessionId: "session-1",
+      deviceName: "Pixel 8",
+      devicePlatform: "Android",
+      browserName: "Chrome",
+      userAgent: "Mozilla/5.0",
+      firstIpAddress: "143.105.174.121",
+      lastIpAddress: "143.105.174.121",
+      city: "Lagos",
+      state: null,
+      country: "Nigeria",
+      createdAtUtc: "2026-09-20T10:00:00Z",
+      lastActiveAtUtc: "2026-09-26T09:55:00Z",
+      expiresAtUtc: "2026-10-20T10:00:00Z",
+      isCurrent: false,
+    };
+    server.use(
+      http.get("http://api.test/api/v1/authentication/sessions", () =>
+        HttpResponse.json([session]),
+      ),
+      http.delete(
+        "http://api.test/api/v1/authentication/sessions/:sessionId",
+        ({ params }) => {
+          expect(params.sessionId).toBe("session-1");
+          return new HttpResponse(null, { status: 204 });
+        },
+      ),
+    );
+
+    await expect(listActiveSessions(client)).resolves.toEqual([session]);
+    await expect(
+      revokeSession(client, { sessionId: "session-1" }),
+    ).resolves.toBeUndefined();
+  });
+
+  it("revokes every other active session", async () => {
+    const client = createApiClient({ baseUrl: "http://api.test" });
+    server.use(
+      http.delete(
+        "http://api.test/api/v1/authentication/sessions/others",
+        () => new HttpResponse(null, { status: 204 }),
+      ),
+    );
+
+    await expect(revokeOtherSessions(client)).resolves.toBeUndefined();
+  });
+
+  it("paginates recent login activity by cursor", async () => {
+    const client = createApiClient({ baseUrl: "http://api.test" });
+    const activity = {
+      id: "activity-1",
+      activityType: "InitialLogin",
+      occurredAtUtc: "2026-09-26T10:42:00Z",
+      ipAddress: "143.105.174.121",
+      deviceName: null,
+      devicePlatform: "Windows",
+      browserName: "Chrome",
+      city: "Lagos",
+      state: null,
+      country: "Nigeria",
+    };
+    server.use(
+      http.get(
+        "http://api.test/api/v1/stakeholders/me/login-activity",
+        ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("Cursor")).toBe("cursor-1");
+          expect(url.searchParams.get("Limit")).toBe("10");
+          return HttpResponse.json({
+            activities: [activity],
+            nextCursor: "cursor-2",
+          });
+        },
+      ),
+    );
+
+    await expect(
+      getLoginActivity(client, { Cursor: "cursor-1", Limit: 10 }),
+    ).resolves.toEqual({ activities: [activity], nextCursor: "cursor-2" });
   });
 
   it("updates the authenticated stakeholder profile", async () => {

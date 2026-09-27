@@ -7,6 +7,8 @@ const PROFILE_BFF_PATH = "/api/profile";
 const AVATAR_UPLOADS_BFF_PATH = "/api/profile/avatar/uploads";
 const PASSWORD_BFF_PATH = "/api/security/password";
 const TWO_FACTOR_BFF_PATH = "/api/security/two-factor";
+const SESSIONS_BFF_PATH = "/api/security/sessions";
+const LOGIN_ACTIVITY_BFF_PATH = "/api/security/login-activity";
 const TWO_FACTOR_BFF_ROUTES = new Map<string, string>([
   [authenticationOperations.getTwoFactorStatus.path, TWO_FACTOR_BFF_PATH],
   [
@@ -28,6 +30,8 @@ const TWO_FACTOR_BFF_ROUTES = new Map<string, string>([
 ]);
 const COMPLETE_AVATAR_UPLOAD_PATH =
   /^\/api\/v1\/stakeholders\/me\/profile\/avatar\/uploads\/([^/]+)\/complete$/;
+const REVOKE_SESSION_PATH =
+  /^\/api\/v1\/authentication\/sessions\/(?!others$)([^/]+)$/;
 
 export function createUserPortalBrowserApi({
   apiBaseUrl,
@@ -89,6 +93,44 @@ export function createUserPortalBrowserApi({
       ) {
         return fetchImplementation(
           `${AVATAR_UPLOADS_BFF_PATH}/${completeAvatarMatch[1]}/complete`,
+          { ...init, credentials: "same-origin" },
+        );
+      }
+      if (
+        init?.method === authenticationOperations.listActiveSessions.method &&
+        requestUrl.pathname === authenticationOperations.listActiveSessions.path
+      ) {
+        return fetchImplementation(SESSIONS_BFF_PATH, {
+          ...init,
+          credentials: "same-origin",
+        });
+      }
+      if (
+        init?.method === authenticationOperations.revokeOtherSessions.method &&
+        requestUrl.pathname ===
+          authenticationOperations.revokeOtherSessions.path
+      ) {
+        return fetchImplementation(`${SESSIONS_BFF_PATH}/others`, {
+          ...init,
+          credentials: "same-origin",
+        });
+      }
+      const revokeSessionMatch = requestUrl.pathname.match(REVOKE_SESSION_PATH);
+      if (
+        init?.method === authenticationOperations.revokeSession.method &&
+        revokeSessionMatch
+      ) {
+        return fetchImplementation(
+          `${SESSIONS_BFF_PATH}/${revokeSessionMatch[1]}`,
+          { ...init, credentials: "same-origin" },
+        );
+      }
+      if (
+        init?.method === authenticationOperations.getLoginActivity.method &&
+        requestUrl.pathname === authenticationOperations.getLoginActivity.path
+      ) {
+        return fetchImplementation(
+          `${LOGIN_ACTIVITY_BFF_PATH}${requestUrl.search}`,
           { ...init, credentials: "same-origin" },
         );
       }

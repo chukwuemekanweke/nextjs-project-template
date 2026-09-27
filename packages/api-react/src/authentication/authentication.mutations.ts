@@ -134,3 +134,28 @@ export const logoutMutationOptions = (
     mutationFn: () => client.logout(),
     onSettled: () => queryClient?.clear(),
   });
+
+const invalidateActiveSessions = (queryClient?: QueryClient) =>
+  queryClient?.invalidateQueries({ queryKey: authenticationKeys.sessions() });
+
+export const revokeSessionMutationOptions = (
+  client: AuthenticationClient,
+  queryClient?: QueryClient,
+) =>
+  mutationOptions({
+    mutationKey: authenticationKeys.mutation("revoke-session"),
+    mutationFn: (
+      pathParams: Parameters<AuthenticationClient["revokeSession"]>[0],
+    ) => client.revokeSession(pathParams),
+    onSuccess: () => invalidateActiveSessions(queryClient),
+  });
+
+export const revokeOtherSessionsMutationOptions = (
+  client: AuthenticationClient,
+  queryClient?: QueryClient,
+) =>
+  mutationOptions({
+    mutationKey: authenticationKeys.mutation("revoke-other-sessions"),
+    mutationFn: () => client.revokeOtherSessions(),
+    onSuccess: () => invalidateActiveSessions(queryClient),
+  });

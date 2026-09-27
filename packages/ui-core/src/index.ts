@@ -5,3 +5,4 @@ export * from "./components/modal";
 export * from "./components/pagination";
 export * from "./components/skeleton";
 export * from "./components/table";
+export * from "./components/tabs";

@@ -3,18 +3,23 @@ import { ApiError } from "@template/api-client";
 import { QueryClient } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
 import {
+  activeSessionsQueryOptions,
   changePasswordMutationOptions,
   disableTwoFactorMutationOptions,
   completeAvatarUploadMutationOptions,
   createAvatarUploadMutationOptions,
+  getInfiniteQueryOptions,
   initiatePaymentMutationOptions,
   currentProfileQueryOptions,
   getQueryOptions,
+  loginActivityQueryOptions,
   logoutMutationOptions,
   paymentKeys,
   profileKeys,
   queryClientDefaults,
   regenerateRecoveryCodesMutationOptions,
+  revokeOtherSessionsMutationOptions,
+  revokeSessionMutationOptions,
   shouldRetryQuery,
   updateProfileMutationOptions,
   twoFactorStatusQueryOptions,
@@ -34,6 +39,30 @@ const createClient = () =>
       regenerateRecoveryCodes: vi
         .fn()
         .mockResolvedValue({ recoveryCodes: ["new-code"] }),
+      listActiveSessions: vi.fn().mockResolvedValue([
+        {
+          sessionId: "session-1",
+          deviceName: null,
+          devicePlatform: "Windows",
+          browserName: "Chrome",
+          userAgent: "Mozilla/5.0",
+          firstIpAddress: "143.105.174.121",
+          lastIpAddress: "143.105.174.121",
+          city: "Lagos",
+          state: null,
+          country: "Nigeria",
+          createdAtUtc: "2026-09-20T10:00:00Z",
+          lastActiveAtUtc: "2026-09-26T09:55:00Z",
+          expiresAtUtc: "2026-10-20T10:00:00Z",
+          isCurrent: true,
+        },
+      ]),
+      revokeSession: vi.fn().mockResolvedValue(undefined),
+      revokeOtherSessions: vi.fn().mockResolvedValue(undefined),
+      getLoginActivity: vi.fn().mockResolvedValue({
+        activities: [],
+        nextCursor: null,
+      }),
     },
     profiles: {
       getProfile: vi.fn().mockResolvedValue({
@@ -183,6 +212,138 @@ describe("API React integration", () => {
       recoveryCodesRemaining: 0,
     });
     expect(invalidate).not.toHaveBeenCalled();
+  });
+
+  it("creates hierarchical keys for sessions and login activity", () => {
+    expect(authenticationKeys.sessions()).toEqual([
+      "authentication",
+      "security",
+      "sessions",
+    ]);
+    expect(authenticationKeys.loginActivityList({ Limit: 10 })).toEqual([
+      "authentication",
+      "security",
+      "login-activity",
+      "list",
+      { Limit: 10 },
+    ]);
+  });
+
+  it("loads active sessions with query cancellation", async () => {
+    const client = createClient();
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    await queryClient.fetchQuery(
+      activeSessionsQueryOptions(client.authentication),
+    );
+
+    expect(client.authentication.listActiveSessions).toHaveBeenCalledWith({
+      signal: expect.any(AbortSignal),
+    });
+  });
+
+  it("invalidates active sessions after revoking one session", async () => {
+    const client = createClient();
+    const queryClient = new QueryClient();
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+    const options = revokeSessionMutationOptions(
+      client.authentication,
+      queryClient,
+    );
+    const mutation = queryClient.getMutationCache().build(queryClient, options);
+
+    await mutation.execute({ sessionId: "session-2" });
+
+    expect(client.authentication.revokeSession).toHaveBeenCalledWith({
+      sessionId: "session-2",
+    });
+    expect(invalidate).toHaveBeenCalledWith({
+      queryKey: authenticationKeys.sessions(),
+    });
+  });
+
+  it("invalidates active sessions after signing out every other session", async () => {
+    const client = createClient();
+    const queryClient = new QueryClient();
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+    const options = revokeOtherSessionsMutationOptions(
+      client.authentication,
+      queryClient,
+    );
+    const mutation = queryClient.getMutationCache().build(queryClient, options);
+
+    await mutation.execute();
+
+    expect(client.authentication.revokeOtherSessions).toHaveBeenCalledOnce();
+    expect(invalidate).toHaveBeenCalledWith({
+      queryKey: authenticationKeys.sessions(),
+    });
+  });
+
+  it("fetches login activity pages by cursor", async () => {
+    const client = createClient();
+    vi.mocked(client.authentication.getLoginActivity)
+      .mockResolvedValueOnce({
+        activities: [
+          {
+            id: "activity-1",
+            activityType: "InitialLogin",
+            occurredAtUtc: "2026-09-26T10:42:00Z",
+            ipAddress: "143.105.174.121",
+            deviceName: null,
+            devicePlatform: "Windows",
+            browserName: "Chrome",
+            city: "Lagos",
+            state: null,
+            country: "Nigeria",
+          },
+        ],
+        nextCursor: "cursor-2",
+      })
+      .mockResolvedValueOnce({ activities: [], nextCursor: null });
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+    const options = loginActivityQueryOptions(client.authentication, 10);
+
+    const result = await queryClient.fetchInfiniteQuery({
+      ...options,
+      pages: 2,
+    });
+
+    expect(client.authentication.getLoginActivity).toHaveBeenNthCalledWith(
+      1,
+      { Cursor: undefined, Limit: 10 },
+      { signal: expect.any(AbortSignal) },
+    );
+    expect(client.authentication.getLoginActivity).toHaveBeenNthCalledWith(
+      2,
+      { Cursor: "cursor-2", Limit: 10 },
+      { signal: expect.any(AbortSignal) },
+    );
+    expect(result.pages[0]?.nextCursor).toBe("cursor-2");
+    expect(result.pages[1]?.nextCursor).toBeNull();
+  });
+
+  it("rejects non-GET operations from retryable infinite query options", () => {
+    expect(() =>
+      getInfiniteQueryOptions(
+        {
+          method: "POST",
+          path: "/api/v1/authentication/sessions/others",
+        } as unknown as { method: "GET"; path: string },
+        {
+          queryKey: ["unsafe-write"],
+          queryFn: () => Promise.resolve(null),
+          initialPageParam: undefined,
+          getNextPageParam: () => undefined,
+        },
+      ),
+    ).toThrow(
+      "TanStack Query retries are restricted to GET operations; received POST /api/v1/authentication/sessions/others.",
+    );
   });
 
   it("loads the current profile with query cancellation", async () => {

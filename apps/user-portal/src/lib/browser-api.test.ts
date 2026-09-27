@@ -211,6 +211,68 @@ describe("User Portal browser API", () => {
     );
   });
 
+  it("routes active session management through authenticated same-origin BFF routes", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json([]))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+
+    await client.authentication.listActiveSessions();
+    await client.authentication.revokeSession({ sessionId: "session-1" });
+    await client.authentication.revokeOtherSessions();
+
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      1,
+      "/api/security/sessions",
+      expect.objectContaining({ credentials: "same-origin", method: "GET" }),
+    );
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      2,
+      "/api/security/sessions/session-1",
+      expect.objectContaining({
+        credentials: "same-origin",
+        method: "DELETE",
+      }),
+    );
+    expect(fetchImplementation).toHaveBeenNthCalledWith(
+      3,
+      "/api/security/sessions/others",
+      expect.objectContaining({
+        credentials: "same-origin",
+        method: "DELETE",
+      }),
+    );
+  });
+
+  it("routes login activity through the authenticated same-origin BFF while preserving cursor pagination", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json({ activities: [], nextCursor: null }));
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+
+    await client.authentication.getLoginActivity({
+      Cursor: "cursor-1",
+      Limit: 10,
+    });
+
+    expect(fetchImplementation).toHaveBeenCalledOnce();
+    const [input, init] = fetchImplementation.mock.calls[0]!;
+    expect(input.toString()).toBe(
+      "/api/security/login-activity?Cursor=cursor-1&Limit=10",
+    );
+    expect(init).toMatchObject({ credentials: "same-origin", method: "GET" });
+  });
+
   it("leaves unrelated API calls on the configured backend URL", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()

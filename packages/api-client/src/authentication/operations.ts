@@ -11,9 +11,12 @@ import type {
   ConfirmEmailMutationResponse,
   DisableTwoFactorMutationRequest,
   DisableTwoFactorMutationResponse,
+  GetLoginActivityQueryParams,
+  GetLoginActivityQueryResponse,
   LogoutMutationResponse,
   LinkGoogleAccountMutationRequest,
   LinkGoogleAccountMutationResponse,
+  ListActiveSessionsQueryResponse,
   RegenerateRecoveryCodesMutationRequest,
   RegenerateRecoveryCodesMutationResponse,
   RefreshSessionMutationRequest,
@@ -22,6 +25,9 @@ import type {
   RequestEmailConfirmationCodeMutationResponse,
   RequestPasswordResetMutationRequest,
   RequestPasswordResetMutationResponse,
+  RevokeOtherSessionsMutationResponse,
+  RevokeSessionMutationResponse,
+  RevokeSessionPathParams,
   SignInMutationRequest,
   SignInMutationResponse,
   SignInWithGoogleMutationRequest,
@@ -246,4 +252,44 @@ export const requestEmailConfirmationCode = (
     ...authenticationOperations.requestEmailConfirmationCode,
     ...options,
     body: request,
+  });
+
+export const listActiveSessions = (
+  client: ApiTransport,
+  options?: ApiOperationOptions,
+) =>
+  client.request<ListActiveSessionsQueryResponse>({
+    ...authenticationOperations.listActiveSessions,
+    ...options,
+  });
+
+export const revokeSession = (
+  client: ApiTransport,
+  pathParams: RevokeSessionPathParams,
+  options?: ApiOperationOptions,
+) =>
+  client.request<RevokeSessionMutationResponse>({
+    ...authenticationOperations.revokeSession,
+    ...options,
+    pathParams,
+  });
+
+export const revokeOtherSessions = (
+  client: ApiTransport,
+  options?: ApiOperationOptions,
+) =>
+  client.request<RevokeOtherSessionsMutationResponse>({
+    ...authenticationOperations.revokeOtherSessions,
+    ...options,
+  });
+
+export const getLoginActivity = (
+  client: ApiTransport,
+  query: GetLoginActivityQueryParams = {},
+  options?: ApiOperationOptions,
+) =>
+  client.request<GetLoginActivityQueryResponse>({
+    ...authenticationOperations.getLoginActivity,
+    ...options,
+    query,
   });

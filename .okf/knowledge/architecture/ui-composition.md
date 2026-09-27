@@ -23,7 +23,7 @@ status: stable
 ---
 
 - `@template/ui-core` exposes general controls such as alerts, cards, form
-  controls, modals, pagination, skeletons, and tables.
+  controls, modals, pagination, skeletons, tables, and accessible tabs.
 - `@template/dashboard-ui` exposes reusable dashboard layout mechanics: shell,
   sidebar state and rendering, mobile navigation, breadcrumbs, header, and
   profile-menu presentation. Apps supply items, destinations, identity text,
