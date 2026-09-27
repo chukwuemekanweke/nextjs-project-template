@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useApiClient } from "../query-client/api-provider";
 import {
   changePasswordMutationOptions,
@@ -9,12 +14,18 @@ import {
   disableTwoFactorMutationOptions,
   regenerateRecoveryCodesMutationOptions,
   requestEmailConfirmationCodeMutationOptions,
+  revokeOtherSessionsMutationOptions,
+  revokeSessionMutationOptions,
   signInMutationOptions,
   signUpMutationOptions,
   setupTwoFactorMutationOptions,
   verifyTwoFactorEnrollmentMutationOptions,
 } from "./authentication.mutations";
-import { twoFactorStatusQueryOptions } from "./authentication.queries";
+import {
+  activeSessionsQueryOptions,
+  loginActivityQueryOptions,
+  twoFactorStatusQueryOptions,
+} from "./authentication.queries";
 
 export const useChangePassword = () =>
   useMutation(changePasswordMutationOptions(useApiClient().authentication));
@@ -60,3 +71,23 @@ export function useLogout() {
   const queryClient = useQueryClient();
   return useMutation(logoutMutationOptions(api.authentication, queryClient));
 }
+export const useActiveSessions = () =>
+  useQuery(activeSessionsQueryOptions(useApiClient().authentication));
+export function useRevokeSession() {
+  const api = useApiClient();
+  const queryClient = useQueryClient();
+  return useMutation(
+    revokeSessionMutationOptions(api.authentication, queryClient),
+  );
+}
+export function useRevokeOtherSessions() {
+  const api = useApiClient();
+  const queryClient = useQueryClient();
+  return useMutation(
+    revokeOtherSessionsMutationOptions(api.authentication, queryClient),
+  );
+}
+export const useLoginActivity = (limit?: number) =>
+  useInfiniteQuery(
+    loginActivityQueryOptions(useApiClient().authentication, limit),
+  );

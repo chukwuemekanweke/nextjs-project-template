@@ -12,8 +12,11 @@ import type {
   ConfirmEmailMutationResponse,
   DisableTwoFactorMutationRequest,
   DisableTwoFactorMutationResponse,
+  GetLoginActivityQueryParams,
+  GetLoginActivityQueryResponse,
   LinkGoogleAccountMutationRequest,
   LinkGoogleAccountMutationResponse,
+  ListActiveSessionsQueryResponse,
   RegenerateRecoveryCodesMutationRequest,
   RegenerateRecoveryCodesMutationResponse,
   RefreshSessionMutationRequest,
@@ -22,6 +25,9 @@ import type {
   RequestEmailConfirmationCodeMutationResponse,
   RequestPasswordResetMutationRequest,
   RequestPasswordResetMutationResponse,
+  RevokeOtherSessionsMutationResponse,
+  RevokeSessionMutationResponse,
+  RevokeSessionPathParams,
   SignInMutationRequest,
   SignInMutationResponse,
   SignInWithGoogleMutationRequest,
@@ -43,13 +49,17 @@ import {
   completeTwoFactorChallenge,
   confirmEmail,
   disableTwoFactor,
+  getLoginActivity,
   getTwoFactorStatus,
+  listActiveSessions,
   logout,
   linkGoogleAccount,
   regenerateRecoveryCodes,
   refreshSession,
   requestEmailConfirmationCode,
   requestPasswordReset,
+  revokeOtherSessions,
+  revokeSession,
   signIn,
   signInWithGoogle,
   signUp,
@@ -134,6 +144,20 @@ export interface AuthenticationClient {
     request: RequestEmailConfirmationCodeMutationRequest,
     options?: ApiOperationOptions,
   ): Promise<RequestEmailConfirmationCodeMutationResponse>;
+  listActiveSessions(
+    options?: ApiOperationOptions,
+  ): Promise<ListActiveSessionsQueryResponse>;
+  revokeSession(
+    pathParams: RevokeSessionPathParams,
+    options?: ApiOperationOptions,
+  ): Promise<RevokeSessionMutationResponse>;
+  revokeOtherSessions(
+    options?: ApiOperationOptions,
+  ): Promise<RevokeOtherSessionsMutationResponse>;
+  getLoginActivity(
+    query?: GetLoginActivityQueryParams,
+    options?: ApiOperationOptions,
+  ): Promise<GetLoginActivityQueryResponse>;
 }
 
 export function createAuthenticationClient(
@@ -175,5 +199,11 @@ export function createAuthenticationClient(
       confirmEmail(transport, request, options),
     requestEmailConfirmationCode: (request, options) =>
       requestEmailConfirmationCode(transport, request, options),
+    listActiveSessions: (options) => listActiveSessions(transport, options),
+    revokeSession: (pathParams, options) =>
+      revokeSession(transport, pathParams, options),
+    revokeOtherSessions: (options) => revokeOtherSessions(transport, options),
+    getLoginActivity: (query, options) =>
+      getLoginActivity(transport, query, options),
   };
 }

@@ -23,6 +23,10 @@ retry policy, and reusable invalidation.
 - Retryable query options are restricted to declared GET operations. Queries
   retry at most twice with exponential delay, and do not retry cancellations or
   API failures below 500.
+- Cursor-paginated GET operations use `getInfiniteQueryOptions` (the same
+  GET-only runtime guard as `getQueryOptions`, wrapping TanStack's
+  `infiniteQueryOptions`) and are consumed with `useInfiniteQuery`; see login
+  activity in the authentication domain for the reference shape.
 - Mutations do not retry by default. Domain mutation options may invalidate or
   clear well-defined shared caches (for example profile updates and logout).
 - `ApiProvider` supplies the API client and query client to applications.
