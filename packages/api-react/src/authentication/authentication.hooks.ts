@@ -10,6 +10,10 @@ import { useApiClient } from "../query-client/api-provider";
 import {
   changePasswordMutationOptions,
   checkEmailExistenceMutationOptions,
+  completePasskeyRegistrationMutationOptions,
+  createPasskeyRegistrationOptionsMutationOptions,
+  removePasskeyMutationOptions,
+  renamePasskeyMutationOptions,
   logoutMutationOptions,
   disableTwoFactorMutationOptions,
   regenerateRecoveryCodesMutationOptions,
@@ -24,6 +28,7 @@ import {
 import {
   activeSessionsQueryOptions,
   loginActivityQueryOptions,
+  passkeysQueryOptions,
   twoFactorStatusQueryOptions,
 } from "./authentication.queries";
 
@@ -91,3 +96,32 @@ export const useLoginActivity = (limit?: number) =>
   useInfiniteQuery(
     loginActivityQueryOptions(useApiClient().authentication, limit),
   );
+export const usePasskeys = () =>
+  useQuery(passkeysQueryOptions(useApiClient().authentication));
+export const useCreatePasskeyRegistrationOptions = () =>
+  useMutation(
+    createPasskeyRegistrationOptionsMutationOptions(
+      useApiClient().authentication,
+    ),
+  );
+export function useCompletePasskeyRegistration() {
+  const api = useApiClient();
+  const queryClient = useQueryClient();
+  return useMutation(
+    completePasskeyRegistrationMutationOptions(api.authentication, queryClient),
+  );
+}
+export function useRenamePasskey() {
+  const api = useApiClient();
+  const queryClient = useQueryClient();
+  return useMutation(
+    renamePasskeyMutationOptions(api.authentication, queryClient),
+  );
+}
+export function useRemovePasskey() {
+  const api = useApiClient();
+  const queryClient = useQueryClient();
+  return useMutation(
+    removePasskeyMutationOptions(api.authentication, queryClient),
+  );
+}

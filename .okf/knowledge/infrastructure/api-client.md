@@ -49,3 +49,12 @@ authenticate an ID credential with a flow token, link an existing password
 account, and finish profile-only registration. Preserve backend `outcome` and
 stable error-code fields at the wire boundary; applications own cookie and UI
 continuation behavior.
+
+Passkey operations keep the WebAuthn Level 3 JSON wire shapes (base64url
+strings) in `authentication/contracts.ts`. Browser-only conversion between that
+JSON and native `navigator.credentials` objects, serialization, support
+detection, and `DOMException` classification live in `browser/webauthn.ts` and
+are exported from `@template/api-client/browser`. They are protocol plumbing
+only: no cryptography or verification. Do not scatter base64url handling into
+applications. `api-react` exposes passkey list/registration/rename/remove
+hooks; sign-in options and completion are BFF-only and have no hooks.

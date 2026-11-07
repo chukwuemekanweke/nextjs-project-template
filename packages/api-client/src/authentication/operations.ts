@@ -3,8 +3,20 @@ import type {
   ChangePasswordMutationResponse,
   CheckEmailExistenceMutationRequest,
   CheckEmailExistenceMutationResponse,
+  CompletePasskeyAuthenticationMutationRequest,
+  CompletePasskeyAuthenticationMutationResponse,
+  CompletePasskeyRegistrationMutationRequest,
+  CompletePasskeyRegistrationMutationResponse,
   CompletePasswordResetMutationRequest,
   CompletePasswordResetMutationResponse,
+  CreatePasskeyAuthenticationOptionsMutationResponse,
+  CreatePasskeyRegistrationOptionsMutationRequest,
+  CreatePasskeyRegistrationOptionsMutationResponse,
+  ListPasskeysQueryResponse,
+  PasskeyPathParams,
+  RemovePasskeyMutationResponse,
+  RenamePasskeyMutationRequest,
+  RenamePasskeyMutationResponse,
   CompleteTwoFactorChallengeMutationRequest,
   CompleteTwoFactorChallengeMutationResponse,
   ConfirmEmailMutationRequest,
@@ -292,4 +304,79 @@ export const getLoginActivity = (
     ...authenticationOperations.getLoginActivity,
     ...options,
     query,
+  });
+
+export const createPasskeyRegistrationOptions = (
+  client: ApiTransport,
+  request: CreatePasskeyRegistrationOptionsMutationRequest,
+  options?: ApiOperationOptions,
+) =>
+  client.request<CreatePasskeyRegistrationOptionsMutationResponse>({
+    ...authenticationOperations.createPasskeyRegistrationOptions,
+    ...options,
+    body: request,
+  });
+
+export const completePasskeyRegistration = (
+  client: ApiTransport,
+  request: CompletePasskeyRegistrationMutationRequest,
+  options?: ApiOperationOptions,
+) =>
+  client.request<CompletePasskeyRegistrationMutationResponse>({
+    ...authenticationOperations.completePasskeyRegistration,
+    ...options,
+    body: request,
+  });
+
+export const createPasskeyAuthenticationOptions = (
+  client: ApiTransport,
+  options?: ApiOperationOptions,
+) =>
+  client.request<CreatePasskeyAuthenticationOptionsMutationResponse>({
+    ...authenticationOperations.createPasskeyAuthenticationOptions,
+    ...options,
+  });
+
+export const completePasskeyAuthentication = (
+  client: ApiTransport,
+  request: CompletePasskeyAuthenticationMutationRequest,
+  options?: ApiOperationOptions,
+) =>
+  client.request<CompletePasskeyAuthenticationMutationResponse>({
+    ...authenticationOperations.completePasskeyAuthentication,
+    ...options,
+    body: request,
+  });
+
+export const listPasskeys = (
+  client: ApiTransport,
+  options?: ApiOperationOptions,
+) =>
+  client.request<ListPasskeysQueryResponse>({
+    ...authenticationOperations.listPasskeys,
+    ...options,
+  });
+
+export const renamePasskey = (
+  client: ApiTransport,
+  pathParams: PasskeyPathParams,
+  request: RenamePasskeyMutationRequest,
+  options?: ApiOperationOptions,
+) =>
+  client.request<RenamePasskeyMutationResponse>({
+    ...authenticationOperations.renamePasskey,
+    ...options,
+    body: request,
+    pathParams,
+  });
+
+export const removePasskey = (
+  client: ApiTransport,
+  pathParams: PasskeyPathParams,
+  options?: ApiOperationOptions,
+) =>
+  client.request<RemovePasskeyMutationResponse>({
+    ...authenticationOperations.removePasskey,
+    ...options,
+    pathParams,
   });

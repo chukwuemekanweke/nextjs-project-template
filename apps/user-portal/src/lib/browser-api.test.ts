@@ -273,6 +273,72 @@ describe("User Portal browser API", () => {
     expect(init).toMatchObject({ credentials: "same-origin", method: "GET" });
   });
 
+  it("routes passkey management through authenticated same-origin BFF routes", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json([]))
+      .mockResolvedValueOnce(Response.json({ flowToken: "flow" }))
+      .mockResolvedValueOnce(Response.json({ id: "AQ" }, { status: 201 }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+
+    await client.authentication.listPasskeys();
+    await client.authentication.createPasskeyRegistrationOptions({
+      name: "Laptop",
+    });
+    await client.authentication.completePasskeyRegistration({
+      credential: {
+        clientExtensionResults: {},
+        id: "AQ",
+        rawId: "AQ",
+        response: { attestationObject: "AA", clientDataJSON: "AA" },
+        type: "public-key",
+      },
+      flowToken: "flow",
+    });
+    await client.authentication.renamePasskey(
+      { credentialId: "a_b-c" },
+      { name: "Phone" },
+    );
+    await client.authentication.removePasskey({ credentialId: "a_b-c" });
+
+    expect(
+      fetchImplementation.mock.calls.map(([input, init]) => [
+        input.toString(),
+        init?.method,
+        init?.credentials,
+      ]),
+    ).toEqual([
+      ["/api/security/passkeys", "GET", "same-origin"],
+      ["/api/security/passkeys/registration-options", "POST", "same-origin"],
+      ["/api/security/passkeys/registrations", "POST", "same-origin"],
+      ["/api/security/passkeys/a_b-c", "PATCH", "same-origin"],
+      ["/api/security/passkeys/a_b-c", "DELETE", "same-origin"],
+    ]);
+  });
+
+  it("does not treat reserved passkey flow paths as credential ids", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json({ flowToken: "flow" }));
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+
+    await client.authentication.createPasskeyAuthenticationOptions();
+
+    expect(fetchImplementation.mock.calls[0]?.[0].toString()).toBe(
+      "http://api.test/api/v1/authentication/passkeys/authentication-options",
+    );
+  });
+
   it("leaves unrelated API calls on the configured backend URL", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()

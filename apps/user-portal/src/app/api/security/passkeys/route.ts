@@ -1,0 +1,11 @@
+import { listPasskeys } from "@template/api-client/authentication";
+import { apiRouteError } from "@/lib/api-route-error";
+import { createAppServerApiClient } from "@/lib/server-api";
+
+export async function GET() {
+  try {
+    return Response.json(await listPasskeys(await createAppServerApiClient()));
+  } catch (error) {
+    return apiRouteError(error);
+  }
+}

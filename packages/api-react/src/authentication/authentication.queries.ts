@@ -27,3 +27,9 @@ export const loginActivityQueryOptions = (
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });
+
+export const passkeysQueryOptions = (client: AuthenticationClient) =>
+  getQueryOptions(authenticationOperations.listPasskeys, {
+    queryKey: authenticationKeys.passkeys(),
+    queryFn: ({ signal }) => client.listPasskeys({ signal }),
+  });

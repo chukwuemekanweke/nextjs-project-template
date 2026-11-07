@@ -80,6 +80,23 @@ consumes the backend sign-in rate limit. Once the flow is ready, the portal
 renders Google's official GIS button; it does not use the One Tap prompt as a
 button substitute.
 
+User Portal passkeys (`/api/v1/authentication/passkeys/**`) are managed in a
+Security-page card: the backend binds a friendly name at registration-options
+time, then the browser runs `navigator.credentials.create()` and posts the
+attestation. List, rename (PATCH), and remove (DELETE) are authenticated BFF
+routes under `apps/user-portal/src/app/api/security/passkeys/**`; they
+invalidate only the passkeys query. Rows show only backend metadata (no
+last-used date exists). `Sign in with passkey` is discoverable/username-less
+and may still return `two_factor_required`. Passkey errors have no stable
+`code`, so app copy is chosen by HTTP status, and WebAuthn cancellation is a
+normal, silent outcome. Unsupported browsers get a disabled, explained control.
+
+New accounts are offered optional passkey setup once, at the protected
+`/passkey-setup?returnTo=…` page, after email confirmation or Google
+profile-only registration issues their first session. It is never mandatory:
+`Skip for now`, an unsupported browser, or an existing passkey continues to the
+validated destination. Ordinary sign-ins are not prompted.
+
 The Admin Portal implements sign-in and logout but adds an admission boundary:
 the returned access token must contain the configured admin role. A rejected
 session is best-effort logged out, cleared, and never stored. Role checks are

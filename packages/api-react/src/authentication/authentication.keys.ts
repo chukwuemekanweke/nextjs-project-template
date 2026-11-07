@@ -8,6 +8,7 @@ export const authenticationKeys = {
   twoFactorStatus: () =>
     [...authenticationKeys.security(), "two-factor"] as const,
   sessions: () => [...authenticationKeys.security(), "sessions"] as const,
+  passkeys: () => [...authenticationKeys.security(), "passkeys"] as const,
   loginActivity: () =>
     [...authenticationKeys.security(), "login-activity"] as const,
   loginActivityList: (filters: GetLoginActivityQueryParams = {}) =>
