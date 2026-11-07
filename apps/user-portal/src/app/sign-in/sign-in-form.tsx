@@ -18,11 +18,13 @@ import type {
   GoogleAuthenticationError,
   GoogleAuthenticationOutcome,
 } from "@/lib/google-authentication";
+import type { PasskeySignInResult } from "@/lib/passkey-sign-in";
 import {
   createEmailConfirmationDestination,
   createTwoFactorDestination,
   safeSignInError,
 } from "@/lib/sign-in";
+import { PasskeySignInButton } from "./passkey-sign-in-button";
 
 const signInSchema = z.object({
   email: z.email("Enter a valid email address."),
@@ -44,6 +46,7 @@ export function SignInForm({
   const requestConfirmationCode = useRequestEmailConfirmationCode();
   const [error, setError] = useState<string>();
   const [googlePending, setGooglePending] = useState(false);
+  const [passkeyPending, setPasskeyPending] = useState(false);
   const [googleStep, setGoogleStep] = useState<"entry" | "link">("entry");
   const form = useValidatedForm(signInSchema, {
     defaultValues: { email: initialEmail, password: "" },
@@ -86,8 +89,30 @@ export function SignInForm({
     [completeAuthentication, destination, router],
   );
 
+  const handlePasskeyOutcome = useCallback(
+    (result: PasskeySignInResult) => {
+      if (result.status === "authenticated") {
+        setError(undefined);
+        completeAuthentication();
+        return;
+      }
+      if (result.status === "two_factor_required") {
+        setError(undefined);
+        router.replace(createTwoFactorDestination(destination));
+        return;
+      }
+      setError(result.status === "error" ? result.message : undefined);
+    },
+    [completeAuthentication, destination, router],
+  );
+  const handlePasskeyPendingChange = useCallback((pending: boolean) => {
+    setPasskeyPending(pending);
+    if (pending) setError(undefined);
+  }, []);
+  const alternativePending = googlePending || passkeyPending;
+
   async function submit(values: SignInValues) {
-    if (googlePending) return;
+    if (alternativePending) return;
     setError(undefined);
 
     try {
@@ -156,9 +181,14 @@ export function SignInForm({
           {error}
         </div>
       ) : null}
+      <PasskeySignInButton
+        disabled={form.formState.isSubmitting || googlePending}
+        onOutcome={handlePasskeyOutcome}
+        onPendingChange={handlePasskeyPendingChange}
+      />
       <GoogleAuthenticationButton
         clientId={googleClientId}
-        disabled={form.formState.isSubmitting}
+        disabled={form.formState.isSubmitting || passkeyPending}
         onError={handleGoogleError}
         onOutcome={handleGoogleOutcome}
         onPendingChange={setGooglePending}
@@ -168,7 +198,7 @@ export function SignInForm({
         <TextField<SignInValues>
           autoComplete="email"
           autoFocus={!initialEmail}
-          disabled={googlePending}
+          disabled={alternativePending}
           inputMode="email"
           label="Email address"
           name="email"
@@ -178,21 +208,23 @@ export function SignInForm({
         <PasswordField<SignInValues>
           autoComplete="current-password"
           autoFocus={Boolean(initialEmail)}
-          disabled={googlePending}
+          disabled={alternativePending}
           label="Password"
           name="password"
           required
         />
         <SubmitButton
           className="bg-brand-500 hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={googlePending}
+          disabled={alternativePending}
           pending={form.formState.isSubmitting}
         >
           {googlePending
             ? "Google sign-in in progress…"
-            : form.formState.isSubmitting
-              ? "Signing in…"
-              : "Sign in"}
+            : passkeyPending
+              ? "Passkey sign-in in progress…"
+              : form.formState.isSubmitting
+                ? "Signing in…"
+                : "Sign in"}
         </SubmitButton>
       </ValidatedForm>
       <p className="text-center text-sm text-gray-500 dark:text-gray-400">

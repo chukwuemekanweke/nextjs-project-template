@@ -159,3 +159,64 @@ export const revokeOtherSessionsMutationOptions = (
     mutationFn: () => client.revokeOtherSessions(),
     onSuccess: () => invalidateActiveSessions(queryClient),
   });
+
+const invalidatePasskeys = (queryClient?: QueryClient) =>
+  queryClient?.invalidateQueries({ queryKey: authenticationKeys.passkeys() });
+
+/** Options carry a single-use flow token, so the result is not retained. */
+export const createPasskeyRegistrationOptionsMutationOptions = (
+  client: AuthenticationClient,
+) =>
+  mutationOptions({
+    gcTime: 0,
+    mutationKey: authenticationKeys.mutation(
+      "create-passkey-registration-options",
+    ),
+    mutationFn: (
+      request: Parameters<
+        AuthenticationClient["createPasskeyRegistrationOptions"]
+      >[0],
+    ) => client.createPasskeyRegistrationOptions(request),
+  });
+
+export const completePasskeyRegistrationMutationOptions = (
+  client: AuthenticationClient,
+  queryClient?: QueryClient,
+) =>
+  mutationOptions({
+    gcTime: 0,
+    mutationKey: authenticationKeys.mutation("complete-passkey-registration"),
+    mutationFn: (
+      request: Parameters<
+        AuthenticationClient["completePasskeyRegistration"]
+      >[0],
+    ) => client.completePasskeyRegistration(request),
+    onSuccess: () => invalidatePasskeys(queryClient),
+  });
+
+export const renamePasskeyMutationOptions = (
+  client: AuthenticationClient,
+  queryClient?: QueryClient,
+) =>
+  mutationOptions({
+    mutationKey: authenticationKeys.mutation("rename-passkey"),
+    mutationFn: ({
+      credentialId,
+      name,
+    }: Parameters<AuthenticationClient["renamePasskey"]>[0] &
+      Parameters<AuthenticationClient["renamePasskey"]>[1]) =>
+      client.renamePasskey({ credentialId }, { name }),
+    onSuccess: () => invalidatePasskeys(queryClient),
+  });
+
+export const removePasskeyMutationOptions = (
+  client: AuthenticationClient,
+  queryClient?: QueryClient,
+) =>
+  mutationOptions({
+    mutationKey: authenticationKeys.mutation("remove-passkey"),
+    mutationFn: (
+      pathParams: Parameters<AuthenticationClient["removePasskey"]>[0],
+    ) => client.removePasskey(pathParams),
+    onSuccess: () => invalidatePasskeys(queryClient),
+  });

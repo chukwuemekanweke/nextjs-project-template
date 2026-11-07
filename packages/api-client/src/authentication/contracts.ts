@@ -145,6 +145,116 @@ export type LoginActivityHistoryResponse = {
   nextCursor: string | null;
 };
 
+/**
+ * WebAuthn Level 3 JSON wire shapes. Binary members are base64url strings;
+ * browser conversion lives in `@template/api-client/browser`.
+ */
+export type Base64UrlString = string;
+export type PublicKeyCredentialDescriptorJson = {
+  id: Base64UrlString;
+  transports?: string[];
+  type: "public-key";
+};
+export type PublicKeyCredentialCreationOptionsJson = {
+  attestation?: string;
+  attestationFormats?: string[];
+  authenticatorSelection?: {
+    authenticatorAttachment?: string;
+    requireResidentKey?: boolean;
+    residentKey?: string;
+    userVerification?: string;
+  };
+  challenge: Base64UrlString;
+  excludeCredentials?: PublicKeyCredentialDescriptorJson[];
+  extensions?: Record<string, unknown>;
+  hints?: string[];
+  pubKeyCredParams: Array<{ alg: number; type: "public-key" }>;
+  rp: { id?: string; name: string };
+  timeout?: number;
+  user: { displayName: string; id: Base64UrlString; name: string };
+};
+export type PublicKeyCredentialRequestOptionsJson = {
+  allowCredentials?: PublicKeyCredentialDescriptorJson[];
+  challenge: Base64UrlString;
+  extensions?: Record<string, unknown>;
+  hints?: string[];
+  rpId?: string;
+  timeout?: number;
+  userVerification?: string;
+};
+export type RegistrationResponseJson = {
+  authenticatorAttachment?: string;
+  clientExtensionResults: Record<string, unknown>;
+  id: Base64UrlString;
+  rawId: Base64UrlString;
+  response: {
+    attestationObject: Base64UrlString;
+    authenticatorData?: Base64UrlString;
+    clientDataJSON: Base64UrlString;
+    publicKey?: Base64UrlString;
+    publicKeyAlgorithm?: number;
+    transports?: string[];
+  };
+  type: "public-key";
+};
+export type AuthenticationResponseJson = {
+  authenticatorAttachment?: string;
+  clientExtensionResults: Record<string, unknown>;
+  id: Base64UrlString;
+  rawId: Base64UrlString;
+  response: {
+    authenticatorData: Base64UrlString;
+    clientDataJSON: Base64UrlString;
+    signature: Base64UrlString;
+    userHandle?: Base64UrlString;
+  };
+  type: "public-key";
+};
+
+/** Backend passkey flow: an opaque single-use token plus WebAuthn options. */
+export type PasskeyRegistrationOptionsResponse = {
+  expiresAtUtc: string;
+  flowToken: string;
+  publicKey: PublicKeyCredentialCreationOptionsJson;
+};
+export type PasskeyAuthenticationOptionsResponse = {
+  expiresAtUtc: string;
+  flowToken: string;
+  publicKey: PublicKeyCredentialRequestOptionsJson;
+};
+export type CreatePasskeyRegistrationOptionsRequest = { name: string };
+export type CompletePasskeyRegistrationRequest = {
+  credential: RegistrationResponseJson;
+  flowToken: string;
+};
+export type CompletePasskeyAuthenticationRequest = {
+  credential: AuthenticationResponseJson;
+  flowToken: string;
+};
+export type PasskeyResponse = {
+  createdAtUtc: string;
+  id: string;
+  isBackedUp: boolean;
+  isBackupEligible: boolean;
+  name: string;
+  transports: string[];
+};
+export type PasskeyPathParams = { credentialId: string };
+export type RenamePasskeyRequest = { name: string };
+/**
+ * Unlike password/Google sign-in, the passkey endpoint names the access-token
+ * expiry `accessTokenExpiresAtUtc`; the field is kept faithful here.
+ */
+export type PasskeyAuthenticatedResponse = Omit<
+  SessionTokenResponse,
+  "expiresAtUtc"
+> & {
+  accessTokenExpiresAtUtc: string;
+  outcome: "authenticated";
+};
+export type PasskeySignInResponse =
+  PasskeyAuthenticatedResponse | TwoFactorRequiredResponse;
+
 export type SignInMutationRequest = SignInRequest;
 export type SignInMutationResponse = SignInResponse;
 export type CompleteTwoFactorChallengeMutationRequest =
@@ -192,6 +302,23 @@ export type ListActiveSessionsQueryResponse = Array<ActiveSessionResponse>;
 export type RevokeSessionMutationResponse = void;
 export type RevokeOtherSessionsMutationResponse = void;
 export type GetLoginActivityQueryResponse = LoginActivityHistoryResponse;
+export type CreatePasskeyRegistrationOptionsMutationRequest =
+  CreatePasskeyRegistrationOptionsRequest;
+export type CreatePasskeyRegistrationOptionsMutationResponse =
+  PasskeyRegistrationOptionsResponse;
+export type CompletePasskeyRegistrationMutationRequest =
+  CompletePasskeyRegistrationRequest;
+export type CompletePasskeyRegistrationMutationResponse = PasskeyResponse;
+export type CreatePasskeyAuthenticationOptionsMutationResponse =
+  PasskeyAuthenticationOptionsResponse;
+export type CompletePasskeyAuthenticationMutationRequest =
+  CompletePasskeyAuthenticationRequest;
+export type CompletePasskeyAuthenticationMutationResponse =
+  PasskeySignInResponse;
+export type ListPasskeysQueryResponse = Array<PasskeyResponse>;
+export type RenamePasskeyMutationRequest = RenamePasskeyRequest;
+export type RenamePasskeyMutationResponse = void;
+export type RemovePasskeyMutationResponse = void;
 
 export const authenticationOperations = {
   changePassword: {
@@ -280,5 +407,33 @@ export const authenticationOperations = {
   getLoginActivity: {
     method: "GET",
     path: "/api/v1/stakeholders/me/login-activity",
+  },
+  createPasskeyRegistrationOptions: {
+    method: "POST",
+    path: "/api/v1/authentication/passkeys/registration-options",
+  },
+  completePasskeyRegistration: {
+    method: "POST",
+    path: "/api/v1/authentication/passkeys/registrations",
+  },
+  createPasskeyAuthenticationOptions: {
+    method: "POST",
+    path: "/api/v1/authentication/passkeys/authentication-options",
+  },
+  completePasskeyAuthentication: {
+    method: "POST",
+    path: "/api/v1/authentication/passkeys/authentication-completions",
+  },
+  listPasskeys: {
+    method: "GET",
+    path: "/api/v1/authentication/passkeys",
+  },
+  renamePasskey: {
+    method: "PATCH",
+    path: "/api/v1/authentication/passkeys/{credentialId}",
+  },
+  removePasskey: {
+    method: "DELETE",
+    path: "/api/v1/authentication/passkeys/{credentialId}",
   },
 } as const;

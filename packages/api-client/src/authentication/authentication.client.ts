@@ -4,8 +4,20 @@ import type {
   ChangePasswordMutationResponse,
   CheckEmailExistenceMutationRequest,
   CheckEmailExistenceMutationResponse,
+  CompletePasskeyAuthenticationMutationRequest,
+  CompletePasskeyAuthenticationMutationResponse,
+  CompletePasskeyRegistrationMutationRequest,
+  CompletePasskeyRegistrationMutationResponse,
   CompletePasswordResetMutationRequest,
   CompletePasswordResetMutationResponse,
+  CreatePasskeyAuthenticationOptionsMutationResponse,
+  CreatePasskeyRegistrationOptionsMutationRequest,
+  CreatePasskeyRegistrationOptionsMutationResponse,
+  ListPasskeysQueryResponse,
+  PasskeyPathParams,
+  RemovePasskeyMutationResponse,
+  RenamePasskeyMutationRequest,
+  RenamePasskeyMutationResponse,
   CompleteTwoFactorChallengeMutationRequest,
   CompleteTwoFactorChallengeMutationResponse,
   ConfirmEmailMutationRequest,
@@ -45,8 +57,15 @@ import type {
 import {
   changePassword,
   checkEmailExistence,
+  completePasskeyAuthentication,
+  completePasskeyRegistration,
   completePasswordReset,
   completeTwoFactorChallenge,
+  createPasskeyAuthenticationOptions,
+  createPasskeyRegistrationOptions,
+  listPasskeys,
+  removePasskey,
+  renamePasskey,
   confirmEmail,
   disableTwoFactor,
   getLoginActivity,
@@ -158,6 +177,33 @@ export interface AuthenticationClient {
     query?: GetLoginActivityQueryParams,
     options?: ApiOperationOptions,
   ): Promise<GetLoginActivityQueryResponse>;
+  createPasskeyRegistrationOptions(
+    request: CreatePasskeyRegistrationOptionsMutationRequest,
+    options?: ApiOperationOptions,
+  ): Promise<CreatePasskeyRegistrationOptionsMutationResponse>;
+  completePasskeyRegistration(
+    request: CompletePasskeyRegistrationMutationRequest,
+    options?: ApiOperationOptions,
+  ): Promise<CompletePasskeyRegistrationMutationResponse>;
+  createPasskeyAuthenticationOptions(
+    options?: ApiOperationOptions,
+  ): Promise<CreatePasskeyAuthenticationOptionsMutationResponse>;
+  completePasskeyAuthentication(
+    request: CompletePasskeyAuthenticationMutationRequest,
+    options?: ApiOperationOptions,
+  ): Promise<CompletePasskeyAuthenticationMutationResponse>;
+  listPasskeys(
+    options?: ApiOperationOptions,
+  ): Promise<ListPasskeysQueryResponse>;
+  renamePasskey(
+    pathParams: PasskeyPathParams,
+    request: RenamePasskeyMutationRequest,
+    options?: ApiOperationOptions,
+  ): Promise<RenamePasskeyMutationResponse>;
+  removePasskey(
+    pathParams: PasskeyPathParams,
+    options?: ApiOperationOptions,
+  ): Promise<RemovePasskeyMutationResponse>;
 }
 
 export function createAuthenticationClient(
@@ -205,5 +251,18 @@ export function createAuthenticationClient(
     revokeOtherSessions: (options) => revokeOtherSessions(transport, options),
     getLoginActivity: (query, options) =>
       getLoginActivity(transport, query, options),
+    createPasskeyRegistrationOptions: (request, options) =>
+      createPasskeyRegistrationOptions(transport, request, options),
+    completePasskeyRegistration: (request, options) =>
+      completePasskeyRegistration(transport, request, options),
+    createPasskeyAuthenticationOptions: (options) =>
+      createPasskeyAuthenticationOptions(transport, options),
+    completePasskeyAuthentication: (request, options) =>
+      completePasskeyAuthentication(transport, request, options),
+    listPasskeys: (options) => listPasskeys(transport, options),
+    renamePasskey: (pathParams, request, options) =>
+      renamePasskey(transport, pathParams, request, options),
+    removePasskey: (pathParams, options) =>
+      removePasskey(transport, pathParams, options),
   };
 }

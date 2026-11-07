@@ -9,6 +9,24 @@ const PASSWORD_BFF_PATH = "/api/security/password";
 const TWO_FACTOR_BFF_PATH = "/api/security/two-factor";
 const SESSIONS_BFF_PATH = "/api/security/sessions";
 const LOGIN_ACTIVITY_BFF_PATH = "/api/security/login-activity";
+const PASSKEYS_BFF_PATH = "/api/security/passkeys";
+const PASSKEY_BFF_ROUTES = new Map<string, string>([
+  [authenticationOperations.listPasskeys.path, PASSKEYS_BFF_PATH],
+  [
+    authenticationOperations.createPasskeyRegistrationOptions.path,
+    `${PASSKEYS_BFF_PATH}/registration-options`,
+  ],
+  [
+    authenticationOperations.completePasskeyRegistration.path,
+    `${PASSKEYS_BFF_PATH}/registrations`,
+  ],
+]);
+const PASSKEY_CREDENTIAL_PATH =
+  /^\/api\/v1\/authentication\/passkeys\/(?!(?:registration-options|registrations|authentication-options|authentication-completions)$)([^/]+)$/;
+const PASSKEY_CREDENTIAL_METHODS = new Set<string>([
+  authenticationOperations.renamePasskey.method,
+  authenticationOperations.removePasskey.method,
+]);
 const TWO_FACTOR_BFF_ROUTES = new Map<string, string>([
   [authenticationOperations.getTwoFactorStatus.path, TWO_FACTOR_BFF_PATH],
   [
@@ -124,6 +142,20 @@ export function createUserPortalBrowserApi({
           `${SESSIONS_BFF_PATH}/${revokeSessionMatch[1]}`,
           { ...init, credentials: "same-origin" },
         );
+      }
+      const passkeyRoute = PASSKEY_BFF_ROUTES.get(requestUrl.pathname);
+      if (passkeyRoute) {
+        return fetchImplementation(passkeyRoute, {
+          ...init,
+          credentials: "same-origin",
+        });
+      }
+      const passkeyMatch = requestUrl.pathname.match(PASSKEY_CREDENTIAL_PATH);
+      if (passkeyMatch && PASSKEY_CREDENTIAL_METHODS.has(init?.method ?? "")) {
+        return fetchImplementation(`${PASSKEYS_BFF_PATH}/${passkeyMatch[1]}`, {
+          ...init,
+          credentials: "same-origin",
+        });
       }
       if (
         init?.method === authenticationOperations.getLoginActivity.method &&

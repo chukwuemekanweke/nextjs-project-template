@@ -1,6 +1,6 @@
 # Authentication and session management
 
-FE-021 added sign-in to the User and Admin portals, FE-022 tightened session storage, FE-023 added coordinated refresh, FE-024 added explicit logout, FE-025 protected dashboard routes, FE-030 added authenticated password changes, and CAF-FE-004 added authenticator two-factor authentication to the User Portal. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. The User Portal also owns the public `/register`, `/confirm-email`, and `/sign-in/two-factor` routes. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
+FE-021 added sign-in to the User and Admin portals, FE-022 tightened session storage, FE-023 added coordinated refresh, FE-024 added explicit logout, FE-025 protected dashboard routes, FE-030 added authenticated password changes, CAF-FE-004 added authenticator two-factor authentication to the User Portal, and CAF-FE-005 added passkey (WebAuthn) registration, management, and passwordless sign-in. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. The User Portal also owns the public `/register`, `/confirm-email`, and `/sign-in/two-factor` routes. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
 
 ## Sign-in flow
 
@@ -87,6 +87,86 @@ The `/security` page owns authenticator management. Its browser API adapter maps
 
 ASP.NET Core Identity remains the owner of authenticator secrets and single-use recovery codes. The frontend never persists either value and cannot redisplay recovery codes after the user dismisses them; regeneration is the only way to obtain a new set.
 
+## Passkeys
+
+Passkeys use the backend's ASP.NET Core Identity WebAuthn implementation. Browser JavaScript only runs the native WebAuthn ceremony; the backend issues every challenge, keeps the ceremony state behind an opaque single-use `flowToken`, and verifies attestation and assertion responses. The frontend never sees credential private keys and implements no cryptography.
+
+| Operation                                           | Backend endpoint                                                  | Browser path                                           |
+| --------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------ |
+| Registration options (`{ name }`)                   | `POST /api/v1/authentication/passkeys/registration-options`       | `POST /api/security/passkeys/registration-options`     |
+| Complete registration (`{ flowToken, credential }`) | `POST /api/v1/authentication/passkeys/registrations`              | `POST /api/security/passkeys/registrations`            |
+| List passkeys                                       | `GET /api/v1/authentication/passkeys`                             | `GET /api/security/passkeys`                           |
+| Rename (`{ name }`) / remove                        | `PATCH`/`DELETE /api/v1/authentication/passkeys/{credentialId}`   | `PATCH`/`DELETE /api/security/passkeys/{credentialId}` |
+| Sign-in options                                     | `POST /api/v1/authentication/passkeys/authentication-options`     | `POST /api/auth/passkey/options`                       |
+| Complete sign-in (`{ flowToken, credential }`)      | `POST /api/v1/authentication/passkeys/authentication-completions` | `POST /api/auth/session/passkey`                       |
+
+### Registration and management
+
+```mermaid
+sequenceDiagram
+  participant Browser
+  participant BFF as User Portal /api/security/passkeys
+  participant Backend as .NET Web API
+  Browser->>BFF: POST registration-options { name }
+  BFF->>Backend: bearer token from HttpOnly cookie
+  Backend-->>Browser: flowToken + WebAuthn creation options + expiry
+  Browser->>Browser: base64url to ArrayBuffer; navigator.credentials.create()
+  Browser->>BFF: POST registrations { flowToken, attestation JSON }
+  BFF->>Backend: verify challenge, origin, attestation; store credential
+  Backend-->>Browser: 201 passkey metadata
+  Browser->>Browser: invalidate the passkeys query
+```
+
+The Security page's General tab hosts the Passkeys card. The friendly name is collected before the ceremony because the backend binds it to the registration flow; renaming later uses the PATCH endpoint. Registration is repeatable, and the backend's `excludeCredentials` makes an authenticator that already holds a passkey for the account fail with `InvalidStateError`, which is shown as a duplicate. The registration flow token is bound server-side to the authenticated user, stakeholder, and tenant, so it travels through browser memory only for the duration of one ceremony; its mutation result is not retained in the query cache. Rows show only backend-supplied metadata: name, creation date, transport hints, and synced/backup state. The backend does not return a last-used date, so none is displayed. Removal requires a confirmation dialog. Registration, rename, and removal invalidate only `['authentication', 'security', 'passkeys']`; no optimistic updates are used. Every management call is authenticated through `/api/security/**`, so an expired access token uses the normal coordinated refresh, and the backend scopes each credential ID to the signed-in user.
+
+### Passwordless sign-in
+
+The backend issues discoverable-credential (username-less) options, so `Sign in with passkey` needs no email. Password and Google sign-in are unchanged and remain available.
+
+```mermaid
+sequenceDiagram
+  participant Browser
+  participant BFF as User Portal BFF
+  participant Backend as .NET Web API
+  Browser->>BFF: POST /api/auth/passkey/options
+  BFF->>Backend: POST authentication-options + X-Tenant-Id
+  Backend-->>BFF: flowToken + WebAuthn request options + expiry
+  BFF-->>Browser: request options only; flowToken in HttpOnly cookie
+  Browser->>Browser: navigator.credentials.get(); serialize assertion
+  Browser->>BFF: POST /api/auth/session/passkey { credential }
+  BFF->>Backend: assertion + cookie-held flowToken
+  alt authenticated
+    Backend-->>BFF: access + refresh tokens
+    BFF-->>Browser: setSessionCookies(...) + safe metadata
+  else two_factor_required
+    Backend-->>BFF: opaque MFA challenge + expiry
+    BFF-->>Browser: existing HttpOnly two-factor challenge cookie
+  end
+  Note over BFF: the passkey flow cookie is cleared after every completion attempt
+  Browser->>Browser: validated returnTo, or /sign-in/two-factor
+```
+
+The `__Host-user-passkey-sign-in-flow` cookie is `HttpOnly`, `Secure`, `SameSite=Lax`, host-only, path-rooted, and expires with the backend flow. The backend consumes a flow on its first completion attempt, so the BFF clears the cookie after success, two-factor continuation, and every failure. If the user cancels the native prompt, the browser calls `DELETE /api/auth/session/passkey` to clear it. Passkey sign-in does not bypass MFA: a `two_factor_required` outcome reuses the existing challenge cookie and `/sign-in/two-factor` page. The passkey endpoint names the access-token expiry `accessTokenExpiresAtUtc`, unlike the other session endpoints, so the BFF adapts it to the shared session shape and then calls the same `setSessionCookies` used by password and Google sign-in. No new session format exists. Passkey BFF responses are sent with `Cache-Control: no-store`, and assertions are never logged.
+
+### Errors and compatibility
+
+Both entry points use `isWebAuthnSupported()`, which requires a secure context, `PublicKeyCredential`, and `navigator.credentials`. Unsupported browsers see a disabled control with an explanation, while other methods stay usable. Native `NotAllowedError`/`AbortError` is treated as normal cancellation: no error banner is shown, nothing is logged, and pending state is cleared. Browsers intentionally report "no matching passkey" and timeouts the same way. Passkey errors carry no stable backend `code`, so copy is chosen by HTTP status:
+
+| Status | Registration                                     | Sign-in                               |
+| ------ | ------------------------------------------------ | ------------------------------------- |
+| 400    | Invalid attestation or name validation           | Invalid flow or credential payload    |
+| 401    | Session expired (refresh, then sign-in redirect) | Assertion rejected                    |
+| 403    | Session cannot manage passkeys                   | Email not verified or tenant mismatch |
+| 409    | Flow already used or duplicate credential        | Flow already used (replay)            |
+| 410    | Challenge expired                                | Challenge expired                     |
+| 423    | —                                                | Account locked                        |
+
+Messages are app-owned, actionable, and distinct from password-failure copy. Backend details are never shown.
+
+### Testing
+
+`webauthn.test.ts` covers base64url round trips, invalid input, option conversion, registration and assertion serialization including optional and null fields, support detection, and error classification against injected WebAuthn environments. `passkey-operations.test.ts` checks HTTP paths, methods, bodies, and encoded credential IDs at the MSW boundary. `passkeys.test.ts` in `api-react` checks query keys and passkey-only invalidation. User Portal tests cover the browser-to-BFF workflows with injected fetch and ceremony functions, the BFF routes (cookie attributes, token-free payloads, two-factor hand-off, and failures that never create a session), browser API rewrites, and static rendering of the card and sign-in control. No physical authenticator is required.
+
 ## Registration and email confirmation
 
 The User Portal implements registration as an app-owned three-step workflow. It first posts the normalized email to `/api/v1/authentication/email-existence-checks`. Existing accounts are sent to `/sign-in` with a validated email query value, which pre-populates the email field and leaves the password field ready. New accounts continue to first name, last name, and a searchable country selector before creating their password on the final step. The selector reads public reference data and submits the selected country's UUID as `countryId`.
@@ -157,7 +237,7 @@ The protected User Portal `/security` page collects the current password, a new 
 
 Browser requests use the `authentication.changePassword` mutation, which the User Portal adapter rewrites to `PUT /api/security/password`. That same-origin Route Handler sits outside the reserved `/api/auth/` session-management prefix, so an expired access token enters the normal coordinated refresh-and-retry flow. The handler reads the HttpOnly session through the request-scoped server client and forwards `PUT /api/v1/authentication/password` with `{ currentPassword, newPassword, confirmNewPassword }`. The expected backend success response is `204 No Content`. The backend operation is the authoritative source for current-password verification and password-policy outcomes; its implementation and OpenAPI contract must use this shape before the integrated flow can succeed.
 
-Two-factor management follows the same authenticated BFF rule under `/api/security/two-factor/**`; React never attaches or reads the access token directly.
+Two-factor and passkey management follow the same authenticated BFF rule under `/api/security/two-factor/**` and `/api/security/passkeys/**`; React never attaches or reads the access token directly.
 
 ## Protected routes
 

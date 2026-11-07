@@ -13,6 +13,8 @@ code_refs:
     packages/api-client/src/browser/**,
     apps/user-portal/src/lib/session-*.ts,
     apps/user-portal/src/lib/two-factor-*.ts,
+    apps/user-portal/src/lib/passkey-*.ts,
+    apps/user-portal/src/app/api/auth/passkey/**,
     apps/user-portal/src/proxy.ts,
     apps/user-portal/src/app/api/auth/session/**,
     apps/admin-portal/src/lib/session-*.ts,
@@ -49,6 +51,15 @@ recovery code. Browser JavaScript receives only status and expiry. Success,
 cancellation, and terminal challenge errors clear the continuation cookie.
 Ordinary refresh rotation never invokes MFA after the application session has
 been established.
+
+User Portal passkey sign-in starts at `/api/auth/passkey/options`, which keeps
+the backend's single-use flow token in the HttpOnly
+`__Host-user-passkey-sign-in-flow` cookie and returns only WebAuthn request
+options. `/api/auth/session/passkey` forwards the browser assertion with that
+token, clears the flow cookie after every attempt (the backend consumes it),
+and reuses the two-factor challenge cookie or `setSessionCookies`. The passkey
+endpoint names expiry `accessTokenExpiresAtUtc`; `passkeySessionTokens` adapts
+it to `SessionTokenResponse` rather than introducing a second session format.
 
 Protected-route proxies validate access-token time claims and refresh from the
 refresh cookie when needed. Refreshes are deduplicated per refresh token.
