@@ -20,6 +20,7 @@ import {
   retrySecondsRemaining,
 } from "@/lib/registration";
 import { confirmEmailSession } from "@/lib/email-confirmation-session";
+import { createPasskeySetupDestination } from "@/lib/passkey-setup";
 
 const confirmEmailSchema = emailSchema.extend(confirmationSchema.shape);
 type ConfirmEmailValues = z.infer<typeof confirmEmailSchema>;
@@ -62,7 +63,7 @@ export function ConfirmEmailForm({
     const email = normalizeRegistrationEmail(values.email);
     try {
       await confirmEmailSession({ email, otp: values.otp.trim() });
-      router.replace(signInDestination);
+      router.replace(createPasskeySetupDestination(signInDestination));
       router.refresh();
     } catch (caughtError) {
       const generalErrors = applyBackendValidation(caughtError, form.setError, [

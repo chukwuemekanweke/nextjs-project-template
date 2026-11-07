@@ -91,6 +91,12 @@ and may still return `two_factor_required`. Passkey errors have no stable
 `code`, so app copy is chosen by HTTP status, and WebAuthn cancellation is a
 normal, silent outcome. Unsupported browsers get a disabled, explained control.
 
+New accounts are offered optional passkey setup once, at the protected
+`/passkey-setup?returnTo=…` page, after email confirmation or Google
+profile-only registration issues their first session. It is never mandatory:
+`Skip for now`, an unsupported browser, or an existing passkey continues to the
+validated destination. Ordinary sign-ins are not prompted.
+
 The Admin Portal implements sign-in and logout but adds an admission boundary:
 the returned access token must contain the configured admin role. A rejected
 session is best-effort logged out, cleared, and never stored. Role checks are

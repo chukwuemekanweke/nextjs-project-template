@@ -15,6 +15,7 @@ import { userNavigation } from "@/config/navigation";
 import { branding } from "@/config/env";
 import { usesDashboardShell } from "@/lib/user-layout";
 import { LogoutButton } from "./logout-button";
+import { PasskeyAddedModal } from "./passkey-added-modal";
 
 export function UserLayoutShell({
   children,
@@ -88,6 +89,7 @@ export function UserLayoutShell({
       }
     >
       {children}
+      <PasskeyAddedModal />
     </DashboardShell>
   );
 }

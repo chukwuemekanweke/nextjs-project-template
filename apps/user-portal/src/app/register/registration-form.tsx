@@ -26,6 +26,7 @@ import type {
   GoogleAuthenticationOutcome,
 } from "@/lib/google-authentication";
 import { googleErrorFromResponse } from "@/lib/google-authentication";
+import { createPasskeySetupDestination } from "@/lib/passkey-setup";
 import {
   emailSchema,
   normalizeRegistrationEmail,
@@ -205,7 +206,9 @@ export function RegistrationForm({
         );
         return;
       }
-      completeAuthentication();
+      // A brand-new account: offer optional passkey setup before continuing.
+      router.replace(createPasskeySetupDestination(destination));
+      router.refresh();
     } catch {
       setError("Registration is temporarily unavailable. Try again later.");
     }
