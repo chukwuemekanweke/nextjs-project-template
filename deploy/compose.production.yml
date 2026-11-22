@@ -1,0 +1,126 @@
+# Production Compose for the three portals, deployed as one stack by the
+# devops-toolkit vps-deploy.yml workflow (.github/workflows/frontend-ci.yml).
+#
+# - Images: no image or tag is named here. The toolkit's generated override sets
+#   each service to its release component's image@sha256 digest from the
+#   release manifest (component name == service name). The VPS never builds.
+# - Configuration: browser-visible NEXT_PUBLIC_* values are compiled into each
+#   image. Server-only values are set here at runtime; host-specific ones are
+#   interpolated from the root-owned <deployment-path>/stack.env (see
+#   deploy/stack.env.example). Never put secrets in this file or in stack.env.
+# - Runtime secrets: none today, so no DEVOPS-007 mounts. See
+#   docs/architecture/10-ci-cd-and-deployment.md before adding any.
+# - Hardening: non-root user, read-only root filesystem with tmpfs scratch
+#   space, all capabilities dropped, no-new-privileges.
+# - Network: each portal publishes only on loopback for the host reverse proxy.
+x-portal-environment: &portal-environment
+  NODE_ENV: production
+  HOSTNAME: 0.0.0.0
+  API_BASE_URL: ${API_BASE_URL:?API_BASE_URL is required in stack.env}
+  TENANT_ID: ${TENANT_ID:?TENANT_ID is required in stack.env}
+  APP_ENVIRONMENT: ${APP_ENVIRONMENT:-production}
+  APPLICATION_VERSION: "0.1.0"
+
+x-portal: &portal
+  user: "1000:1000"
+  init: true
+  read_only: true
+  restart: unless-stopped
+  stop_grace_period: 15s
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  networks:
+    - portals
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: "3"
+
+services:
+  user-portal:
+    <<: *portal
+    environment:
+      <<: *portal-environment
+      PORT: "9000"
+      APPLICATION_NAME: user-portal
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m
+      - /app/apps/user-portal/.next/cache:rw,noexec,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=0700
+    ports:
+      - "127.0.0.1:9000:9000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-O",
+          "/dev/null",
+          "http://127.0.0.1:9000/api/health",
+        ]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+      start_interval: 2s
+
+  admin-portal:
+    <<: *portal
+    environment:
+      <<: *portal-environment
+      PORT: "9001"
+      APPLICATION_NAME: admin-portal
+      ADMIN_REQUIRED_ROLE: ${ADMIN_REQUIRED_ROLE:-Administrator}
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m
+      - /app/apps/admin-portal/.next/cache:rw,noexec,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=0700
+    ports:
+      - "127.0.0.1:9001:9001"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-O",
+          "/dev/null",
+          "http://127.0.0.1:9001/api/health",
+        ]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+      start_interval: 2s
+
+  public-portal:
+    <<: *portal
+    environment:
+      <<: *portal-environment
+      PORT: "9002"
+      APPLICATION_NAME: public-portal
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m
+      - /app/apps/public-portal/.next/cache:rw,noexec,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=0700
+    ports:
+      - "127.0.0.1:9002:9002"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-O",
+          "/dev/null",
+          "http://127.0.0.1:9002/api/health",
+        ]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+      start_interval: 2s
+
+networks:
+  portals: {}

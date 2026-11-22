@@ -1,46 +1,156 @@
-name: Frontend CI
+# Frontend CI/CD: thin callers of the shared devops-toolkit reusable workflows.
+#
+# Every event: monorepo verification (frozen install, lint, typecheck, test,
+# build) and secret-free release configuration validation (image config,
+# deployment config, Compose render, and host Compose policy against the
+# checked-in registry copy).
+# Push to main only: publish the three portal images by immutable digest, then
+# deploy them as one stack to the production VPS through the protected
+# `production` GitHub Environment.
+#
+# Toolkit pin: devops-toolkit has no release tag yet, so every call uses the
+# same reviewed full commit SHA (main at DEVOPS-013 integration). Upgrade all
+# four references together; see docs/architecture/10-ci-cd-and-deployment.md.
+name: Frontend CI/CD
 
 on:
   pull_request:
     paths:
       - "apps/**"
       - "packages/**"
+      - "deploy/**"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "turbo.json"
+      - ".node-version"
+      - ".npmrc"
+      - ".dockerignore"
+      - ".github/docker-images.json"
+      - ".github/vps-deploy.production.json"
       - ".github/workflows/frontend-ci.yml"
   push:
     branches: [main]
     paths:
       - "apps/**"
       - "packages/**"
+      - "deploy/**"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
       - "turbo.json"
+      - ".node-version"
+      - ".npmrc"
+      - ".dockerignore"
+      - ".github/docker-images.json"
+      - ".github/vps-deploy.production.json"
       - ".github/workflows/frontend-ci.yml"
 
+permissions: {}
+
+concurrency:
+  group: frontend-ci-${{ github.ref }}
+  # Never cancel a main-branch run: it may be publishing or deploying.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  verify-frontend:
+  verify-monorepo:
+    name: Verify monorepo
+    permissions:
+      contents: read
+    uses: chukwuemekanweke/devops-toolkit/.github/workflows/nextjs-ci.yml@190253ec766e10185629ef3e6e123bf3d603aadf
+    with:
+      node-version-file: .node-version
+      # Must match the root package.json packageManager declaration.
+      pnpm-version: 11.20.0
+      # Safe, checked-in development examples; no secrets are needed to build.
+      build-config-files: >-
+        {
+          "apps/user-portal/.env.local": "apps/user-portal/.env.example",
+          "apps/admin-portal/.env.local": "apps/admin-portal/.env.example",
+          "apps/public-portal/.env.local": "apps/public-portal/.env.example"
+        }
+
+  check-release-config:
+    name: Check release configuration
+    permissions:
+      contents: read
+    uses: chukwuemekanweke/devops-toolkit/.github/workflows/release-config-check.yml@190253ec766e10185629ef3e6e123bf3d603aadf
+    with:
+      image-config-path: .github/docker-images.json
+      deploy-config-path: .github/vps-deploy.production.json
+      environment: production
+      stack-name: frontendprojecttemplate-production
+      # Repository copy of /etc/vps-deploy/stacks/<stack>.json and a non-secret
+      # stand-in for the host stack.env, so the host Compose policy runs on PRs.
+      stack-registry-path: deploy/vps-deploy-stack.production.json
+      compose-env-file: deploy/stack.env.example
+
+  publish-images:
+    name: Publish images
+    needs: [verify-monorepo, check-release-config]
+    # Trusted path only: never publish from pull requests or other branches.
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    permissions:
+      contents: read
+    uses: chukwuemekanweke/devops-toolkit/.github/workflows/docker-publish.yml@190253ec766e10185629ef3e6e123bf3d603aadf
+    with:
+      # Write-once release identity: images are tagged release-<sha> and the
+      # manifest records each image digest.
+      deployment-id: ${{ github.sha }}
+      image-config-path: .github/docker-images.json
+    secrets:
+      registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      registry-token: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  deploy-production:
+    name: Deploy production
+    needs: publish-images
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    permissions:
+      contents: read
+    uses: chukwuemekanweke/devops-toolkit/.github/workflows/vps-deploy.yml@190253ec766e10185629ef3e6e123bf3d603aadf
+    with:
+      # GitHub Environment (protection rules) and deployment/audit label.
+      environment: production
+      deployment-id: ${{ needs.publish-images.outputs.deployment-id }}
+      # Same-run immutable manifest artifact produced by publish-images.
+      manifest-artifact: ${{ needs.publish-images.outputs.manifest-artifact }}
+      stack-name: frontendprojecttemplate-production
+      deploy-config-path: .github/vps-deploy.production.json
+    secrets:
+      ssh-host: ${{ secrets.VPS_HOST }}
+      ssh-user: ${{ secrets.VPS_DEPLOY_USER }}
+      ssh-private-key: ${{ secrets.VPS_DEPLOY_SSH_KEY }}
+      ssh-known-hosts: ${{ secrets.VPS_KNOWN_HOSTS }}
+      registry-username: ${{ secrets.DOCKERHUB_READ_USERNAME }}
+      registry-token: ${{ secrets.DOCKERHUB_READ_TOKEN }}
+
+  # Caller-owned alerting. The deployment workflow records a sanitized outcome
+  # and keeps the run failed even when automatic restoration succeeds; this job
+  # delivers the alert when DEPLOY_ALERT_WEBHOOK_URL is configured.
+  notify-deployment-failure:
+    name: Notify deployment failure
+    needs: deploy-production
+    if: ${{ always() && (needs.deploy-production.result == 'failure' || needs.deploy-production.result == 'cancelled') }}
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 11.20.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .node-version
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm test
-      - name: Build applications with safe example configuration
-        shell: bash
+      - name: Report and send deployment failure alert
+        env:
+          ALERT_WEBHOOK_URL: ${{ secrets.DEPLOY_ALERT_WEBHOOK_URL }}
+          STACK: frontendprojecttemplate-production
+          OUTCOME: ${{ needs.deploy-production.outputs.deployment-outcome || 'unknown' }}
+          FAILED_PHASE: ${{ needs.deploy-production.outputs.failed-phase || 'unknown' }}
+          RESTORATION: ${{ needs.deploy-production.outputs.restoration-outcome || 'unknown' }}
+          RECORD: ${{ needs.deploy-production.outputs.deployment-record-artifact }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          cp apps/user-portal/.env.example apps/user-portal/.env.local
-          cp apps/admin-portal/.env.example apps/admin-portal/.env.local
-          cp apps/public-portal/.env.example apps/public-portal/.env.local
-          pnpm build
+          message="Production deployment of $STACK $OUTCOME: phase=$FAILED_PHASE restoration=$RESTORATION record=${RECORD:-none} $RUN_URL"
+          echo "$message" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -z "$ALERT_WEBHOOK_URL" ]]; then
+            echo "::warning::DEPLOY_ALERT_WEBHOOK_URL is not configured; no alert was delivered."
+            exit 0
+          fi
+          jq -n --arg text "$message" '{text: $text}' \
+            | curl --fail --silent --show-error --max-time 30 -H 'Content-Type: application/json' --data @- "$ALERT_WEBHOOK_URL"

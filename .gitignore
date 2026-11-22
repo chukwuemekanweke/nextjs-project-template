@@ -35,6 +35,8 @@ pnpm-debug.log*
 # Environment variables
 .env*
 !.env.example
+# Reviewed, browser-visible production build configuration (NEXT_PUBLIC_* only).
+!apps/*/.env.production
 
 # Vercel
 .vercel/

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "composeFiles": ["deploy/compose.production.yml"],
+  "remoteDeploymentPath": "/srv/frontendprojecttemplate/production",
+  "healthServices": ["user-portal", "admin-portal", "public-portal"],
+  "healthChecks": [
+    {
+      "name": "user-portal health",
+      "url": "http://127.0.0.1:9000/api/health"
+    },
+    {
+      "name": "user-portal sign-in page",
+      "url": "http://127.0.0.1:9000/sign-in"
+    },
+    {
+      "name": "admin-portal health",
+      "url": "http://127.0.0.1:9001/api/health"
+    },
+    {
+      "name": "admin-portal sign-in page",
+      "url": "http://127.0.0.1:9001/sign-in"
+    },
+    {
+      "name": "public-portal health",
+      "url": "http://127.0.0.1:9002/api/health"
+    },
+    {
+      "name": "public-portal home page",
+      "url": "http://127.0.0.1:9002/"
+    }
+  ],
+  "healthTimeoutSeconds": 300,
+  "rollbackOnHealthFailure": true
+}
