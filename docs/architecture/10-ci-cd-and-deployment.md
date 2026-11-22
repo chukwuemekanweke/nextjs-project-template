@@ -30,6 +30,8 @@ pull_request / push to main (path-filtered)
 | `deploy-production`         | Deploys the manifest artifact from the same run to the VPS stack. It runs in the `production` GitHub Environment, so environment protection rules apply.                                                                                                                                                                                                                                                  |
 | `notify-deployment-failure` | Writes the sanitized outcome to the job summary and posts it to `DEPLOY_ALERT_WEBHOOK_URL` when that secret is set. Without the secret it emits a warning only. The run is already red either way.                                                                                                                                                                                                        |
 
+`verify-monorepo` activates pnpm through the corepack bundled with the Node version in `.node-version`. Keep that version at Node 22.14.0 or later: older bundled corepack (0.30) cannot verify npm's rotated signing keys and fails with `Cannot find matching keyid`. The Dockerfiles use the same Node version, and also install a pinned corepack.
+
 Publishing and deployment run only for a `push` to `main`. A pull request never receives registry or VPS credentials. Every job declares only `contents: read`, the workflow default is `permissions: {}`, and secrets are mapped explicitly (never `secrets: inherit`). Main-branch runs are never cancelled by a newer push, because they may be publishing or deploying.
 
 The path filters include `apps/**`, `packages/**`, `deploy/**`, root workspace and tool files, `.dockerignore`, and the two release configuration files. A change outside them, for example documentation only, neither verifies nor deploys.
@@ -60,8 +62,8 @@ Repository names follow the backend template's `backendprojecttemplate-<componen
 
 Each Dockerfile builds from the repository root in two stages:
 
-1. **builder** (`node:22.13.0-alpine`): `pnpm fetch` from the lockfile (a cacheable layer), copy the workspace, run an offline frozen install filtered to the portal and its workspace dependencies, then `next build`.
-2. **runner** (`node:22.13.0-alpine`): Alpine security updates, then removal of npm, npx, corepack, and yarn. The runner copies the standalone server, `.next/static`, and the portal's `public/` directory. Application files stay root-owned and read-only. Only `.next/cache` is writable by the `node` user (uid 1000), which runs the server.
+1. **builder** (`node:22.23.4-alpine`): `pnpm fetch` from the lockfile (a cacheable layer), copy the workspace, run an offline frozen install filtered to the portal and its workspace dependencies, then `next build`.
+2. **runner** (`node:22.23.4-alpine`): Alpine security updates, then removal of npm, npx, corepack, and yarn. The runner copies the standalone server, `.next/static`, and the portal's `public/` directory. Application files stay root-owned and read-only. Only `.next/cache` is writable by the `node` user (uid 1000), which runs the server.
 
 ### Build-time and runtime configuration
 

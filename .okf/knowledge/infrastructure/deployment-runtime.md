@@ -29,7 +29,7 @@ status: stable
 ---
 
 Each portal builds as a Next.js standalone application with a two-stage Node
-22.13 Alpine image built from the repository root: `pnpm fetch`, offline frozen
+22.23 Alpine image built from the repository root: `pnpm fetch`, offline frozen
 install filtered to the portal and its workspace dependencies, `next build`;
 the runner copies standalone output, `.next/static`, and `public/`, removes
 package managers, and runs as non-root `node` with read-only app files.

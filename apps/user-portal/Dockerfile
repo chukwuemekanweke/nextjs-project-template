@@ -8,7 +8,7 @@
 #   APPLICATION_NAME, APPLICATION_VERSION, future secrets) are never baked in;
 #   the container receives them at runtime (deploy/compose.production.yml).
 
-FROM node:22.13.0-alpine AS builder
+FROM node:22.23.4-alpine AS builder
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm install --global corepack@0.34.5 && corepack enable
 WORKDIR /workspace
@@ -30,7 +30,7 @@ RUN API_BASE_URL=http://server-config-supplied-at-runtime.invalid \
     APPLICATION_VERSION=0.0.0-build \
     pnpm --filter @template/user-portal build
 
-FROM node:22.13.0-alpine AS runner
+FROM node:22.23.4-alpine AS runner
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     HOSTNAME=0.0.0.0 \
