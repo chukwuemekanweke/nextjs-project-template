@@ -10,25 +10,28 @@ Do not add build, publish, scan, or deploy steps to the caller workflow or to lo
 pull_request / push to main (path-filtered)
   |
   +-- verify-monorepo        nextjs-ci.yml             every event
-  +-- check-release-config   release-config-check.yml  every event, no secrets
+  +-- check-release-config               release-config-check.yml  every event, no secrets (production)
+  +-- check-release-config-development   release-config-check.yml  every event, no secrets (development)
           |
-          v  (both must pass; push to main only)
+          v  (all must pass; push to main only)
       publish-images         docker-publish.yml        3 images, scan, SBOM, provenance, manifest
           |
-          v
-      deploy-production      vps-deploy.yml            protected `production` environment
-          |
-          v  (only if the deployment failed or was cancelled)
-      notify-deployment-failure                         caller-owned alert
+          +--> deploy-development  vps-deploy.yml      `development` environment, if DEVELOPMENT_DEPLOY_ENABLED == 'true'
+          +--> deploy-production   vps-deploy.yml      protected `production` environment, if PRODUCTION_DEPLOY_ENABLED == 'true'
+                   |
+                   v  (only if the production deployment failed or was cancelled)
+               notify-deployment-failure                caller-owned alert
 ```
 
-| Job                         | What it does                                                                                                                                                                                                                                                                                                                                                                                              |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `verify-monorepo`           | Node from `.node-version`, pnpm `11.20.0` (matches `packageManager`), `pnpm install --frozen-lockfile`, then `lint`, `typecheck`, `test`, and `build` across the whole workspace. Before building, it copies each portal's safe `.env.example` to `.env.local` through the `build-config-files` input.                                                                                                    |
-| `check-release-config`      | Validates `.github/docker-images.json` and `.github/vps-deploy.production.json`, renders `deploy/compose.production.yml` with `deploy/stack.env.example` and placeholder digests, and applies the host Compose policy against `deploy/vps-deploy-stack.production.json`. It uses no secrets, so pull requests catch broken release configuration.                                                         |
-| `publish-images`            | Builds the three images from the image configuration as a toolkit matrix. Each is tagged `release-<commit sha>`, and the job refuses to overwrite an existing tag. The job then scans each image (it fails on any CRITICAL vulnerability), attaches SBOM and provenance attestations, and uploads the immutable release manifest artifact `release-manifest-<sha>` with each component's `sha256` digest. |
-| `deploy-production`         | Deploys the manifest artifact from the same run to the VPS stack. It runs in the `production` GitHub Environment, so environment protection rules apply.                                                                                                                                                                                                                                                  |
-| `notify-deployment-failure` | Writes the sanitized outcome to the job summary and posts it to `DEPLOY_ALERT_WEBHOOK_URL` when that secret is set. Without the secret it emits a warning only. The run is already red either way.                                                                                                                                                                                                        |
+| Job                                | What it does                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `verify-monorepo`                  | Node from `.node-version`, pnpm `11.20.0` (matches `packageManager`), `pnpm install --frozen-lockfile`, then `lint`, `typecheck`, `test`, and `build` across the whole workspace. Before building, it copies each portal's safe `.env.example` to `.env.local` through the `build-config-files` input.                                                                                                    |
+| `check-release-config`             | Validates `.github/docker-images.json` and `.github/vps-deploy.production.json`, renders `deploy/compose.production.yml` with `deploy/stack.env.example` and placeholder digests, and applies the host Compose policy against `deploy/vps-deploy-stack.production.json`. It uses no secrets, so pull requests catch broken release configuration.                                                         |
+| `publish-images`                   | Builds the three images from the image configuration as a toolkit matrix. Each is tagged `release-<commit sha>`, and the job refuses to overwrite an existing tag. The job then scans each image (it fails on any CRITICAL vulnerability), attaches SBOM and provenance attestations, and uploads the immutable release manifest artifact `release-manifest-<sha>` with each component's `sha256` digest. |
+| `check-release-config-development` | The same checks for the development target: `.github/vps-deploy.development.json`, `deploy/stack.development.env.example`, and `deploy/vps-deploy-stack.development.json`.                                                                                                                                                                                                                                |
+| `deploy-development`               | Deploys the same manifest to the `frontendprojecttemplate-development` stack on the development VPS (SSH port `35340`). Runs in the `development` GitHub Environment. Skipped unless the repository variable `DEVELOPMENT_DEPLOY_ENABLED` is `true`.                                                                                                                                                      |
+| `deploy-production`                | Deploys the manifest artifact from the same run to the production VPS stack. It runs in the `production` GitHub Environment, so environment protection rules apply. Skipped unless the repository variable `PRODUCTION_DEPLOY_ENABLED` is `true`.                                                                                                                                                         |
+| `notify-deployment-failure`        | Writes the sanitized outcome to the job summary and posts it to `DEPLOY_ALERT_WEBHOOK_URL` when that secret is set. Without the secret it emits a warning only. The run is already red either way.                                                                                                                                                                                                        |
 
 `verify-monorepo` activates pnpm through the corepack bundled with the Node version in `.node-version`. Keep that version at Node 22.14.0 or later: older bundled corepack (0.30) cannot verify npm's rotated signing keys and fails with `Cannot find matching keyid`. The Dockerfiles use the same Node version, and also install a pinned corepack.
 
@@ -38,12 +41,12 @@ The path filters include `apps/**`, `packages/**`, `deploy/**`, root workspace a
 
 ### Toolkit version pinning
 
-The toolkit has no release tag yet. All four `uses:` references therefore pin the same reviewed full commit SHA, `190253ec766e10185629ef3e6e123bf3d603aadf` (toolkit `main` when this integration was made; it is the first revision that contains `release-config-check.yml`). Never use `@main` or a feature branch.
+The toolkit has no release tag yet. All `uses:` references therefore pin the same reviewed full commit SHA, `190253ec766e10185629ef3e6e123bf3d603aadf` (toolkit `main` when this integration was made; it is the first revision that contains `release-config-check.yml`). Never use `@main` or a feature branch.
 
 To upgrade:
 
 1. Read the toolkit changelog and the diff between the pinned SHA and the candidate.
-2. Change all four references together. The workflows share contracts (image configuration, manifest, and deployment configuration), so mixing revisions is not supported.
+2. Change all references together. The workflows share contracts (image configuration, manifest, and deployment configuration), so mixing revisions is not supported.
 3. Let `verify-monorepo` and `check-release-config` pass on a pull request, then observe the first publish and deploy on `main`.
 
 Once the toolkit publishes immutable release tags, pin `@v1.x.y` (or keep a full SHA). Use the mutable `@v1` alias only if automatic compatible updates are acceptable for production.
@@ -141,21 +144,23 @@ When a derived application needs a server-only secret:
 
 ### GitHub
 
-GitHub does not let a caller pass Environment secrets to a reusable workflow, so the deployment credentials must be **repository** secrets. The `production` Environment still gates the deploy job through its protection rules. Configure it with required reviewers and restrict deployment branches to `main`. Keep write access to the repository small, because any workflow on a pushed branch can read repository secrets.
+Each deploy target is a GitHub Environment (`development`, `production`) holding that target's deployment credentials as **environment** secrets. The toolkit's deploy job declares `environment: <target>`, so the caller's `secrets.*` mappings resolve to that Environment's secrets. Only the publish credentials are **repository** secrets, because the publish job runs outside any Environment. Configure `production` with required reviewers and restrict its deployment branches to `main`.
 
-| Secret                                            | Purpose                                                                                     |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`           | Publishing. Use a Docker Hub access token with read/write access to the three repositories. |
-| `DOCKERHUB_READ_USERNAME`, `DOCKERHUB_READ_TOKEN` | Pull-only token sent to the VPS for one deployment.                                         |
-| `VPS_HOST`                                        | VPS hostname or IP.                                                                         |
-| `VPS_DEPLOY_USER`                                 | `vps-deploy`.                                                                               |
-| `VPS_DEPLOY_SSH_KEY`                              | Private key bound on the host to this stack only (forced command).                          |
-| `VPS_KNOWN_HOSTS`                                 | Pinned host key line(s), obtained out of band.                                              |
-| `DEPLOY_ALERT_WEBHOOK_URL` (optional)             | Failure alert webhook (Slack, Teams, incident tool).                                        |
+Each deploy job is off until its repository variable is `true`: `DEVELOPMENT_DEPLOY_ENABLED` or `PRODUCTION_DEPLOY_ENABLED`.
+
+| Secret                                               | Purpose                                                                                     |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN` (repository) | Publishing. Use a Docker Hub access token with read/write access to the three repositories. |
+| `DOCKERHUB_READ_USERNAME`, `DOCKERHUB_READ_TOKEN`    | Environment secret. Pull-only token sent to the VPS for one deployment.                     |
+| `VPS_HOST`                                           | Environment secret. VPS hostname or IP.                                                     |
+| `VPS_DEPLOY_USER`                                    | `vps-deploy`.                                                                               |
+| `VPS_DEPLOY_SSH_KEY`                                 | Private key bound on the host to this stack only (forced command).                          |
+| `VPS_KNOWN_HOSTS`                                    | Pinned host key line(s), obtained out of band. Development uses `[host]:35340` entries.     |
+| `DEPLOY_ALERT_WEBHOOK_URL` (optional, repository)    | Failure alert webhook (Slack, Teams, incident tool).                                        |
 
 ### VPS
 
-Follow devops-toolkit `docs/vps-deployment.md`:
+Follow devops-toolkit `docs/vps-deployment.md`. The steps below use the production names; for the development VPS substitute `development` (stack `frontendprojecttemplate-development`, `/srv/frontendprojecttemplate/development`, `deploy/vps-deploy-stack.development.json`, `deploy/stack.development.env.example`). Both targets use `deploy/compose.production.yml`, which is environment-agnostic; `APP_ENVIRONMENT` comes from the host `stack.env`. A target needs its own deploy key, because each key is bound to one stack.
 
 1. Install the helper from a checkout of the pinned toolkit SHA, and create the `vps-deploy` account (once per host).
 2. Create `/srv/frontendprojecttemplate/production` (root-owned, `0750`).

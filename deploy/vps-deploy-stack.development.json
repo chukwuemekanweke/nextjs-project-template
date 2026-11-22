@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "stackName": "frontendprojecttemplate-development",
+  "environment": "development",
+  "deploymentPath": "/srv/frontendprojecttemplate/development",
+  "allowedSourceRepositories": ["chukwuemekanweke/nextjs-project-template"],
+  "allowedImageRepositories": [
+    "docker.io/chukwuemekanweke/frontendprojecttemplate-user-portal",
+    "docker.io/chukwuemekanweke/frontendprojecttemplate-admin-portal",
+    "docker.io/chukwuemekanweke/frontendprojecttemplate-public-portal"
+  ],
+  "allowedBindSources": [],
+  "lockTimeoutSeconds": 1800
+}
