@@ -18,8 +18,8 @@ catalog:
   "@types/react": 19.2.14
   "@types/react-dom": 19.2.3
   eslint: 9.39.5
-  eslint-config-next: 16.2.10
-  next: 16.2.10
+  eslint-config-next: 16.4.5
+  next: 16.4.5
   postcss: 8.5.6
   react: 19.2.7
   react-dom: 19.2.7

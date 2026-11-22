@@ -60,6 +60,8 @@ repository-wide changes must finish with repository-level verification.
   implement HTTP transport.
 - Keep product workflows and application composition in `apps/*`; reusable
   infrastructure and UI primitives belong in `packages/*`.
+- CI/CD is thin callers of the shared devops-toolkit workflows. Do not add
+  standalone build, publish, or deploy steps; see the OKF CI/CD concept.
 - Preserve package-level third-party notices such as `LICENSE.tailadmin` and
   `LICENSE.solid`.
 - Keep this router small; durable knowledge belongs in OKF.

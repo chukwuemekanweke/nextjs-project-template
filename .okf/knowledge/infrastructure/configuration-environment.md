@@ -7,7 +7,13 @@ description:
 resource: okf://knowledge/infrastructure/configuration-environment
 tags: [constraint, infrastructure, configuration, environment, secrets]
 governance: constraint
-code_refs: [packages/config/**, apps/*/.env.example, apps/*/src/config/**]
+code_refs:
+  [
+    packages/config/**,
+    apps/*/.env.example,
+    apps/*/.env.production,
+    apps/*/src/config/**,
+  ]
 sources:
   - kind: file
     path: packages/config/src/index.ts
@@ -36,3 +42,8 @@ app-specific values, and exports app-owned configuration.
 
 Document new values in the relevant `.env.example`. Keep application-specific
 configuration in its app rather than widening the shared schema without reuse.
+
+Production images compile browser values from `apps/<portal>/.env.production`,
+which may contain only `NEXT_PUBLIC_*` keys (enforced by each portal's
+`src/config/production-build-env.test.ts`); add new browser values there too.
+Server values are runtime container configuration, never build input.

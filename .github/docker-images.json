@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "images": [
+    {
+      "component": "user-portal",
+      "image": "docker.io/chukwuemekanweke/frontendprojecttemplate-user-portal",
+      "dockerfile": "apps/user-portal/Dockerfile"
+    },
+    {
+      "component": "admin-portal",
+      "image": "docker.io/chukwuemekanweke/frontendprojecttemplate-admin-portal",
+      "dockerfile": "apps/admin-portal/Dockerfile"
+    },
+    {
+      "component": "public-portal",
+      "image": "docker.io/chukwuemekanweke/frontendprojecttemplate-public-portal",
+      "dockerfile": "apps/public-portal/Dockerfile"
+    }
+  ]
+}

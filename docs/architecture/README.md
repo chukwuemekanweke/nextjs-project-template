@@ -13,6 +13,7 @@ Read in this order:
 7. [Handwritten API client and React integration](./07-api-client.md)
 8. [Query and form infrastructure](./08-query-and-form-infrastructure.md)
 9. [Authentication and session management](./09-authentication-and-session-management.md)
+10. [CI/CD and deployment](./10-ci-cd-and-deployment.md)
 
 ## Summary
 

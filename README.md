@@ -67,7 +67,11 @@ docker build -f apps/admin-portal/Dockerfile -t admin-portal .
 docker build -f apps/public-portal/Dockerfile -t public-portal .
 ```
 
-The images run their standalone Next.js servers on ports 9000, 9001, and 9002 respectively, use a non-root runtime user, and contain only the selected application's production output.
+The images run their standalone Next.js servers on ports 9000, 9001, and 9002 respectively, use a non-root runtime user, and contain only the selected application's production output. Browser-visible `NEXT_PUBLIC_*` values are compiled in from each app's reviewed `.env.production`; server-only values are supplied to the container at runtime, and each portal exposes an unauthenticated `GET /api/health`.
+
+## CI/CD and Deployment
+
+`.github/workflows/frontend-ci.yml` is a thin caller of the shared [devops-toolkit](https://github.com/chukwuemekanweke/devops-toolkit) reusable workflows: monorepo verification and release-configuration validation on every change, then, on `main`, publishing the three images by immutable digest and deploying them to the production VPS from `deploy/compose.production.yml`. See [CI/CD and deployment](docs/architecture/10-ci-cd-and-deployment.md) for the workflow graph, configuration boundaries, required secrets, VPS and reverse-proxy setup, and restoration behaviour.
 
 ## Workspace Commands
 

@@ -3,8 +3,24 @@
 **/.turbo
 **/coverage
 **/node_modules
+**/*.tsbuildinfo
 **/.env
 **/.env.*
 !**/.env.example
+# Reviewed, browser-visible production build configuration (NEXT_PUBLIC_* only).
+!apps/*/.env.production
 npm-debug.log*
 pnpm-debug.log*
+
+# Not needed to build any portal image.
+.pnpm-store
+.github
+.okf
+.vscode
+.idea
+deploy
+docs
+scripts
+*.md
+!**/LICENSE*
+backendprojecttemplatewebapi.json
