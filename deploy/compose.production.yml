@@ -1,4 +1,5 @@
-# Production Compose for the three portals, deployed as one stack by the
+# Compose for the three portals, used by both the development and production
+# targets. Deployed as one stack by the
 # devops-toolkit vps-deploy.yml workflow (.github/workflows/frontend-ci.yml).
 #
 # - Images: no image or tag is named here. The toolkit's generated override sets

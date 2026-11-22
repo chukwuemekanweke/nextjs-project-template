@@ -5,12 +5,14 @@
 # deployment config, Compose render, and host Compose policy against the
 # checked-in registry copy).
 # Push to main only: publish the three portal images by immutable digest, then
-# deploy them as one stack to the production VPS through the protected
-# `production` GitHub Environment.
+# deploy them as one stack to each enabled VPS target through its GitHub
+# Environment (`development`, `production`). Each deploy is off until an
+# operator sets its repository variable (DEVELOPMENT_DEPLOY_ENABLED,
+# PRODUCTION_DEPLOY_ENABLED) to `true`.
 #
 # Toolkit pin: devops-toolkit has no release tag yet, so every call uses the
 # same reviewed full commit SHA (main at DEVOPS-013 integration). Upgrade all
-# four references together; see docs/architecture/10-ci-cd-and-deployment.md.
+# toolkit references together; see docs/architecture/10-ci-cd-and-deployment.md.
 name: Frontend CI/CD
 
 on:
@@ -28,6 +30,7 @@ on:
       - ".dockerignore"
       - ".github/docker-images.json"
       - ".github/vps-deploy.production.json"
+      - ".github/vps-deploy.development.json"
       - ".github/workflows/frontend-ci.yml"
   push:
     branches: [main]
@@ -44,6 +47,7 @@ on:
       - ".dockerignore"
       - ".github/docker-images.json"
       - ".github/vps-deploy.production.json"
+      - ".github/vps-deploy.development.json"
       - ".github/workflows/frontend-ci.yml"
 
 permissions: {}
@@ -86,9 +90,24 @@ jobs:
       stack-registry-path: deploy/vps-deploy-stack.production.json
       compose-env-file: deploy/stack.env.example
 
+  check-release-config-development:
+    name: Check development release configuration
+    permissions:
+      contents: read
+    uses: chukwuemekanweke/devops-toolkit/.github/workflows/release-config-check.yml@190253ec766e10185629ef3e6e123bf3d603aadf
+    with:
+      image-config-path: .github/docker-images.json
+      # Must match the deploy-development inputs below.
+      deploy-config-path: .github/vps-deploy.development.json
+      environment: development
+      stack-name: frontendprojecttemplate-development
+      stack-registry-path: deploy/vps-deploy-stack.development.json
+      compose-env-file: deploy/stack.development.env.example
+
   publish-images:
     name: Publish images
-    needs: [verify-monorepo, check-release-config]
+    needs:
+      [verify-monorepo, check-release-config, check-release-config-development]
     # Trusted path only: never publish from pull requests or other branches.
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     permissions:
@@ -103,10 +122,46 @@ jobs:
       registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
       registry-token: ${{ secrets.DOCKERHUB_TOKEN }}
 
+  deploy-development:
+    name: Deploy development
+    needs: publish-images
+    # Off until an operator sets the repository variable
+    # DEVELOPMENT_DEPLOY_ENABLED=true. Runs in the `development` GitHub
+    # Environment, whose environment secrets the toolkit job reads.
+    if: >-
+      github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      vars.DEVELOPMENT_DEPLOY_ENABLED == 'true'
+    permissions:
+      contents: read
+    uses: chukwuemekanweke/devops-toolkit/.github/workflows/vps-deploy.yml@190253ec766e10185629ef3e6e123bf3d603aadf
+    with:
+      environment: development
+      stack-name: frontendprojecttemplate-development
+      # The development VPS runs sshd on a non-default port; VPS_KNOWN_HOSTS
+      # must use [host]:35340.
+      ssh-port: 35340
+      deployment-id: ${{ needs.publish-images.outputs.deployment-id }}
+      manifest-artifact: ${{ needs.publish-images.outputs.manifest-artifact }}
+      deploy-config-path: .github/vps-deploy.development.json
+    secrets:
+      # Secrets of the `development` GitHub Environment. Registry credentials
+      # are pull-only.
+      ssh-host: ${{ secrets.VPS_HOST }}
+      ssh-user: ${{ secrets.VPS_DEPLOY_USER }}
+      ssh-private-key: ${{ secrets.VPS_DEPLOY_SSH_KEY }}
+      ssh-known-hosts: ${{ secrets.VPS_KNOWN_HOSTS }}
+      registry-username: ${{ secrets.DOCKERHUB_READ_USERNAME }}
+      registry-token: ${{ secrets.DOCKERHUB_READ_TOKEN }}
+
   deploy-production:
     name: Deploy production
     needs: publish-images
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    # Off until an operator sets the repository variable
+    # PRODUCTION_DEPLOY_ENABLED=true; the protected `production` Environment's
+    # reviewers and branch rules apply on top of this.
+    if: >-
+      github.event_name == 'push' && github.ref == 'refs/heads/main' &&
+      vars.PRODUCTION_DEPLOY_ENABLED == 'true'
     permissions:
       contents: read
     uses: chukwuemekanweke/devops-toolkit/.github/workflows/vps-deploy.yml@190253ec766e10185629ef3e6e123bf3d603aadf
@@ -119,6 +174,7 @@ jobs:
       stack-name: frontendprojecttemplate-production
       deploy-config-path: .github/vps-deploy.production.json
     secrets:
+      # Secrets of the protected `production` GitHub Environment.
       ssh-host: ${{ secrets.VPS_HOST }}
       ssh-user: ${{ secrets.VPS_DEPLOY_USER }}
       ssh-private-key: ${{ secrets.VPS_DEPLOY_SSH_KEY }}
