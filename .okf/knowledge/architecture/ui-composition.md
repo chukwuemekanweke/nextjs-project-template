@@ -23,7 +23,9 @@ status: stable
 ---
 
 - `@template/ui-core` exposes general controls such as alerts, cards, form
-  controls, modals, pagination, skeletons, tables, and accessible tabs.
+  controls, modals, pagination, skeletons, tables, and accessible tabs, plus
+  the presentation-only `formatMinorUnits` money formatter (also used by the
+  Public Portal).
 - `@template/dashboard-ui` exposes reusable dashboard layout mechanics: shell,
   sidebar state and rendering, mobile navigation, breadcrumbs, header, and
   profile-menu presentation. Apps supply items, destinations, identity text,

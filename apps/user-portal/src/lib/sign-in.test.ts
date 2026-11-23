@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   createEmailConfirmationDestination,
+  createRegistrationHref,
+  createSignInHref,
   createTwoFactorDestination,
   safeEmailParameter,
   safeSignInDestination,
@@ -74,5 +76,30 @@ describe("safeSignInError", () => {
 
   it("uses a generic message for unexpected failures", () => {
     expect(safeSignInError(500)).not.toContain("500");
+  });
+});
+
+describe("authentication links", () => {
+  const checkout =
+    "/billing/checkout?planId=019a0000-0000-7000-8000-000000000001";
+
+  it("keeps a selected plan destination between sign-in and registration", () => {
+    expect(createRegistrationHref(checkout)).toBe(
+      `/register?returnTo=${encodeURIComponent(checkout)}`,
+    );
+    expect(
+      createSignInHref({ email: "User@Example.com", returnTo: checkout }),
+    ).toBe(
+      `/sign-in?email=user%40example.com&returnTo=${encodeURIComponent(checkout)}`,
+    );
+  });
+
+  it("omits default and unsafe destinations", () => {
+    expect(createRegistrationHref("/dashboard")).toBe("/register");
+    expect(createRegistrationHref("https://evil.example/billing")).toBe(
+      "/register",
+    );
+    expect(createSignInHref({ returnTo: "//evil.example" })).toBe("/sign-in");
+    expect(createSignInHref()).toBe("/sign-in");
   });
 });

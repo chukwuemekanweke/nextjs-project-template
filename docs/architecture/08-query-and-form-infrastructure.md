@@ -19,7 +19,7 @@ flowchart LR
   Backend -. authoritative errors .-> Forms
 ```
 
-Each portal has a local `src/components/app-providers.tsx`. It creates no cross-application runtime dependency: it combines that portal's `src/lib/api.ts` browser client with the reusable `ApiProvider`. The User and Admin portals are ready for authenticated same-origin operations, and the Public portal can adopt public queries without adding another provider later. Server Components and Route Handlers remain free to use `@template/api-client` directly.
+Each portal has a local `src/components/app-providers.tsx`. It creates no cross-application runtime dependency: it combines that portal's `src/lib/api.ts` browser client with the reusable `ApiProvider`. The User and Admin portals are ready for authenticated same-origin operations, and the Public Portal can adopt public queries without adding another provider later. Its subscription plans are loaded by Server Components instead. Server Components and Route Handlers remain free to use `@template/api-client` directly.
 
 ## Query policy and keys
 
@@ -37,7 +37,7 @@ profileKeys.current();
 // ["profiles", "current"]
 ```
 
-Key factories live with their domains under `packages/api-react/src`. Every reusable query is created through `getQueryOptions`, which accepts only operation metadata whose method is `GET` and repeats that check at runtime. This prevents POST, PUT, PATCH, or DELETE operations from inheriting query retries through an accidental query wrapper. Mutations invalidate the narrowest useful parent hierarchy. Logout clears all cached server state. TanStack Query Devtools render only when `NODE_ENV` is `development`.
+Key factories live with their domains under `packages/api-react/src`. Every reusable query is created through `getQueryOptions`, which accepts only operation metadata whose method is `GET` and repeats that check at runtime. This prevents POST, PUT, PATCH, or DELETE operations from inheriting query retries through an accidental query wrapper. Mutations invalidate the narrowest useful parent hierarchy. Customer data that depends on a billing owner nests under an owner segment (for example `["subscriptions", "owner", "Stakeholder", "current"]`) so different billing contexts never share entries. Polling uses TanStack `refetchInterval` driven by backend flags with a client-side bound rather than custom timers; see the subscription purchase status in [Subscriptions and billing](./11-subscriptions-and-billing.md). Logout clears all cached server state. TanStack Query Devtools render only when `NODE_ENV` is `development`.
 
 ## Form lifecycle
 

@@ -355,4 +355,97 @@ describe("User Portal browser API", () => {
       "http://api.test/api/v1/reference-data/countries",
     );
   });
+
+  it("routes authenticated subscription operations through same-origin BFF routes", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockImplementation(async () => Response.json({}));
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+    const owner = { BillingAccountOwnerType: "Stakeholder" } as const;
+    const key = "4d3c3a2e-6f9b-4f43-9a55-0c5b3f6f1a10";
+
+    await client.subscriptions.listEligiblePaymentProviders(
+      { planId: "plan-1" },
+      owner,
+    );
+    await client.subscriptions.purchaseSubscription(
+      {
+        autoRenew: true,
+        billingAccountOwnerType: "Stakeholder",
+        paymentProviderId: "provider-1",
+        planId: "plan-1",
+      },
+      key,
+    );
+    await client.subscriptions.getSubscriptionPurchaseStatus(
+      { purchaseId: "purchase-1" },
+      owner,
+    );
+    await client.subscriptions.getCurrentSubscription(owner);
+    await client.subscriptions.getBillingHistory({ ...owner, Page: 2 });
+    await client.subscriptions.cancelSubscriptionAtPeriodEnd({
+      billingAccountOwnerType: "Stakeholder",
+    });
+
+    expect(
+      fetchImplementation.mock.calls.map(([input, init]) => [
+        input.toString(),
+        init?.method,
+        init?.credentials,
+      ]),
+    ).toEqual([
+      [
+        "/api/billing/subscription-plans/plan-1/payment-providers?BillingAccountOwnerType=Stakeholder",
+        "GET",
+        "same-origin",
+      ],
+      ["/api/billing/subscriptions/purchases", "POST", "same-origin"],
+      [
+        "/api/billing/subscriptions/purchases/purchase-1?BillingAccountOwnerType=Stakeholder",
+        "GET",
+        "same-origin",
+      ],
+      [
+        "/api/billing/subscriptions/current?BillingAccountOwnerType=Stakeholder",
+        "GET",
+        "same-origin",
+      ],
+      [
+        "/api/billing/subscriptions/billing-history?BillingAccountOwnerType=Stakeholder&Page=2",
+        "GET",
+        "same-origin",
+      ],
+      [
+        "/api/billing/subscriptions/current/cancellation-at-period-end",
+        "POST",
+        "same-origin",
+      ],
+    ]);
+    const purchaseHeaders = new Headers(
+      fetchImplementation.mock.calls[1]?.[1]?.headers,
+    );
+    expect(purchaseHeaders.get("Idempotency-Key")).toBe(key);
+    expect(purchaseHeaders.get("Authorization")).toBeNull();
+  });
+
+  it("loads public subscription plans directly from the API", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json([]));
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+
+    await client.subscriptions.listSubscriptionPlans();
+
+    expect(fetchImplementation.mock.calls[0]?.[0].toString()).toBe(
+      "http://api.test/api/v1/subscription-plans",
+    );
+  });
 });

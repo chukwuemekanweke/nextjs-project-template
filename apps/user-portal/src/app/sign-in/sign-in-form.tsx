@@ -21,6 +21,7 @@ import type {
 import type { PasskeySignInResult } from "@/lib/passkey-sign-in";
 import {
   createEmailConfirmationDestination,
+  createRegistrationHref,
   createTwoFactorDestination,
   safeSignInError,
 } from "@/lib/sign-in";
@@ -231,7 +232,7 @@ export function SignInForm({
         Need an account?{" "}
         <Link
           className="text-brand-600 hover:text-brand-700 dark:text-brand-400 font-medium"
-          href="/register"
+          href={createRegistrationHref(destination)}
         >
           Register
         </Link>

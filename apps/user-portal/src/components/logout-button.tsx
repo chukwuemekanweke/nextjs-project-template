@@ -2,6 +2,7 @@
 
 import { useApiQueryClient } from "@template/api-react/query-client";
 import { useState } from "react";
+import { browserCheckoutAttemptStore } from "@/lib/checkout-attempt";
 import { logoutPortalSession } from "@/lib/logout";
 
 export function LogoutButton() {
@@ -16,7 +17,10 @@ export function LogoutButton() {
     setIsLoggingOut(true);
     await logoutPortalSession({
       cancelPrivateRequests: () => queryClient.cancelQueries(),
-      clearPrivateData: () => queryClient.clear(),
+      clearPrivateData: () => {
+        queryClient.clear();
+        browserCheckoutAttemptStore().clear();
+      },
     });
   }
 

@@ -23,8 +23,9 @@ activation. Contracts and operation metadata live together under
 transport rather than interpolated by features.
 
 `api-react/src/payments` supplies payment keys, GET query options/hooks, and
-mutation options with targeted invalidation. No complete application payment
-screen/workflow is implemented yet. Do not describe one as existing or move
+mutation options with targeted invalidation. No complete wallet payment
+screen/workflow is implemented yet. Subscription checkout is a separate domain
+(`domains/subscriptions`) and does not use these wallet operations. Do not describe one as existing or move
 product decisions into packages. A future app owns amount-entry UX, redirects,
 notifications, authorization presentation, and payment journey state while
 reusing these package capabilities.

@@ -43,6 +43,34 @@ export function safeSignInDestination(value: string | undefined): string {
   }
 }
 
+/** Sign-in link that keeps a non-default, validated destination. */
+export function createSignInHref({
+  email,
+  returnTo,
+}: Readonly<{ email?: string; returnTo?: string }> = {}): string {
+  return withAuthenticationParameters("/sign-in", { email, returnTo });
+}
+
+/** Registration link that keeps a non-default, validated destination. */
+export function createRegistrationHref(returnTo?: string): string {
+  return withAuthenticationParameters("/register", { returnTo });
+}
+
+function withAuthenticationParameters(
+  path: string,
+  { email, returnTo }: Readonly<{ email?: string; returnTo?: string }>,
+): string {
+  const parameters = new URLSearchParams();
+  const safeEmail = safeEmailParameter(email);
+  if (safeEmail) parameters.set("email", safeEmail);
+  const destination = safeSignInDestination(returnTo);
+  if (destination !== DEFAULT_SIGN_IN_DESTINATION) {
+    parameters.set("returnTo", destination);
+  }
+  const query = parameters.toString();
+  return query ? `${path}?${query}` : path;
+}
+
 export function createTwoFactorDestination(returnTo: string): string {
   const parameters = new URLSearchParams({
     returnTo: safeSignInDestination(returnTo),

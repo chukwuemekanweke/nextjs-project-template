@@ -81,7 +81,7 @@ Next.js inlines `NEXT_PUBLIC_*` values into the JavaScript bundle at build time.
 Rules:
 
 - `.env.production` may contain only `NEXT_PUBLIC_*` keys. `src/config/production-build-env.test.ts` in each portal enforces that, rejects secret-like key names and localhost endpoints, and validates the file against the portal's browser schema. It is the only `.env*` file besides `.env.example` that git and Docker accept.
-- During `next build`, Next.js evaluates server modules while collecting page data, and `src/config/server-env.ts` validates server configuration at load time. The user and admin Dockerfiles therefore pass placeholder server values to that single `RUN` step only. The placeholder API host ends in the reserved `.invalid` domain. These values never enter the runtime image, and verification confirmed the placeholder string appears nowhere in the built images. The public portal needs no placeholders.
+- During `next build`, Next.js evaluates server modules while collecting page data, and `src/config/server-env.ts` validates server configuration at load time. All three Dockerfiles therefore pass placeholder server values to that single `RUN` step only (the Public Portal needs them because it loads subscription plans through a server API client). The placeholder API host ends in the reserved `.invalid` domain. These values never enter the runtime image, and verification confirmed the placeholder string appears nowhere in the built images.
 - Never pass server values or secrets as Docker build arguments or `buildArgs` in the image configuration. Build arguments are recorded in image provenance.
 - `.env.local` takes precedence over `.env.production`, so development and CI builds keep using the example values.
 

@@ -33,6 +33,10 @@ import {
   passwordSchema,
   profileSchema,
 } from "@/lib/registration";
+import {
+  createEmailConfirmationDestination,
+  createSignInHref,
+} from "@/lib/sign-in";
 
 type EmailValues = z.infer<typeof emailSchema>;
 type PasswordValues = z.infer<typeof passwordSchema>;
@@ -112,7 +116,9 @@ export function RegistrationForm({
     try {
       const result = await checkEmail.mutateAsync({ email: normalizedEmail });
       if (result.exists) {
-        router.replace(`/sign-in?email=${encodeURIComponent(normalizedEmail)}`);
+        router.replace(
+          createSignInHref({ email: normalizedEmail, returnTo: destination }),
+        );
         return;
       }
       setEmail(normalizedEmail);
@@ -148,15 +154,16 @@ export function RegistrationForm({
         firstName: profileValues.firstName.trim(),
         lastName: profileValues.lastName.trim(),
       });
-      const retryAtUtc = response.retryAtUtc
-        ? `&retryAtUtc=${encodeURIComponent(response.retryAtUtc)}`
-        : "";
       router.replace(
-        `/confirm-email?email=${encodeURIComponent(response.email || email)}${retryAtUtc}`,
+        createEmailConfirmationDestination({
+          email: response.email || email,
+          retryAtUtc: response.retryAtUtc,
+          returnTo: destination,
+        }),
       );
     } catch (caughtError) {
       if (isApiError(caughtError) && caughtError.kind === "conflict") {
-        router.replace(`/sign-in?email=${encodeURIComponent(email)}`);
+        router.replace(createSignInHref({ email, returnTo: destination }));
         return;
       }
       const generalErrors = applyBackendValidation(
@@ -395,9 +402,7 @@ export function RegistrationForm({
         Already have an account?{" "}
         <Link
           className="text-brand-600 hover:text-brand-700 dark:text-brand-400 font-medium"
-          href={
-            email ? `/sign-in?email=${encodeURIComponent(email)}` : "/sign-in"
-          }
+          href={createSignInHref({ email, returnTo: destination })}
         >
           Sign in
         </Link>
