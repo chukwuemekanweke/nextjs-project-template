@@ -86,7 +86,11 @@ The checkout route is protected by the User Portal proxy, so an unauthenticated 
 
 `checkoutOutcomeFor` maps the purchase response:
 
-- `PaymentLink`: navigate only to `instructionFields.paymentLink`, and only if it is an absolute `https:` URL without credentials (`safePaymentLink`). The page also shows a manual continue link and a status link.
+- `PaymentLink`: navigate only to `instructionFields.paymentLink`, and only if it is an absolute `https:` URL without credentials (`safePaymentLink`).
+  - `submitAndFollowCheckout` navigates once from the submit handler, not from a render effect, so re-renders cannot repeat it. Ignored duplicate submissions and failures never navigate.
+  - While the browser leaves, `ProviderRedirect` shows "Taking you to {provider}" with no merchant reference, status link, or polling.
+  - A "Continue to {provider}" link to the same backend URL appears only after 4 seconds, as a fallback.
+  - A missing or unsafe link is treated as `unsupported`, with a "couldn't open the checkout page" message, the reference, and a status link.
 - `BankTransfer`: render the documented `bankName`, `accountName`, `accountNumber`, and `providerReference` fields, the plan amount, expiry, and merchant reference, with a link to the status page.
 - Anything else, or an invalid link: show a "cannot be completed in this portal" message with the reference and a status link. No provider URL is constructed.
 

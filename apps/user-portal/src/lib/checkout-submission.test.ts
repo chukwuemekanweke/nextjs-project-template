@@ -8,6 +8,7 @@ import {
 import {
   checkoutOutcomeFor,
   createCheckoutSubmitter,
+  submitAndFollowCheckout,
   type CheckoutSubmitterOptions,
 } from "./checkout-submission";
 
@@ -255,5 +256,83 @@ describe("checkoutOutcomeFor", () => {
         }),
       ).type,
     ).toBe("unsupported");
+  });
+});
+
+describe("submitAndFollowCheckout", () => {
+  it("navigates to the backend payment link once after initiation", async () => {
+    const purchase = vi.fn().mockResolvedValue(response());
+    const { createKey, submitter } = setup(purchase);
+    const navigate = vi.fn();
+
+    const outcome = await submitAndFollowCheckout(
+      submitter,
+      selection,
+      navigate,
+    );
+
+    expect(outcome.type).toBe("redirect");
+    expect(navigate).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledWith(
+      "https://provider.example/checkout/abc",
+    );
+    expect(createKey).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not navigate for a duplicate submission while one is in flight", async () => {
+    let resolve!: (value: PurchaseSubscriptionMutationResponse) => void;
+    const purchase = vi.fn(
+      () =>
+        new Promise<PurchaseSubscriptionMutationResponse>((done) => {
+          resolve = done;
+        }),
+    );
+    const { submitter } = setup(purchase);
+    const navigate = vi.fn();
+
+    const first = submitAndFollowCheckout(submitter, selection, navigate);
+    const duplicate = await submitAndFollowCheckout(
+      submitter,
+      selection,
+      navigate,
+    );
+    resolve(response());
+    await first;
+
+    expect(duplicate.type).toBe("ignored");
+    expect(purchase).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not navigate when initiation fails", async () => {
+    const { submitter } = setup(vi.fn().mockRejectedValue(conflict()));
+    const navigate = vi.fn();
+
+    const outcome = await submitAndFollowCheckout(
+      submitter,
+      selection,
+      navigate,
+    );
+
+    expect(outcome.type).toBe("error");
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it("does not navigate to a missing or unsafe payment link", async () => {
+    const navigate = vi.fn();
+    const unusable: PurchaseSubscriptionMutationResponse["instructionFields"][] =
+      [{}, { paymentLink: "http://provider.example/x" }];
+    for (const instructionFields of unusable) {
+      const { submitter } = setup(
+        vi.fn().mockResolvedValue(response({ instructionFields })),
+      );
+      const outcome = await submitAndFollowCheckout(
+        submitter,
+        selection,
+        navigate,
+      );
+      expect(outcome.type).toBe("unsupported");
+    }
+    expect(navigate).not.toHaveBeenCalled();
   });
 });

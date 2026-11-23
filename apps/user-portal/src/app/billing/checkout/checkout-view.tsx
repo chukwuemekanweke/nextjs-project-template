@@ -27,6 +27,7 @@ import {
 } from "@/lib/checkout-attempt";
 import {
   createCheckoutSubmitter,
+  submitAndFollowCheckout,
   type CheckoutOutcome,
 } from "@/lib/checkout-submission";
 import { useRememberedCheckoutAttempt } from "@/lib/use-checkout-attempt";
@@ -39,6 +40,7 @@ import {
 } from "./checkout-icons";
 import { SubscriptionOrderSummary } from "./order-summary";
 import { PaymentInstructions } from "./payment-instructions";
+import { ProviderRedirect } from "./provider-redirect";
 import { PaymentMethodSelector } from "./payment-method-selector";
 import { PlanPicker } from "./plan-picker";
 
@@ -131,19 +133,22 @@ function PlanCheckout({
       store: browserCheckoutAttemptStore(),
     });
     setError(undefined);
-    const result = await submitterRef.current.submit({
-      autoRenew,
-      billingAccountOwnerType: ownerType,
-      paymentProviderId: selectedProvider.id,
-      planId: plan.id,
-    });
+    const result = await submitAndFollowCheckout(
+      submitterRef.current,
+      {
+        autoRenew,
+        billingAccountOwnerType: ownerType,
+        paymentProviderId: selectedProvider.id,
+        planId: plan.id,
+      },
+      navigate,
+    );
     if (result.type === "ignored") return;
     if (result.type === "error") {
       setError(result.message);
       return;
     }
     setOutcome(result);
-    if (result.type === "redirect") navigate(result.href);
   }
 
   return (
@@ -158,7 +163,12 @@ function PlanCheckout({
       />
       <Card className="shadow-theme-sm xl:col-start-1 xl:row-start-1">
         <CardContent className="sm:p-8">
-          {outcome ? (
+          {outcome?.type === "redirect" ? (
+            <ProviderRedirect
+              href={outcome.href}
+              providerName={outcome.response.paymentProviderName}
+            />
+          ) : outcome ? (
             <>
               <PaymentCardHeader
                 description="Your checkout was created. Follow the steps below."

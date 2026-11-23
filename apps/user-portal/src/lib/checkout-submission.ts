@@ -51,6 +51,22 @@ export function checkoutOutcomeFor(
 }
 
 /**
+ * Runs one submission and, for a hosted checkout, navigates to the
+ * backend-returned link exactly once. Navigation is driven by the submit
+ * event, never by a render effect, so re-renders cannot repeat it; an ignored
+ * duplicate submission or a failure never navigates.
+ */
+export async function submitAndFollowCheckout(
+  submitter: Pick<ReturnType<typeof createCheckoutSubmitter>, "submit">,
+  selection: CheckoutSelection,
+  navigate: (href: string) => void,
+): Promise<CheckoutOutcome> {
+  const outcome = await submitter.submit(selection);
+  if (outcome.type === "redirect") navigate(outcome.href);
+  return outcome;
+}
+
+/**
  * Submits checkout attempts. While a submission is in flight further calls
  * are ignored (usability only; the backend enforces idempotency). An
  * identical selection reuses the remembered idempotency key; a changed one

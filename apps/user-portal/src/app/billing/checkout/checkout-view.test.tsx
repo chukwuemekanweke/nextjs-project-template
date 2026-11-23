@@ -24,6 +24,7 @@ vi.mock("@/lib/use-checkout-attempt", () => ({
 import { CheckoutView } from "./checkout-view";
 import { PaymentInstructions } from "./payment-instructions";
 import { PaymentMethodCard } from "./payment-method-selector";
+import { ProviderRedirect } from "./provider-redirect";
 
 const PLAN_ID = "019a0000-0000-7000-8000-000000000001";
 const plan: SubscriptionPlanResponse = {
@@ -124,6 +125,27 @@ describe("CheckoutView", () => {
     expect(markup).toContain("You already started a checkout for this plan.");
     expect(markup).toMatch(/<button[^>]*type="submit"[^>]*>Pay NGN 7,500.00/);
     expect(markup).not.toMatch(/<button[^>]*disabled=""[^>]*type="submit"/);
+  });
+
+  it("does not purchase or redirect again when the page is refreshed after initiation", () => {
+    const mutateAsync = vi.fn();
+    hooks.usePurchaseSubscription.mockReturnValue({
+      isPending: false,
+      mutateAsync,
+    });
+    hooks.useRememberedCheckoutAttempt.mockReturnValue({
+      autoRenew: true,
+      billingAccountOwnerType: "Stakeholder",
+      createdAtUtc: "2026-11-23T12:00:00Z",
+      idempotencyKey: "4d3c3a2e-6f9b-4f43-9a55-0c5b3f6f1a10",
+      paymentProviderId: "provider-link",
+      planId: PLAN_ID,
+      purchaseId: "019a0000-0000-7000-8000-000000000002",
+    });
+    const markup = render();
+    expect(mutateAsync).not.toHaveBeenCalled();
+    expect(markup).not.toContain("Taking you to");
+    expect(markup).toContain("You already started a checkout for this plan.");
   });
 
   it("prevents duplicate submissions while a purchase is pending", () => {
@@ -342,6 +364,39 @@ describe("PaymentMethodCard", () => {
   });
 });
 
+describe("ProviderRedirect", () => {
+  const href = "https://provider.example/checkout/1";
+  const renderRedirect = (fallbackDelayMs?: number) =>
+    renderToStaticMarkup(
+      createElement(ProviderRedirect, {
+        fallbackDelayMs,
+        href,
+        providerName: "Bachs",
+      }),
+    ).replace(/&#x27;/g, "'");
+
+  it("shows a minimal redirect state without identifiers or a status check", () => {
+    const markup = renderRedirect();
+    expect(markup).toContain("Taking you to Bachs");
+    expect(markup).toContain("You'll return here after checkout.");
+    expect(markup).toContain('aria-busy="true"');
+    expect(markup).not.toContain("pay_1");
+    expect(markup).not.toContain("Reference");
+    expect(markup).not.toContain("Check payment status");
+    expect(markup).not.toContain("/billing/purchases/");
+  });
+
+  it("waits for automatic navigation before offering the manual link", () => {
+    expect(renderRedirect()).not.toContain(`href="${href}"`);
+  });
+
+  it("offers the backend link as a fallback once automatic navigation stalls", () => {
+    const markup = renderRedirect(0);
+    expect(markup).toContain("If the redirect doesn't happen automatically");
+    expect(markup).toMatch(new RegExp(`href="${href}"[^>]*>Continue to Bachs`));
+  });
+});
+
 describe("PaymentInstructions", () => {
   const response = {
     expiresAtUtc: "2026-11-23T13:00:00Z",
@@ -361,16 +416,13 @@ describe("PaymentInstructions", () => {
       createElement(PaymentInstructions, { amount: "NGN 7,500.00", outcome }),
     );
 
-  it("offers the hosted checkout link and a status fallback", () => {
-    const markup = renderOutcome({
-      href: "https://provider.example/checkout/1",
-      response,
-      type: "redirect",
-    });
-    expect(markup).toContain('href="https://provider.example/checkout/1"');
-    expect(markup).toContain(
-      `href="/billing/purchases/${response.purchaseId}"`,
+  it("explains an unusable payment link instead of redirecting", () => {
+    const markup = renderOutcome({ response, type: "unsupported" }).replace(
+      /&#x27;/g,
+      "'",
     );
+    expect(markup).toContain("We couldn't open Bachs's checkout page.");
+    expect(markup).not.toContain("cannot be completed in this portal yet");
   });
 
   it("renders bank-transfer details and references", () => {
