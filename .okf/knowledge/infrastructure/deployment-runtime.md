@@ -39,7 +39,7 @@ package managers, and runs as non-root `node` with read-only app files.
   container and deployment health check; `/` redirects on user/admin portals.
 - Browser `NEXT_PUBLIC_*` values compile in from `apps/<portal>/.env.production`;
   server values arrive at runtime from `deploy/compose.production.yml` and the
-  host `stack.env`. The user/admin Dockerfiles pass `.invalid` placeholder
+  host `stack.env`. All three Dockerfiles pass `.invalid` placeholder
   server values to the `next build` step only, because page-data collection
   loads `server-env.ts`.
 - Production Compose runs the three portals as one stack: no image names (the

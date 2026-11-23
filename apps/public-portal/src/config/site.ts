@@ -4,9 +4,9 @@ import type {
   FeatureItem,
   LinkItem,
   LogoItem,
-  PricePlan,
   TestimonialItem,
 } from "@template/public-ui";
+import type { PlanMarketingContent } from "@/lib/subscription-pricing";
 import { branding, env, userPortalHref } from "./env";
 
 export const site = {
@@ -59,31 +59,12 @@ export const features: FeatureItem[] = [
       "Start from standardized tooling, metadata, testing, and container builds.",
   },
 ];
-export const plans: PricePlan[] = [
-  {
-    name: "Starter",
-    price: "$0",
-    cadence: "month",
-    description: "For teams exploring the product.",
-    features: ["Core workspace", "Community support", "One project"],
-    action: site.register,
-  },
-  {
-    name: "Growth",
-    price: "$29",
-    cadence: "month",
-    description: "For teams ready to scale.",
-    features: ["Unlimited projects", "Team collaboration", "Priority support"],
-    action: site.register,
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    description: "For organizations with advanced needs.",
-    features: ["Custom controls", "Dedicated support", "Flexible deployment"],
-    action: { label: "Contact us", href: "/contact" },
-  },
-];
+/**
+ * Optional marketing copy keyed by backend plan `code`. Commercial data
+ * (price, currency, interval) always comes from the subscription-plans API;
+ * do not list feature entitlements here unless the backend enforces them.
+ */
+export const planMarketing: PlanMarketingContent = {};
 export const faqs: FaqItem[] = [
   {
     question: "Can I customize the product?",
@@ -96,9 +77,9 @@ export const faqs: FaqItem[] = [
       "Yes. The public portal remains independently deployable and treats backend authorization as authoritative.",
   },
   {
-    question: "Can I change plans later?",
+    question: "Where do plan prices come from?",
     answer:
-      "Yes. These plans are configurable placeholders for your real commercial offering.",
+      "Prices, currencies, and billing intervals are read from the billing service, so this page shows exactly what checkout will charge.",
   },
 ];
 export const testimonials: TestimonialItem[] = [

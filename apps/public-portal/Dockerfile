@@ -20,7 +20,15 @@ RUN pnpm fetch --frozen-lockfile
 COPY . .
 RUN pnpm install --frozen-lockfile --offline --filter "@template/public-portal..."
 
-RUN pnpm --filter @template/public-portal build
+# `next build` evaluates server modules while collecting page data, and the
+# server configuration module validates its values at load time. These
+# placeholders exist only for this RUN step, never reach the runtime image, and
+# use a reserved .invalid host so any accidental use is obvious and fails.
+RUN API_BASE_URL=http://server-config-supplied-at-runtime.invalid \
+    APP_ENVIRONMENT=production \
+    APPLICATION_NAME=public-portal \
+    APPLICATION_VERSION=0.0.0-build \
+    pnpm --filter @template/public-portal build
 
 FROM node:22.23.4-alpine AS runner
 ENV NODE_ENV=production \

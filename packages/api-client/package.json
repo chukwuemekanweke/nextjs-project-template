@@ -12,6 +12,7 @@
     "./providers": "./src/providers/index.ts",
     "./reference-data": "./src/reference-data/index.ts",
     "./server": "./src/server/index.ts",
+    "./subscriptions": "./src/subscriptions/index.ts",
     "./transport": "./src/transport/index.ts"
   },
   "scripts": {

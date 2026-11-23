@@ -8,11 +8,13 @@ export type FeatureItem = {
   icon?: ReactNode;
 };
 export type PricePlan = {
+  /** Stable identity, such as a backend plan id; falls back to `name`. */
+  id?: string;
   name: string;
   price: string;
   cadence?: string;
   description: string;
-  features: string[];
+  features?: string[];
   action: Action;
 };
 export type FaqItem = { question: string; answer: string };

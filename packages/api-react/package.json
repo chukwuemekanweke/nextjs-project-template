@@ -10,7 +10,8 @@
     "./profiles": "./src/profiles/index.ts",
     "./providers": "./src/providers/index.ts",
     "./query-client": "./src/query-client/index.ts",
-    "./reference-data": "./src/reference-data/index.ts"
+    "./reference-data": "./src/reference-data/index.ts",
+    "./subscriptions": "./src/subscriptions/index.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

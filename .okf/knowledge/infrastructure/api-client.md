@@ -44,6 +44,10 @@ Features must not construct backend URLs, duplicate transport, or import package
 internals. Use declared package/domain exports. Server and browser factories are
 separate boundaries.
 
+Operations that require an idempotency key take it as an explicit argument and
+set the header themselves (for example `purchaseSubscription` and
+`Idempotency-Key`); callers own the key lifecycle.
+
 Google authentication operations are also handwritten: start the opaque flow,
 authenticate an ID credential with a flow token, link an existing password
 account, and finish profile-only registration. Preserve backend `outcome` and

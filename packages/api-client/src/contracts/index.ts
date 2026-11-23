@@ -4,3 +4,4 @@ export type * from "../profiles/contracts";
 export type * from "../providers/contracts";
 export type * from "../reference-data/contracts";
 export type * from "../shared/contracts";
+export type * from "../subscriptions/contracts";

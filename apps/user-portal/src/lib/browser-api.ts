@@ -2,6 +2,7 @@ import { TENANT_ID_HEADER } from "@template/api-client";
 import { createBrowserApiClient } from "@template/api-client/browser";
 import { authenticationOperations } from "@template/api-client/authentication";
 import { profilesOperations } from "@template/api-client/profiles";
+import { subscriptionsOperations } from "@template/api-client/subscriptions";
 
 const PROFILE_BFF_PATH = "/api/profile";
 const AVATAR_UPLOADS_BFF_PATH = "/api/profile/avatar/uploads";
@@ -48,6 +49,37 @@ const TWO_FACTOR_BFF_ROUTES = new Map<string, string>([
 ]);
 const COMPLETE_AVATAR_UPLOAD_PATH =
   /^\/api\/v1\/stakeholders\/me\/profile\/avatar\/uploads\/([^/]+)\/complete$/;
+const BILLING_BFF_PREFIX = "/api/billing";
+const BACKEND_VERSION_PREFIX = "/api/v1";
+const SEGMENT = "[^/]+";
+/**
+ * Authenticated subscription operations are forwarded to same-origin BFF
+ * routes. The public plan list is not listed and goes directly to the API.
+ */
+const SUBSCRIPTION_BFF_OPERATIONS = [
+  subscriptionsOperations.listEligiblePaymentProviders,
+  subscriptionsOperations.purchaseSubscription,
+  subscriptionsOperations.getSubscriptionPurchaseStatus,
+  subscriptionsOperations.getCurrentSubscription,
+  subscriptionsOperations.getBillingHistory,
+  subscriptionsOperations.cancelSubscriptionAtPeriodEnd,
+].map(({ method, path }) => ({
+  method,
+  pattern: new RegExp(`^${path.replace(/\{[^}]+\}/g, SEGMENT)}$`),
+}));
+
+function subscriptionBffPath(
+  method: string | undefined,
+  pathname: string,
+): string | undefined {
+  const matches = SUBSCRIPTION_BFF_OPERATIONS.some(
+    (operation) =>
+      operation.method === method && operation.pattern.test(pathname),
+  );
+  return matches
+    ? `${BILLING_BFF_PREFIX}${pathname.slice(BACKEND_VERSION_PREFIX.length)}`
+    : undefined;
+}
 const REVOKE_SESSION_PATH =
   /^\/api\/v1\/authentication\/sessions\/(?!others$)([^/]+)$/;
 
@@ -165,6 +197,17 @@ export function createUserPortalBrowserApi({
           `${LOGIN_ACTIVITY_BFF_PATH}${requestUrl.search}`,
           { ...init, credentials: "same-origin" },
         );
+      }
+
+      const billingRoute = subscriptionBffPath(
+        init?.method,
+        requestUrl.pathname,
+      );
+      if (billingRoute) {
+        return fetchImplementation(`${billingRoute}${requestUrl.search}`, {
+          ...init,
+          credentials: "same-origin",
+        });
       }
 
       return fetchImplementation(input, init);

@@ -30,12 +30,16 @@ durable boundaries and pure behavior rather than broad browser rendering:
 - `api-react`: key/options/hook policies and integration with domain clients.
 - `forms`: backend validation mapping.
 - `config`: schema validation and defaults.
-- applications: session/cookie adapters, sign-in/logout, authorization,
+- `ui-core`: pure presentation helpers such as minor-unit money formatting.
+- applications: rendering via `renderToStaticMarkup` with mocked hooks (no DOM
+  or browser runner exists), BFF Route Handlers, session/cookie adapters, sign-in/logout, authorization,
   registration/profile/password helpers, navigation, environment, and portal
   configuration.
 
 When changing transport, auth concurrency, serialization, package exports, BFF
 routing, or validation mapping, add boundary-focused regression tests. Prefer
 injected fetch/clock/location/client dependencies and deterministic unit tests.
+Keep interactive workflow logic (for example checkout submission and idempotency
+key reuse) in pure modules so it can be tested without a DOM.
 Run a filtered workspace test while iterating, then the repository test suite;
 architectural/shared changes also require the full verification sequence.

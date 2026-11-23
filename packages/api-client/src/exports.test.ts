@@ -15,6 +15,7 @@ describe("package boundaries", () => {
       "./providers",
       "./reference-data",
       "./server",
+      "./subscriptions",
       "./transport",
     ]);
   });

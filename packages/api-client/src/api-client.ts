@@ -8,6 +8,10 @@ import { createPaymentsClient, type PaymentsClient } from "./payments";
 import { createProfilesClient, type ProfilesClient } from "./profiles";
 import { createProvidersClient, type ProvidersClient } from "./providers";
 import {
+  createSubscriptionsClient,
+  type SubscriptionsClient,
+} from "./subscriptions";
+import {
   createReferenceDataClient,
   type ReferenceDataClient,
 } from "./reference-data";
@@ -18,6 +22,7 @@ export interface ApiClient extends ApiTransport {
   readonly profiles: ProfilesClient;
   readonly providers: ProvidersClient;
   readonly referenceData: ReferenceDataClient;
+  readonly subscriptions: SubscriptionsClient;
   readonly transport: ApiTransport;
 }
 
@@ -36,6 +41,7 @@ export function createApiClientWithTransport(
     profiles: createProfilesClient(transport),
     providers: createProvidersClient(transport),
     referenceData: createReferenceDataClient(transport),
+    subscriptions: createSubscriptionsClient(transport),
     transport,
   });
 }

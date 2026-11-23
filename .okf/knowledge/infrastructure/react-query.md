@@ -27,6 +27,10 @@ retry policy, and reusable invalidation.
   GET-only runtime guard as `getQueryOptions`, wrapping TanStack's
   `infiniteQueryOptions`) and are consumed with `useInfiniteQuery`; see login
   activity in the authentication domain for the reference shape.
+- Customer data scoped by a billing owner nests under an owner key segment
+  (see subscriptions) so different billing contexts never share cache entries.
+- Status polling uses TanStack `refetchInterval` driven by backend flags plus a
+  client-side bound, not custom timers; stop polling after a failed read.
 - Mutations do not retry by default. Domain mutation options may invalidate or
   clear well-defined shared caches (for example profile updates and logout).
 - `ApiProvider` supplies the API client and query client to applications.
