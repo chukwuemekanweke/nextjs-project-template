@@ -20,6 +20,7 @@ code_refs:
     apps/user-portal/src/config/billing.ts,
     apps/user-portal/src/lib/billing-*.ts,
     apps/user-portal/src/lib/checkout-*.ts,
+    apps/user-portal/src/lib/payment-return.ts,
     apps/user-portal/src/lib/use-checkout-attempt.ts,
   ]
 sources:
@@ -64,8 +65,20 @@ minor units on the wire; format them only with `formatMinorUnits`
   other's retries. It is navigation state only; logout clears it.
 - Navigate only to a backend `paymentLink` that is absolute HTTPS. Render
   documented `BankTransfer` fields. Do not invent `Card` or other flows.
-- Provider return parameters are never proof of payment; the return route
-  resolves the remembered purchase id and the status page reads the backend.
+- Provider returns land on `/billing/checkout/success`, `/cancelled`, or the
+  hint-free `/return`, all rendering `PaymentReturn`. Query parameters are
+  ignored; the purchase id comes only from the remembered attempt, and the
+  outcome only from purchase status via `resolvePaymentReturnView`
+  (`lib/payment-return.ts`). The route is a wording hint: success needs
+  `SubscriptionActive`/`Scheduled` (paid but unfulfilled is "activating"), a
+  cancel return with no final payment state is "not completed", and confirmed
+  outcomes replace the URL with the matching route. No context: recoverable
+  state, never success, never a purchase.
+- Bachs `success_url`/`cancel_url` come from backend config
+  `Payments:Bachs:SuccessUrl`/`CancelUrl` (one value for all Bachs intents, no
+  purchase id). Bachs cancellation is verified as `PaymentFailed`, so a cancel
+  return plus `PaymentFailed` reads as cancelled. Backend gaps are listed in
+  `docs/architecture/11-subscriptions-and-billing.md`.
 - Public pricing CTAs link to User Portal `/billing/checkout?planId=`; the
   proxy and validated `returnTo` carry the plan through sign-in/registration.
 

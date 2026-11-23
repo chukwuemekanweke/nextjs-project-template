@@ -23,6 +23,7 @@ vi.mock("@/lib/use-checkout-attempt", () => ({
 
 import { CheckoutView } from "./checkout-view";
 import { PaymentInstructions } from "./payment-instructions";
+import { PaymentMethodCard } from "./payment-method-selector";
 
 const PLAN_ID = "019a0000-0000-7000-8000-000000000001";
 const plan: SubscriptionPlanResponse = {
@@ -46,6 +47,16 @@ const cardProvider = {
   paymentMethodType: "Card",
   supportsRecurringPayments: false,
 };
+
+const AUTO_RENEW = 'name="autoRenew"';
+
+/** Matches an <input> carrying every literal attribute, in any order. */
+function inputWith(...attributes: string[]) {
+  const lookaheads = attributes
+    .map((attribute) => `(?=[^>]*${attribute})`)
+    .join("");
+  return new RegExp(`<input${lookaheads}[^>]*>`);
+}
 
 function render() {
   return renderToStaticMarkup(
@@ -108,8 +119,8 @@ describe("CheckoutView", () => {
       purchaseId: "019a0000-0000-7000-8000-000000000002",
     });
     const markup = render();
-    expect(markup).toMatch(/checked=""[^>]*value="provider-link"/);
-    expect(markup).not.toMatch(/checked=""[^>]*name="autoRenew"/);
+    expect(markup).toMatch(inputWith('value="provider-link"', 'checked=""'));
+    expect(markup).not.toMatch(inputWith(AUTO_RENEW, 'checked=""'));
     expect(markup).toContain("You already started a checkout for this plan.");
     expect(markup).toMatch(/<button[^>]*type="submit"[^>]*>Pay NGN 7,500.00/);
     expect(markup).not.toMatch(/<button[^>]*disabled=""[^>]*type="submit"/);
@@ -158,6 +169,121 @@ describe("CheckoutView", () => {
     );
   });
 
+  it("renders the order summary from the authoritative plan", () => {
+    const markup = render();
+    expect(markup).toContain("Order summary");
+    expect(markup).toMatch(/Subtotal<\/dt><dd[^>]*>NGN 7,500.00/);
+    expect(markup).toMatch(/Billing frequency<\/dt><dd[^>]*>Monthly/);
+    expect(markup).toMatch(/Due today<\/dt><dd[^>]*>NGN 7,500.00/);
+    expect(markup).toContain("/ month");
+    expect(markup).not.toMatch(/tax|discount|fee/i);
+  });
+
+  it("renders backend providers as selectable cards with a distinct selected state", () => {
+    hooks.useRememberedCheckoutAttempt.mockReturnValue({
+      autoRenew: true,
+      billingAccountOwnerType: "Stakeholder",
+      createdAtUtc: "2026-11-23T12:00:00Z",
+      idempotencyKey: "4d3c3a2e-6f9b-4f43-9a55-0c5b3f6f1a10",
+      paymentProviderId: "provider-link",
+      planId: PLAN_ID,
+    });
+    const markup = render();
+    expect(markup).toContain("Bachs");
+    expect(markup).toContain("Hosted checkout");
+    expect(markup).toContain("CardCo");
+    expect(markup.match(/data-selected="true"/g)).toHaveLength(1);
+    expect(markup).toMatch(
+      /data-selected="true"><input[^>]*value="provider-link"/,
+    );
+    expect(markup).toContain(
+      "Choose how you would like to pay for Pro Monthly.",
+    );
+  });
+
+  it("describes renewal using the plan's billing interval and the chosen preference", () => {
+    hooks.useSubscriptionPlans.mockReturnValue({
+      data: [{ ...plan, billingInterval: "Yearly", name: "Pro Yearly" }],
+      isPending: false,
+    });
+    let markup = render();
+    expect(markup).toMatch(inputWith(AUTO_RENEW, 'checked=""'));
+    expect(markup).toContain("Renew automatically at the end of each year");
+    expect(markup).toContain("Yearly subscription");
+    expect(markup).toContain("Renews automatically each year.");
+    expect(markup).toContain("/ year");
+
+    hooks.useRememberedCheckoutAttempt.mockReturnValue({
+      autoRenew: false,
+      billingAccountOwnerType: "Stakeholder",
+      createdAtUtc: "2026-11-23T12:00:00Z",
+      idempotencyKey: "4d3c3a2e-6f9b-4f43-9a55-0c5b3f6f1a10",
+      paymentProviderId: "provider-link",
+      planId: PLAN_ID,
+    });
+    markup = render();
+    expect(markup).toContain("Does not renew automatically.");
+    expect(markup).toContain("Access ends at the end of the paid year");
+    expect(markup).not.toContain("Renews automatically each year.");
+  });
+
+  it("pre-selects a settled attempt's choices without reusing its checkout", () => {
+    hooks.useRememberedCheckoutAttempt.mockReturnValue({
+      autoRenew: false,
+      billingAccountOwnerType: "Stakeholder",
+      createdAtUtc: "2026-11-23T12:00:00Z",
+      idempotencyKey: "4d3c3a2e-6f9b-4f43-9a55-0c5b3f6f1a10",
+      paymentProviderId: "provider-link",
+      planId: PLAN_ID,
+      purchaseId: "019a0000-0000-7000-8000-000000000002",
+      settledAtUtc: "2026-11-23T12:30:00Z",
+    });
+    const markup = render();
+    expect(markup).toMatch(inputWith('value="provider-link"', 'checked=""'));
+    expect(markup).not.toMatch(inputWith(AUTO_RENEW, 'checked=""'));
+    expect(markup).not.toContain("You already started a checkout");
+    expect(markup).not.toMatch(/<button[^>]*disabled=""[^>]*type="submit"/);
+  });
+
+  it("does not promise renewal through a provider without recurring payments", () => {
+    const nonRecurring = { ...linkProvider, supportsRecurringPayments: false };
+    hooks.useEligiblePaymentProviders.mockReturnValue({
+      data: [nonRecurring],
+      isPending: false,
+    });
+    hooks.useRememberedCheckoutAttempt.mockReturnValue({
+      autoRenew: true,
+      billingAccountOwnerType: "Stakeholder",
+      createdAtUtc: "2026-11-23T12:00:00Z",
+      idempotencyKey: "4d3c3a2e-6f9b-4f43-9a55-0c5b3f6f1a10",
+      paymentProviderId: "provider-link",
+      planId: PLAN_ID,
+    });
+    const markup = render();
+    expect(markup).toContain(
+      "Bachs does not support automatic recurring charges.",
+    );
+    expect(markup).toContain("Does not renew automatically.");
+    expect(markup).not.toContain("Renews automatically each month.");
+  });
+
+  it("disables provider selection and shows progress while purchasing", () => {
+    hooks.usePurchaseSubscription.mockReturnValue({
+      isPending: true,
+      mutateAsync: vi.fn(),
+    });
+    const markup = render();
+    expect(markup).toMatch(/<fieldset[^>]*disabled=""/);
+    expect(markup).toMatch(inputWith(AUTO_RENEW, 'disabled=""'));
+    expect(markup).not.toContain("Pay NGN 7,500.00");
+  });
+
+  it("states who processes the payment without overclaiming", () => {
+    expect(render()).toContain(
+      "Secure payment. Your payment is processed by our billing service.",
+    );
+  });
+
   it("shows loading and plan errors", () => {
     hooks.useSubscriptionPlans.mockReturnValue({ isPending: true });
     expect(render()).toContain("Loading checkout");
@@ -167,6 +293,52 @@ describe("CheckoutView", () => {
       isPending: false,
     });
     expect(render()).toContain("Subscription plans could not be loaded.");
+  });
+});
+
+describe("PaymentMethodCard", () => {
+  type Node = {
+    props?: Record<string, unknown> & { children?: unknown };
+    type?: unknown;
+  };
+  function findInput(node: unknown): Node | undefined {
+    if (Array.isArray(node)) {
+      for (const child of node) {
+        const found = findInput(child);
+        if (found) return found;
+      }
+      return undefined;
+    }
+    if (!node || typeof node !== "object") return undefined;
+    const element = node as Node;
+    if (element.type === "input") return element;
+    return findInput(element.props?.children);
+  }
+
+  it("selects the provider when its radio changes", () => {
+    const onSelect = vi.fn();
+    const element = PaymentMethodCard({
+      checked: false,
+      onSelect,
+      provider: linkProvider,
+    });
+    const input = findInput(element);
+    expect(input?.props?.name).toBe("paymentProviderId");
+    (input?.props?.onChange as () => void)();
+    expect(onSelect).toHaveBeenCalledWith("provider-link");
+  });
+
+  it("marks the selected provider with more than color", () => {
+    const selected = renderToStaticMarkup(
+      createElement(PaymentMethodCard, {
+        checked: true,
+        onSelect: vi.fn(),
+        provider: linkProvider,
+      }),
+    );
+    expect(selected).toContain('data-selected="true"');
+    expect(selected).toContain("checked=");
+    expect(selected).toContain("font-semibold");
   });
 });
 

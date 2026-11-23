@@ -1,10 +1,6 @@
 "use client";
 
-import { isApiError } from "@template/api-client";
-import type {
-  EligiblePaymentProviderResponse,
-  SubscriptionPlanResponse,
-} from "@template/api-client/subscriptions";
+import type { SubscriptionPlanResponse } from "@template/api-client/subscriptions";
 import {
   useEligiblePaymentProviders,
   usePurchaseSubscription,
@@ -14,8 +10,6 @@ import {
   Alert,
   Card,
   CardContent,
-  CardDescription,
-  CardTitle,
   Skeleton,
   formatMinorUnits,
 } from "@template/ui-core";
@@ -24,10 +18,8 @@ import { useRef, useState, type FormEvent } from "react";
 import { billingRoutes, resolveBillingOwnerType } from "@/config/billing";
 import {
   billingCadence,
-  billingIntervalLabel,
   describeBillingLoadError,
   isPortalSupportedPaymentMethod,
-  paymentMethodLabel,
 } from "@/lib/billing-display";
 import {
   browserCheckoutAttemptStore,
@@ -38,8 +30,16 @@ import {
   type CheckoutOutcome,
 } from "@/lib/checkout-submission";
 import { useRememberedCheckoutAttempt } from "@/lib/use-checkout-attempt";
-import { primaryButtonClass } from "../billing-ui";
+import { largePrimaryButtonClass } from "../billing-ui";
+import {
+  ArrowRightIcon,
+  LockIcon,
+  PaymentCardIcon,
+  SpinnerIcon,
+} from "./checkout-icons";
+import { SubscriptionOrderSummary } from "./order-summary";
 import { PaymentInstructions } from "./payment-instructions";
+import { PaymentMethodSelector } from "./payment-method-selector";
 import { PlanPicker } from "./plan-picker";
 
 type InstructionOutcome = Extract<
@@ -96,17 +96,27 @@ function PlanCheckout({
     remembered.billingAccountOwnerType === ownerType
       ? remembered
       : undefined;
+  // A settled attempt for this plan (for example a cancelled payment) only
+  // pre-selects its choices; submitting starts a new attempt and key.
+  const lastSelection =
+    remembered?.planId === plan.id &&
+    remembered.billingAccountOwnerType === ownerType
+      ? remembered
+      : undefined;
   const [chosenProviderId, setProviderId] = useState<string>();
   const [chosenAutoRenew, setAutoRenew] = useState<boolean>();
   const [error, setError] = useState<string>();
   const [outcome, setOutcome] = useState<InstructionOutcome>();
-  const providerId = chosenProviderId ?? previousAttempt?.paymentProviderId;
-  const autoRenew = chosenAutoRenew ?? previousAttempt?.autoRenew ?? true;
+  const providerId = chosenProviderId ?? lastSelection?.paymentProviderId;
+  const autoRenew = chosenAutoRenew ?? lastSelection?.autoRenew ?? true;
   const price = formatMinorUnits(plan.price, plan.currencyCode);
 
   const selectedProvider = providers.data?.find(
     (provider) => provider.id === providerId,
   );
+  // Never promise renewal through a provider that cannot charge again.
+  const renewsAutomatically =
+    autoRenew && selectedProvider?.supportsRecurringPayments !== false;
   const canSubmit =
     !purchase.isPending &&
     selectedProvider !== undefined &&
@@ -137,26 +147,34 @@ function PlanCheckout({
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(17rem,1fr)]">
-      <Card>
-        <CardContent>
+    // The summary comes first in reading order so small screens show the plan
+    // before payment; on wide screens it moves to the right-hand column.
+    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] xl:gap-8">
+      <SubscriptionOrderSummary
+        autoRenew={renewsAutomatically}
+        className="xl:col-start-2 xl:row-start-1"
+        plan={plan}
+        price={price}
+      />
+      <Card className="shadow-theme-sm xl:col-start-1 xl:row-start-1">
+        <CardContent className="sm:p-8">
           {outcome ? (
             <>
-              <CardTitle>Complete your payment</CardTitle>
-              <CardDescription>
-                Your checkout was created. Follow the steps below.
-              </CardDescription>
-              <div className="mt-5">
+              <PaymentCardHeader
+                description="Your checkout was created. Follow the steps below."
+                title="Complete your payment"
+              />
+              <div className="mt-6">
                 <PaymentInstructions amount={price} outcome={outcome} />
               </div>
             </>
           ) : (
             <form aria-busy={purchase.isPending} onSubmit={submit}>
-              <CardTitle>Payment</CardTitle>
-              <CardDescription>
-                Choose how you would like to pay for {plan.name}.
-              </CardDescription>
-              <div className="mt-5 space-y-5">
+              <PaymentCardHeader
+                description={`Choose how you would like to pay for ${plan.name}.`}
+                title="Payment"
+              />
+              <div className="mt-8 space-y-6">
                 {previousAttempt?.purchaseId ? (
                   <Alert variant="info">
                     You already started a checkout for this plan.{" "}
@@ -180,23 +198,23 @@ function PlanCheckout({
                     </Link>
                   </Alert>
                 ) : null}
-                <ProviderOptions
+                <PaymentMethodSelector
                   disabled={purchase.isPending}
                   onSelect={setProviderId}
                   providers={providers}
                   selectedId={providerId}
                 />
-                <div className="space-y-2">
-                  <label className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300">
+                <div>
+                  <label className="flex cursor-pointer items-center gap-3 has-disabled:cursor-not-allowed">
                     <input
                       checked={autoRenew}
-                      className="mt-0.5 h-4 w-4"
+                      className="accent-brand-500 focus-visible:outline-brand-500 h-5 w-5 shrink-0 rounded focus-visible:outline-2 focus-visible:outline-offset-2"
                       disabled={purchase.isPending}
                       name="autoRenew"
                       onChange={(event) => setAutoRenew(event.target.checked)}
                       type="checkbox"
                     />
-                    <span>
+                    <span className="text-sm text-gray-800 sm:text-base dark:text-white/90">
                       Renew automatically at the end of each{" "}
                       {billingCadence(plan.billingInterval)}
                     </span>
@@ -204,165 +222,78 @@ function PlanCheckout({
                   {autoRenew &&
                   selectedProvider &&
                   !selectedProvider.supportsRecurringPayments ? (
-                    <p className="text-sm text-amber-700 dark:text-amber-400">
+                    <p className="mt-2 pl-8 text-sm text-amber-700 dark:text-amber-400">
                       {selectedProvider.name} does not support automatic
                       recurring charges.
                     </p>
                   ) : null}
                 </div>
-                <button
-                  className={`${primaryButtonClass} w-full sm:w-auto`}
-                  disabled={!canSubmit}
-                  type="submit"
-                >
-                  {purchase.isPending ? "Starting checkout…" : `Pay ${price}`}
-                </button>
+                <div className="space-y-3">
+                  <button
+                    className={largePrimaryButtonClass}
+                    disabled={!canSubmit}
+                    type="submit"
+                  >
+                    {purchase.isPending ? (
+                      <>
+                        <SpinnerIcon />
+                        <span>Starting checkout…</span>
+                      </>
+                    ) : (
+                      <>
+                        {`Pay ${price}`}
+                        <ArrowRightIcon />
+                      </>
+                    )}
+                  </button>
+                  <p className="flex items-center justify-center gap-2 text-center text-sm text-gray-500 dark:text-gray-400">
+                    <LockIcon className="h-4 w-4 shrink-0" />
+                    <span>
+                      Secure payment. Your payment is processed by our billing
+                      service.
+                    </span>
+                  </p>
+                </div>
               </div>
             </form>
           )}
         </CardContent>
       </Card>
-      <PlanSummary autoRenew={autoRenew} plan={plan} price={price} />
     </div>
   );
 }
 
-function ProviderOptions({
-  disabled,
-  onSelect,
-  providers,
-  selectedId,
-}: Readonly<{
-  disabled: boolean;
-  onSelect: (id: string) => void;
-  providers: ReturnType<typeof useEligiblePaymentProviders>;
-  selectedId: string | undefined;
-}>) {
-  if (providers.isPending) {
-    return (
-      <div aria-busy="true" aria-label="Loading payment methods" role="status">
-        <Skeleton className="h-16 w-full" />
-      </div>
-    );
-  }
-  if (providers.isError) {
-    return (
-      <Alert variant="error">
-        {isApiError(providers.error) && providers.error.status === 404
-          ? "This plan is no longer available for purchase."
-          : describeBillingLoadError(providers.error, "payment methods")}
-      </Alert>
-    );
-  }
-  if (providers.data.length === 0) {
-    return (
-      <Alert variant="warning">
-        No payment methods are available for this plan in your region.
-      </Alert>
-    );
-  }
+function PaymentCardHeader({
+  description,
+  title,
+}: Readonly<{ description: string; title: string }>) {
   return (
-    <fieldset className="space-y-3" disabled={disabled}>
-      <legend className="mb-2 text-sm font-medium text-gray-800 dark:text-white/90">
-        Payment method
-      </legend>
-      {providers.data.map((provider) => (
-        <ProviderOption
-          checked={provider.id === selectedId}
-          key={provider.id}
-          onSelect={onSelect}
-          provider={provider}
-        />
-      ))}
-    </fieldset>
-  );
-}
-
-function ProviderOption({
-  checked,
-  onSelect,
-  provider,
-}: Readonly<{
-  checked: boolean;
-  onSelect: (id: string) => void;
-  provider: EligiblePaymentProviderResponse;
-}>) {
-  const supported = isPortalSupportedPaymentMethod(provider.paymentMethodType);
-  return (
-    <label
-      className={`flex items-start gap-3 rounded-xl border p-4 text-sm ${
-        checked
-          ? "border-brand-500 bg-brand-50/40 dark:bg-brand-500/10"
-          : "border-gray-200 dark:border-gray-800"
-      } ${supported ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
-    >
-      <input
-        checked={checked}
-        className="mt-0.5 h-4 w-4"
-        disabled={!supported}
-        name="paymentProviderId"
-        onChange={() => onSelect(provider.id)}
-        type="radio"
-        value={provider.id}
-      />
-      <span>
-        <span className="block font-medium text-gray-800 dark:text-white/90">
-          {provider.name}
-        </span>
-        <span className="block text-gray-500 dark:text-gray-400">
-          {supported
-            ? paymentMethodLabel(provider.paymentMethodType)
-            : `${paymentMethodLabel(provider.paymentMethodType)} is not available in this portal yet`}
-        </span>
+    <div className="flex items-center gap-4 sm:gap-5">
+      <span className="bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl sm:h-14 sm:w-14">
+        <PaymentCardIcon className="h-6 w-6" />
       </span>
-    </label>
-  );
-}
-
-function PlanSummary({
-  autoRenew,
-  plan,
-  price,
-}: Readonly<{
-  autoRenew: boolean;
-  plan: SubscriptionPlanResponse;
-  price: string;
-}>) {
-  const cadence = billingCadence(plan.billingInterval);
-  return (
-    <Card className="self-start">
-      <CardContent className="space-y-3">
-        <p className="text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-          Order summary
+      <div className="min-w-0">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+          {title}
+        </h2>
+        <p className="mt-1 text-sm break-words text-gray-600 sm:text-base dark:text-gray-400">
+          {description}
         </p>
-        <p className="text-lg font-semibold text-gray-900 dark:text-white">
-          {plan.name}
-        </p>
-        <p className="text-2xl font-bold text-gray-900 dark:text-white">
-          {price}
-          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-            {" "}
-            / {cadence}
-          </span>
-        </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {billingIntervalLabel(plan.billingInterval)} in {plan.currencyCode}.
-          The amount is set by our billing service.
-        </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {autoRenew
-            ? `Your subscription renews each ${cadence} until you cancel. You can cancel from Billing at any time; access continues to the end of the paid period.`
-            : `Your subscription ends at the end of the paid ${cadence} unless you renew.`}
-        </p>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
 function CheckoutSkeleton() {
   return (
-    <div aria-busy="true" aria-label="Loading checkout" role="status">
-      <Skeleton className="h-64 w-full" />
+    <div
+      aria-busy="true"
+      aria-label="Loading checkout"
+      className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] xl:gap-8"
+      role="status"
+    >
+      <Skeleton className="h-96 w-full rounded-2xl" />
+      <Skeleton className="h-80 w-full rounded-2xl" />
     </div>
   );
 }

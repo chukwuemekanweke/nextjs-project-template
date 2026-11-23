@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { createSignInRedirectUrl } from "@template/api-client/authentication";
 import {
   createEmailConfirmationDestination,
   createRegistrationHref,
@@ -101,5 +102,31 @@ describe("authentication links", () => {
     );
     expect(createSignInHref({ returnTo: "//evil.example" })).toBe("/sign-in");
     expect(createSignInHref()).toBe("/sign-in");
+  });
+});
+
+describe("provider return destinations", () => {
+  it("bring an expired session back to the payment return route after sign-in", () => {
+    const redirect = createSignInRedirectUrl(
+      new URL("https://portal.example/billing/checkout/success?checkout_id=x"),
+      "/sign-in",
+    );
+    const returnTo = redirect.searchParams.get("returnTo") ?? undefined;
+    expect(redirect.origin).toBe("https://portal.example");
+    expect(safeSignInDestination(returnTo)).toBe(
+      "/billing/checkout/success?checkout_id=x",
+    );
+    expect(safeSignInDestination("/billing/checkout/cancelled")).toBe(
+      "/billing/checkout/cancelled",
+    );
+  });
+
+  it("never turn a return destination into an open redirect", () => {
+    expect(
+      safeSignInDestination("//attacker.test/billing/checkout/success"),
+    ).toBe("/dashboard");
+    expect(
+      safeSignInDestination("https://attacker.test/billing/checkout/success"),
+    ).toBe("/dashboard");
   });
 });

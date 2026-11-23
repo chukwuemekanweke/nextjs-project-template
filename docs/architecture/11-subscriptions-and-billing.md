@@ -9,10 +9,12 @@ flowchart LR
   signin --> checkout
   checkout -->|POST purchase + Idempotency-Key| bff[User Portal /api/billing BFF]
   bff --> api[(Backend API)]
-  checkout -->|PaymentLink| provider[Hosted checkout]
-  provider --> ret[/billing/checkout/return]
-  ret --> status[/billing/purchases/:purchaseId]
-  checkout -->|BankTransfer| status
+  checkout -->|PaymentLink| provider[Hosted checkout e.g. Bachs]
+  provider -->|success_url| ok[/billing/checkout/success]
+  provider -->|cancel_url| cancelled[/billing/checkout/cancelled]
+  ok -->|poll| bff
+  cancelled -->|poll| bff
+  checkout -->|BankTransfer| status[/billing/purchases/:purchaseId]
   status -->|poll| bff
   status --> billing[/billing]
   billing -->|current, history, cancel| bff
@@ -76,7 +78,9 @@ The checkout route is protected by the User Portal proxy, so an unauthenticated 
 - Because every tab shares the record, the submitter also keeps an attempt whose outcome is unknown (sent, no purchase id yet) in memory. A retry in that tab replays its own key even if another tab has started a different checkout since, and a rejection only removes the stored attempt if it still has the rejected key (`store.discard(key)`). Two tabs submitting the same selection share one key, so they cannot create two purchases.
 - Network failures, timeouts, 5xx, 401, and 429 keep the key so a retry replays the same request. Definitive rejections (400, 403, 404, 409) discard the attempt so the next deliberate submission gets a new key. A `409` is shown as a conflict with an existing subscription or earlier checkout.
 - After the backend reports a settled purchase, the status page marks the attempt settled; its key is never reused. Attempts older than 24 hours are discarded. Logout clears the attempt.
-- An interrupted, unsettled attempt for the same plan restores its selection on the checkout page and links to its status before the user pays again.
+- An interrupted, unsettled attempt for the same plan restores its selection on the checkout page and links to its status before the user pays again. Submitting the same selection replays the same key, so the backend returns the original purchase (and its payment link) rather than creating another.
+- A settled attempt for the same plan (for example after "Return to checkout" from a cancelled payment) only pre-selects its provider and auto-renew choice; submitting it creates a new attempt and key.
+- When the selected provider reports `supportsRecurringPayments: false`, the page warns and the order summary does not promise automatic renewal. The user's choice is still sent unchanged.
 
 ### Payment instructions and hosted checkout
 
@@ -88,7 +92,38 @@ The checkout route is protected by the User Portal proxy, so an unauthenticated 
 
 ### Return from hosted checkout
 
-`/billing/checkout/return` ignores all provider query parameters. It reads the remembered purchase id from the tab's checkout attempt and replaces the route with `/billing/purchases/{purchaseId}`; when nothing is remembered it links to `/billing`. The status page itself works on direct navigation and refresh because the purchase id is in its path. Configuring the provider's return URL to the return route is a backend/provider configuration concern.
+Bachs checkout sessions carry two optional redirect fields, `success_url` and `cancel_url`. The backend fills them from its own configuration (`Payments:Bachs:SuccessUrl` / `Payments:Bachs:CancelUrl`, environment variables `Payments__Bachs__SuccessUrl` / `Payments__Bachs__CancelUrl`, exposed in the backend compose file as `BACHS_SUCCESS_URL` / `BACHS_CANCEL_URL`). They are static per backend deployment; the purchase API does not accept return URLs. Set them per environment to the User Portal origin:
+
+```text
+Payments__Bachs__SuccessUrl=https://<user-portal-origin>/billing/checkout/success
+Payments__Bachs__CancelUrl=https://<user-portal-origin>/billing/checkout/cancelled
+```
+
+Bachs rejects localhost and private-network redirect URLs, so local end-to-end returns need a public tunnel to the User Portal.
+
+`/billing/checkout/success`, `/billing/checkout/cancelled`, and the hint-free `/billing/checkout/return` all render `PaymentReturn` (`app/billing/checkout/payment-return.tsx`). It:
+
+1. Ignores every provider query parameter. The purchase id comes only from this browser's remembered checkout attempt, and only when the attempt's owner type matches. With no remembered purchase it shows a recoverable "We couldn't find your checkout" state linking to Billing and checkout. It never shows success and never purchases.
+2. Reads the authoritative status with `useSubscriptionPurchaseStatus` (same polling policy as below; the hook invalidates the owner's current subscription and billing history once the purchase is terminal) and marks the attempt settled when `isTerminal`.
+3. Maps status plus the route hint with `resolvePaymentReturnView` (`lib/payment-return.ts`). The hint only changes wording; it never overrides the backend:
+
+| Backend status                                 | Success / return route         | Cancelled route                                         |
+| ---------------------------------------------- | ------------------------------ | ------------------------------------------------------- |
+| `SubscriptionActive`, `SubscriptionScheduled`  | "Payment successful"           | "Payment successful" (URL replaced with `/success`)     |
+| `PaymentSucceededFulfillmentPending`           | "Activating your subscription" | same                                                    |
+| `PurchaseInitiated`, `PaymentPending`          | "Confirming your payment"      | "Payment not completed" (checkout can still be resumed) |
+| `PaymentCancelled`                             | URL replaced with `/cancelled` | "Payment cancelled"                                     |
+| `PaymentFailed`                                | "Payment failed"               | "Payment cancelled" (Bachs records cancel as a failure) |
+| `PaymentExpired`                               | "Payment expired"              | same                                                    |
+| `PaymentUnderpaid`, `FulfillmentBlocked`       | Needs attention + support      | same                                                    |
+| `SubscriptionCancelled`, `SubscriptionExpired` | Subscription has since ended   | same                                                    |
+| unknown                                        | Confirming; "Check again"      | same                                                    |
+
+`canonicalPaymentReturnRoute` replaces the URL only for backend-confirmed success or cancellation, so a refresh shows the matching page. A polling timeout keeps the waiting state with "Check again" and states that it is not a failure. "Return to checkout" links to `/billing/checkout?planId=` for the remembered plan and never purchases by itself.
+
+Session recovery uses the existing proxy: an expired access token is refreshed; without a valid session the proxy redirects to `/sign-in?returnTo=/billing/checkout/success…`, `safeSignInDestination` keeps only same-origin paths, and after sign-in the route re-reads the remembered attempt (session expiry does not clear it; logout does) and re-queries the backend.
+
+The result pages share `PaymentResultCard` and `PaymentResultSummary` (`payment-result.tsx`). Amount and currency come from the purchase status; plan name and interval come from the backend plan list for the remembered plan id (the status response has neither) and are omitted if the plan is no longer listed.
 
 ## Purchase status and polling
 
@@ -126,10 +161,12 @@ When raw `status` is `Active` and `cancelAtPeriodEnd` is false, the card offers 
 
 - Both `409` cases (idempotency-key reuse with a different payload, and an entitlement conflict) are plain Problem Details without a stable `code`, so the UI shows one combined conflict message.
 - The backend does not currently restrict which tenant users may act for a `Tenant` billing account; the User Portal uses `Stakeholder` only.
-- The hosted-checkout return URL is configured outside the frontend; it should point to `/billing/checkout/return` on the User Portal.
+- Bachs `success_url`/`cancel_url` come from one backend-wide setting (`BachsOptions.SuccessUrl`/`CancelUrl`) applied to every Bachs checkout, including wallet top-ups. Pointing it at the User Portal subscription routes also sends wallet top-up returns there. The backend needs per-intent return URLs (for example `Payments:Bachs:ReturnUrls:SubscriptionPurchase:*`) selected in `BachsPaymentProviderService` from the payment intent.
+- The redirect carries no purchase correlation, so recovery depends on this browser's remembered attempt. Proposed backend change: append the purchase id (for example `?purchaseId={id}`) when building `success_url`/`cancel_url` per checkout. The frontend would use it only as a lookup key; the owner-scoped status endpoint already returns `404` for other owners.
+- A cancelled Bachs checkout is verified as `PaymentStatus.Failed` (`provider_reported_cancelled` in `BachsPaymentProviderService.VerifyPaymentAsync`), never `Cancelled`, and only by reconciliation: the webhook subscribes to `collection.*` and `checkout.expired`, not to a cancellation event. After a cancel redirect the backend usually still reports `PaymentPending` until reconciliation or checkout expiry, so the cancelled route shows "Payment not completed". Proposed: map provider cancellation to `PaymentStatus.Cancelled` and subscribe to a Bachs checkout-cancelled event if one exists.
 - `Card` instruction fields are undocumented, so card-method providers are shown but cannot be selected.
 - Plans have no backend feature/entitlement list; the pricing page shows no feature bullets unless marketing copy is configured.
-- The effect of choosing auto-renewal with a provider whose `supportsRecurringPayments` is false is not documented; the UI shows the capability but does not block the choice.
+- The backend accepts `autoRenew: true` for a provider whose `supportsRecurringPayments` is false (no validation in `PurchaseSubscriptionHandler`). The UI warns and does not promise renewal, but does not change the submitted choice.
 - Checkout recovery works across tabs of the same browser (`localStorage`) for 24 hours. Returning on another browser or device falls back to the billing page, because the backend has no "latest purchase" endpoint to recover from.
 - The remembered attempt is cleared on explicit logout but not when a session simply expires. If a different user then signs in on the same browser, the checkout page may link to the previous user's purchase; the backend answers `404` for it, so no data is exposed.
 - End-to-end browser tests are not included because the repository has no browser test runner; journeys are covered by unit, route, and rendering tests.

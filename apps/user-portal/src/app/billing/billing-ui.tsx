@@ -49,5 +49,12 @@ export function DetailList({
 export const primaryButtonClass =
   "bg-brand-500 hover:bg-brand-600 inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60";
 
+/** The Profile "Save changes" blue, sized for checkout and payment results. */
+export const largePrimaryButtonClass =
+  "bg-brand-500 hover:bg-brand-600 focus-visible:ring-brand-500/40 inline-flex min-h-13 w-full items-center justify-center gap-2 rounded-xl px-8 text-base font-semibold text-white shadow-theme-xs transition focus-visible:ring-3 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:focus-visible:ring-offset-gray-900";
+
+export const textLinkClass =
+  "text-brand-500 hover:text-brand-600 dark:text-brand-400 focus-visible:ring-brand-500/40 rounded-md px-2 py-1 text-base font-semibold focus-visible:ring-3 focus-visible:outline-none";
+
 export const secondaryButtonClass =
   "inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03]";
