@@ -88,18 +88,10 @@ export type SubscriptionPlanResponse = {
   billingInterval?: string;
   /** @deprecated Legacy single-interval field (minor units); use `prices`. */
   price?: number | string;
-  /**
-   * Optional presentation fields. They never affect price, currency,
-   * interval, or entitlement checks.
-   */
-  /** Short marketing description. */
+  /** Card description; never affects price, interval, or entitlement. */
   description?: string | null;
-  /** Ordered list of plan highlights. */
+  /** Ordered card feature bullets, exactly as configured in the backend. */
   features?: Array<string> | null;
-  /** Short tier label shown as a pill, for example "Starter". */
-  badge?: string | null;
-  /** Product-configured recommendation ("Most popular"). */
-  recommended?: boolean | null;
 };
 export type ListSubscriptionPlansQueryResponse =
   Array<SubscriptionPlanResponse>;

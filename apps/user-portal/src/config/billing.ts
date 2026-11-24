@@ -36,29 +36,3 @@ export const billingRoutes = {
       billingInterval ? { billingInterval, planId } : { planId },
     ).toString()}`,
 } as const;
-
-/**
- * Optional presentation for plan cards. The API's plan fields
- * (`description`, `features`, `badge`, `recommended`) take precedence; these
- * entries, keyed by backend plan `code`, fill gaps. They never supply prices,
- * currencies, intervals, or entitlements.
- */
-export type PlanPresentation = Readonly<{
-  /** Tier label shown as a neutral pill, for example "Starter". */
-  badge?: string;
-  description?: string;
-  features?: ReadonlyArray<string>;
-  /** Shows the "Most popular" highlight. */
-  recommended?: boolean;
-}>;
-
-export const planPresentation: Readonly<Record<string, PlanPresentation>> = {};
-
-/**
- * PLACEHOLDER content shown until `GET /api/v1/subscription-plans` returns
- * `description` and `features`. Remove once the backend provides them.
- */
-export const placeholderPlanPresentation: PlanPresentation = {
-  description: "Everything you need to get started.",
-  features: ["Core features", "Up to 3 team members", "Email support"],
-};

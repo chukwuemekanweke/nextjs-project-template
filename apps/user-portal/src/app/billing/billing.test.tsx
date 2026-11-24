@@ -450,46 +450,41 @@ describe("SubscriptionPlanGrid", () => {
     expect(markup).toMatch(/¥1,200<|JPY 1,200</);
   });
 
-  it("fills every card with placeholder copy until the API provides it", () => {
-    // Every layout uses the same full pricing card as the three-plan design.
-    const pair = renderToStaticMarkup(
-      createElement(SubscriptionPlanGrid, { plans: plans(2) }),
-    );
-    expect(pair.match(/<h2 class="mt-5[^"]*text-2xl/g)).toHaveLength(2);
-    expect(pair.match(/<hr /g)).toHaveLength(2);
-    expect(pair.match(/Everything you need to get started\./g)).toHaveLength(2);
-    expect(pair.match(/>Email support</g)).toHaveLength(2);
-    // Pills fall back to the backend interval; no plan is assumed popular.
-    expect(pair).toContain(">Monthly<");
-    expect(pair).toContain(">Yearly<");
-    expect(pair).not.toContain("Most popular");
-  });
-
-  it("prefers API presentation fields over configuration and placeholders", () => {
+  it("renders the description and features returned by the API", () => {
     const markup = renderToStaticMarkup(
       createElement(SubscriptionPlanGrid, {
         plans: [
           plan(0, {
-            badge: "Starter",
-            description: "From the API.",
-            features: ["API feature"],
+            description: "Everything you need to get started.",
+            features: ["Core features", " ", "Email support"],
           }),
-          plan(1, { recommended: true }),
-          plan(2),
+          plan(1, {
+            description: "More power for growing teams.",
+            features: ["Priority support"],
+          }),
         ],
-        presentation: {
-          PLAN_0: { description: "From config.", features: ["Config"] },
-          PLAN_2: { badge: "Business", features: ["Config feature"] },
-        },
       }),
     );
-    expect(markup).toContain(">Starter<");
-    expect(markup).toContain("From the API.");
-    expect(markup).toContain("API feature");
-    expect(markup).not.toContain("From config.");
-    expect(markup.match(/Most popular/g)).toHaveLength(1);
-    expect(markup).toContain(">Business<");
-    expect(markup).toContain("Config feature");
+    // Every layout uses the same full pricing card as the three-plan design.
+    expect(markup.match(/<h2 class="mt-5[^"]*text-2xl/g)).toHaveLength(2);
+    expect(markup.match(/<hr /g)).toHaveLength(2);
+    expect(markup).toContain("Everything you need to get started.");
+    expect(markup).toContain("More power for growing teams.");
+    expect(markup.match(/<li class="flex gap-3">/g)).toHaveLength(3);
+    expect(markup).toContain(">Email support<");
+    expect(markup).toContain(">Priority support<");
+  });
+
+  it("shows no locally invented copy when the API sends none", () => {
+    const markup = renderToStaticMarkup(
+      createElement(SubscriptionPlanGrid, {
+        plans: [plan(0, { description: null, features: null }), plan(1)],
+      }),
+    );
+    expect(markup).not.toContain('<p class="mt-2 text-base leading-6');
+    expect(markup).not.toContain('<li class="flex gap-3">');
+    expect(markup).not.toContain("Most popular");
+    expect(markup).not.toContain("Everything you need");
   });
 });
 

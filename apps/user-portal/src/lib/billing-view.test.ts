@@ -4,10 +4,10 @@ import { describe, expect, it } from "vitest";
 import {
   abbreviateReference,
   offeredBillingIntervals,
+  planCardContent,
   resolveBillingHistoryPlacement,
   resolveBillingView,
   resolvePlanLayout,
-  resolvePlanPresentation,
 } from "./billing-view";
 
 function subscription(
@@ -148,57 +148,27 @@ describe("abbreviateReference", () => {
   });
 });
 
-describe("resolvePlanPresentation", () => {
-  const basePlan = {
-    billingInterval: "Monthly",
-    code: "STARTER_MONTHLY",
-    currencyCode: "NGN",
-    currencyId: "currency-1",
-    id: "plan-1",
-    name: "Starter Monthly",
-    price: 500000,
-  };
-
-  it("uses API fields, then configuration, then the placeholder", () => {
-    const placeholder = { description: "Placeholder", features: ["P"] };
+describe("planCardContent", () => {
+  it("uses only the backend description and features, dropping blanks", () => {
     expect(
-      resolvePlanPresentation(
-        { ...basePlan, description: " ", features: [], recommended: null },
-        { description: "Config" },
-        placeholder,
-      ),
+      planCardContent({
+        description: "  For growing teams. ",
+        features: ["Priority support", " ", "Advanced reports "],
+      }),
     ).toEqual({
-      badge: undefined,
-      description: "Config",
-      features: ["P"],
-      recommended: false,
-    });
-    expect(
-      resolvePlanPresentation(
-        {
-          ...basePlan,
-          badge: "Starter",
-          description: "API",
-          features: ["A"],
-          recommended: true,
-        },
-        { badge: "Config", description: "Config", features: ["C"] },
-        placeholder,
-      ),
-    ).toEqual({
-      badge: "Starter",
-      description: "API",
-      features: ["A"],
-      recommended: true,
+      description: "For growing teams.",
+      features: ["Priority support", "Advanced reports"],
     });
   });
 
-  it("works without any presentation source", () => {
-    expect(resolvePlanPresentation(basePlan, undefined, undefined)).toEqual({
-      badge: undefined,
+  it("substitutes nothing when the backend sends no content", () => {
+    expect(planCardContent({ description: " ", features: [] })).toEqual({
       description: undefined,
       features: [],
-      recommended: false,
+    });
+    expect(planCardContent({})).toEqual({
+      description: undefined,
+      features: [],
     });
   });
 });

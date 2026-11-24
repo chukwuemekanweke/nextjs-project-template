@@ -8,18 +8,12 @@ import {
 import { Card, formatMinorUnits } from "@template/ui-core";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  billingRoutes,
-  placeholderPlanPresentation,
-  planPresentation as configuredPlanPresentation,
-  type PlanPresentation,
-} from "@/config/billing";
+import { billingRoutes } from "@/config/billing";
 import { billingCadence, billingIntervalLabel } from "@/lib/billing-display";
 import {
   offeredBillingIntervals,
   resolvePlanLayout,
-  resolvePlanPresentation,
-  type ResolvedPlanPresentation,
+  planCardContent,
 } from "@/lib/billing-view";
 import { BillingIntervalToggle } from "./billing-interval-toggle";
 import {
@@ -45,18 +39,12 @@ const PLAN_ICONS = [BoltIcon, LayersIcon, BuildingIcon] as const;
  * Backend-authoritative plans. The count selects a balanced single card, a
  * pair, or the multi-row grid; every layout uses the same pricing card, and
  * plans are never filtered or reordered. When plans offer several billing
- * intervals, a toggle chooses which price each card shows.
+ * intervals, a toggle chooses which price each card shows. All card content
+ * comes from the plan response; nothing is supplied locally.
  */
 export function SubscriptionPlanGrid({
-  placeholder = placeholderPlanPresentation,
   plans,
-  presentation = configuredPlanPresentation,
-}: Readonly<{
-  /** Fallback copy until the API supplies plan presentation fields. */
-  placeholder?: PlanPresentation | undefined;
-  plans: ReadonlyArray<SubscriptionPlanResponse>;
-  presentation?: Readonly<Record<string, PlanPresentation>>;
-}>) {
+}: Readonly<{ plans: ReadonlyArray<SubscriptionPlanResponse> }>) {
   const intervals = offeredBillingIntervals(plans);
   const [chosenInterval, setChosenInterval] = useState<string>();
   const selectedInterval =
@@ -104,11 +92,6 @@ export function SubscriptionPlanGrid({
               <SubscriptionPlanCard
                 iconIndex={index}
                 plan={plan}
-                presentation={resolvePlanPresentation(
-                  plan,
-                  presentation[plan.code],
-                  placeholder,
-                )}
                 price={price}
               />
             </li>
@@ -122,43 +105,27 @@ export function SubscriptionPlanGrid({
 export function SubscriptionPlanCard({
   iconIndex = 0,
   plan,
-  presentation,
   price,
 }: Readonly<{
   iconIndex?: number;
   plan: SubscriptionPlanResponse;
-  presentation: ResolvedPlanPresentation;
   /** One of the plan's offered intervals. */
   price: SubscriptionPlanPriceResponse;
 }>) {
   const headingId = `plan-${plan.id}-name`;
   const Icon = PLAN_ICONS[iconIndex % PLAN_ICONS.length] ?? BoltIcon;
-  const { badge, description, features, recommended } = presentation;
+  const { description, features } = planCardContent(plan);
 
   return (
     <article
       aria-labelledby={headingId}
-      className={[
-        "shadow-theme-sm flex w-full flex-col rounded-2xl border bg-white p-6 sm:p-7 dark:bg-white/[0.03]",
-        recommended
-          ? "border-brand-200 bg-brand-25 dark:border-brand-800 dark:bg-brand-500/5"
-          : "border-gray-200 dark:border-gray-800",
-      ].join(" ")}
+      className="shadow-theme-sm flex w-full flex-col rounded-2xl border border-gray-200 bg-white p-6 sm:p-7 dark:border-gray-800 dark:bg-white/[0.03]"
       data-plan-code={plan.code}
     >
-      <div className="flex items-start justify-between gap-3">
+      <div>
         <span className="bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl">
           <Icon className="h-6 w-6" />
         </span>
-        {recommended ? (
-          <span className="bg-brand-500 rounded-full px-3 py-1 text-xs font-semibold text-white">
-            Most popular
-          </span>
-        ) : badge ? (
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 dark:bg-white/5 dark:text-gray-300">
-            {badge}
-          </span>
-        ) : null}
       </div>
 
       <h2
