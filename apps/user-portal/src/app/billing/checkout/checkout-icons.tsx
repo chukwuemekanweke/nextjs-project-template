@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-// Small decorative icons for checkout and payment results. They are always
+// Small decorative icons for billing, checkout, and payment results. They are always
 // aria-hidden; the adjacent text carries the meaning.
 
 type IconProps = Readonly<{ className?: string }>;
@@ -148,5 +148,66 @@ export function SpinnerIcon({ className = "h-4 w-4" }: IconProps) {
         strokeWidth="3"
       />
     </svg>
+  );
+}
+
+export function CalendarIcon({ className = "h-6 w-6" }: IconProps) {
+  return (
+    <StrokeIcon className={className}>
+      <rect height="16" rx="2.5" width="17" x="3.5" y="5" />
+      <path d="M3.5 10h17M8 3v4M16 3v4" />
+    </StrokeIcon>
+  );
+}
+
+export function CalendarCheckIcon({ className = "h-6 w-6" }: IconProps) {
+  return (
+    <StrokeIcon className={className}>
+      <rect height="16" rx="2.5" width="17" x="3.5" y="5" />
+      <path d="M3.5 10h17M8 3v4M16 3v4M9 15l2 2 4-4" />
+    </StrokeIcon>
+  );
+}
+
+export function CopyIcon({ className = "h-4 w-4" }: IconProps) {
+  return (
+    <StrokeIcon className={className}>
+      <rect height="12" rx="2" width="12" x="8" y="8" />
+      <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+    </StrokeIcon>
+  );
+}
+
+export function SmallCheckIcon({ className = "h-4 w-4" }: IconProps) {
+  return (
+    <StrokeIcon className={className} strokeWidth={2.25}>
+      <path d="m5 12.5 4.5 4.5L19 7.5" />
+    </StrokeIcon>
+  );
+}
+
+export function BoltIcon({ className = "h-6 w-6" }: IconProps) {
+  return (
+    <StrokeIcon className={className}>
+      <path d="M13 2.5 4.5 13.5H12l-1 8 8.5-11H12l1-8Z" />
+    </StrokeIcon>
+  );
+}
+
+export function LayersIcon({ className = "h-6 w-6" }: IconProps) {
+  return (
+    <StrokeIcon className={className}>
+      <path d="m12 3 9 5-9 5-9-5 9-5Z" />
+      <path d="m3 12.5 9 5 9-5M3 16.5l9 5 9-5" />
+    </StrokeIcon>
+  );
+}
+
+export function BuildingIcon({ className = "h-6 w-6" }: IconProps) {
+  return (
+    <StrokeIcon className={className}>
+      <rect height="18" rx="1.5" width="14" x="5" y="3" />
+      <path d="M9 7h1.5M13.5 7H15M9 11h1.5M13.5 11H15M9 15h1.5M13.5 15H15M10.5 21v-3h3v3" />
+    </StrokeIcon>
   );
 }

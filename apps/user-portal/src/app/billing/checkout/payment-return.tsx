@@ -144,7 +144,10 @@ function VerifiedPaymentReturn({
     !status.pollingExhausted &&
     !status.isError;
   const content = describeView(view, status.data, {
-    retryHref: billingRoutes.checkoutForPlan(attempt.planId),
+    retryHref: billingRoutes.checkoutForPlan(
+      attempt.planId,
+      attempt.billingInterval,
+    ),
     supportEmail,
   });
   const needsManualCheck = isAwaitingBackend(view) && !polling;
@@ -197,7 +200,9 @@ function VerifiedPaymentReturn({
         amount={formatMinorUnits(status.data.amount, status.data.currencyCode)}
         amountLabel={content.paid ? "Amount paid" : "Amount"}
         planDetail={
-          plan ? billingIntervalLabel(plan.billingInterval) : undefined
+          plan && attempt?.billingInterval
+            ? billingIntervalLabel(attempt.billingInterval)
+            : undefined
         }
         planName={plan?.name}
       />

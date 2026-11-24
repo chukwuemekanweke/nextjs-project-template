@@ -32,7 +32,7 @@ import { PaymentReturn } from "./payment-return";
 
 const PLAN_ID = "019a0000-0000-7000-8000-000000000001";
 const PURCHASE_ID = "019a0000-0000-7000-8000-000000000002";
-const RETRY_HREF = `href="/billing/checkout?planId=${PLAN_ID}"`;
+const RETRY_HREF = `href="/billing/checkout?billingInterval=Monthly&amp;planId=${PLAN_ID}"`;
 
 const plan: SubscriptionPlanResponse = {
   billingInterval: "Monthly",
@@ -47,6 +47,7 @@ const plan: SubscriptionPlanResponse = {
 const attempt = {
   autoRenew: true,
   billingAccountOwnerType: "Stakeholder",
+  billingInterval: "Monthly",
   createdAtUtc: "2026-11-23T12:00:00Z",
   idempotencyKey: "4d3c3a2e-6f9b-4f43-9a55-0c5b3f6f1a10",
   paymentProviderId: "provider-link",

@@ -8,8 +8,16 @@ export const metadata: Metadata = { title: "Checkout" };
 
 export default async function CheckoutPage({
   searchParams,
-}: Readonly<{ searchParams: Promise<{ planId?: string | string[] }> }>) {
-  const planId = firstSearchParameter((await searchParams).planId);
+}: Readonly<{
+  searchParams: Promise<{
+    billingInterval?: string | string[];
+    planId?: string | string[];
+  }>;
+}>) {
+  const query = await searchParams;
+  const planId = firstSearchParameter(query.planId);
+  // Only a preference: CheckoutView accepts it only when the plan offers it.
+  const billingInterval = firstSearchParameter(query.billingInterval);
 
   return (
     <section className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
@@ -26,7 +34,7 @@ export default async function CheckoutPage({
         </p>
       </header>
       {isBackendId(planId) ? (
-        <CheckoutView planId={planId} />
+        <CheckoutView billingInterval={billingInterval} planId={planId} />
       ) : (
         <PlanPicker
           notice={

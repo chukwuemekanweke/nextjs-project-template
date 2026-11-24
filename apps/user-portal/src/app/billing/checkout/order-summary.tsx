@@ -9,16 +9,19 @@ import { InfoIcon, RenewIcon } from "./checkout-icons";
  */
 export function SubscriptionOrderSummary({
   autoRenew,
+  billingInterval,
   className = "",
   plan,
   price,
 }: Readonly<{
   autoRenew: boolean;
+  /** The selected, backend-offered interval. */
+  billingInterval: string;
   className?: string;
   plan: SubscriptionPlanResponse;
   price: string;
 }>) {
-  const cadence = billingCadence(plan.billingInterval);
+  const cadence = billingCadence(billingInterval);
   return (
     <Card
       aria-labelledby="order-summary-heading"
@@ -46,7 +49,7 @@ export function SubscriptionOrderSummary({
 
         <dl className="pt-4 text-sm sm:text-base">
           <SummaryRow label="Subtotal" value={price} />
-          <SummaryRow label="Billing frequency" value={plan.billingInterval} />
+          <SummaryRow label="Billing frequency" value={billingInterval} />
           <div className="bg-brand-50 dark:bg-brand-500/10 mt-2 flex items-center justify-between gap-4 rounded-lg px-3 py-3 font-semibold text-gray-900 dark:text-white">
             <dt>Due today</dt>
             <dd className="text-right">{price}</dd>
@@ -56,8 +59,8 @@ export function SubscriptionOrderSummary({
         <p className="mt-6 flex gap-3 border-b border-gray-200 pb-6 text-sm leading-6 text-gray-600 dark:border-gray-800 dark:text-gray-400">
           <InfoIcon className="mt-1 h-5 w-5 shrink-0 text-gray-500" />
           <span>
-            {billingIntervalLabel(plan.billingInterval)} in {plan.currencyCode}.
-            The amount and currency are determined by our billing service.
+            {billingIntervalLabel(billingInterval)} in {plan.currencyCode}. The
+            amount and currency are determined by our billing service.
           </span>
         </p>
 
@@ -65,7 +68,7 @@ export function SubscriptionOrderSummary({
           <RenewIcon className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" />
           <div>
             <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-              {plan.billingInterval} subscription
+              {billingInterval} subscription
             </h3>
             <p className="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-400">
               {autoRenew

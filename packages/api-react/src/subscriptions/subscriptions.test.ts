@@ -282,6 +282,7 @@ describe("subscription mutations", () => {
     const request = {
       autoRenew: true,
       billingAccountOwnerType: "Stakeholder" as const,
+      billingInterval: "Monthly",
       paymentProviderId: "provider-1",
       planId: "plan-1",
     };
@@ -329,6 +330,7 @@ describe("subscription mutations", () => {
           request: {
             autoRenew: true,
             billingAccountOwnerType: "Stakeholder",
+            billingInterval: "Monthly",
             paymentProviderId: "provider-1",
             planId: "plan-1",
           },

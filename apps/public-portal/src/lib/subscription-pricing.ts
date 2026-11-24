@@ -1,4 +1,7 @@
-import type { SubscriptionPlanResponse } from "@template/api-client/subscriptions";
+import {
+  defaultSubscriptionPlanPrice,
+  type SubscriptionPlanResponse,
+} from "@template/api-client/subscriptions";
 import type { PricePlan } from "@template/public-ui";
 import { formatMinorUnits } from "@template/ui-core";
 
@@ -20,9 +23,11 @@ export type PlanMarketingContent = Readonly<
 export function subscriptionCheckoutHref(
   userPortalUrl: string,
   planId: string,
+  billingInterval?: string,
 ): string {
   const url = new URL(SUBSCRIPTION_CHECKOUT_PATH, `${userPortalUrl}/`);
   url.searchParams.set("planId", planId);
+  if (billingInterval) url.searchParams.set("billingInterval", billingInterval);
   return url.toString();
 }
 
@@ -32,26 +37,39 @@ export function billingCadence(billingInterval: string): string {
   return billingInterval.toLowerCase();
 }
 
+/**
+ * Maps a plan to the shared pricing card at its default interval (Monthly
+ * when offered). Returns `undefined` for a plan that offers no price. API
+ * presentation fields win over local marketing copy.
+ */
 export function toPricePlan(
   plan: SubscriptionPlanResponse,
   {
     marketing = {},
     userPortalUrl,
   }: Readonly<{ marketing?: PlanMarketingContent; userPortalUrl: string }>,
-): PricePlan {
+): PricePlan | undefined {
+  const offered = defaultSubscriptionPlanPrice(plan);
+  if (!offered) return undefined;
   const copy = marketing[plan.code];
+  const features = plan.features?.length ? plan.features : copy?.highlights;
   return {
     action: {
-      href: subscriptionCheckoutHref(userPortalUrl, plan.id),
+      href: subscriptionCheckoutHref(
+        userPortalUrl,
+        plan.id,
+        offered.billingInterval,
+      ),
       label: "Subscribe",
     },
-    cadence: billingCadence(plan.billingInterval),
+    cadence: billingCadence(offered.billingInterval),
     description:
-      copy?.description ??
-      `Billed ${plan.billingInterval.toLowerCase()} in ${plan.currencyCode}.`,
-    features: copy?.highlights,
+      plan.description?.trim() ||
+      copy?.description ||
+      `Billed ${offered.billingInterval.toLowerCase()} in ${plan.currencyCode}.`,
+    features,
     id: plan.id,
     name: plan.name,
-    price: formatMinorUnits(plan.price, plan.currencyCode),
+    price: formatMinorUnits(offered.price, plan.currencyCode),
   };
 }

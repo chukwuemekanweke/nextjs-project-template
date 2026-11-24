@@ -455,3 +455,69 @@ describe("PaymentInstructions", () => {
     expect(markup).not.toContain("provider.example");
   });
 });
+
+describe("CheckoutView billing intervals", () => {
+  const multiInterval: SubscriptionPlanResponse = {
+    code: "PRO",
+    currencyCode: "NGN",
+    currencyId: "currency-1",
+    id: PLAN_ID,
+    name: "Pro",
+    prices: [
+      { billingInterval: "Monthly", price: 750000 },
+      { billingInterval: "Yearly", price: 7500000 },
+    ],
+  };
+  const renderWith = (billingInterval?: string) =>
+    renderToStaticMarkup(
+      createElement(CheckoutView, { billingInterval, planId: PLAN_ID }),
+    ).replace(/ /g, " ");
+
+  beforeEach(() => {
+    hooks.useSubscriptionPlans.mockReturnValue({
+      data: [multiInterval],
+      isPending: false,
+    });
+  });
+
+  it("preselects the requested interval and prices it from the backend", () => {
+    const markup = renderWith("Yearly");
+    expect(markup).toMatch(
+      inputWith('name="billingInterval"', 'value="Yearly"', 'checked=""'),
+    );
+    expect(markup).toContain("Pay NGN 75,000.00");
+    expect(markup).toContain("/ year");
+    expect(markup).toContain("Renew automatically at the end of each year");
+  });
+
+  it("ignores an interval the plan does not offer and defaults to monthly", () => {
+    const markup = renderWith("Weekly");
+    expect(markup).toMatch(
+      inputWith('name="billingInterval"', 'value="Monthly"', 'checked=""'),
+    );
+    expect(markup).toContain("Pay NGN 7,500.00");
+  });
+
+  it("hides the selector when the plan offers one interval", () => {
+    hooks.useSubscriptionPlans.mockReturnValue({
+      data: [
+        {
+          ...multiInterval,
+          prices: [{ billingInterval: "Yearly", price: 7500000 }],
+        },
+      ],
+      isPending: false,
+    });
+    const markup = renderWith("Monthly");
+    expect(markup).not.toContain('name="billingInterval"');
+    expect(markup).toContain("Pay NGN 75,000.00");
+  });
+
+  it("falls back to the plan picker when a plan offers no prices", () => {
+    hooks.useSubscriptionPlans.mockReturnValue({
+      data: [{ ...multiInterval, prices: [] }],
+      isPending: false,
+    });
+    expect(renderWith()).toContain("The selected plan is no longer available.");
+  });
+});

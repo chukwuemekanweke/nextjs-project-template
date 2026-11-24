@@ -2,23 +2,24 @@ import type { ReactNode } from "react";
 import type { StatusTone } from "@/lib/billing-display";
 
 const toneClasses: Record<StatusTone, string> = {
-  danger: "border-red-300 text-red-700 dark:border-red-900 dark:text-red-400",
-  info: "border-blue-300 text-blue-700 dark:border-blue-900 dark:text-blue-400",
-  neutral:
-    "border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-300",
+  danger: "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400",
+  info: "bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-400",
+  neutral: "bg-gray-100 text-gray-700 dark:bg-white/5 dark:text-gray-300",
   success:
-    "border-emerald-300 text-emerald-700 dark:border-emerald-800 dark:text-emerald-400",
+    "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400",
   warning:
-    "border-amber-300 text-amber-700 dark:border-amber-800 dark:text-amber-400",
+    "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400",
 };
 
+/** Subtle filled status pill. The text label always carries the meaning. */
 export function StatusBadge({
   children,
   tone,
 }: Readonly<{ children: ReactNode; tone: StatusTone }>) {
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium whitespace-nowrap ${toneClasses[tone]}`}
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium whitespace-nowrap ${toneClasses[tone]}`}
+      data-tone={tone}
     >
       {children}
     </span>

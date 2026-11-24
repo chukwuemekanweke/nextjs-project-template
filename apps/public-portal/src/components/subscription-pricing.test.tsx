@@ -61,12 +61,48 @@ describe("subscription pricing helpers", () => {
       marketing: { PRO_MONTHLY: { description: "For growing teams." } },
       userPortalUrl: USER_PORTAL,
     });
-    expect(mapped.price.replace(/\u00a0/g, " ")).toBe("NGN 7,500.00");
-    expect(mapped.description).toBe("For growing teams.");
-    expect(mapped.features).toBeUndefined();
-    expect(mapped.action.href).toBe(
-      `${USER_PORTAL}/billing/checkout?planId=${plan.id}`,
+    expect(mapped?.price.replace(/\u00a0/g, " ")).toBe("NGN 7,500.00");
+    expect(mapped?.description).toBe("For growing teams.");
+    expect(mapped?.features).toBeUndefined();
+    expect(mapped?.action.href).toBe(
+      `${USER_PORTAL}/billing/checkout?planId=${plan.id}&billingInterval=Monthly`,
     );
+  });
+
+  it("prices multi-interval plans at monthly and prefers API copy", () => {
+    const mapped = toPricePlan(
+      {
+        code: "PRO",
+        currencyCode: "NGN",
+        currencyId: "currency-1",
+        description: "From the API.",
+        features: ["API feature"],
+        id: plan.id,
+        name: "Pro",
+        prices: [
+          { billingInterval: "Yearly", price: 7500000 },
+          { billingInterval: "Monthly", price: 750000 },
+        ],
+      },
+      {
+        marketing: { PRO: { description: "Local", highlights: ["Local"] } },
+        userPortalUrl: USER_PORTAL,
+      },
+    );
+    expect(mapped?.price.replace(/\u00a0/g, " ")).toBe("NGN 7,500.00");
+    expect(mapped?.cadence).toBe("month");
+    expect(mapped?.description).toBe("From the API.");
+    expect(mapped?.features).toEqual(["API feature"]);
+    expect(mapped?.action.href).toContain("billingInterval=Monthly");
+  });
+
+  it("skips plans that offer no price", () => {
+    expect(
+      toPricePlan(
+        { ...plan, billingInterval: undefined, price: undefined, prices: [] },
+        { userPortalUrl: USER_PORTAL },
+      ),
+    ).toBeUndefined();
   });
 });
 
@@ -107,7 +143,7 @@ describe("SubscriptionPricing", () => {
     expect(markup).toContain("/month");
     expect(markup).toContain("Billed monthly in NGN.");
     expect(markup).toContain(
-      `href="${USER_PORTAL}/billing/checkout?planId=${plan.id}"`,
+      `href="${USER_PORTAL}/billing/checkout?planId=${plan.id}&amp;billingInterval=Monthly"`,
     );
     expect(markup).toContain('aria-label="Subscribe: Pro Monthly"');
   });

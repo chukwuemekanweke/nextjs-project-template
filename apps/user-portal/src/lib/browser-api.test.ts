@@ -376,6 +376,7 @@ describe("User Portal browser API", () => {
       {
         autoRenew: true,
         billingAccountOwnerType: "Stakeholder",
+        billingInterval: "Monthly",
         paymentProviderId: "provider-1",
         planId: "plan-1",
       },

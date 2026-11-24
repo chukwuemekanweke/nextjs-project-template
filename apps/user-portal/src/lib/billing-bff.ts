@@ -70,6 +70,8 @@ export function purchaseRequestFromBody(
   if (
     typeof candidate.planId !== "string" ||
     typeof candidate.paymentProviderId !== "string" ||
+    typeof candidate.billingInterval !== "string" ||
+    candidate.billingInterval.length === 0 ||
     typeof candidate.autoRenew !== "boolean" ||
     !billingAccountOwnerType
   ) {
@@ -78,6 +80,7 @@ export function purchaseRequestFromBody(
   return {
     autoRenew: candidate.autoRenew,
     billingAccountOwnerType,
+    billingInterval: candidate.billingInterval,
     paymentProviderId: candidate.paymentProviderId,
     planId: candidate.planId,
   };

@@ -1,6 +1,11 @@
 "use client";
 
-import type { SubscriptionPlanResponse } from "@template/api-client/subscriptions";
+import {
+  defaultSubscriptionPlanPrice,
+  findSubscriptionPlanPrice,
+  subscriptionPlanPrices,
+  type SubscriptionPlanResponse,
+} from "@template/api-client/subscriptions";
 import {
   useEligiblePaymentProviders,
   usePurchaseSubscription,
@@ -31,6 +36,7 @@ import {
   type CheckoutOutcome,
 } from "@/lib/checkout-submission";
 import { useRememberedCheckoutAttempt } from "@/lib/use-checkout-attempt";
+import { BillingIntervalToggle } from "../billing-interval-toggle";
 import { largePrimaryButtonClass } from "../billing-ui";
 import {
   ArrowRightIcon,
@@ -50,9 +56,15 @@ type InstructionOutcome = Extract<
 >;
 
 export function CheckoutView({
+  billingInterval,
   navigate = (href) => window.location.assign(href),
   planId,
-}: Readonly<{ navigate?: (href: string) => void; planId: string }>) {
+}: Readonly<{
+  /** Requested interval; ignored unless the plan offers it. */
+  billingInterval?: string | undefined;
+  navigate?: (href: string) => void;
+  planId: string;
+}>) {
   const ownerType = resolveBillingOwnerType();
   const plans = useSubscriptionPlans();
   const plan = plans.data?.find((candidate) => candidate.id === planId);
@@ -67,22 +79,31 @@ export function CheckoutView({
       </Alert>
     );
   }
-  if (!plan) {
+  if (!plan || subscriptionPlanPrices(plan).length === 0) {
     return (
       <PlanPicker notice="The selected plan is no longer available. Choose another plan." />
     );
   }
-  return <PlanCheckout navigate={navigate} ownerType={ownerType} plan={plan} />;
+  return (
+    <PlanCheckout
+      navigate={navigate}
+      ownerType={ownerType}
+      plan={plan}
+      requestedInterval={billingInterval}
+    />
+  );
 }
 
 function PlanCheckout({
   navigate,
   ownerType,
   plan,
+  requestedInterval,
 }: Readonly<{
   navigate: (href: string) => void;
   ownerType: ReturnType<typeof resolveBillingOwnerType>;
   plan: SubscriptionPlanResponse;
+  requestedInterval: string | undefined;
 }>) {
   const providers = useEligiblePaymentProviders(plan.id, ownerType);
   const purchase = usePurchaseSubscription();
@@ -107,11 +128,24 @@ function PlanCheckout({
       : undefined;
   const [chosenProviderId, setProviderId] = useState<string>();
   const [chosenAutoRenew, setAutoRenew] = useState<boolean>();
+  const [chosenInterval, setChosenInterval] = useState<string>();
   const [error, setError] = useState<string>();
   const [outcome, setOutcome] = useState<InstructionOutcome>();
   const providerId = chosenProviderId ?? lastSelection?.paymentProviderId;
   const autoRenew = chosenAutoRenew ?? lastSelection?.autoRenew ?? true;
-  const price = formatMinorUnits(plan.price, plan.currencyCode);
+  // Explicit choice, then the link's interval, then the remembered one, then
+  // the plan default; only intervals the backend offers are ever used.
+  const selectedPrice =
+    findSubscriptionPlanPrice(plan, chosenInterval) ??
+    findSubscriptionPlanPrice(plan, requestedInterval) ??
+    defaultSubscriptionPlanPrice(plan, lastSelection?.billingInterval);
+  const offeredIntervals = subscriptionPlanPrices(plan).map(
+    (offered) => offered.billingInterval,
+  );
+  const billingInterval = selectedPrice?.billingInterval ?? "";
+  const price = selectedPrice
+    ? formatMinorUnits(selectedPrice.price, plan.currencyCode)
+    : "";
 
   const selectedProvider = providers.data?.find(
     (provider) => provider.id === providerId,
@@ -121,6 +155,7 @@ function PlanCheckout({
     autoRenew && selectedProvider?.supportsRecurringPayments !== false;
   const canSubmit =
     !purchase.isPending &&
+    selectedPrice !== undefined &&
     selectedProvider !== undefined &&
     isPortalSupportedPaymentMethod(selectedProvider.paymentMethodType);
 
@@ -138,6 +173,7 @@ function PlanCheckout({
       {
         autoRenew,
         billingAccountOwnerType: ownerType,
+        billingInterval,
         paymentProviderId: selectedProvider.id,
         planId: plan.id,
       },
@@ -157,6 +193,7 @@ function PlanCheckout({
     <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] xl:gap-8">
       <SubscriptionOrderSummary
         autoRenew={renewsAutomatically}
+        billingInterval={billingInterval}
         className="xl:col-start-2 xl:row-start-1"
         plan={plan}
         price={price}
@@ -208,6 +245,20 @@ function PlanCheckout({
                     </Link>
                   </Alert>
                 ) : null}
+                {offeredIntervals.length > 1 ? (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                      Billing interval
+                    </p>
+                    <BillingIntervalToggle
+                      disabled={purchase.isPending}
+                      intervals={offeredIntervals}
+                      name="billingInterval"
+                      onChange={setChosenInterval}
+                      value={billingInterval}
+                    />
+                  </div>
+                ) : null}
                 <PaymentMethodSelector
                   disabled={purchase.isPending}
                   onSelect={setProviderId}
@@ -226,7 +277,7 @@ function PlanCheckout({
                     />
                     <span className="text-sm text-gray-800 sm:text-base dark:text-white/90">
                       Renew automatically at the end of each{" "}
-                      {billingCadence(plan.billingInterval)}
+                      {billingCadence(billingInterval)}
                     </span>
                   </label>
                   {autoRenew &&

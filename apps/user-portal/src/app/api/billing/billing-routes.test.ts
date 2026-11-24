@@ -53,6 +53,7 @@ function purchaseRequest(
 const validPurchase = {
   autoRenew: true,
   billingAccountOwnerType: "Stakeholder",
+  billingInterval: "Yearly",
   paymentProviderId: "provider-1",
   planId: "plan-1",
 };
@@ -85,9 +86,13 @@ describe("subscription BFF routes", () => {
     expect(mocks.purchaseSubscription).not.toHaveBeenCalled();
   });
 
-  it("rejects malformed purchase bodies", async () => {
+  it.each([
+    ["owner type", { billingAccountOwnerType: "Account" }],
+    ["missing interval", { billingInterval: undefined }],
+    ["empty interval", { billingInterval: "" }],
+  ])("rejects malformed purchase bodies (%s)", async (_label, change) => {
     const response = await purchase(
-      purchaseRequest({ ...validPurchase, billingAccountOwnerType: "Account" }),
+      purchaseRequest({ ...validPurchase, ...change }),
     );
     expect(response.status).toBe(400);
     expect(mocks.purchaseSubscription).not.toHaveBeenCalled();

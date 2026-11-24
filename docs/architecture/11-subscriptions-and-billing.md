@@ -22,7 +22,7 @@ flowchart LR
 
 ## API client
 
-`packages/api-client/src/subscriptions` follows the payments module layout (`contracts.ts`, `operations.ts`, `subscriptions.client.ts`, `index.ts`) and is exported as `@template/api-client/subscriptions` and as `api.subscriptions` on the aggregate client. Contracts preserve backend camelCase names and nullability. Monetary fields (`price`, `planPrice`, `amount`) stay in whole minor currency units. Enumerated response fields are typed as `string` because the backend may add values; the module exports the documented literal lists (`subscriptionPurchaseStatuses`, `subscriptionLifecycleStatuses`, `subscriptionPaymentMethodTypes`, `subscriptionBillingIntervals`, `billingAccountOwnerTypes`) for presentation code to narrow against.
+`packages/api-client/src/subscriptions` follows the payments module layout (`contracts.ts`, `operations.ts`, `subscriptions.client.ts`, `index.ts`) and is exported as `@template/api-client/subscriptions` and as `api.subscriptions` on the aggregate client. Contracts preserve backend camelCase names and nullability. Monetary fields (plan `prices[].price`, `planPrice`, `amount`) stay in whole minor currency units. A plan is a package that offers one price per billing interval in `prices` (monthly and yearly are the same plan). Read prices through `subscriptionPlanPrices`, `findSubscriptionPlanPrice`, and `defaultSubscriptionPlanPrice` (preferred interval, else `Monthly`, else first); they also accept the legacy single `price`/`billingInterval` shape while backends migrate. Optional plan `description`, `features`, `badge`, and `recommended` are presentation-only. `PurchaseSubscriptionMutationRequest` requires the chosen `billingInterval`. Enumerated response fields are typed as `string` because the backend may add values; the module exports the documented literal lists (`subscriptionPurchaseStatuses`, `subscriptionLifecycleStatuses`, `subscriptionPaymentMethodTypes`, `subscriptionBillingIntervals`, `billingAccountOwnerTypes`) for presentation code to narrow against.
 
 | Operation                       | Route                                                           |
 | ------------------------------- | --------------------------------------------------------------- |
@@ -61,19 +61,19 @@ Invalidation is narrow: a successful purchase invalidates the owner's purchases,
 
 ## Pricing and authentication handoff
 
-The Public Portal loads plans on the server. The `/` and `/pricing` Server Components call `loadSubscriptionPlans()` (`src/lib/subscription-plans.ts`), which uses an anonymous request-scoped server client (`src/lib/server-api.ts`, runtime `API_BASE_URL` and `TENANT_ID`) and a Next.js data-cache request (`revalidate: 60`, tag `subscription-plans`). Both pages call `connection()` so they render per request and `next build` never contacts the API; the cached plan response keeps that cheap. A failed load becomes an `unavailable` result rendered as an error message rather than a failed page. Because the browser never calls the API, no CORS rule is needed for the Public Portal. `SubscriptionPricing` maps each plan into the existing `public-ui` `Pricing` section (`toPricePlan`), with empty and error placeholders. Prices are formatted from minor units, cadence comes from `billingInterval`, and the CTA links to `{NEXT_PUBLIC_USER_PORTAL_URL}/billing/checkout?planId={id}`. Optional marketing copy lives in `planMarketing` in `site.ts`, keyed by plan `code`; it never supplies prices, currencies, intervals, or entitlements, and it is empty by default.
+The Public Portal loads plans on the server. The `/` and `/pricing` Server Components call `loadSubscriptionPlans()` (`src/lib/subscription-plans.ts`), which uses an anonymous request-scoped server client (`src/lib/server-api.ts`, runtime `API_BASE_URL` and `TENANT_ID`) and a Next.js data-cache request (`revalidate: 60`, tag `subscription-plans`). Both pages call `connection()` so they render per request and `next build` never contacts the API; the cached plan response keeps that cheap. A failed load becomes an `unavailable` result rendered as an error message rather than a failed page. Because the browser never calls the API, no CORS rule is needed for the Public Portal. `SubscriptionPricing` maps each plan into the existing `public-ui` `Pricing` section (`toPricePlan`), with empty and error placeholders. Each plan is shown at its default interval (Monthly when offered); plans offering no price are skipped. Prices are formatted from minor units, and the CTA links to `{NEXT_PUBLIC_USER_PORTAL_URL}/billing/checkout?planId={id}&billingInterval={interval}`. API `description`/`features` win over local marketing copy. Optional marketing copy lives in `planMarketing` in `site.ts`, keyed by plan `code`; it never supplies prices, currencies, intervals, or entitlements, and it is empty by default.
 
 The checkout route is protected by the User Portal proxy, so an unauthenticated visitor is redirected to `/sign-in?returnTo=/billing/checkout?planId=...` by the existing `createSignInRedirectUrl` mechanism. `safeSignInDestination` keeps only same-origin relative paths. The sign-in page's register link, the registration form's sign-in links, and the registration → email confirmation redirect all carry the validated `returnTo` (`createRegistrationHref`, `createSignInHref`, `createEmailConfirmationDestination`), so a selected plan survives sign-in, registration, email confirmation, two-factor, and passkey setup.
 
 ## Checkout
 
-`/billing/checkout?planId={id}` validates the id format and otherwise shows a plan picker (also the "back to plans" path inside the User Portal). `CheckoutView` finds the plan in the backend plan list, discovers eligible providers for that plan and owner type, and lets the user choose a provider and auto-renewal. Providers whose payment method this portal cannot complete (currently `Card`) are listed but disabled. The amount and currency are never user input.
+`/billing/checkout?planId={id}` validates the id format and otherwise shows a plan picker (also the "back to plans" path inside the User Portal). `CheckoutView` finds the plan in the backend plan list, discovers eligible providers for that plan and owner type, and lets the user choose a billing interval (shown only when the plan offers more than one), a provider, and auto-renewal. The interval comes from the explicit choice, then a `billingInterval` query value the plan offers, then the remembered attempt, then the plan default; unoffered values are ignored, and a plan with no prices falls back to the plan picker. The BFF forwards `billingInterval` and rejects purchases without one. Providers whose payment method this portal cannot complete (currently `Card`) are listed but disabled. The amount and currency are never user input.
 
 ### Idempotency-key lifecycle
 
 `lib/checkout-attempt.ts` keeps one logical checkout attempt in `localStorage` (`user-portal.subscription-checkout`): plan, provider, owner type, auto-renew, idempotency key, creation time, and, once accepted, the purchase id. It holds no credentials and is navigation/retry state only; the backend only returns a purchase to its owner. Using `localStorage` lets a hosted checkout return in a new tab, or after the original tab was closed, and still find its purchase. `useRememberedCheckoutAttempt` listens for `storage` events so open tabs stay in sync.
 
-- `resolveCheckoutAttempt` reuses the stored key when the selection is identical and the attempt is not settled; any changed field creates a new UUID.
+- `resolveCheckoutAttempt` reuses the stored key when the selection is identical and the attempt is not settled; any changed field (plan, interval, provider, owner type, auto-renewal) creates a new UUID. Attempts stored without an interval are discarded.
 - `createCheckoutSubmitter` ignores submissions while one is in flight (usability only; the backend enforces idempotency), stores the attempt before sending, and records the purchase id on success. An exact replay returns the original purchase, which the UI continues with.
 - Because every tab shares the record, the submitter also keeps an attempt whose outcome is unknown (sent, no purchase id yet) in memory. A retry in that tab replays its own key even if another tab has started a different checkout since, and a rejection only removes the stored attempt if it still has the rejected key (`store.discard(key)`). Two tabs submitting the same selection share one key, so they cannot create two purchases.
 - Network failures, timeouts, 5xx, 401, and 429 keep the key so a retry replays the same request. Definitive rejections (400, 403, 404, 409) discard the attempt so the next deliberate submission gets a new key. A `409` is shown as a conflict with an existing subscription or earlier checkout.
@@ -123,7 +123,7 @@ Bachs rejects localhost and private-network redirect URLs, so local end-to-end r
 | `SubscriptionCancelled`, `SubscriptionExpired` | Subscription has since ended   | same                                                    |
 | unknown                                        | Confirming; "Check again"      | same                                                    |
 
-`canonicalPaymentReturnRoute` replaces the URL only for backend-confirmed success or cancellation, so a refresh shows the matching page. A polling timeout keeps the waiting state with "Check again" and states that it is not a failure. "Return to checkout" links to `/billing/checkout?planId=` for the remembered plan and never purchases by itself.
+`canonicalPaymentReturnRoute` replaces the URL only for backend-confirmed success or cancellation, so a refresh shows the matching page. A polling timeout keeps the waiting state with "Check again" and states that it is not a failure. "Return to checkout" links to `/billing/checkout?planId=&billingInterval=` for the remembered plan and interval and never purchases by itself.
 
 Session recovery uses the existing proxy: an expired access token is refreshed; without a valid session the proxy redirects to `/sign-in?returnTo=/billing/checkout/success…`, `safeSignInDestination` keeps only same-origin paths, and after sign-in the route re-reads the remembered attempt (session expiry does not clear it; logout does) and re-queries the backend.
 
@@ -147,23 +147,65 @@ The result pages share `PaymentResultCard` and `PaymentResultSummary` (`payment-
 
 `isTerminal` only means polling has finished for this purchase; it is not read as loss of entitlement.
 
-## Billing dashboard
+## Billing page
 
-`/billing` (in the User Portal navigation) composes `CurrentSubscriptionCard` and `BillingHistoryCard`.
+`/billing` (in the User Portal navigation) is the unified subscription entry point. `BillingOverview` (client) reads the owner's current subscription and selects one of three layouts. All rendering decisions live in `lib/billing-view.ts` (`resolveBillingView`, `resolvePlanLayout`, `resolveBillingHistoryPlacement`) so they are tested without rendering.
 
-The current subscription card shows plan, formatted price and interval, a status badge from `lifecycleStatus` (with the raw `status` preserved in `data-subscription-status`), current period start/end, next billing date (only when auto-renewing and not cancelling), auto-renewal, and, when cancelling, the effective and requested cancellation dates. `currentPeriodEndUtc`, `nextBillingAtUtc`, and `cancellationEffectiveAtUtc` are displayed separately and never derived from the interval. A `null` result (backend `404`) shows "No active subscription" with a link to plans. `PastDue` shows a warning.
+### Subscription state
 
-Billing history is server-paginated through `?page=` (page size 20) with the shared `Pagination` and `DataTable`. Rows show date (paid date, or created date marked "Not paid"), plan, billing period when known, amount, payment status (`Succeeded` is "Paid"; failures, pending, and other states keep their own labels), provider, and merchant reference. No invoices, receipts, or refunds are shown.
+| `GET /subscriptions/current` result                               | View           | Main content                                     |
+| ----------------------------------------------------------------- | -------------- | ------------------------------------------------ |
+| Loading                                                           | `loading`      | Skeleton; never a "no subscription" state        |
+| Network, `401`, `403`, `5xx`                                      | `error`        | Error alert with retry; plans are not offered    |
+| `404` (mapped to `null`)                                          | `discovery`    | Plans (and history per the rules below)          |
+| `lifecycleStatus` `Pending`                                       | `pending`      | Processing/recovery card, history when it exists |
+| `Active`, `PastDue`, cancellation scheduled, `Scheduled`, unknown | `subscription` | Current subscription card, then billing history  |
+| `Cancelled`/`Expired` (not returned today; defensive)             | `discovery`    | Plans                                            |
+
+The backend returns only `Pending` or `Active` subscriptions from the current endpoint (Active first); ended subscriptions answer `404`, so the customer may buy again. A cancellation scheduled for period end is still an active entitlement and keeps the subscription view. Unknown lifecycle values are treated as an entitlement, never as permission to purchase. Plans are fetched only in the discovery view.
+
+The pending card never links to checkout (the backend reserves the entitlement and rejects a conflicting purchase with `409`). It offers "View payment status" when this browser's remembered, unsettled checkout attempt is for the same plan, a "Check again" refetch, and a support contact.
+
+### Plan layouts
+
+`SubscriptionPlanGrid` renders backend plans in order, without filtering. One plan uses a centered card (`max-w-md`); two use two equal columns from `md`; three or more use the expanded grid (one column on mobile, two on tablet, three from `xl`, wrapping into more rows). Every layout uses the same pricing card (the three-plan design): a decorative icon (cycled by position, never implying a tier), optional tier pill or "Most popular" highlight, name, description, formatted price, cadence, "Billed monthly/yearly", a divider, a feature checklist, and a "Choose plan" link to `/billing/checkout?planId={id}&billingInterval={interval}`. When the plans offer more than one interval, a Monthly/Yearly toggle (default Monthly) above the grid picks the price each card shows; a plan that does not offer the selected interval shows its own default; selection never starts a purchase. The checkout page's plan picker reuses the same grid.
+
+Card copy resolves through `resolvePlanPresentation`: API plan fields (`description`, `features`, `badge`, `recommended`) first, then `planPresentation` in `config/billing.ts` keyed by plan `code`, then `placeholderPlanPresentation`. The placeholder is temporary copy that fills cards until the API returns these fields and should be removed then. A recommendation is never assumed, and a missing badge shows no pill.
+
+### Billing-history visibility
+
+| State                         | History                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| Subscription view             | Always inline (empty message when there are no records)                  |
+| Pending                       | Inline when records exist                                                |
+| Discovery, no records         | Hidden (no empty table)                                                  |
+| Discovery, records, 0–2 plans | Inline below the plans                                                   |
+| Discovery, records, 3+ plans  | Hidden from the page; "View billing history" links to `/billing/history` |
+
+`/billing/history` renders the same `BillingHistoryCard` with its own pagination base path, so past payments remain reachable after a subscription is cancelled or expires. The discovery view reads history page 1 through the same query key the table uses, so no extra request is made.
+
+### Current subscription card
+
+The card shows plan name, a status badge from `lifecycleStatus` (raw `status` preserved in `data-subscription-status`), price and cadence, then current period start/end, next billing date (only when auto-renewing and not cancelling), auto-renewal, and, when cancelling, the effective and requested cancellation dates. `currentPeriodEndUtc`, `nextBillingAtUtc`, and `cancellationEffectiveAtUtc` are displayed separately and never derived from the interval. `PastDue` shows a renewal warning; a scheduled cancellation shows the access end date.
+
+There is no "Upgrade plan" action: the customer API has no plan-change endpoint, and buying a second plan against an active entitlement is rejected. The card says plan changes are not available yet and that the customer can cancel at period end and choose a new plan afterwards.
+
+### Billing history table
+
+History is server-paginated through `?page=` (page size 20) with the shared `Pagination` and `DataTable`. All seven columns are kept on every viewport: date (paid date, or created date marked "Not paid"), plan, billing period (backend boundaries, or "—"), amount (right-aligned), payment status, provider, and merchant reference. Status badges are subtle filled pills with text labels: Succeeded green, Failed red, Pending amber, Underpaid amber, Cancelled and Expired neutral; unknown values pass through as neutral. Long references are abbreviated with the full value in `title` and a copy button that writes the complete reference and announces the result through a polite live region. Cells do not wrap; the table scrolls horizontally inside its rounded container, never the page. No invoices, receipts, or refunds are shown.
 
 Amounts everywhere use `formatMinorUnits` from `@template/ui-core`, which reads the currency's minor-unit scale from `Intl` and converts with decimal string arithmetic. Dates use `formatBillingDate` (`en-US`, medium date style) in the browser's time zone.
 
 ## Cancellation at period end
 
-When raw `status` is `Active` and `cancelAtPeriodEnd` is false, the card offers "Cancel at period end". A confirmation modal explains that the subscription will not renew, access continues until the current period end returned by the backend, and no refund is issued. Confirming calls the mutation (guarded against repeated submission), then shows `entitledUntilUtc` from the response; the invalidated current subscription refreshes into the "Cancellation scheduled" state, which no longer offers the action. Immediate cancellation, resume, upgrade, downgrade, proration, and refunds are not implemented because the customer API does not support them.
+When raw `status` is `Active` and `cancelAtPeriodEnd` is false, the current subscription card offers "Cancel at period end". A confirmation modal explains that the subscription will not renew, access continues until the current period end returned by the backend, and no refund is issued. Confirming calls the mutation (guarded against repeated submission), then shows `entitledUntilUtc` from the response and hides the action immediately; the invalidated current subscription refreshes into the "Cancellation scheduled" state, which no longer offers the action. Immediate cancellation, resume, upgrade, downgrade, proration, and refunds are not implemented because the customer API does not support them.
 
 ## Known backend gaps and limitations
 
 - Both `409` cases (idempotency-key reuse with a different payload, and an entitlement conflict) are plain Problem Details without a stable `code`, so the UI shows one combined conflict message.
+- There is no customer plan-change endpoint (upgrade, downgrade, proration), so the Billing page offers no "Upgrade plan" action. Adding one requires a backend operation that changes the plan of the current entitlement; the frontend must not emulate it with a second purchase.
+- The plan presentation fields (`description`, `features`, `badge`, `recommended`) are not yet returned by `GET /subscription-plans`; cards show `placeholderPlanPresentation` until they are. The multi-interval `prices` model is in progress in the backend; the frontend accepts both shapes.
+- `GET /subscriptions/current` returns `404` once a subscription is cancelled or expired, so the Billing page cannot show the ended plan; billing history remains the record of past subscriptions.
 - The backend does not currently restrict which tenant users may act for a `Tenant` billing account; the User Portal uses `Stakeholder` only.
 - Bachs `success_url`/`cancel_url` come from one backend-wide setting (`BachsOptions.SuccessUrl`/`CancelUrl`) applied to every Bachs checkout, including wallet top-ups. Pointing it at the User Portal subscription routes also sends wallet top-up returns there. The backend needs per-intent return URLs (for example `Payments:Bachs:ReturnUrls:SubscriptionPurchase:*`) selected in `BachsPaymentProviderService` from the payment intent.
 - The redirect carries no purchase correlation, so recovery depends on this browser's remembered attempt. Proposed backend change: append the purchase id (for example `?purchaseId={id}`) when building `success_url`/`cancel_url` per checkout. The frontend would use it only as a lookup key; the owner-scoped status endpoint already returns `404` for other owners.

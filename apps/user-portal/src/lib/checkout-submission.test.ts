@@ -15,6 +15,7 @@ import {
 const selection: CheckoutSelection = {
   autoRenew: true,
   billingAccountOwnerType: "Stakeholder",
+  billingInterval: "Monthly",
   paymentProviderId: "provider-1",
   planId: "plan-1",
 };
