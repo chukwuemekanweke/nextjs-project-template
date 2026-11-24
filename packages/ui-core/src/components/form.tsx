@@ -25,7 +25,7 @@ export function FormField({
   children: ReactNode;
 }>) {
   return (
-    <div className="grid gap-2">
+    <div className="grid content-start gap-2">
       <label
         className="text-sm font-medium text-gray-700 dark:text-gray-400"
         htmlFor={inputId}
