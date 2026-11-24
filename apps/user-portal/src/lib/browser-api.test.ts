@@ -250,7 +250,7 @@ describe("User Portal browser API", () => {
     );
   });
 
-  it("routes login activity through the authenticated same-origin BFF while preserving cursor pagination", async () => {
+  it("routes security activity through the authenticated same-origin BFF while preserving cursor pagination", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()
       .mockResolvedValue(Response.json({ activities: [], nextCursor: null }));
@@ -260,7 +260,7 @@ describe("User Portal browser API", () => {
       tenantId: TENANT_ID,
     });
 
-    await client.authentication.getLoginActivity({
+    await client.authentication.getSecurityActivity({
       Cursor: "cursor-1",
       Limit: 10,
     });
@@ -268,7 +268,7 @@ describe("User Portal browser API", () => {
     expect(fetchImplementation).toHaveBeenCalledOnce();
     const [input, init] = fetchImplementation.mock.calls[0]!;
     expect(input.toString()).toBe(
-      "/api/security/login-activity?Cursor=cursor-1&Limit=10",
+      "/api/security/security-activity?Cursor=cursor-1&Limit=10",
     );
     expect(init).toMatchObject({ credentials: "same-origin", method: "GET" });
   });

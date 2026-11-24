@@ -1,8 +1,8 @@
 "use client";
 
 import { isApiError } from "@template/api-client";
-import { useLoginActivity } from "@template/api-react/authentication";
-import type { LoginActivityResponse } from "@template/api-client/authentication";
+import { useSecurityActivity } from "@template/api-react/authentication";
+import type { SecurityActivityResponse } from "@template/api-client/authentication";
 import {
   ActivityIcon,
   Alert,
@@ -24,6 +24,7 @@ import {
   describeActivityPresentation,
   describeActivityType,
   describeDevice,
+  describeFailureReason,
   describeLocation,
   formatActivityTimestamp,
   ipAddressLookupUrl,
@@ -32,10 +33,10 @@ import {
   type ActivityTone,
 } from "./session-display";
 
-const LOGIN_ACTIVITY_PAGE_SIZE = 10;
+const SECURITY_ACTIVITY_PAGE_SIZE = 10;
 
-export function LoginActivityCard() {
-  const activity = useLoginActivity(LOGIN_ACTIVITY_PAGE_SIZE);
+export function SecurityActivityCard() {
+  const activity = useSecurityActivity(SECURITY_ACTIVITY_PAGE_SIZE);
   const activities = sortActivitiesNewestFirst(
     activity.data?.pages.flatMap((page) => page.activities) ?? [],
   );
@@ -46,26 +47,28 @@ export function LoginActivityCard() {
         <SectionHeader
           description="A history of sign-ins and security events on your account."
           icon={<ClockIcon className="h-6 w-6" />}
-          title="Recent login activity"
+          title="Recent security activity"
         />
         <div className="mt-5 space-y-3">
           {activity.isPending ? (
-            <LoginActivityListSkeleton />
+            <SecurityActivityListSkeleton />
           ) : activity.isError && !activity.data ? (
-            <Alert variant="error">{loginActivityError(activity.error)}</Alert>
+            <Alert variant="error">
+              {securityActivityError(activity.error)}
+            </Alert>
           ) : activities.length === 0 ? (
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              No login activity has been recorded yet.
+              No security activity has been recorded yet.
             </p>
           ) : (
             <>
               {activity.isFetchNextPageError ? (
                 <Alert variant="error">
-                  More login activity could not be loaded. Try again.
+                  More security activity could not be loaded. Try again.
                 </Alert>
               ) : null}
               <ul
-                aria-label="Login activity"
+                aria-label="Security activity"
                 className="divide-y divide-gray-200 border-t border-gray-200 dark:divide-gray-800 dark:border-gray-800"
               >
                 {activities.map((entry) => (
@@ -114,9 +117,10 @@ const ACTIVITY_TONES: Readonly<Record<ActivityTone, string>> = {
     "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
 };
 
-function ActivityRow({ entry }: Readonly<{ entry: LoginActivityResponse }>) {
+function ActivityRow({ entry }: Readonly<{ entry: SecurityActivityResponse }>) {
   const location = describeLocation(entry);
   const presentation = describeActivityPresentation(entry.activityType);
+  const failureReason = describeFailureReason(entry.failureReason);
 
   return (
     <li className="flex items-start gap-4 py-4 last:pb-0">
@@ -131,6 +135,12 @@ function ActivityRow({ entry }: Readonly<{ entry: LoginActivityResponse }>) {
           <p className="text-[15px] font-semibold text-gray-900 dark:text-white/90">
             {describeActivityType(entry.activityType)}
           </p>
+          {failureReason ? (
+            <p className="mt-0.5 text-sm text-red-600 dark:text-red-400">
+              <span className="sr-only">Reason: </span>
+              {failureReason}
+            </p>
+          ) : null}
           <p className="mt-0.5 text-sm break-words text-gray-600 dark:text-gray-400">
             {describeDevice(entry)}
             <span aria-hidden="true"> · </span>
@@ -167,11 +177,11 @@ function ActivityRow({ entry }: Readonly<{ entry: LoginActivityResponse }>) {
   );
 }
 
-function LoginActivityListSkeleton() {
+function SecurityActivityListSkeleton() {
   return (
     <div
       aria-busy="true"
-      aria-label="Loading login activity"
+      aria-label="Loading security activity"
       className="space-y-4"
       role="status"
     >
@@ -186,9 +196,9 @@ function LoginActivityListSkeleton() {
   );
 }
 
-function loginActivityError(error: unknown): string {
+function securityActivityError(error: unknown): string {
   if (isApiError(error) && error.status === 403) {
-    return "Your current session does not have permission to view login activity. Sign out and sign in again.";
+    return "Your current session does not have permission to view security activity. Sign out and sign in again.";
   }
-  return "Login activity could not be loaded. Refresh and try again.";
+  return "Security activity could not be loaded. Refresh and try again.";
 }

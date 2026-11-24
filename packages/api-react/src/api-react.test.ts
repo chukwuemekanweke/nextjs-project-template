@@ -12,7 +12,7 @@ import {
   initiatePaymentMutationOptions,
   currentProfileQueryOptions,
   getQueryOptions,
-  loginActivityQueryOptions,
+  securityActivityQueryOptions,
   logoutMutationOptions,
   paymentKeys,
   profileKeys,
@@ -59,7 +59,7 @@ const createClient = () =>
       ]),
       revokeSession: vi.fn().mockResolvedValue(undefined),
       revokeOtherSessions: vi.fn().mockResolvedValue(undefined),
-      getLoginActivity: vi.fn().mockResolvedValue({
+      getSecurityActivity: vi.fn().mockResolvedValue({
         activities: [],
         nextCursor: null,
       }),
@@ -214,16 +214,16 @@ describe("API React integration", () => {
     expect(invalidate).not.toHaveBeenCalled();
   });
 
-  it("creates hierarchical keys for sessions and login activity", () => {
+  it("creates hierarchical keys for sessions and security activity", () => {
     expect(authenticationKeys.sessions()).toEqual([
       "authentication",
       "security",
       "sessions",
     ]);
-    expect(authenticationKeys.loginActivityList({ Limit: 10 })).toEqual([
+    expect(authenticationKeys.securityActivityList({ Limit: 10 })).toEqual([
       "authentication",
       "security",
-      "login-activity",
+      "security-activity",
       "list",
       { Limit: 10 },
     ]);
@@ -282,9 +282,9 @@ describe("API React integration", () => {
     });
   });
 
-  it("fetches login activity pages by cursor", async () => {
+  it("fetches security activity pages by cursor", async () => {
     const client = createClient();
-    vi.mocked(client.authentication.getLoginActivity)
+    vi.mocked(client.authentication.getSecurityActivity)
       .mockResolvedValueOnce({
         activities: [
           {
@@ -298,6 +298,7 @@ describe("API React integration", () => {
             city: "Lagos",
             state: null,
             country: "Nigeria",
+            failureReason: null,
           },
         ],
         nextCursor: "cursor-2",
@@ -306,19 +307,19 @@ describe("API React integration", () => {
     const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
-    const options = loginActivityQueryOptions(client.authentication, 10);
+    const options = securityActivityQueryOptions(client.authentication, 10);
 
     const result = await queryClient.fetchInfiniteQuery({
       ...options,
       pages: 2,
     });
 
-    expect(client.authentication.getLoginActivity).toHaveBeenNthCalledWith(
+    expect(client.authentication.getSecurityActivity).toHaveBeenNthCalledWith(
       1,
       { Cursor: undefined, Limit: 10 },
       { signal: expect.any(AbortSignal) },
     );
-    expect(client.authentication.getLoginActivity).toHaveBeenNthCalledWith(
+    expect(client.authentication.getSecurityActivity).toHaveBeenNthCalledWith(
       2,
       { Cursor: "cursor-2", Limit: 10 },
       { signal: expect.any(AbortSignal) },

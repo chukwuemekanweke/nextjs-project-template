@@ -1,14 +1,14 @@
 import type {
   ActiveSessionResponse,
-  LoginActivityResponse,
+  SecurityActivityResponse,
 } from "@template/api-client/authentication";
 
 type DeviceFields = Pick<
-  ActiveSessionResponse | LoginActivityResponse,
+  ActiveSessionResponse | SecurityActivityResponse,
   "browserName" | "devicePlatform" | "deviceName"
 >;
 type LocationFields = Pick<
-  ActiveSessionResponse | LoginActivityResponse,
+  ActiveSessionResponse | SecurityActivityResponse,
   "city" | "state" | "country"
 >;
 
@@ -27,14 +27,21 @@ const activityTimeFormatter = new Intl.DateTimeFormat("en-US", {
 const ACTIVITY_TYPE_LABELS: Readonly<Record<string, string>> = {
   InitialLogin: "Successful sign in",
   TokenRefresh: "Session refreshed",
-  initialLogin: "Successful sign in",
-  tokenRefresh: "Session refreshed",
-  sign_in_succeeded: "Successful sign in",
-  sign_in_failed: "Failed sign in attempt",
-  two_factor_challenge_succeeded: "Two-factor verification succeeded",
-  two_factor_challenge_failed: "Two-factor verification failed",
-  password_changed: "Password changed",
-  session_revoked: "Session signed out",
+  FailedSignIn: "Failed sign in attempt",
+  PasskeyAdded: "Passkey added",
+  PasskeyRemoved: "Passkey removed",
+  TwoFactorEnabled: "Two-factor authentication enabled",
+  TwoFactorDisabled: "Two-factor authentication disabled",
+  TwoFactorRecoveryCodesRegenerated: "Recovery codes regenerated",
+  PasswordChanged: "Password changed",
+};
+
+const FAILURE_REASON_LABELS: Readonly<Record<string, string>> = {
+  email_not_verified: "Email address not verified",
+  invalid_credentials: "Incorrect password",
+  invalid_two_factor_code: "Incorrect two-factor code",
+  locked_out: "Account temporarily locked",
+  user_not_found: "Account not found",
 };
 
 /** Puts the current session first while preserving the backend's ordering otherwise. */
@@ -46,10 +53,10 @@ export function sortSessionsCurrentFirst(
   );
 }
 
-/** Sorts login activity so the most recent event is always shown first. */
+/** Sorts security activity so the most recent event is always shown first. */
 export function sortActivitiesNewestFirst(
-  activities: readonly LoginActivityResponse[],
-): LoginActivityResponse[] {
+  activities: readonly SecurityActivityResponse[],
+): SecurityActivityResponse[] {
   return [...activities].sort(
     (a, b) =>
       new Date(b.occurredAtUtc).getTime() - new Date(a.occurredAtUtc).getTime(),
@@ -119,13 +126,26 @@ export function describeActivityType(activityType: string): string {
   );
 }
 
+/** Readable failure reason for a failed sign-in; undefined when absent. */
+export function describeFailureReason(
+  failureReason: string | null | undefined,
+): string | undefined {
+  const reason = failureReason?.trim();
+  if (!reason) return undefined;
+  return FAILURE_REASON_LABELS[reason] ?? humanize(reason, reason);
+}
+
 function humanizeActivityType(activityType: string): string {
-  const humanized = activityType
+  return humanize(activityType, "Account activity");
+}
+
+function humanize(value: string, fallback: string): string {
+  const humanized = value
     .trim()
     .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
     .replace(/[_-]+/g, " ")
     .replace(/\b\w/g, (character) => character.toUpperCase());
-  return humanized || "Account activity";
+  return humanized || fallback;
 }
 
 export type BrowserIconKind =
@@ -158,18 +178,17 @@ const ACTIVITY_PRESENTATION: Readonly<
   Record<string, { icon: ActivityIconKind; tone: ActivityTone }>
 > = {
   InitialLogin: { icon: "check", tone: "success" },
-  initialLogin: { icon: "check", tone: "success" },
-  sign_in_succeeded: { icon: "check", tone: "success" },
   TokenRefresh: { icon: "refresh", tone: "neutral" },
-  tokenRefresh: { icon: "refresh", tone: "neutral" },
-  sign_in_failed: { icon: "alert", tone: "danger" },
-  two_factor_challenge_succeeded: { icon: "shield", tone: "success" },
-  two_factor_challenge_failed: { icon: "alert", tone: "danger" },
-  password_changed: { icon: "key", tone: "brand" },
-  session_revoked: { icon: "logout", tone: "neutral" },
+  FailedSignIn: { icon: "alert", tone: "danger" },
+  PasskeyAdded: { icon: "key", tone: "brand" },
+  PasskeyRemoved: { icon: "key", tone: "neutral" },
+  TwoFactorEnabled: { icon: "shield", tone: "success" },
+  TwoFactorDisabled: { icon: "shield", tone: "danger" },
+  TwoFactorRecoveryCodesRegenerated: { icon: "shield", tone: "brand" },
+  PasswordChanged: { icon: "key", tone: "brand" },
 };
 
-/** Icon and semantic tone for a login activity event; unknown types stay neutral. */
+/** Icon and semantic tone for a security activity event; unknown types stay neutral. */
 export function describeActivityPresentation(activityType: string): {
   icon: ActivityIconKind;
   tone: ActivityTone;

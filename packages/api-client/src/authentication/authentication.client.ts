@@ -24,8 +24,8 @@ import type {
   ConfirmEmailMutationResponse,
   DisableTwoFactorMutationRequest,
   DisableTwoFactorMutationResponse,
-  GetLoginActivityQueryParams,
-  GetLoginActivityQueryResponse,
+  GetSecurityActivityQueryParams,
+  GetSecurityActivityQueryResponse,
   LinkGoogleAccountMutationRequest,
   LinkGoogleAccountMutationResponse,
   ListActiveSessionsQueryResponse,
@@ -68,7 +68,7 @@ import {
   renamePasskey,
   confirmEmail,
   disableTwoFactor,
-  getLoginActivity,
+  getSecurityActivity,
   getTwoFactorStatus,
   listActiveSessions,
   logout,
@@ -173,10 +173,10 @@ export interface AuthenticationClient {
   revokeOtherSessions(
     options?: ApiOperationOptions,
   ): Promise<RevokeOtherSessionsMutationResponse>;
-  getLoginActivity(
-    query?: GetLoginActivityQueryParams,
+  getSecurityActivity(
+    query?: GetSecurityActivityQueryParams,
     options?: ApiOperationOptions,
-  ): Promise<GetLoginActivityQueryResponse>;
+  ): Promise<GetSecurityActivityQueryResponse>;
   createPasskeyRegistrationOptions(
     request: CreatePasskeyRegistrationOptionsMutationRequest,
     options?: ApiOperationOptions,
@@ -249,8 +249,8 @@ export function createAuthenticationClient(
     revokeSession: (pathParams, options) =>
       revokeSession(transport, pathParams, options),
     revokeOtherSessions: (options) => revokeOtherSessions(transport, options),
-    getLoginActivity: (query, options) =>
-      getLoginActivity(transport, query, options),
+    getSecurityActivity: (query, options) =>
+      getSecurityActivity(transport, query, options),
     createPasskeyRegistrationOptions: (request, options) =>
       createPasskeyRegistrationOptions(transport, request, options),
     completePasskeyRegistration: (request, options) =>

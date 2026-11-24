@@ -7,7 +7,7 @@ import {
   completeTwoFactorChallenge,
   confirmEmail,
   disableTwoFactor,
-  getLoginActivity,
+  getSecurityActivity,
   getTwoFactorStatus,
   linkGoogleAccount,
   listActiveSessions,
@@ -553,7 +553,7 @@ describe("handwritten API operations", () => {
     await expect(revokeOtherSessions(client)).resolves.toBeUndefined();
   });
 
-  it("paginates recent login activity by cursor", async () => {
+  it("paginates recent security activity by cursor", async () => {
     const client = createApiClient({ baseUrl: "http://api.test" });
     const activity = {
       id: "activity-1",
@@ -569,7 +569,7 @@ describe("handwritten API operations", () => {
     };
     server.use(
       http.get(
-        "http://api.test/api/v1/stakeholders/me/login-activity",
+        "http://api.test/api/v1/stakeholders/me/security-activity",
         ({ request }) => {
           const url = new URL(request.url);
           expect(url.searchParams.get("Cursor")).toBe("cursor-1");
@@ -583,7 +583,7 @@ describe("handwritten API operations", () => {
     );
 
     await expect(
-      getLoginActivity(client, { Cursor: "cursor-1", Limit: 10 }),
+      getSecurityActivity(client, { Cursor: "cursor-1", Limit: 10 }),
     ).resolves.toEqual({ activities: [activity], nextCursor: "cursor-2" });
   });
 
