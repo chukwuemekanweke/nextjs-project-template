@@ -48,11 +48,11 @@ Sensitive setup and recovery results remain ephemeral UI state and are never
 persisted.
 
 The Security page also lists active sessions (`GET
-/api/v1/authentication/sessions`) and paginated recent login activity (`GET
-/api/v1/stakeholders/me/login-activity`, cursor-based via `useInfiniteQuery`),
+/api/v1/authentication/sessions`) and paginated recent security activity (`GET
+/api/v1/stakeholders/me/security-activity`, cursor-based via `useInfiniteQuery`),
 both grouped under the `authentication` domain client and `api-react` module
 alongside two-factor security rather than under `profiles`, since they are
-security/session concerns despite the stakeholder-scoped login-activity route.
+security/session concerns despite the stakeholder-scoped security-activity route.
 Revoking a session or signing out every other session
 (`DELETE /api/v1/authentication/sessions/{sessionId}` and `.../sessions/others`)
 invalidates the active-sessions query on success; no optimistic updates are
@@ -62,11 +62,14 @@ Logout flow and duplicating that cookie-clearing behavior was judged
 unnecessary UX surface. All four operations are authenticated and are
 BFF-routed like password/two-factor management: same-origin routes live under
 `apps/user-portal/src/app/api/security/sessions/**` and
-`.../api/security/login-activity/**`, and `apps/user-portal/src/lib/browser-api.ts`
+`.../api/security/security-activity/**`, and `apps/user-portal/src/lib/browser-api.ts`
 rewrites the matching backend-shaped request paths to them.
-Each login-activity row displays the backend-recorded IP address as a safely
+Each security-activity row displays the backend-recorded IP address as a safely
 encoded external lookup link and shows the backend-provided coarse location;
 the frontend never performs IP geolocation.
+Rows cover sign-ins, failed sign-ins (with a mapped `failureReason`), passkey,
+two-factor, recovery-code, and password-change events; unknown activity types
+or reasons are humanized rather than rejected.
 
 The User Portal also has one GIS-based `Continue with Google` entry on sign-in
 and registration. The backend selects immediate authentication, MFA

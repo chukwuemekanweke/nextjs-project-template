@@ -16,14 +16,17 @@ export const activeSessionsQueryOptions = (client: AuthenticationClient) =>
     queryFn: ({ signal }) => client.listActiveSessions({ signal }),
   });
 
-export const loginActivityQueryOptions = (
+export const securityActivityQueryOptions = (
   client: AuthenticationClient,
   limit?: number,
 ) =>
-  getInfiniteQueryOptions(authenticationOperations.getLoginActivity, {
-    queryKey: authenticationKeys.loginActivityList({ Limit: limit }),
+  getInfiniteQueryOptions(authenticationOperations.getSecurityActivity, {
+    queryKey: authenticationKeys.securityActivityList({ Limit: limit }),
     queryFn: ({ pageParam, signal }) =>
-      client.getLoginActivity({ Cursor: pageParam, Limit: limit }, { signal }),
+      client.getSecurityActivity(
+        { Cursor: pageParam, Limit: limit },
+        { signal },
+      ),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });

@@ -1,4 +1,4 @@
-import type { GetLoginActivityQueryParams } from "@template/api-client/authentication";
+import type { GetSecurityActivityQueryParams } from "@template/api-client/authentication";
 
 export const authenticationKeys = {
   all: ["authentication"] as const,
@@ -9,8 +9,8 @@ export const authenticationKeys = {
     [...authenticationKeys.security(), "two-factor"] as const,
   sessions: () => [...authenticationKeys.security(), "sessions"] as const,
   passkeys: () => [...authenticationKeys.security(), "passkeys"] as const,
-  loginActivity: () =>
-    [...authenticationKeys.security(), "login-activity"] as const,
-  loginActivityList: (filters: GetLoginActivityQueryParams = {}) =>
-    [...authenticationKeys.loginActivity(), "list", filters] as const,
+  securityActivity: () =>
+    [...authenticationKeys.security(), "security-activity"] as const,
+  securityActivityList: (filters: GetSecurityActivityQueryParams = {}) =>
+    [...authenticationKeys.securityActivity(), "list", filters] as const,
 };

@@ -27,7 +27,7 @@ import {
 } from "./authentication.mutations";
 import {
   activeSessionsQueryOptions,
-  loginActivityQueryOptions,
+  securityActivityQueryOptions,
   passkeysQueryOptions,
   twoFactorStatusQueryOptions,
 } from "./authentication.queries";
@@ -92,9 +92,9 @@ export function useRevokeOtherSessions() {
     revokeOtherSessionsMutationOptions(api.authentication, queryClient),
   );
 }
-export const useLoginActivity = (limit?: number) =>
+export const useSecurityActivity = (limit?: number) =>
   useInfiniteQuery(
-    loginActivityQueryOptions(useApiClient().authentication, limit),
+    securityActivityQueryOptions(useApiClient().authentication, limit),
   );
 export const usePasskeys = () =>
   useQuery(passkeysQueryOptions(useApiClient().authentication));
