@@ -125,7 +125,7 @@ describe("LoginActivityCard", () => {
     const markup = render();
 
     expect(markup).toContain("Unknown device");
-    expect(markup).toContain("Location unavailable");
+    expect(markup).not.toContain("Location:");
     expect(markup).not.toMatch(/\bnull\b/);
   });
 

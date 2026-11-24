@@ -12,7 +12,11 @@
   },
   "scripts": {
     "lint": "eslint src --max-warnings 0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@template/ui-core": "workspace:*"
   },
   "peerDependencies": {
     "next": "catalog:",
@@ -25,6 +29,10 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

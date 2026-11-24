@@ -29,36 +29,32 @@ function DashboardFrame({
   topbar: ReactNode;
   children: ReactNode;
 }>) {
-  const { isExpanded, isHovered, isMobileOpen, toggleMobileSidebar } =
-    useSidebar();
-  const wide = isExpanded || isHovered;
+  const { isExpanded, isMobileOpen, closeMobileSidebar } = useSidebar();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {sidebar}
       {isMobileOpen ? (
         <button
           aria-label="Close navigation"
           className="fixed inset-0 z-40 bg-gray-900/50 lg:hidden"
-          onClick={toggleMobileSidebar}
+          onClick={closeMobileSidebar}
           type="button"
         />
       ) : null}
       <div
         className={[
-          "min-h-screen transition-all duration-300 ease-in-out",
-          wide ? "lg:ml-[290px]" : "lg:ml-[90px]",
+          "flex min-h-screen min-w-0 flex-col transition-[margin] duration-200 ease-in-out motion-reduce:transition-none",
+          isExpanded ? "lg:ml-[224px]" : "lg:ml-[72px]",
         ].join(" ")}
       >
-        <header className="sticky top-0 z-30 border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-          <div className="lg:flex lg:items-center">
-            <div className="lg:flex-none">{mobileNav}</div>
-            <div className="border-t border-gray-200 px-4 py-3 sm:px-6 lg:flex-1 lg:border-t-0 lg:px-2 dark:border-gray-800">
-              {topbar}
-            </div>
-          </div>
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-gray-200 bg-white px-4 sm:px-6 lg:px-8 dark:border-gray-800 dark:bg-gray-900">
+          {mobileNav}
+          <div className="min-w-0 flex-1">{topbar}</div>
         </header>
-        <main className="mx-auto max-w-[1536px] p-4 md:p-6">{children}</main>
+        <main className="mx-auto w-full max-w-[1600px] flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+          {children}
+        </main>
       </div>
     </div>
   );

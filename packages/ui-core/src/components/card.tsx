@@ -6,7 +6,7 @@ export function Card({ className = "", ...props }: CardProps) {
   return (
     <div
       className={[
-        "rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]",
+        "rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900",
         className,
       ].join(" ")}
       {...props}
@@ -28,7 +28,7 @@ export function CardTitle({
   return (
     <h2
       className={[
-        "text-base font-medium text-gray-800 dark:text-white/90",
+        "text-lg leading-7 font-semibold text-gray-900 dark:text-white/90",
         className,
       ].join(" ")}
       {...props}
@@ -43,7 +43,7 @@ export function CardDescription({
   return (
     <p
       className={[
-        "mt-1 text-sm text-gray-500 dark:text-gray-400",
+        "mt-0.5 text-sm text-gray-600 dark:text-gray-400",
         className,
       ].join(" ")}
       {...props}

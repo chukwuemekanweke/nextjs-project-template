@@ -4,18 +4,40 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Breadcrumbs,
+  DashboardBrand,
   DashboardShell,
   DashboardSidebar,
   DashboardSidebarNav,
   MobileNav,
   ProfileMenu,
+  ThemeToggle,
+  type DashboardNavItem,
 } from "@template/dashboard-ui";
+import {
+  CreditCardIcon,
+  HomeIcon,
+  SettingsIcon,
+  ShieldIcon,
+  UserIcon,
+} from "@template/ui-core";
 import type { ReactNode } from "react";
 import { userNavigation } from "@/config/navigation";
 import { branding } from "@/config/env";
 import { usesDashboardShell } from "@/lib/user-layout";
 import { LogoutButton } from "./logout-button";
 import { PasskeyAddedModal } from "./passkey-added-modal";
+
+const navigationIcons: Readonly<Record<string, ReactNode>> = {
+  "/billing": <CreditCardIcon />,
+  "/dashboard": <HomeIcon />,
+  "/profile": <UserIcon />,
+  "/security": <ShieldIcon />,
+  "/settings": <SettingsIcon />,
+};
+
+const navigationItems: readonly DashboardNavItem[] = userNavigation.map(
+  (item) => ({ ...item, icon: navigationIcons[item.href] }),
+);
 
 export function UserLayoutShell({
   children,
@@ -29,62 +51,59 @@ export function UserLayoutShell({
   return (
     <DashboardShell
       mobileNav={
-        <MobileNav
-          activeHref={pathname}
-          ariaLabel="User navigation"
-          brand={branding.portals.user}
-          items={userNavigation}
-        />
+        <MobileNav ariaLabel="User navigation" brand={branding.productName} />
       }
       sidebar={
         <DashboardSidebar
           brand={
-            <div>
-              <Link
-                className="text-xl font-semibold text-gray-800 dark:text-white/90"
-                href="/dashboard"
-              >
-                {branding.productName}
-              </Link>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {branding.portals.user}
-              </p>
-            </div>
+            <DashboardBrand
+              href="/dashboard"
+              name={branding.productName}
+              subtitle={branding.portals.user}
+            />
           }
-          footer={
-            <p>Identity and policy decisions are sourced from the backend.</p>
+          brandMark={
+            <DashboardBrand
+              compact
+              href="/dashboard"
+              name={branding.productName}
+            />
           }
-          sectionLabel="Account"
         >
           <DashboardSidebarNav
             activeHref={pathname}
             ariaLabel="User navigation"
-            items={userNavigation}
+            items={navigationItems}
           />
         </DashboardSidebar>
       }
       topbar={
-        <div className="flex items-center justify-between gap-4">
-          <Breadcrumbs
-            items={[
-              { href: "/dashboard", label: branding.portals.user },
-              { label: currentLabel(pathname) },
-            ]}
-          />
-          <ProfileMenu
-            actions={[
-              <Link href="/profile" key="profile">
-                View profile
-              </Link>,
-              <Link href="/" key="sessions">
-                Manage sessions
-              </Link>,
-              <LogoutButton key="logout" />,
-            ]}
-            meta="Verified account"
-            name="Signed-in user"
-            role={branding.portals.user}
-          />
+        <div className="flex items-center justify-between gap-3">
+          <div className="hidden min-w-0 sm:block">
+            <Breadcrumbs
+              items={[
+                { href: "/dashboard", label: branding.portals.user },
+                { label: currentLabel(pathname) },
+              ]}
+            />
+          </div>
+          <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
+            <ProfileMenu
+              actions={[
+                <Link href="/profile" key="profile">
+                  View profile
+                </Link>,
+                <Link href="/" key="sessions">
+                  Manage sessions
+                </Link>,
+                <LogoutButton key="logout" />,
+              ]}
+              meta="Verified account"
+              name="Signed-in user"
+              role={branding.portals.user}
+            />
+          </div>
         </div>
       }
     >
@@ -96,6 +115,8 @@ export function UserLayoutShell({
 
 function currentLabel(pathname: string) {
   return (
-    userNavigation.find((item) => item.href === pathname)?.label ?? "Overview"
+    userNavigation.find(
+      (item) => item.href === pathname || pathname.startsWith(`${item.href}/`),
+    )?.label ?? "Overview"
   );
 }

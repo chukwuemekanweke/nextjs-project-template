@@ -12,10 +12,13 @@ import {
   Alert,
   Card,
   CardContent,
-  CardDescription,
-  CardTitle,
+  EmptyState,
+  FingerprintIcon,
   Modal,
+  SectionHeader,
   Skeleton,
+  StatusBadge,
+  buttonClassName,
 } from "@template/ui-core";
 import { useCallback, useRef, useState } from "react";
 import {
@@ -139,23 +142,21 @@ export function PasskeysCard() {
   return (
     <Card>
       <CardContent>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <CardTitle>Passkeys</CardTitle>
-            <CardDescription>
-              Sign in without a password using your device&apos;s screen lock, a
-              phone, or a security key.
-            </CardDescription>
-          </div>
-          <button
-            className="bg-brand-500 hover:bg-brand-600 rounded-lg px-4 py-2.5 text-sm font-medium whitespace-nowrap text-white disabled:opacity-60"
-            disabled={!canAdd}
-            onClick={() => open({ kind: "add" })}
-            type="button"
-          >
-            Add passkey
-          </button>
-        </div>
+        <SectionHeader
+          actions={
+            <button
+              className={buttonClassName()}
+              disabled={!canAdd}
+              onClick={() => open({ kind: "add" })}
+              type="button"
+            >
+              Add passkey
+            </button>
+          }
+          description="Sign in without a password using your device's screen lock, a phone, or a security key."
+          icon={<FingerprintIcon className="h-6 w-6" />}
+          title="Passkeys"
+        />
         <div className="mt-5 space-y-3">
           {supported === false ? (
             <Alert variant="info">
@@ -177,22 +178,25 @@ export function PasskeysCard() {
           ) : passkeys.isError ? (
             <Alert variant="error">{passkeysLoadError(passkeys.error)}</Alert>
           ) : passkeys.data.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-gray-300 p-6 text-center dark:border-gray-700">
-              <p className="font-medium text-gray-800 dark:text-white/90">
-                No passkeys yet
-              </p>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Add a passkey to sign in faster and more securely.
-              </p>
-              <button
-                className="text-brand-600 hover:text-brand-700 dark:text-brand-400 mt-3 text-sm font-medium disabled:opacity-60"
-                disabled={!canAdd}
-                onClick={() => open({ kind: "add" })}
-                type="button"
-              >
-                Add your first passkey
-              </button>
-            </div>
+            <EmptyState
+              action={
+                <button
+                  className={buttonClassName({
+                    className: "min-w-52",
+                    size: "sm",
+                    variant: "accent",
+                  })}
+                  disabled={!canAdd}
+                  onClick={() => open({ kind: "add" })}
+                  type="button"
+                >
+                  Add your first passkey
+                </button>
+              }
+              description="Add a passkey to sign in faster and more securely."
+              icon={<FingerprintIcon className="h-8 w-8" />}
+              title="No passkeys yet"
+            />
           ) : (
             <ul aria-label="Registered passkeys" className="space-y-3">
               {passkeys.data.map((passkey) => (
@@ -250,7 +254,7 @@ export function PasskeysCard() {
             {dialogError ? <Alert variant="error">{dialogError}</Alert> : null}
             <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
               <button
-                className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 disabled:opacity-60 dark:border-gray-700 dark:text-gray-300"
+                className={buttonClassName({ variant: "secondary" })}
                 disabled={removePasskey.isPending}
                 onClick={close}
                 type="button"
@@ -258,7 +262,7 @@ export function PasskeysCard() {
                 Cancel
               </button>
               <button
-                className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60"
+                className={buttonClassName({ variant: "danger" })}
                 disabled={removePasskey.isPending}
                 onClick={() =>
                   dialog?.kind === "remove" && void remove(dialog.passkey)
@@ -290,34 +294,37 @@ function PasskeyRow({
   const backup = describePasskeyBackup(passkey);
   const added = formatPasskeyDate(passkey.createdAtUtc);
 
+  const details = [added ? `Added ${added}` : "", transports]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
-    <li className="flex flex-col gap-3 rounded-xl border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800">
-      <div className="min-w-0 space-y-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="font-medium break-words text-gray-800 dark:text-white/90">
-            {passkey.name}
-          </p>
-          {backup ? (
-            <span className="inline-flex items-center rounded-full border border-gray-300 px-2 py-0.5 text-xs font-medium text-gray-600 dark:border-gray-700 dark:text-gray-400">
-              {backup}
-            </span>
+    <li className="flex flex-col gap-4 rounded-[10px] border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5 dark:border-gray-800">
+      <div className="flex min-w-0 items-center gap-4">
+        <span
+          aria-hidden="true"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-300"
+        >
+          <FingerprintIcon />
+        </span>
+        <div className="min-w-0 space-y-0.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-[15px] font-semibold break-words text-gray-900 dark:text-white/90">
+              {passkey.name}
+            </p>
+            {backup ? <StatusBadge>{backup}</StatusBadge> : null}
+          </div>
+          {details ? (
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {details}
+            </p>
           ) : null}
         </div>
-        {added ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Added {added}
-          </p>
-        ) : null}
-        {transports ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {transports}
-          </p>
-        ) : null}
       </div>
-      <div className="flex gap-2">
+      <div className="flex gap-2 *:flex-1 sm:*:flex-none">
         <button
           aria-label={`Rename ${passkey.name}`}
-          className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium whitespace-nowrap text-gray-700 disabled:opacity-60 dark:border-gray-700 dark:text-gray-300"
+          className={buttonClassName({ size: "sm", variant: "secondary" })}
           disabled={disabled}
           onClick={onRename}
           type="button"
@@ -326,7 +333,7 @@ function PasskeyRow({
         </button>
         <button
           aria-label={`Remove ${passkey.name}`}
-          className="rounded-lg border border-red-300 px-4 py-2.5 text-sm font-medium whitespace-nowrap text-red-600 hover:bg-red-50 disabled:opacity-60 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30"
+          className={buttonClassName({ size: "sm", variant: "destructive" })}
           disabled={disabled}
           onClick={onRemove}
           type="button"
@@ -348,7 +355,7 @@ function PasskeyListSkeleton() {
     >
       {[0, 1].map((index) => (
         <div
-          className="flex flex-col gap-3 rounded-xl border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800"
+          className="flex flex-col gap-3 rounded-[10px] border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5 dark:border-gray-800"
           key={index}
         >
           <div className="min-w-0 flex-1 space-y-2">

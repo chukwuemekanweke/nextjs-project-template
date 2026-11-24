@@ -33,7 +33,7 @@ Put a component in an **app** when it contains product wording, a route destinat
 
 ## Mistakes to avoid
 
-- Do not add User or Admin navigation arrays to `dashboard-ui`; pass them into `DashboardSidebarNav` and `MobileNav`.
+- Do not add User or Admin navigation arrays to `dashboard-ui`; pass them into `DashboardSidebarNav` from the app shell, along with their icons.
 - Do not import public-ui or its marketing dependencies into dashboard apps.
 - Do not import a dashboard package into Public Portal simply to reuse a generic element; use or extend the appropriate shared boundary deliberately.
 - Do not omit `transpilePackages` or a Tailwind `@source` path when an app consumes new TypeScript/CSS-bearing shared source.
