@@ -14,6 +14,9 @@
 # - Hardening: non-root user, read-only root filesystem with tmpfs scratch
 #   space, all capabilities dropped, no-new-privileges.
 # - Network: each portal publishes only on loopback for the host reverse proxy.
+#   The web network has a pinned subnet (PORTALS_SUBNET/PORTALS_GATEWAY in
+#   stack.env), so the range the API's reverse proxy trusts for the portals'
+#   forwarded browser IP (X-Forwarded-For) stays the same across redeploys.
 x-portal-environment: &portal-environment
   NODE_ENV: production
   HOSTNAME: 0.0.0.0
@@ -33,7 +36,7 @@ x-portal: &portal
   security_opt:
     - no-new-privileges:true
   networks:
-    - portals
+    - web
   logging:
     driver: json-file
     options:
@@ -124,4 +127,13 @@ services:
       start_interval: 2s
 
 networks:
-  portals: {}
+  # Pinned so the source range of portal requests to the API is deterministic.
+  # Docker cannot change an existing network's subnet, so changing this block
+  # needs a new network name (it replaced the unpinned "portals" network, which
+  # the previous release still uses for restoration). Each stack on a host needs
+  # its own non-overlapping subnet.
+  web:
+    ipam:
+      config:
+        - subnet: ${PORTALS_SUBNET:?PORTALS_SUBNET is required in stack.env}
+          gateway: ${PORTALS_GATEWAY:?PORTALS_GATEWAY is required in stack.env}

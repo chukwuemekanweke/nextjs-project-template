@@ -7,7 +7,10 @@ import {
   resolveRouteSession,
   type RefreshSessionMutationResponse,
 } from "@template/api-client/authentication";
-import { createServerApiClient } from "@template/api-client/server";
+import {
+  createForwardedRequestHeaders,
+  createServerApiClient,
+} from "@template/api-client/server";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { serverEnv } from "@/config/server-env";
@@ -38,7 +41,7 @@ export async function proxy(request: NextRequest) {
     defaultCache: "no-store",
     defaultHeaders: {
       [TENANT_ID_HEADER]: serverEnv.TENANT_ID,
-      ...forwardedHeaders(request),
+      ...createForwardedRequestHeaders(request.headers),
     },
   });
   const resolution = await resolveRouteSession({
@@ -65,15 +68,6 @@ export async function proxy(request: NextRequest) {
   );
   clearSessionCookies(response);
   return response;
-}
-
-function forwardedHeaders(request: NextRequest): Record<string, string> {
-  return Object.fromEntries(
-    ["traceparent", "user-agent", "x-correlation-id"].flatMap((name) => {
-      const value = request.headers.get(name);
-      return value ? [[name, value]] : [];
-    }),
-  );
 }
 
 export const config = {

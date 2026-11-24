@@ -89,7 +89,7 @@ Because browser configuration is compiled in, an image is specific to one enviro
 
 ## Production Compose stack
 
-`deploy/compose.production.yml` defines `user-portal`, `admin-portal`, and `public-portal` (service name = manifest component name) on a private `portals` network. It names no image: at deploy time, the toolkit's generated override sets each service to `image@sha256:<digest>` from the release manifest, so a mutable tag is never a deployment identity.
+`deploy/compose.production.yml` defines `user-portal`, `admin-portal`, and `public-portal` (service name = manifest component name) on a private `web` network whose subnet and gateway are pinned from `stack.env` (`PORTALS_SUBNET`, `PORTALS_GATEWAY`). Pinning keeps the source range of portal requests to the API stable across redeploys, so the API's reverse proxy can trust it for the forwarded browser IP. Each stack on a host needs a non-overlapping subnet (the examples use `172.30.232.0/24` for production and `172.30.233.0/24` for development; the backend uses `172.30.231.0/24`). Docker cannot change an existing network's subnet, so change it only under a new network name; the network replaced the unpinned `portals` network, which the previous release keeps for restoration. It names no image: at deploy time, the toolkit's generated override sets each service to `image@sha256:<digest>` from the release manifest, so a mutable tag is never a deployment identity.
 
 Each service:
 
@@ -171,7 +171,7 @@ Follow devops-toolkit `docs/vps-deployment.md`. The steps below use the producti
 
 ### Reverse proxy
 
-The toolkit does not manage the reverse proxy. Terminate TLS for each portal's domain and forward to `127.0.0.1:9000` (user), `127.0.0.1:9001` (admin), and `127.0.0.1:9002` (public), passing `Host` and `X-Forwarded-For`/`-Proto`. HTTPS is required because session cookies are `Secure`. The deployment's HTTP checks run from the host, so they do not prove external reachability through the proxy.
+The toolkit does not manage the reverse proxy. Terminate TLS for each portal's domain and forward to `127.0.0.1:9000` (user), `127.0.0.1:9001` (admin), and `127.0.0.1:9002` (public), passing `Host` and `X-Forwarded-For`/`-Proto`. The portals forward the browser's IP to the API as `X-Forwarded-For`, using the last entry of that header (the address the proxy observed), so do not let the portal sites trust upstream proxies unless one really sits in front. When the portals reach the API through the same reverse proxy, that proxy must trust the pinned portal subnet (for Caddy, `trusted_proxies static <PORTALS_SUBNET>`) or it replaces the forwarded IP with the container's address, and the backend must accept that hop too. HTTPS is required because session cookies are `Secure`. The deployment's HTTP checks run from the host, so they do not prove external reachability through the proxy.
 
 ## Customizing a derived project
 
