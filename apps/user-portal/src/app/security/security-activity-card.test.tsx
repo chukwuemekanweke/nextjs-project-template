@@ -1,19 +1,19 @@
-import type { LoginActivityResponse } from "@template/api-client/authentication";
+import type { SecurityActivityResponse } from "@template/api-client/authentication";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-const useLoginActivity = vi.fn();
+const useSecurityActivity = vi.fn();
 
 vi.mock("@template/api-react/authentication", () => ({
-  useLoginActivity: () => useLoginActivity(),
+  useSecurityActivity: () => useSecurityActivity(),
 }));
 
-import { LoginActivityCard } from "./login-activity-card";
+import { SecurityActivityCard } from "./security-activity-card";
 
 function buildActivity(
-  overrides: Partial<LoginActivityResponse> = {},
-): LoginActivityResponse {
+  overrides: Partial<SecurityActivityResponse> = {},
+): SecurityActivityResponse {
   return {
     id: "activity-1",
     activityType: "InitialLogin",
@@ -25,26 +25,27 @@ function buildActivity(
     city: "Lagos",
     state: null,
     country: "Nigeria",
+    failureReason: null,
     ...overrides,
   };
 }
 
 function render() {
-  return renderToStaticMarkup(createElement(LoginActivityCard));
+  return renderToStaticMarkup(createElement(SecurityActivityCard));
 }
 
-describe("LoginActivityCard", () => {
+describe("SecurityActivityCard", () => {
   it("shows an accessible loading state", () => {
-    useLoginActivity.mockReturnValue({ isPending: true });
+    useSecurityActivity.mockReturnValue({ isPending: true });
 
     const markup = render();
 
-    expect(markup).toContain("Loading login activity");
+    expect(markup).toContain("Loading security activity");
     expect(markup).toContain('aria-busy="true"');
   });
 
   it("shows the error state without crashing the rest of the page", () => {
-    useLoginActivity.mockReturnValue({
+    useSecurityActivity.mockReturnValue({
       isPending: false,
       isError: true,
       error: new Error("network down"),
@@ -53,19 +54,45 @@ describe("LoginActivityCard", () => {
     const markup = render();
 
     expect(markup).toContain(
-      "Login activity could not be loaded. Refresh and try again.",
+      "Security activity could not be loaded. Refresh and try again.",
     );
   });
 
+  it("labels failed sign-ins with their reason", () => {
+    useSecurityActivity.mockReturnValue({
+      isPending: false,
+      data: {
+        pages: [
+          {
+            activities: [
+              buildActivity({
+                activityType: "FailedSignIn",
+                failureReason: "invalid_two_factor_code",
+              }),
+              buildActivity({ activityType: "PasskeyAdded", id: "activity-2" }),
+            ],
+            nextCursor: null,
+          },
+        ],
+      },
+    });
+
+    const markup = render();
+
+    expect(markup).toContain("Failed sign in attempt");
+    expect(markup).toContain("Incorrect two-factor code");
+    expect(markup).toContain("Passkey added");
+  });
+
   it("shows an empty state when there is no recorded activity", () => {
-    useLoginActivity.mockReturnValue({
+    useSecurityActivity.mockReturnValue({
       isPending: false,
       data: { pages: [{ activities: [], nextCursor: null }] },
     });
 
     const markup = render();
 
-    expect(markup).toContain("No login activity has been recorded yet.");
+    expect(markup).toContain("No security activity has been recorded yet.");
   });
 
   it("orders activity newest first, maps activity types, and formats the timestamp", () => {
@@ -79,7 +106,7 @@ describe("LoginActivityCard", () => {
       activityType: "InitialLogin",
       occurredAtUtc: "2026-09-26T10:42:00Z",
     });
-    useLoginActivity.mockReturnValue({
+    useSecurityActivity.mockReturnValue({
       isPending: false,
       data: { pages: [{ activities: [older, newer], nextCursor: null }] },
       hasNextPage: false,
@@ -100,7 +127,7 @@ describe("LoginActivityCard", () => {
   });
 
   it("falls back to readable copy when device and location details are missing", () => {
-    useLoginActivity.mockReturnValue({
+    useSecurityActivity.mockReturnValue({
       isPending: false,
       data: {
         pages: [
@@ -130,7 +157,7 @@ describe("LoginActivityCard", () => {
   });
 
   it("shows a load-more control while another page is available", () => {
-    useLoginActivity.mockReturnValue({
+    useSecurityActivity.mockReturnValue({
       isPending: false,
       data: {
         pages: [{ activities: [buildActivity()], nextCursor: "cursor-2" }],
@@ -145,7 +172,7 @@ describe("LoginActivityCard", () => {
   });
 
   it("hides the load-more control once every page has been fetched", () => {
-    useLoginActivity.mockReturnValue({
+    useSecurityActivity.mockReturnValue({
       isPending: false,
       data: { pages: [{ activities: [buildActivity()], nextCursor: null }] },
       hasNextPage: false,
@@ -157,7 +184,7 @@ describe("LoginActivityCard", () => {
   });
 
   it("keeps loaded activity visible when loading another page fails", () => {
-    useLoginActivity.mockReturnValue({
+    useSecurityActivity.mockReturnValue({
       isPending: false,
       isError: true,
       isFetchNextPageError: true,
@@ -173,7 +200,7 @@ describe("LoginActivityCard", () => {
 
     expect(markup).toContain("Successful sign in");
     expect(markup).toContain(
-      "More login activity could not be loaded. Try again.",
+      "More security activity could not be loaded. Try again.",
     );
     expect(markup).toContain("Try loading more again");
   });

@@ -123,10 +123,27 @@ export type ActiveSessionResponse = {
   isCurrent: boolean;
 };
 export type RevokeSessionPathParams = { sessionId: string };
-export type LoginActivityType = "InitialLogin" | "TokenRefresh";
-export type LoginActivityResponse = {
+/** `TokenRefresh` is persisted for audit but filtered from the history endpoint. */
+export type SecurityActivityType =
+  | "InitialLogin"
+  | "TokenRefresh"
+  | "FailedSignIn"
+  | "PasskeyAdded"
+  | "PasskeyRemoved"
+  | "TwoFactorEnabled"
+  | "TwoFactorDisabled"
+  | "TwoFactorRecoveryCodesRegenerated"
+  | "PasswordChanged";
+/** Set only for `FailedSignIn`; snake_case codes such as `invalid_credentials`. */
+export type SecurityActivityFailureReason =
+  | "user_not_found"
+  | "invalid_credentials"
+  | "email_not_verified"
+  | "locked_out"
+  | "invalid_two_factor_code";
+export type SecurityActivityResponse = {
   id: string;
-  activityType: LoginActivityType;
+  activityType: SecurityActivityType;
   occurredAtUtc: string;
   ipAddress: string;
   deviceName: string | null;
@@ -135,13 +152,15 @@ export type LoginActivityResponse = {
   city: string | null;
   state: string | null;
   country: string | null;
+  /** Typed as `string` too so unknown future codes still parse. */
+  failureReason: SecurityActivityFailureReason | (string & {}) | null;
 };
-export type GetLoginActivityQueryParams = {
+export type GetSecurityActivityQueryParams = {
   Cursor?: string;
   Limit?: number | string;
 };
-export type LoginActivityHistoryResponse = {
-  activities: Array<LoginActivityResponse>;
+export type SecurityActivityHistoryResponse = {
+  activities: Array<SecurityActivityResponse>;
   nextCursor: string | null;
 };
 
@@ -301,7 +320,7 @@ export type RequestEmailConfirmationCodeMutationResponse =
 export type ListActiveSessionsQueryResponse = Array<ActiveSessionResponse>;
 export type RevokeSessionMutationResponse = void;
 export type RevokeOtherSessionsMutationResponse = void;
-export type GetLoginActivityQueryResponse = LoginActivityHistoryResponse;
+export type GetSecurityActivityQueryResponse = SecurityActivityHistoryResponse;
 export type CreatePasskeyRegistrationOptionsMutationRequest =
   CreatePasskeyRegistrationOptionsRequest;
 export type CreatePasskeyRegistrationOptionsMutationResponse =
@@ -404,9 +423,9 @@ export const authenticationOperations = {
     method: "DELETE",
     path: "/api/v1/authentication/sessions/others",
   },
-  getLoginActivity: {
+  getSecurityActivity: {
     method: "GET",
-    path: "/api/v1/stakeholders/me/login-activity",
+    path: "/api/v1/stakeholders/me/security-activity",
   },
   createPasskeyRegistrationOptions: {
     method: "POST",

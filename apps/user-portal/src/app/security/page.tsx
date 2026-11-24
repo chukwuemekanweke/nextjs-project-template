@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { DashboardHeader } from "@template/dashboard-ui";
 import { ShieldIcon } from "@template/ui-core";
 import { ActiveSessionsCard } from "./active-sessions-card";
-import { LoginActivityCard } from "./login-activity-card";
+import { SecurityActivityCard } from "./security-activity-card";
 import { PasskeysCard } from "./passkeys-card";
 import { PasswordChangeCard } from "./password-change-card";
 import { SecurityOverviewCard } from "./security-overview-card";
@@ -15,7 +15,7 @@ export default function SecurityPage() {
   return (
     <section className="space-y-6">
       <DashboardHeader
-        description="Manage your credentials, passkeys, two-factor authentication, active sessions, and login activity."
+        description="Manage your credentials, passkeys, two-factor authentication, active sessions, and security activity."
         icon={<ShieldIcon className="h-6 w-6" />}
         title="Security"
       />
@@ -23,7 +23,7 @@ export default function SecurityPage() {
         devices={
           <>
             <ActiveSessionsCard />
-            <LoginActivityCard />
+            <SecurityActivityCard />
           </>
         }
         general={

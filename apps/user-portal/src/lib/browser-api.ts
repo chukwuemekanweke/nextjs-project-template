@@ -9,7 +9,7 @@ const AVATAR_UPLOADS_BFF_PATH = "/api/profile/avatar/uploads";
 const PASSWORD_BFF_PATH = "/api/security/password";
 const TWO_FACTOR_BFF_PATH = "/api/security/two-factor";
 const SESSIONS_BFF_PATH = "/api/security/sessions";
-const LOGIN_ACTIVITY_BFF_PATH = "/api/security/login-activity";
+const SECURITY_ACTIVITY_BFF_PATH = "/api/security/security-activity";
 const PASSKEYS_BFF_PATH = "/api/security/passkeys";
 const PASSKEY_BFF_ROUTES = new Map<string, string>([
   [authenticationOperations.listPasskeys.path, PASSKEYS_BFF_PATH],
@@ -190,11 +190,12 @@ export function createUserPortalBrowserApi({
         });
       }
       if (
-        init?.method === authenticationOperations.getLoginActivity.method &&
-        requestUrl.pathname === authenticationOperations.getLoginActivity.path
+        init?.method === authenticationOperations.getSecurityActivity.method &&
+        requestUrl.pathname ===
+          authenticationOperations.getSecurityActivity.path
       ) {
         return fetchImplementation(
-          `${LOGIN_ACTIVITY_BFF_PATH}${requestUrl.search}`,
+          `${SECURITY_ACTIVITY_BFF_PATH}${requestUrl.search}`,
           { ...init, credentials: "same-origin" },
         );
       }

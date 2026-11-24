@@ -1,6 +1,6 @@
 import type {
   ActiveSessionResponse,
-  LoginActivityResponse,
+  SecurityActivityResponse,
 } from "@template/api-client/authentication";
 import { describe, expect, it } from "vitest";
 import {
@@ -8,6 +8,7 @@ import {
   describeActivityPresentation,
   describeActivityType,
   describeDevice,
+  describeFailureReason,
   describeLocation,
   formatActivityTimestamp,
   formatRelativeTime,
@@ -39,8 +40,8 @@ function buildSession(
 }
 
 function buildActivity(
-  overrides: Partial<LoginActivityResponse> = {},
-): LoginActivityResponse {
+  overrides: Partial<SecurityActivityResponse> = {},
+): SecurityActivityResponse {
   return {
     id: "activity-1",
     activityType: "InitialLogin",
@@ -52,6 +53,7 @@ function buildActivity(
     city: "Lagos",
     state: null,
     country: "Nigeria",
+    failureReason: null,
     ...overrides,
   };
 }
@@ -69,7 +71,7 @@ describe("session display", () => {
     ).toEqual(["current", "other-1", "other-2"]);
   });
 
-  it("orders login activity from newest to oldest", () => {
+  it("orders security activity from newest to oldest", () => {
     const oldest = buildActivity({
       id: "oldest",
       occurredAtUtc: "2026-09-20T10:00:00Z",
@@ -170,12 +172,23 @@ describe("session display", () => {
   it("maps known activity types to human-readable labels", () => {
     expect(describeActivityType("InitialLogin")).toBe("Successful sign in");
     expect(describeActivityType("TokenRefresh")).toBe("Session refreshed");
-    expect(describeActivityType("sign_in_succeeded")).toBe(
-      "Successful sign in",
+    expect(describeActivityType("FailedSignIn")).toBe("Failed sign in attempt");
+    expect(describeActivityType("TwoFactorRecoveryCodesRegenerated")).toBe(
+      "Recovery codes regenerated",
     );
-    expect(describeActivityType("sign_in_failed")).toBe(
-      "Failed sign in attempt",
+    expect(describeActivityType("PasswordChanged")).toBe("Password changed");
+  });
+
+  it("describes failure reasons and tolerates unknown or missing ones", () => {
+    expect(describeFailureReason("invalid_credentials")).toBe(
+      "Incorrect password",
     );
+    expect(describeFailureReason("locked_out")).toBe(
+      "Account temporarily locked",
+    );
+    expect(describeFailureReason("device_blocked")).toBe("Device Blocked");
+    expect(describeFailureReason(null)).toBeUndefined();
+    expect(describeFailureReason(" ")).toBeUndefined();
   });
 
   it("humanizes unrecognized activity types instead of exposing raw enum values", () => {
@@ -243,11 +256,11 @@ describe("describeActivityPresentation", () => {
       icon: "check",
       tone: "success",
     });
-    expect(describeActivityPresentation("sign_in_failed")).toEqual({
+    expect(describeActivityPresentation("FailedSignIn")).toEqual({
       icon: "alert",
       tone: "danger",
     });
-    expect(describeActivityPresentation("password_changed")).toEqual({
+    expect(describeActivityPresentation("PasswordChanged")).toEqual({
       icon: "key",
       tone: "brand",
     });

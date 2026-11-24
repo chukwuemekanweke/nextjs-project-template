@@ -23,8 +23,8 @@ import type {
   ConfirmEmailMutationResponse,
   DisableTwoFactorMutationRequest,
   DisableTwoFactorMutationResponse,
-  GetLoginActivityQueryParams,
-  GetLoginActivityQueryResponse,
+  GetSecurityActivityQueryParams,
+  GetSecurityActivityQueryResponse,
   LogoutMutationResponse,
   LinkGoogleAccountMutationRequest,
   LinkGoogleAccountMutationResponse,
@@ -295,13 +295,13 @@ export const revokeOtherSessions = (
     ...options,
   });
 
-export const getLoginActivity = (
+export const getSecurityActivity = (
   client: ApiTransport,
-  query: GetLoginActivityQueryParams = {},
+  query: GetSecurityActivityQueryParams = {},
   options?: ApiOperationOptions,
 ) =>
-  client.request<GetLoginActivityQueryResponse>({
-    ...authenticationOperations.getLoginActivity,
+  client.request<GetSecurityActivityQueryResponse>({
+    ...authenticationOperations.getSecurityActivity,
     ...options,
     query,
   });
