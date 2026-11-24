@@ -62,7 +62,8 @@ minor units on the wire; format them only with `formatMinorUnits`
   field, settled attempt, or definitive 400/403/404/409. Keep it on network,
   timeout, 5xx, 401, and 429. The submitter also holds its unresolved attempt
   in memory and discards only by matching key, so tabs cannot clobber each
-  other's retries. It is navigation state only; logout clears it.
+  other's retries. A purchase-status 404 forgets the attempt naming that
+  purchase. It is navigation state only; logout clears it.
 - Navigate only to a backend `paymentLink` that is absolute HTTPS. Render
   documented `BankTransfer` fields. Do not invent `Card` or other flows.
 - Provider returns land on `/billing/checkout/success`, `/cancelled`, or the
