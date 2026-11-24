@@ -3,7 +3,7 @@ type: domain
 title: Subscriptions and Billing
 description:
   Backend-authoritative plans, idempotent checkout, purchase-status polling,
-  billing dashboard, and period-end cancellation
+  state-aware Billing page, and period-end cancellation
 resource: okf://knowledge/domains/subscriptions
 tags: [constraint, domain, subscriptions, billing, payments, idempotency]
 governance: constraint
@@ -20,6 +20,7 @@ code_refs:
     apps/user-portal/src/config/billing.ts,
     apps/user-portal/src/lib/billing-*.ts,
     apps/user-portal/src/lib/checkout-*.ts,
+    apps/user-portal/src/lib/payment-return.ts,
     apps/user-portal/src/lib/use-checkout-attempt.ts,
   ]
 sources:
@@ -64,9 +65,43 @@ minor units on the wire; format them only with `formatMinorUnits`
   other's retries. It is navigation state only; logout clears it.
 - Navigate only to a backend `paymentLink` that is absolute HTTPS. Render
   documented `BankTransfer` fields. Do not invent `Card` or other flows.
-- Provider return parameters are never proof of payment; the return route
-  resolves the remembered purchase id and the status page reads the backend.
-- Public pricing CTAs link to User Portal `/billing/checkout?planId=`; the
+- Provider returns land on `/billing/checkout/success`, `/cancelled`, or the
+  hint-free `/return`, all rendering `PaymentReturn`. Query parameters are
+  ignored; the purchase id comes only from the remembered attempt, and the
+  outcome only from purchase status via `resolvePaymentReturnView`
+  (`lib/payment-return.ts`). The route is a wording hint: success needs
+  `SubscriptionActive`/`Scheduled` (paid but unfulfilled is "activating"), a
+  cancel return with no final payment state is "not completed", and confirmed
+  outcomes replace the URL with the matching route. No context: recoverable
+  state, never success, never a purchase.
+- Bachs `success_url`/`cancel_url` come from backend config
+  `Payments:Bachs:SuccessUrl`/`CancelUrl` (one value for all Bachs intents, no
+  purchase id). Bachs cancellation is verified as `PaymentFailed`, so a cancel
+  return plus `PaymentFailed` reads as cancelled. Backend gaps are listed in
+  `docs/architecture/11-subscriptions-and-billing.md`.
+- `/billing` is the single entry point. `lib/billing-view.ts` owns every
+  layout rule: the current-subscription result picks the view (loading and
+  errors are never "no subscription"; only `404`/`null` or an ended lifecycle
+  shows plans; `Pending` shows recovery with no checkout links; Active,
+  PastDue, cancelling, Scheduled, and unknown show the subscription card).
+  Plan count picks the layout (1 centered, 2 columns, 3+ expanded grid).
+  History is always inline for a subscription, hidden when empty, inline with
+  0-2 plans, and replaced by a `/billing/history` link with 3+ plans. Keep new
+  rules there, not in components.
+- A plan offers one price per interval in `prices`; read it only through the
+  `api-client` helpers (`subscriptionPlanPrices`, `defaultSubscriptionPlanPrice`),
+  which also accept the legacy single `price`/`billingInterval`. Purchases send
+  the chosen `billingInterval`; it is part of the checkout attempt (a change
+  means a new key), forwarded by the BFF, and carried in checkout links as
+  `?planId=&billingInterval=`. Never accept an interval the plan does not offer.
+- Card copy: API `description`/`features`/`badge`/`recommended`, then
+  `planPresentation` by `code`, then the temporary `placeholderPlanPresentation`
+  (remove once the API returns the fields). Never assume a recommendation. The
+  grid shows a Monthly/Yearly toggle when several intervals exist; the checkout
+  plan picker reuses `SubscriptionPlanGrid`.
+- Billing history keeps all seven columns (date, plan, period, amount, status,
+  provider, reference) and scrolls inside its container on narrow screens.
+- Public pricing CTAs link to User Portal `/billing/checkout?planId=&billingInterval=`; the
   proxy and validated `returnTo` carry the plan through sign-in/registration.
 
 Unsupported by the backend customer API: upgrades, downgrades, proration,

@@ -40,8 +40,8 @@ export function PurchaseStatusView({
   const ownerType = resolveBillingOwnerType();
   const status = useSubscriptionPurchaseStatus(purchaseId, ownerType);
   const remembered = useRememberedCheckoutAttempt();
-  const retryPlanId =
-    remembered?.purchaseId === purchaseId ? remembered.planId : undefined;
+  const retryAttempt =
+    remembered?.purchaseId === purchaseId ? remembered : undefined;
   const settled = status.data?.isTerminal === true;
 
   // A settled purchase ends its attempt: a new checkout gets a new key.
@@ -98,8 +98,11 @@ export function PurchaseStatusView({
       pollingExhausted={status.pollingExhausted}
       refreshFailed={status.isError}
       retryHref={
-        retryPlanId
-          ? billingRoutes.checkoutForPlan(retryPlanId)
+        retryAttempt
+          ? billingRoutes.checkoutForPlan(
+              retryAttempt.planId,
+              retryAttempt.billingInterval,
+            )
           : billingRoutes.checkout
       }
       supportEmail={supportEmail}

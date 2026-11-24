@@ -20,8 +20,8 @@ export function SubscriptionPricing({
 }>) {
   const pricePlans =
     plans.status === "loaded"
-      ? plans.plans.map((plan) =>
-          toPricePlan(plan, { marketing, userPortalUrl }),
+      ? plans.plans.flatMap(
+          (plan) => toPricePlan(plan, { marketing, userPortalUrl }) ?? [],
         )
       : [];
 

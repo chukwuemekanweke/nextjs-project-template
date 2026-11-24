@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
+import { Outfit } from "next/font/google";
 import type { CSSProperties, ReactNode } from "react";
 import { AppProviders } from "@/components/app-providers";
 import { UserLayoutShell } from "@/components/user-layout-shell";
 import { branding, env } from "@/config/env";
 import "./globals.css";
+
+// Self-hosted at build time; browsers never request Google Fonts.
+const outfit = Outfit({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-outfit-loaded",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -18,8 +26,9 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    <html className={outfit.variable} lang="en">
       <body
+        className="antialiased"
         style={{ "--brand-primary": branding.colours.primary } as CSSProperties}
       >
         <AppProviders>

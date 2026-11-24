@@ -4,6 +4,8 @@ export type TableColumn<Row> = {
   header: string;
   cell: (row: Row) => ReactNode;
   className?: string;
+  /** Horizontal alignment of the header and cells; defaults to `left`. */
+  align?: "left" | "right";
 };
 
 export function DataTable<Row>({
@@ -26,7 +28,8 @@ export function DataTable<Row>({
               {columns.map((column) => (
                 <th
                   className={[
-                    "px-5 py-3 text-left text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400",
+                    column.align === "right" ? "text-right" : "text-left",
+                    "px-5 py-3 text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400",
                     column.className ?? "",
                   ].join(" ")}
                   key={column.header}
@@ -54,6 +57,7 @@ export function DataTable<Row>({
                     <td
                       className={[
                         "px-5 py-4 text-sm text-gray-700 dark:text-gray-400",
+                        column.align === "right" ? "text-right" : "",
                         column.className ?? "",
                       ].join(" ")}
                       key={column.header}

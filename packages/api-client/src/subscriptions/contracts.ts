@@ -63,15 +63,43 @@ export type SubscriptionOwnerQueryParams = {
   BillingAccountOwnerType: BillingAccountOwnerType;
 };
 
-export type SubscriptionPlanResponse = {
+/** One offered billing interval of a plan and its authoritative price. */
+export type SubscriptionPlanPriceResponse = {
   billingInterval: string;
+  /** Whole minor currency units. */
+  price: number | string;
+};
+
+/**
+ * A subscription package priced in one currency. A plan offers one price per
+ * billing interval in `prices`, so monthly and yearly options are the same
+ * plan. Read prices through `subscriptionPlanPrices`, which also accepts the
+ * legacy single-interval shape.
+ */
+export type SubscriptionPlanResponse = {
   code: string;
   currencyCode: string;
   currencyId: string;
   id: string;
   name: string;
-  /** Whole minor currency units. */
-  price: number | string;
+  /** Offered intervals, ordered by the backend. */
+  prices?: Array<SubscriptionPlanPriceResponse>;
+  /** @deprecated Legacy single-interval field; use `prices`. */
+  billingInterval?: string;
+  /** @deprecated Legacy single-interval field (minor units); use `prices`. */
+  price?: number | string;
+  /**
+   * Optional presentation fields. They never affect price, currency,
+   * interval, or entitlement checks.
+   */
+  /** Short marketing description. */
+  description?: string | null;
+  /** Ordered list of plan highlights. */
+  features?: Array<string> | null;
+  /** Short tier label shown as a pill, for example "Starter". */
+  badge?: string | null;
+  /** Product-configured recommendation ("Most popular"). */
+  recommended?: boolean | null;
 };
 export type ListSubscriptionPlansQueryResponse =
   Array<SubscriptionPlanResponse>;
@@ -92,6 +120,8 @@ export type ListEligiblePaymentProvidersQueryResponse =
 export type PurchaseSubscriptionMutationRequest = {
   autoRenew: boolean;
   billingAccountOwnerType: BillingAccountOwnerType;
+  /** One of the plan's offered intervals (`Monthly` or `Yearly`). */
+  billingInterval: string;
   paymentProviderId: string;
   planId: string;
 };

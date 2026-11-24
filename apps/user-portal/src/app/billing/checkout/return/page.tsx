@@ -1,24 +1,18 @@
 import type { Metadata } from "next";
-import { DashboardHeader } from "@template/dashboard-ui";
-import { portalName } from "@/lib/portal";
-import { CheckoutReturn } from "./checkout-return";
+import { branding } from "@/config/env";
+import { PaymentReturn } from "../payment-return";
 
-export const metadata: Metadata = { title: "Returning from payment" };
+export const metadata: Metadata = { title: "Payment status" };
 
 /**
- * Landing route for hosted-checkout returns. Provider query parameters are
- * intentionally ignored; the remembered purchase id is resolved client-side
- * and its status is read from the backend.
+ * Hint-free provider return for integrations with a single return URL.
+ * Provider query parameters are ignored: the purchase comes from this
+ * browser's remembered checkout attempt and its outcome from the backend.
  */
 export default function CheckoutReturnPage() {
   return (
-    <section className="mx-auto max-w-3xl space-y-6 sm:space-y-8">
-      <DashboardHeader
-        description="We are confirming your payment with our billing service."
-        eyebrow={portalName}
-        title="Confirming your payment"
-      />
-      <CheckoutReturn />
+    <section className="mx-auto w-full max-w-6xl py-2 sm:py-6">
+      <PaymentReturn hint={undefined} supportEmail={branding.supportEmail} />
     </section>
   );
 }

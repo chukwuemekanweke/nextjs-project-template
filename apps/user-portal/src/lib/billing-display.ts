@@ -51,6 +51,13 @@ export function billingIntervalLabel(billingInterval: string): string {
   return `Billed ${billingInterval.toLowerCase()}`;
 }
 
+/** Display name for a backend interval, for example "Monthly". */
+export function billingIntervalName(billingInterval: string): string {
+  if (billingInterval === "Monthly") return "Monthly";
+  if (billingInterval === "Yearly") return "Yearly";
+  return billingInterval;
+}
+
 export function billingCadence(billingInterval: string): string {
   if (billingInterval === "Monthly") return "month";
   if (billingInterval === "Yearly") return "year";
@@ -268,9 +275,9 @@ const PAYMENT_STATUS_LABELS: Readonly<
   Cancelled: { label: "Cancelled", tone: "neutral" },
   Expired: { label: "Expired", tone: "neutral" },
   Failed: { label: "Failed", tone: "danger" },
-  Initiated: { label: "Pending", tone: "info" },
-  PendingInitiation: { label: "Pending", tone: "info" },
-  Succeeded: { label: "Paid", tone: "success" },
+  Initiated: { label: "Pending", tone: "warning" },
+  PendingInitiation: { label: "Pending", tone: "warning" },
+  Succeeded: { label: "Succeeded", tone: "success" },
   Underpaid: { label: "Underpaid", tone: "warning" },
 };
 
@@ -445,4 +452,10 @@ export function firstSearchParameter(
   value: string | string[] | undefined,
 ): string | undefined {
   return Array.isArray(value) ? value[0] : value;
+}
+
+/** Billing-history page from a query value; invalid values fall back to 1. */
+export function parseBillingPage(value: string | undefined): number {
+  if (!value || !/^\d{1,6}$/.test(value)) return 1;
+  return Math.max(1, Number(value));
 }

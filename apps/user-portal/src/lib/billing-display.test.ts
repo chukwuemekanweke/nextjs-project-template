@@ -151,9 +151,18 @@ describe("payment instructions", () => {
 
 describe("billing history statuses", () => {
   it("does not label unsuccessful attempts as paid", () => {
-    expect(describePaymentStatus("Succeeded").label).toBe("Paid");
+    expect(describePaymentStatus("Succeeded")).toEqual({
+      label: "Succeeded",
+      tone: "success",
+    });
+    expect(describePaymentStatus("Underpaid").tone).toBe("warning");
+    expect(describePaymentStatus("Cancelled").tone).toBe("neutral");
+    expect(describePaymentStatus("Expired").tone).toBe("neutral");
     expect(describePaymentStatus("Failed").label).toBe("Failed");
-    expect(describePaymentStatus("Initiated").label).toBe("Pending");
+    expect(describePaymentStatus("Initiated")).toEqual({
+      label: "Pending",
+      tone: "warning",
+    });
     expect(describePaymentStatus("SomethingNew").label).toBe("SomethingNew");
   });
 });

@@ -11,6 +11,7 @@ import {
 const selection: CheckoutSelection = {
   autoRenew: true,
   billingAccountOwnerType: "Stakeholder",
+  billingInterval: "Monthly",
   paymentProviderId: "provider-1",
   planId: "plan-1",
 };
@@ -58,6 +59,7 @@ describe("resolveCheckoutAttempt", () => {
     ["provider", { paymentProviderId: "provider-2" }],
     ["owner type", { billingAccountOwnerType: "Tenant" as const }],
     ["auto-renew", { autoRenew: false }],
+    ["billing interval", { billingInterval: "Yearly" }],
   ])("creates a new key when the %s changes", (_field, change) => {
     const existing = resolveCheckoutAttempt(
       undefined,
@@ -121,6 +123,13 @@ describe("checkout attempt store", () => {
         NOW,
       ),
     ).toBeUndefined();
+    // Attempts stored before intervals existed cannot be replayed safely.
+    expect(
+      parseCheckoutAttempt(
+        JSON.stringify({ ...attempt, billingInterval: undefined }),
+        NOW,
+      ),
+    ).toBeUndefined();
   });
 
   it("marks only the matching purchase as settled", () => {
@@ -175,6 +184,7 @@ describe("checkout attempt store", () => {
     ).toEqual([
       "autoRenew",
       "billingAccountOwnerType",
+      "billingInterval",
       "createdAtUtc",
       "idempotencyKey",
       "paymentProviderId",

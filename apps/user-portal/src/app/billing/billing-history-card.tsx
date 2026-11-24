@@ -17,29 +17,100 @@ import {
   formatMinorUnits,
   type TableColumn,
 } from "@template/ui-core";
+import { useEffect, useState } from "react";
 import { billingRoutes, resolveBillingOwnerType } from "@/config/billing";
 import {
   describeBillingLoadError,
   describePaymentStatus,
   formatBillingDate,
 } from "@/lib/billing-display";
+import { abbreviateReference } from "@/lib/billing-view";
 import { StatusBadge } from "./billing-ui";
+import { CopyIcon, SmallCheckIcon } from "./checkout/checkout-icons";
 
-export function billingHistoryPageHref(page: number): string {
+export function billingHistoryPageHref(
+  page: number,
+  basePath: string = billingRoutes.overview,
+): string {
   return page <= 1
-    ? billingRoutes.overview
-    : `${billingRoutes.overview}?${new URLSearchParams({ page: String(page) }).toString()}`;
+    ? basePath
+    : `${basePath}?${new URLSearchParams({ page: String(page) }).toString()}`;
 }
 
+/** Backend period boundaries only; never derived from the plan interval. */
 export function billingPeriod(item: BillingHistoryItemResponse): string {
   const start = formatBillingDate(item.billingPeriodStartUtc);
   const end = formatBillingDate(item.billingPeriodEndUtc);
   return start && end ? `${start} – ${end}` : "—";
 }
 
-const columns: ReadonlyArray<TableColumn<BillingHistoryItemResponse>> = [
+/** Copies text, resolving `false` instead of throwing when unavailable. */
+export async function copyText(
+  text: string,
+  clipboard: Pick<Clipboard, "writeText"> | undefined = typeof navigator ===
+  "undefined"
+    ? undefined
+    : navigator.clipboard,
+): Promise<boolean> {
+  if (!clipboard) return false;
+  try {
+    await clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function MerchantReference({ reference }: Readonly<{ reference: string }>) {
+  const [feedback, setFeedback] = useState<"copied" | "failed">();
+
+  useEffect(() => {
+    if (!feedback) return;
+    const timer = setTimeout(() => setFeedback(undefined), 2_000);
+    return () => clearTimeout(timer);
+  }, [feedback]);
+
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span className="font-mono text-xs" title={reference}>
+        {abbreviateReference(reference)}
+      </span>
+      <button
+        aria-label={`Copy reference ${reference}`}
+        className="hover:text-brand-600 focus-visible:ring-brand-500/40 dark:hover:text-brand-400 rounded-md p-1 text-gray-500 focus-visible:ring-3 focus-visible:outline-none dark:text-gray-400"
+        data-reference={reference}
+        onClick={() => {
+          void copyText(reference).then((copied) =>
+            setFeedback(copied ? "copied" : "failed"),
+          );
+        }}
+        type="button"
+      >
+        {feedback === "copied" ? (
+          <SmallCheckIcon className="h-4 w-4 text-emerald-600" />
+        ) : (
+          <CopyIcon />
+        )}
+      </button>
+      <span aria-live="polite" className="sr-only">
+        {feedback === "copied"
+          ? "Reference copied"
+          : feedback === "failed"
+            ? "Reference could not be copied"
+            : ""}
+      </span>
+    </span>
+  );
+}
+
+const nowrap = "whitespace-nowrap";
+
+export const billingHistoryColumns: ReadonlyArray<
+  TableColumn<BillingHistoryItemResponse>
+> = [
   {
     header: "Date",
+    className: nowrap,
     cell: (item) =>
       item.paidAtUtc ? (
         formatBillingDate(item.paidAtUtc)
@@ -50,30 +121,48 @@ const columns: ReadonlyArray<TableColumn<BillingHistoryItemResponse>> = [
         </span>
       ),
   },
-  { header: "Plan", cell: (item) => item.planName },
-  { header: "Billing period", cell: billingPeriod },
+  { header: "Plan", className: nowrap, cell: (item) => item.planName },
+  { header: "Billing period", className: nowrap, cell: billingPeriod },
   {
     header: "Amount",
-    cell: (item) => formatMinorUnits(item.amount, item.currencyCode),
-    className: "whitespace-nowrap",
+    align: "right",
+    className: nowrap,
+    cell: (item) => (
+      <span className="font-medium text-gray-800 tabular-nums dark:text-white/90">
+        {formatMinorUnits(item.amount, item.currencyCode)}
+      </span>
+    ),
   },
   {
     header: "Status",
+    className: nowrap,
     cell: (item) => {
       const status = describePaymentStatus(item.paymentStatus);
       return <StatusBadge tone={status.tone}>{status.label}</StatusBadge>;
     },
   },
-  { header: "Provider", cell: (item) => item.paymentProviderName },
+  {
+    header: "Provider",
+    className: nowrap,
+    cell: (item) => item.paymentProviderName,
+  },
   {
     header: "Reference",
-    cell: (item) => (
-      <span className="font-mono text-xs">{item.merchantReference}</span>
-    ),
+    className: nowrap,
+    cell: (item) => <MerchantReference reference={item.merchantReference} />,
   },
 ];
 
-export function BillingHistoryCard({ page }: Readonly<{ page: number }>) {
+export function BillingHistoryCard({
+  basePath = billingRoutes.overview,
+  heading = true,
+  page,
+}: Readonly<{
+  basePath?: string;
+  /** Hide the card heading when the page heading already names the table. */
+  heading?: boolean;
+  page: number;
+}>) {
   const ownerType = resolveBillingOwnerType();
   const history = useBillingHistory(ownerType, {
     page,
@@ -84,9 +173,18 @@ export function BillingHistoryCard({ page }: Readonly<{ page: number }>) {
     : 1;
 
   return (
-    <Card>
+    <Card
+      aria-labelledby="billing-history-heading"
+      className="min-w-0"
+      role="region"
+    >
       <CardContent>
-        <CardTitle>Billing history</CardTitle>
+        <CardTitle
+          className={heading ? "text-xl font-semibold" : "sr-only"}
+          id="billing-history-heading"
+        >
+          Billing history
+        </CardTitle>
         <CardDescription>
           Initial purchases and renewal attempts, newest first, including
           payments that did not complete.
@@ -109,9 +207,16 @@ export function BillingHistoryCard({ page }: Readonly<{ page: number }>) {
             </Alert>
           ) : (
             <>
-              <div aria-busy={history.isPlaceholderData || undefined}>
+              <div
+                aria-busy={history.isPlaceholderData || undefined}
+                className={
+                  history.isPlaceholderData
+                    ? "opacity-60 transition"
+                    : undefined
+                }
+              >
                 <DataTable
-                  columns={columns}
+                  columns={billingHistoryColumns}
                   emptyMessage={
                     history.data.totalCount === 0
                       ? "No billing activity yet."
@@ -124,7 +229,7 @@ export function BillingHistoryCard({ page }: Readonly<{ page: number }>) {
               {totalPages > 1 ? (
                 <Pagination
                   currentPage={Math.min(page, totalPages)}
-                  getHref={billingHistoryPageHref}
+                  getHref={(target) => billingHistoryPageHref(target, basePath)}
                   totalPages={totalPages}
                 />
               ) : null}

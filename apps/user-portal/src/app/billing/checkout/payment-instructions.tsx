@@ -18,36 +18,19 @@ import {
 
 type InstructionOutcome = Extract<
   CheckoutOutcome,
-  { type: "bank-transfer" | "redirect" | "unsupported" }
+  { type: "bank-transfer" | "unsupported" }
 >;
 
-/** Next step after the backend accepted a purchase. */
+/**
+ * Next step after the backend accepted a purchase that does not redirect to a
+ * hosted checkout (hosted checkouts use `ProviderRedirect`).
+ */
 export function PaymentInstructions({
   amount,
   outcome,
 }: Readonly<{ amount: string; outcome: InstructionOutcome }>) {
   const { response } = outcome;
   const statusHref = billingRoutes.purchase(response.purchaseId);
-
-  if (outcome.type === "redirect") {
-    return (
-      <div className="space-y-4" aria-live="polite">
-        <Alert variant="info">
-          Redirecting you to {response.paymentProviderName} to complete your
-          payment securely…
-        </Alert>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <a className={primaryButtonClass} href={outcome.href}>
-            Continue to {response.paymentProviderName}
-          </a>
-          <Link className={secondaryButtonClass} href={statusHref}>
-            Check payment status
-          </Link>
-        </div>
-        <PurchaseReference response={response} />
-      </div>
-    );
-  }
 
   if (outcome.type === "bank-transfer") {
     const details = bankTransferDetails(response.instructionFields);
@@ -83,10 +66,20 @@ export function PaymentInstructions({
   return (
     <div className="space-y-4">
       <Alert variant="warning">
-        {paymentMethodLabel(response.paymentMethodType)} payments with{" "}
-        {response.paymentProviderName} cannot be completed in this portal yet.
-        Your checkout was recorded; check its status or contact support with the
-        reference below.
+        {response.paymentMethodType === "PaymentLink" ? (
+          <>
+            We couldn&apos;t open {response.paymentProviderName}&apos;s checkout
+            page. Your checkout was recorded; check its status or contact
+            support with the reference below.
+          </>
+        ) : (
+          <>
+            {paymentMethodLabel(response.paymentMethodType)} payments with{" "}
+            {response.paymentProviderName} cannot be completed in this portal
+            yet. Your checkout was recorded; check its status or contact support
+            with the reference below.
+          </>
+        )}
       </Alert>
       <PurchaseReference response={response} />
       <Link className={secondaryButtonClass} href={statusHref}>

@@ -1,4 +1,5 @@
 export * from "./operations";
+export * from "./plan-prices";
 export * from "./subscriptions.client";
 export {
   billingAccountOwnerTypes,

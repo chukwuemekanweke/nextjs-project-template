@@ -8,6 +8,8 @@ import type { BillingAccountOwnerType } from "@template/api-client/subscriptions
 export type CheckoutSelection = Readonly<{
   autoRenew: boolean;
   billingAccountOwnerType: BillingAccountOwnerType;
+  /** The plan's offered interval being purchased. */
+  billingInterval: string;
   paymentProviderId: string;
   planId: string;
 }>;
@@ -43,6 +45,7 @@ export function isSameSelection(
     attempt.planId === selection.planId &&
     attempt.paymentProviderId === selection.paymentProviderId &&
     attempt.billingAccountOwnerType === selection.billingAccountOwnerType &&
+    attempt.billingInterval === selection.billingInterval &&
     attempt.autoRenew === selection.autoRenew
   );
 }
@@ -81,6 +84,7 @@ function isAttempt(value: unknown): value is CheckoutAttempt {
     typeof candidate.paymentProviderId === "string" &&
     (candidate.billingAccountOwnerType === "Stakeholder" ||
       candidate.billingAccountOwnerType === "Tenant") &&
+    typeof candidate.billingInterval === "string" &&
     typeof candidate.autoRenew === "boolean" &&
     typeof candidate.idempotencyKey === "string" &&
     typeof candidate.createdAtUtc === "string" &&

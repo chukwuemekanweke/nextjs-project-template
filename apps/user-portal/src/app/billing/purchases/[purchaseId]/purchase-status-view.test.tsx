@@ -133,6 +133,7 @@ describe("PurchaseStatusView", () => {
       hooks.useRememberedCheckoutAttempt.mockReturnValue({
         autoRenew: true,
         billingAccountOwnerType: "Stakeholder",
+        billingInterval: "Yearly",
         createdAtUtc: "2026-11-23T12:00:00Z",
         idempotencyKey: "4d3c3a2e-6f9b-4f43-9a55-0c5b3f6f1a10",
         paymentProviderId: "provider-1",
@@ -150,7 +151,9 @@ describe("PurchaseStatusView", () => {
       );
       const markup = render();
       expect(markup).toContain("Start a new checkout");
-      expect(markup).toContain(`href="/billing/checkout?planId=${PLAN_ID}"`);
+      expect(markup).toContain(
+        `href="/billing/checkout?billingInterval=Yearly&amp;planId=${PLAN_ID}"`,
+      );
     },
   );
 

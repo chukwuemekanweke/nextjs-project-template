@@ -51,13 +51,15 @@ describe("subscription operations", () => {
   it("lists public plans without converting minor-unit prices", async () => {
     const plans = [
       {
-        billingInterval: "Monthly",
-        code: "PRO_MONTHLY",
+        code: "PRO",
         currencyCode: "NGN",
         currencyId: "currency-1",
         id: PLAN_ID,
-        name: "Pro Monthly",
-        price: 750000,
+        name: "Pro",
+        prices: [
+          { billingInterval: "Monthly", price: 750000 },
+          { billingInterval: "Yearly", price: 7500000 },
+        ],
       },
     ];
     server.use(
@@ -105,6 +107,7 @@ describe("subscription operations", () => {
     const request = {
       autoRenew: false,
       billingAccountOwnerType: "Stakeholder" as const,
+      billingInterval: "Yearly",
       paymentProviderId: "provider-1",
       planId: PLAN_ID,
     };
@@ -129,6 +132,7 @@ describe("subscription operations", () => {
     const request = {
       autoRenew: true,
       billingAccountOwnerType: "Stakeholder" as const,
+      billingInterval: "Yearly",
       paymentProviderId: "provider-1",
       planId: PLAN_ID,
     };
@@ -165,6 +169,7 @@ describe("subscription operations", () => {
       {
         autoRenew: true,
         billingAccountOwnerType: "Stakeholder",
+        billingInterval: "Monthly",
         paymentProviderId: "provider-1",
         planId: PLAN_ID,
       },
