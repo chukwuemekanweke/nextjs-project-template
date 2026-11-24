@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import type { CSSProperties, ReactNode } from "react";
 import { Footer, Header, PublicUiProvider } from "@template/public-ui";
 import { AppProviders } from "@/components/app-providers";
 import { branding } from "@/config/env";
 import { navigation, site } from "@/config/site";
 import "./globals.css";
+
+// Self-hosted at build time; browsers never request Google Fonts.
+const inter = Inter({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-inter-loaded",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -17,9 +25,9 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html className={inter.variable} lang="en" suppressHydrationWarning>
       <body
-        className="dark:bg-black"
+        className="antialiased dark:bg-black"
         style={
           {
             "--brand-accent": branding.colours.accent,

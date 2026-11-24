@@ -9,6 +9,7 @@ tags: [constraint, architecture, ui, composition]
 governance: constraint
 code_refs:
   [
+    apps/*/src/app/layout.tsx,
     packages/ui-core/**,
     packages/dashboard-ui/**,
     packages/public-ui/**,
@@ -33,6 +34,10 @@ status: stable
 - `@template/public-ui` exposes marketing sections and typed content inputs. The
   Public Portal owns concrete copy, navigation, URLs, metadata, and page
   assembly.
+- Fonts are loaded only in app root layouts with `next/font/google`
+  (self-hosted at build): dashboards set `--font-outfit-loaded`, which the
+  shared theme's `--font-outfit` uses; the Public Portal sets
+  `--font-inter-loaded`. Do not add font CDN links or `@font-face` rules.
 - Application layouts and components decide which primitives to compose. Do not
   move navigation, business state, routes, toasts, or product workflows into
   shared UI packages.

@@ -36,6 +36,6 @@ These files use `"use client"` because React context/state, browser storage, med
 
 ## Theme and primitive boundary
 
-`packages/dashboard-ui/src/tailadmin-theme.css` defines the shared TailAdmin-derived font, breakpoints, colors, shadows, and utilities. Both dashboard application global stylesheets import it and tell Tailwind to scan both shared source directories. `ui-core` uses those semantic Tailwind tokens but intentionally has no application theme import of its own.
+`packages/dashboard-ui/src/tailadmin-theme.css` defines the shared TailAdmin-derived font, breakpoints, colors, shadows, and utilities. The theme resolves `--font-outfit` from `--font-outfit-loaded`, which each dashboard root layout sets by loading Outfit with `next/font/google` (self-hosted at build time, so browsers never contact Google; the Public Portal loads Inter the same way as `--font-inter-loaded`). Both dashboard application global stylesheets import it and tell Tailwind to scan both shared source directories. `ui-core` uses those semantic Tailwind tokens but intentionally has no application theme import of its own.
 
 Use `ui-core` for domain-neutral controls and display primitives. Use `dashboard-ui` for a reusable dashboard layout or navigation presentation. Put application labels, routes, profile data, permissions, and API-backed behaviour in an app. The current page tables are empty-state examples, not connected account, authorization, audit, or health workflows.

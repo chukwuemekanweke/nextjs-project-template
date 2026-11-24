@@ -2,7 +2,9 @@
 
 @theme {
   --font-*: initial;
-  --font-outfit: Outfit, ui-sans-serif, system-ui, sans-serif;
+  /* Apps load Outfit with next/font and expose it as --font-outfit-loaded. */
+  --font-outfit:
+    var(--font-outfit-loaded, Outfit), ui-sans-serif, system-ui, sans-serif;
 
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;

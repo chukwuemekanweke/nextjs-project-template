@@ -6,7 +6,8 @@
 
 @theme {
   --font-*: initial;
-  --font-inter: Inter, sans-serif;
+  /* Loaded with next/font in the root layout as --font-inter-loaded. */
+  --font-inter: var(--font-inter-loaded, Inter), ui-sans-serif, sans-serif;
 
   --color-current: currentColor;
   --color-transparent: transparent;
