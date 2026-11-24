@@ -155,6 +155,16 @@ describe("checkout attempt store", () => {
     expect(store.read()).toBeUndefined();
   });
 
+  it("forgets only the attempt that references the given purchase", () => {
+    const storage = memoryStorage();
+    const store = createCheckoutAttemptStore(storage, () => NOW);
+    store.write(attempt);
+    store.forgetPurchase("another-purchase");
+    expect(store.read()).toEqual(attempt);
+    store.forgetPurchase("purchase-1");
+    expect(store.read()).toBeUndefined();
+  });
+
   it("degrades safely when storage is unavailable", () => {
     const failing = {
       getItem: () => {

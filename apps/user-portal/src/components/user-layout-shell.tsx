@@ -16,7 +16,6 @@ import {
 import {
   CreditCardIcon,
   HomeIcon,
-  SettingsIcon,
   ShieldIcon,
   UserIcon,
 } from "@template/ui-core";
@@ -32,7 +31,6 @@ const navigationIcons: Readonly<Record<string, ReactNode>> = {
   "/dashboard": <HomeIcon />,
   "/profile": <UserIcon />,
   "/security": <ShieldIcon />,
-  "/settings": <SettingsIcon />,
 };
 
 const navigationItems: readonly DashboardNavItem[] = userNavigation.map(

@@ -43,11 +43,19 @@ export function PurchaseStatusView({
   const retryAttempt =
     remembered?.purchaseId === purchaseId ? remembered : undefined;
   const settled = status.data?.isTerminal === true;
+  const missing =
+    !status.data && isApiError(status.error) && status.error.status === 404;
 
   // A settled purchase ends its attempt: a new checkout gets a new key.
   useEffect(() => {
     if (settled) browserCheckoutAttemptStore().markSettled(purchaseId);
   }, [purchaseId, settled]);
+
+  // An unknown purchase (another account, or removed by the backend) must not
+  // keep prompting checkout to "check its payment status".
+  useEffect(() => {
+    if (missing) browserCheckoutAttemptStore().forgetPurchase(purchaseId);
+  }, [missing, purchaseId]);
 
   if (status.isPending) {
     return (
@@ -58,7 +66,6 @@ export function PurchaseStatusView({
   }
 
   if (!status.data) {
-    const missing = isApiError(status.error) && status.error.status === 404;
     return (
       <Card>
         <CardContent className="space-y-4">

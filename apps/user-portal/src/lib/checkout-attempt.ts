@@ -120,6 +120,11 @@ export interface CheckoutAttemptStore {
    * tab never discards an attempt another tab has since started.
    */
   discard(idempotencyKey: string): void;
+  /**
+   * Removes the stored attempt if it references `purchaseId`, for purchases
+   * the backend no longer recognises for the signed-in billing account.
+   */
+  forgetPurchase(purchaseId: string): void;
   /** Marks the attempt for `purchaseId` as settled, if it is the stored one. */
   markSettled(purchaseId: string): void;
   read(): CheckoutAttempt | undefined;
@@ -160,6 +165,9 @@ export function createCheckoutAttemptStore(
     clear,
     discard(idempotencyKey) {
       if (read()?.idempotencyKey === idempotencyKey) clear();
+    },
+    forgetPurchase(purchaseId) {
+      if (read()?.purchaseId === purchaseId) clear();
     },
     markSettled(purchaseId) {
       const attempt = read();
