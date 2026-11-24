@@ -3,7 +3,6 @@ import {
   type GetCurrentSubscriptionQueryResponse,
   type SubscriptionPlanResponse,
 } from "@template/api-client/subscriptions";
-import type { PlanPresentation } from "@/config/billing";
 
 /**
  * Billing page rendering decisions, centralized so every layout rule is
@@ -134,40 +133,22 @@ export function offeredBillingIntervals(
   return intervals;
 }
 
-export type ResolvedPlanPresentation = Readonly<{
-  badge: string | undefined;
+export type PlanCardContent = Readonly<{
   description: string | undefined;
   features: ReadonlyArray<string>;
-  recommended: boolean;
 }>;
 
-const present = (value: string | null | undefined) =>
-  value?.trim() ? value.trim() : undefined;
-
 /**
- * Card copy for a plan: API fields first, then configuration by plan code,
- * then the placeholder. A recommendation is never assumed.
+ * Card copy taken only from the backend plan response. Blank values are
+ * dropped; nothing is substituted when the backend sends none.
  */
-export function resolvePlanPresentation(
-  plan: SubscriptionPlanResponse,
-  configured: PlanPresentation | undefined,
-  placeholder: PlanPresentation | undefined,
-): ResolvedPlanPresentation {
-  const apiFeatures = plan.features?.filter((feature) => present(feature));
+export function planCardContent(
+  plan: Pick<SubscriptionPlanResponse, "description" | "features">,
+): PlanCardContent {
   return {
-    badge:
-      present(plan.badge) ??
-      present(configured?.badge) ??
-      present(placeholder?.badge),
-    description:
-      present(plan.description) ??
-      present(configured?.description) ??
-      present(placeholder?.description),
-    features: apiFeatures?.length
-      ? apiFeatures
-      : configured?.features?.length
-        ? configured.features
-        : (placeholder?.features ?? []),
-    recommended: plan.recommended ?? configured?.recommended ?? false,
+    description: plan.description?.trim() || undefined,
+    features: (plan.features ?? [])
+      .map((feature) => feature.trim())
+      .filter((feature) => feature.length > 0),
   };
 }

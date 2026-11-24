@@ -94,11 +94,11 @@ minor units on the wire; format them only with `formatMinorUnits`
   the chosen `billingInterval`; it is part of the checkout attempt (a change
   means a new key), forwarded by the BFF, and carried in checkout links as
   `?planId=&billingInterval=`. Never accept an interval the plan does not offer.
-- Card copy: API `description`/`features`/`badge`/`recommended`, then
-  `planPresentation` by `code`, then the temporary `placeholderPlanPresentation`
-  (remove once the API returns the fields). Never assume a recommendation. The
-  grid shows a Monthly/Yearly toggle when several intervals exist; the checkout
-  plan picker reuses `SubscriptionPlanGrid`.
+- Plan cards use backend data only: name, `prices`, `description`, and
+  `features` (via `planCardContent`). Never add local, placeholder, or
+  inferred copy, tier labels, or recommendations. The grid shows a
+  Monthly/Yearly toggle when several intervals exist; the checkout plan picker
+  reuses `SubscriptionPlanGrid`.
 - Billing history keeps all seven columns (date, plan, period, amount, status,
   provider, reference) and scrolls inside its container on narrow screens.
 - Public pricing CTAs link to User Portal `/billing/checkout?planId=&billingInterval=`; the
