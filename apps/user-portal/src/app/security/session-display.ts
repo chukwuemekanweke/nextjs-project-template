@@ -127,3 +127,54 @@ function humanizeActivityType(activityType: string): string {
     .replace(/\b\w/g, (character) => character.toUpperCase());
   return humanized || "Account activity";
 }
+
+export type BrowserIconKind =
+  "chrome" | "edge" | "firefox" | "safari" | "mobile" | "desktop";
+
+const MOBILE_PLATFORM = /\b(android|ios|iphone|ipad|ipados|mobile|tablet)\b/i;
+
+/**
+ * Chooses a recognisable browser icon, falling back to a generic phone or
+ * desktop icon when the browser is unknown or has no dedicated mark.
+ */
+export function browserIconKind(fields: DeviceFields): BrowserIconKind {
+  const browser = fields.browserName?.trim().toLowerCase() ?? "";
+  // Edge's user agent also names Chrome, so it must be matched first.
+  if (browser.includes("edge")) return "edge";
+  if (browser.includes("firefox")) return "firefox";
+  if (browser.includes("chrom")) return "chrome";
+  if (browser.includes("safari")) return "safari";
+  const device = [fields.devicePlatform, fields.deviceName, fields.browserName]
+    .filter(Boolean)
+    .join(" ");
+  return MOBILE_PLATFORM.test(device) ? "mobile" : "desktop";
+}
+
+export type ActivityIconKind =
+  "check" | "alert" | "key" | "shield" | "logout" | "refresh" | "activity";
+export type ActivityTone = "success" | "danger" | "brand" | "neutral";
+
+const ACTIVITY_PRESENTATION: Readonly<
+  Record<string, { icon: ActivityIconKind; tone: ActivityTone }>
+> = {
+  InitialLogin: { icon: "check", tone: "success" },
+  initialLogin: { icon: "check", tone: "success" },
+  sign_in_succeeded: { icon: "check", tone: "success" },
+  TokenRefresh: { icon: "refresh", tone: "neutral" },
+  tokenRefresh: { icon: "refresh", tone: "neutral" },
+  sign_in_failed: { icon: "alert", tone: "danger" },
+  two_factor_challenge_succeeded: { icon: "shield", tone: "success" },
+  two_factor_challenge_failed: { icon: "alert", tone: "danger" },
+  password_changed: { icon: "key", tone: "brand" },
+  session_revoked: { icon: "logout", tone: "neutral" },
+};
+
+/** Icon and semantic tone for a login activity event; unknown types stay neutral. */
+export function describeActivityPresentation(activityType: string): {
+  icon: ActivityIconKind;
+  tone: ActivityTone;
+} {
+  return (
+    ACTIVITY_PRESENTATION[activityType] ?? { icon: "activity", tone: "neutral" }
+  );
+}

@@ -17,7 +17,9 @@ status: stable
 
 `apps/*` may compose `api-react`, `api-client`, `forms`, UI packages, and
 `config`. `api-react` depends on `api-client`; `forms` depends on `api-client`
-only for normalized errors and on `ui-core` for controls. `api-client` has no
+only for normalized errors and on `ui-core` for controls; `dashboard-ui`
+depends on `ui-core` for icons and presentation primitives (never the
+reverse). `api-client` has no
 React or TanStack Query dependency.
 
 ## Rules

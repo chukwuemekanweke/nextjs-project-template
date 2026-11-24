@@ -4,16 +4,40 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Breadcrumbs,
+  DashboardBrand,
   DashboardShell,
   DashboardSidebar,
   DashboardSidebarNav,
   MobileNav,
   ProfileMenu,
+  ThemeToggle,
+  type DashboardNavItem,
 } from "@template/dashboard-ui";
+import {
+  ActivityIcon,
+  DatabaseIcon,
+  GridIcon,
+  HistoryIcon,
+  LockIcon,
+  UsersIcon,
+} from "@template/ui-core";
 import type { ReactNode } from "react";
 import { adminNavigation } from "@/config/navigation";
 import { branding } from "@/config/env";
 import { LogoutButton } from "./logout-button";
+
+const navigationIcons: Readonly<Record<string, ReactNode>> = {
+  "/": <GridIcon />,
+  "/audit": <HistoryIcon />,
+  "/reference-data": <DatabaseIcon />,
+  "/roles": <LockIcon />,
+  "/system-health": <ActivityIcon />,
+  "/users": <UsersIcon />,
+};
+
+const navigationItems: readonly DashboardNavItem[] = adminNavigation.map(
+  (item) => ({ ...item, icon: navigationIcons[item.href] }),
+);
 
 export function AdminLayoutShell({
   children,
@@ -27,60 +51,55 @@ export function AdminLayoutShell({
   return (
     <DashboardShell
       mobileNav={
-        <MobileNav
-          activeHref={pathname}
-          ariaLabel="Admin navigation"
-          brand={branding.portals.admin}
-          items={adminNavigation}
-        />
+        <MobileNav ariaLabel="Admin navigation" brand={branding.productName} />
       }
       sidebar={
         <DashboardSidebar
           brand={
-            <div>
-              <Link
-                className="text-xl font-semibold text-gray-800 dark:text-white/90"
-                href="/"
-              >
-                {branding.productName}
-              </Link>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {branding.portals.admin}
-              </p>
-            </div>
+            <DashboardBrand
+              href="/"
+              name={branding.productName}
+              subtitle={branding.portals.admin}
+            />
           }
-          footer={<p>Authorization remains enforced by the backend API.</p>}
-          sectionLabel="Administration"
+          brandMark={
+            <DashboardBrand compact href="/" name={branding.productName} />
+          }
         >
           <DashboardSidebarNav
             activeHref={pathname}
             ariaLabel="Admin navigation"
-            items={adminNavigation}
+            items={navigationItems}
           />
         </DashboardSidebar>
       }
       topbar={
-        <div className="flex items-center justify-between gap-4">
-          <Breadcrumbs
-            items={[
-              { href: "/", label: "Admin" },
-              { label: currentLabel(pathname) },
-            ]}
-          />
-          <ProfileMenu
-            actions={[
-              <Link href="/" key="preferences">
-                Workspace settings
-              </Link>,
-              <Link href="/" key="audit">
-                Review audit events
-              </Link>,
-              <LogoutButton key="logout" />,
-            ]}
-            meta="Privileged session"
-            name="Signed-in administrator"
-            role={branding.portals.admin}
-          />
+        <div className="flex items-center justify-between gap-3">
+          <div className="hidden min-w-0 sm:block">
+            <Breadcrumbs
+              items={[
+                { href: "/", label: "Admin" },
+                { label: currentLabel(pathname) },
+              ]}
+            />
+          </div>
+          <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
+            <ProfileMenu
+              actions={[
+                <Link href="/" key="preferences">
+                  Workspace settings
+                </Link>,
+                <Link href="/" key="audit">
+                  Review audit events
+                </Link>,
+                <LogoutButton key="logout" />,
+              ]}
+              meta="Privileged session"
+              name="Signed-in administrator"
+              role={branding.portals.admin}
+            />
+          </div>
         </div>
       }
     >

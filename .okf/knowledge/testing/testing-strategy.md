@@ -31,6 +31,8 @@ durable boundaries and pure behavior rather than broad browser rendering:
 - `forms`: backend validation mapping.
 - `config`: schema validation and defaults.
 - `ui-core`: pure presentation helpers such as minor-unit money formatting.
+- `dashboard-ui`: sidebar active-state matching and expanded/collapsed
+  navigation rendering via `renderToStaticMarkup`.
 - applications: rendering via `renderToStaticMarkup` with mocked hooks (no DOM
   or browser runner exists), BFF Route Handlers, session/cookie adapters, sign-in/logout, authorization,
   registration/profile/password helpers, navigation, environment, and portal

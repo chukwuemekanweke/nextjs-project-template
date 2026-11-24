@@ -17,10 +17,13 @@ import {
   Alert,
   Card,
   CardContent,
-  CardDescription,
-  CardTitle,
   Modal,
+  SectionHeader,
+  SettingsRow,
   Skeleton,
+  SmartphoneIcon,
+  StatusBadge,
+  buttonClassName,
 } from "@template/ui-core";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
@@ -91,12 +94,12 @@ export function TwoFactorSecurityCard() {
   return (
     <Card>
       <CardContent>
-        <CardTitle>Authenticator two-factor authentication</CardTitle>
-        <CardDescription>
-          Require a code from your authenticator app when starting a new
-          session.
-        </CardDescription>
-        <div className="mt-5 space-y-5">
+        <SectionHeader
+          description="Require a code from your authenticator app when starting a new session."
+          icon={<SmartphoneIcon className="h-6 w-6" />}
+          title="Authenticator two-factor authentication"
+        />
+        <div className="mt-5 space-y-4">
           {status.isPending ? (
             <TwoFactorStatusSkeleton />
           ) : status.isError ? (
@@ -155,7 +158,7 @@ function TwoFactorStatusSkeleton() {
     <div
       aria-busy="true"
       aria-label="Loading two-factor settings"
-      className="flex flex-col gap-4 rounded-xl border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800"
+      className="flex flex-col gap-4 rounded-[10px] border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5 dark:border-gray-800"
       role="status"
     >
       <div className="min-w-0 flex-1 space-y-2">
@@ -172,22 +175,25 @@ function DisabledPanel({
   pending,
 }: Readonly<{ onEnable: () => void; pending: boolean }>) {
   return (
-    <div className="flex flex-col gap-4 rounded-xl border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800">
-      <div>
-        <p className="font-medium text-gray-800 dark:text-white/90">Disabled</p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Add an authenticator app for stronger account protection.
-        </p>
-      </div>
-      <button
-        className="bg-brand-500 hover:bg-brand-600 rounded-lg px-4 py-2.5 text-sm font-medium text-white disabled:opacity-60"
-        disabled={pending}
-        onClick={onEnable}
-        type="button"
-      >
-        Enable
-      </button>
-    </div>
+    <SettingsRow
+      actions={
+        <button
+          className={buttonClassName()}
+          disabled={pending}
+          onClick={onEnable}
+          type="button"
+        >
+          Enable
+        </button>
+      }
+      description="Add an authenticator app for stronger account protection."
+      title={
+        <StatusBadge tone="danger">
+          <span className="sr-only">Two-factor authentication is </span>
+          Disabled
+        </StatusBadge>
+      }
+    />
   );
 }
 
@@ -239,11 +245,7 @@ function SetupModal({
       ) : error ? (
         <div className="space-y-4">
           <Alert variant="error">{error}</Alert>
-          <button
-            className="bg-brand-500 hover:bg-brand-600 rounded-lg px-4 py-2.5 text-sm font-medium text-white"
-            onClick={onRetry}
-            type="button"
-          >
+          <button className={buttonClassName()} onClick={onRetry} type="button">
             Try again
           </button>
         </div>
@@ -276,32 +278,33 @@ function EnabledPanel({
   recoveryCodesRemaining: number;
 }>) {
   return (
-    <div className="space-y-4 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
-      <div>
-        <p className="font-medium text-gray-800 dark:text-white/90">
-          Authenticator app · Enabled
-        </p>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-          Recovery codes remaining: {recoveryCodesRemaining}
-        </p>
-      </div>
-      <div className="flex flex-wrap gap-3">
-        <button
-          className="border-brand-300 text-brand-600 hover:bg-brand-50 dark:border-brand-800 dark:text-brand-400 rounded-lg border px-4 py-2.5 text-sm font-medium"
-          onClick={onRegenerate}
-          type="button"
-        >
-          Regenerate recovery codes
-        </button>
-        <button
-          className="rounded-lg border border-red-300 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30"
-          onClick={onDisable}
-          type="button"
-        >
-          Disable
-        </button>
-      </div>
-    </div>
+    <SettingsRow
+      actions={
+        <>
+          <button
+            className={buttonClassName({ variant: "secondary" })}
+            onClick={onRegenerate}
+            type="button"
+          >
+            Regenerate recovery codes
+          </button>
+          <button
+            className={buttonClassName({ variant: "destructive" })}
+            onClick={onDisable}
+            type="button"
+          >
+            Disable
+          </button>
+        </>
+      }
+      description={`Your authenticator app is required when you start a new session. Recovery codes remaining: ${recoveryCodesRemaining}`}
+      title={
+        <StatusBadge tone="success">
+          <span className="sr-only">Two-factor authentication is </span>
+          Enabled
+        </StatusBadge>
+      }
+    />
   );
 }
 
@@ -387,7 +390,7 @@ function EnrollmentPanel({
             </div>
           ) : null}
           <button
-            className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 disabled:opacity-60 dark:border-gray-700 dark:text-gray-300"
+            className={buttonClassName({ variant: "secondary" })}
             disabled={verify.isPending}
             onClick={onCancel}
             type="button"
@@ -454,7 +457,7 @@ function RecoveryCodesPanel({
       </div>
       <div className="flex flex-wrap gap-3">
         <button
-          className="border-brand-300 text-brand-600 hover:bg-brand-50 dark:border-brand-800 dark:text-brand-400 rounded-lg border px-4 py-2.5 text-sm font-medium"
+          className={buttonClassName({ variant: "accent" })}
           onClick={() => {
             void navigator.clipboard.writeText(codes.join("\n")).then(() => {
               setCopied(true);
@@ -464,11 +467,7 @@ function RecoveryCodesPanel({
         >
           {copied ? "Copied" : "Copy all"}
         </button>
-        <button
-          className="bg-brand-500 hover:bg-brand-600 rounded-lg px-4 py-2.5 text-sm font-medium text-white"
-          onClick={onSaved}
-          type="button"
-        >
+        <button className={buttonClassName()} onClick={onSaved} type="button">
           I have saved my recovery codes
         </button>
       </div>

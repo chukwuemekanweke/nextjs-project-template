@@ -4,15 +4,18 @@
 @source "../../../../packages/forms/src";
 @source "../../../../packages/ui-core/src";
 
-body {
-  margin: 0;
-}
+/* Layered so Tailwind utilities (for example link colours) can override them. */
+@layer base {
+  body {
+    margin: 0;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-* {
-  box-sizing: border-box;
+  * {
+    box-sizing: border-box;
+  }
 }

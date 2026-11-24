@@ -1,12 +1,20 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 type SidebarState = {
+  /** Desktop sidebar shows labels (expanded) or an icon rail (collapsed). */
   isExpanded: boolean;
-  isHovered: boolean;
+  /** Below the `lg` breakpoint the sidebar is an off-canvas drawer. */
   isMobileOpen: boolean;
-  setIsHovered: (value: boolean) => void;
+  closeMobileSidebar: () => void;
   toggleSidebar: () => void;
   toggleMobileSidebar: () => void;
 };
@@ -15,24 +23,40 @@ const SidebarContext = createContext<SidebarState | undefined>(undefined);
 
 export function SidebarProvider({
   children,
-}: Readonly<{ children: ReactNode }>) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  defaultExpanded = true,
+}: Readonly<{ children: ReactNode; defaultExpanded?: boolean }>) {
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+
+  const closeMobileSidebar = useCallback(() => setIsMobileOpen(false), []);
+  const toggleMobileSidebar = useCallback(
+    () => setIsMobileOpen((open) => !open),
+    [],
+  );
+  const toggleSidebar = useCallback(
+    () => setIsExpanded((expanded) => !expanded),
+    [],
+  );
+
+  const value = useMemo(
+    () => ({
+      closeMobileSidebar,
+      isExpanded,
+      isMobileOpen,
+      toggleMobileSidebar,
+      toggleSidebar,
+    }),
+    [
+      closeMobileSidebar,
+      isExpanded,
+      isMobileOpen,
+      toggleMobileSidebar,
+      toggleSidebar,
+    ],
+  );
 
   return (
-    <SidebarContext.Provider
-      value={{
-        isExpanded,
-        isHovered,
-        isMobileOpen,
-        setIsHovered,
-        toggleMobileSidebar: () => setIsMobileOpen((open) => !open),
-        toggleSidebar: () => setIsExpanded((expanded) => !expanded),
-      }}
-    >
-      {children}
-    </SidebarContext.Provider>
+    <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>
   );
 }
 

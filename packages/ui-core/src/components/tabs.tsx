@@ -54,17 +54,17 @@ export function Tabs<TValue extends string>({
         className="border-b border-gray-200 dark:border-gray-800"
         role="tablist"
       >
-        <div className="flex gap-6">
+        <div className="no-scrollbar -mb-px flex gap-2 overflow-x-auto">
           {items.map((item, index) => {
             const selected = activeValue === item.value;
             return (
               <button
                 aria-controls={`${tabsId}-panel-${index}`}
                 aria-selected={selected}
-                className={`relative border-b-2 px-1 pb-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                className={`focus-visible:outline-brand-500 relative shrink-0 rounded-t-md border-b-2 px-4 pt-1 pb-3 text-[15px] font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 ${
                   selected
-                    ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                    : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:border-gray-700 dark:hover:text-gray-200"
+                    ? "border-brand-500 text-brand-500 dark:border-brand-400 dark:text-brand-400"
+                    : "border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-200"
                 }`}
                 id={`${tabsId}-tab-${index}`}
                 key={item.value}

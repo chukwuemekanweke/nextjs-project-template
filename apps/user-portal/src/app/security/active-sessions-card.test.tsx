@@ -104,6 +104,50 @@ describe("ActiveSessionsCard", () => {
     expect(markup).toContain("Sign out all other sessions");
   });
 
+  it("highlights only the current session using isCurrent, not browser matching", () => {
+    useActiveSessions.mockReturnValue({
+      isPending: false,
+      data: [
+        buildSession({ sessionId: "other", isCurrent: false }),
+        buildSession({ sessionId: "current", isCurrent: true }),
+      ],
+    });
+    useRevokeSession.mockReturnValue(idleMutation);
+    useRevokeOtherSessions.mockReturnValue(idleMutation);
+
+    const markup = render();
+    const rows = markup.split("<li").slice(1);
+
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toContain("border-green-200 bg-green-50");
+    expect(rows[0]).toContain("This device");
+    expect(rows[0]).not.toContain("Sign out");
+    expect(rows[1]).not.toContain("bg-green-50");
+    expect(rows[1]).toContain('aria-label="Sign out Chrome on Windows"');
+  });
+
+  it("uses a generic device icon when the browser is not recognised", () => {
+    useActiveSessions.mockReturnValue({
+      isPending: false,
+      data: [
+        buildSession({ browserName: "Chrome", sessionId: "chrome" }),
+        buildSession({
+          browserName: "Samsung Internet",
+          devicePlatform: "Android",
+          sessionId: "android",
+        }),
+      ],
+    });
+    useRevokeSession.mockReturnValue(idleMutation);
+    useRevokeOtherSessions.mockReturnValue(idleMutation);
+
+    const [chromeRow, androidRow] = render().split("<li").slice(1);
+
+    expect(chromeRow).toContain('fill="#4285F4"');
+    expect(androidRow).not.toContain('fill="#4285F4"');
+    expect(androidRow).toContain('rx="2.5" width="11"');
+  });
+
   it("hides the sign-out-all action when only the current session exists", () => {
     useActiveSessions.mockReturnValue({
       isPending: false,

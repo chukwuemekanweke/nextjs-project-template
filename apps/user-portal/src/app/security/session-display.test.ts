@@ -4,6 +4,8 @@ import type {
 } from "@template/api-client/authentication";
 import { describe, expect, it } from "vitest";
 import {
+  browserIconKind,
+  describeActivityPresentation,
   describeActivityType,
   describeDevice,
   describeLocation,
@@ -182,5 +184,83 @@ describe("session display", () => {
     );
     expect(describeActivityType("RecoveryCodeUsed")).toBe("Recovery Code Used");
     expect(describeActivityType("")).toBe("Account activity");
+  });
+});
+
+describe("browserIconKind", () => {
+  it.each([
+    ["Chrome", "chrome"],
+    ["Chrome Mobile", "chrome"],
+    ["Chromium", "chrome"],
+    ["Microsoft Edge", "edge"],
+    ["Edge", "edge"],
+    ["Firefox", "firefox"],
+    ["Mobile Safari", "safari"],
+  ] as const)("recognises %s", (browserName, expected) => {
+    expect(
+      browserIconKind({ browserName, deviceName: null, devicePlatform: null }),
+    ).toBe(expected);
+  });
+
+  it("falls back to a phone icon for unknown mobile browsers", () => {
+    expect(
+      browserIconKind({
+        browserName: "Samsung Internet",
+        deviceName: null,
+        devicePlatform: "Android",
+      }),
+    ).toBe("mobile");
+    expect(
+      browserIconKind({
+        browserName: null,
+        deviceName: "iPhone",
+        devicePlatform: null,
+      }),
+    ).toBe("mobile");
+  });
+
+  it("falls back to a desktop icon when nothing identifies the device", () => {
+    expect(
+      browserIconKind({
+        browserName: "Opera",
+        deviceName: null,
+        devicePlatform: "Windows",
+      }),
+    ).toBe("desktop");
+    expect(
+      browserIconKind({
+        browserName: null,
+        deviceName: null,
+        devicePlatform: null,
+      }),
+    ).toBe("desktop");
+  });
+});
+
+describe("describeActivityPresentation", () => {
+  it("maps known events to semantic icons and tones", () => {
+    expect(describeActivityPresentation("InitialLogin")).toEqual({
+      icon: "check",
+      tone: "success",
+    });
+    expect(describeActivityPresentation("sign_in_failed")).toEqual({
+      icon: "alert",
+      tone: "danger",
+    });
+    expect(describeActivityPresentation("password_changed")).toEqual({
+      icon: "key",
+      tone: "brand",
+    });
+    expect(describeActivityPresentation("TokenRefresh")).toEqual({
+      icon: "refresh",
+      tone: "neutral",
+    });
+  });
+
+  it("keeps unknown events neutral", () => {
+    expect(describeActivityPresentation("something_new")).toEqual({
+      icon: "activity",
+      tone: "neutral",
+    });
   });
 });

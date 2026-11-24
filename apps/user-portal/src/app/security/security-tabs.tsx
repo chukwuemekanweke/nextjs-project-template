@@ -15,7 +15,7 @@ export function SecurityTabs({
         { content: general, label: "General", value: "general" },
         { content: devices, label: "Devices", value: "devices" },
       ]}
-      panelClassName="space-y-6 sm:mt-8 sm:space-y-8"
+      panelClassName="space-y-5 sm:space-y-6"
     />
   );
 }
