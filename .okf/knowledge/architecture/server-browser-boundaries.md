@@ -40,5 +40,9 @@ Handlers read HttpOnly cookies, create server API clients, attach bearer tokens,
 and return safe responses without exposing tokens. Public unauthenticated
 operations may call the backend through the browser client when no secret is
 required. Server Components and server routes use application `server-api.ts`
-factories with private `API_BASE_URL`, tenant configuration, forwarded tracing
-headers, and optional cookie access.
+factories with private `API_BASE_URL`, tenant configuration, forwarded request
+headers, and optional cookie access. Those factories and the dashboard
+`proxy.ts` files build forwarded headers with `createForwardedRequestHeaders`
+(`@template/api-client/server`): tracing, user agent, and the browser IP as
+`X-Forwarded-For`, taken from the last entry of the header the host reverse
+proxy (Caddy) adds, so a browser-supplied value is never forwarded.

@@ -45,6 +45,11 @@ package managers, and runs as non-root `node` with read-only app files.
 - Production Compose runs the three portals as one stack: no image names (the
   deployer injects digests), read-only root, tmpfs `/tmp` and `.next/cache`,
   all capabilities dropped, loopback-only ports for the host reverse proxy.
+- The stack's `web` network has a pinned subnet from `stack.env`
+  (`PORTALS_SUBNET`/`PORTALS_GATEWAY`; distinct per stack on a host) so the
+  API's reverse proxy can trust a stable range for forwarded browser IPs.
+  Docker cannot change an existing network's IPAM: change it only under a new
+  network name.
 
 `next.config.ts` lists workspace packages that Next must transpile. Update it
 when an app begins consuming another source-distributed package. Preserve

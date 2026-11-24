@@ -1,7 +1,10 @@
 import "server-only";
 
 import { TENANT_ID_HEADER } from "@template/api-client";
-import { createServerApiClient } from "@template/api-client/server";
+import {
+  createForwardedRequestHeaders,
+  createServerApiClient,
+} from "@template/api-client/server";
 import { cookies, headers } from "next/headers";
 import { serverEnv } from "@/config/server-env";
 import { ACCESS_TOKEN_COOKIE } from "./session-cookies";
@@ -16,15 +19,7 @@ export async function createAppServerApiClient(
     defaultCache: options.authenticated === false ? undefined : "no-store",
     defaultHeaders: {
       [TENANT_ID_HEADER]: serverEnv.TENANT_ID,
-      ...(requestHeaders.get("traceparent")
-        ? { traceparent: requestHeaders.get("traceparent")! }
-        : {}),
-      ...(requestHeaders.get("user-agent")
-        ? { "user-agent": requestHeaders.get("user-agent")! }
-        : {}),
-      ...(requestHeaders.get("x-correlation-id")
-        ? { "x-correlation-id": requestHeaders.get("x-correlation-id")! }
-        : {}),
+      ...createForwardedRequestHeaders(requestHeaders),
     },
     getAccessToken:
       options.authenticated === false
