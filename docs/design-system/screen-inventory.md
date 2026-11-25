@@ -22,10 +22,10 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | Screens with an existing route or in-app state                | 25    |
 | Screens with a proposed route only                            | 28    |
 | Screens whose design assumes unsupported backend capabilities | 44    |
-| Status: Implemented                                           | 15    |
+| Status: Implemented                                           | 16    |
 | Status: Missing                                               | 28    |
 | Status: Partial                                               | 13    |
-| Status: Reference-only                                        | 2     |
+| Status: Reference-only                                        | 1     |
 | Classification A                                              | 15    |
 | Classification B                                              | 8     |
 | Classification C                                              | 10    |
@@ -39,9 +39,9 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 ### Foundations (1)
 
-| Screen ID                             | Screen                                       | Kind      | App | Existing route | Proposed route | Status         | Class | Backend      | Priority | Ticket    |
-| ------------------------------------- | -------------------------------------------- | --------- | --- | -------------- | -------------- | -------------- | ----- | ------------ | -------- | --------- |
-| [`FND-FOUNDATIONS`](#fnd-foundations) | Foundations (tokens and component specimens) | reference | —   | —              | —              | Reference-only | C     | Not required | P0       | FE-UI-003 |
+| Screen ID                             | Screen                                       | Kind      | App | Existing route | Proposed route | Status      | Class | Backend      | Priority | Ticket    |
+| ------------------------------------- | -------------------------------------------- | --------- | --- | -------------- | -------------- | ----------- | ----- | ------------ | -------- | --------- |
+| [`FND-FOUNDATIONS`](#fnd-foundations) | Foundations (tokens and component specimens) | reference | —   | —              | —              | Implemented | C     | Not required | P0       | FE-UI-003 |
 
 ### Marketing site (8)
 
@@ -127,14 +127,16 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Foundations (tokens and component specimens)** — reference; target `none`; auth: n/a.
 
 - **Artboards:** `Main` — 1 reference files (desktop; light).
-- **Status:** Reference-only (C); **backend:** Not required; **priority:** P0; **ticket:** FE-UI-003.
-- **Implementation:** `packages/dashboard-ui/src/tailadmin-theme.css`, `apps/public-portal/src/app/globals.css`
-- **Works today:** Current tokens live in tailadmin-theme.css (dashboards) and public-portal globals.css (Solid tokens); neither matches the reference.
-- **Gap:** Semantic token set (bg/surface/text/brand/status/chart/nav) does not exist; components use raw brand-_/gray-_ and Tailwind status scales.
-- **Gap:** Public Portal uses Inter and Solid tokens; reference uses Outfit and JetBrains Mono everywhere.
-- **Gap:** No foundations preview (Storybook page) exists.
+- **Status:** Implemented (C); **backend:** Not required; **priority:** P0; **ticket:** FE-UI-003 (delivered by the Trello card numbered FE-UI-002, see [DR-077](./discrepancy-register.md#dr-077)).
+- **Implementation:** `packages/ui-core/src/styles/theme.css`, `packages/ui-core/src/theme/theme-provider.tsx`, `packages/ui-core/src/theme/theme-controls.tsx`, `packages/dashboard-ui/src/tailadmin-theme.css`, `apps/public-portal/src/app/globals.css`, `apps/public-portal/src/app/foundations/page.tsx`
+- **Works today:** All three apps import `@template/ui-core/theme.css`, load Outfit and JetBrains Mono with `next/font`, and use the shared `next-themes` `ThemeProvider` with `ThemeSwitch`/`ThemeSelect`.
+- **Works today:** A development-only specimen at `/foundations` in the public portal (404 in production builds) renders the real tokens; token values and WCAG contrast are unit-tested from `theme.css`.
+- **Gap:** Existing components still use the legacy `brand-*`/`gray-*` and Tailwind status utilities through the dashboard compatibility layer; component and screen tickets migrate them (FE-UI-004 onwards, removal in FE-UI-032).
+- **Gap:** Un-migrated `public-ui` sections still use the Solid tokens until FE-UI-009/010.
+- **Gap:** The preview is a development route, not the Storybook workbench proposed in TD-15 (OD-05 still open).
+- **Note:** Delivered by the Trello card numbered FE-UI-002, which carries this roadmap ticket's scope (see DR-077).
 - **Note:** Authoritative token values are the `.tp` / `.tp.dark` custom properties in theme.css inlined into every canonical file; see token-mapping.md.
-- **Discrepancies:** [DR-001](./discrepancy-register.md#dr-001), [DR-002](./discrepancy-register.md#dr-002), [DR-020](./discrepancy-register.md#dr-020)
+- **Discrepancies:** [DR-001](./discrepancy-register.md#dr-001), [DR-002](./discrepancy-register.md#dr-002), [DR-020](./discrepancy-register.md#dr-020), [DR-029](./discrepancy-register.md#dr-029), [DR-076](./discrepancy-register.md#dr-076), [DR-077](./discrepancy-register.md#dr-077)
 
 ### MKT-ABOUT
 

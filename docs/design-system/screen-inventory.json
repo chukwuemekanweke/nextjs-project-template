@@ -32,10 +32,10 @@
       "state-flow": 10
     },
     "byStatus": {
-      "Implemented": 15,
+      "Implemented": 16,
       "Missing": 28,
       "Partial": 13,
-      "Reference-only": 2
+      "Reference-only": 1
     },
     "byClassification": {
       "A": 15,
@@ -2964,14 +2964,19 @@
         ]
       },
       "implementation": {
-        "status": "Reference-only",
+        "status": "Implemented",
         "classification": "C",
         "files": [
+          "packages/ui-core/src/styles/theme.css",
+          "packages/ui-core/src/theme/theme-provider.tsx",
+          "packages/ui-core/src/theme/theme-controls.tsx",
           "packages/dashboard-ui/src/tailadmin-theme.css",
-          "apps/public-portal/src/app/globals.css"
+          "apps/public-portal/src/app/globals.css",
+          "apps/public-portal/src/app/foundations/page.tsx"
         ],
         "existingFunctionality": [
-          "Current tokens live in tailadmin-theme.css (dashboards) and public-portal globals.css (Solid tokens); neither matches the reference."
+          "All three apps import @template/ui-core/theme.css (palette and semantic tokens, type scale, sizes, radius, elevation, layers, chart tokens), load Outfit and JetBrains Mono with next/font, and use the shared next-themes ThemeProvider with ThemeSwitch/ThemeSelect.",
+          "A development-only specimen at /foundations in the public portal (404 in production builds) renders the real tokens; token values and WCAG contrast are unit-tested from theme.css."
         ]
       },
       "backend": {
@@ -2980,15 +2985,23 @@
         "missingCapabilities": []
       },
       "uiGaps": [
-        "Semantic token set (bg/surface/text/brand/status/chart/nav) does not exist; components use raw brand-*/gray-* and Tailwind status scales.",
-        "Public Portal uses Inter and Solid tokens; reference uses Outfit and JetBrains Mono everywhere.",
-        "No foundations preview (Storybook page) exists."
+        "Existing components still use the legacy brand-*/gray-* and Tailwind status utilities through the dashboard compatibility layer; component and screen tickets migrate them to semantic utilities (FE-UI-004 onwards, removal in FE-UI-032).",
+        "Un-migrated public-ui sections still use the Solid tokens in apps/public-portal/src/app/globals.css until FE-UI-009/010.",
+        "The preview is a development route, not the Storybook workbench proposed in TD-15 (OD-05 still open)."
       ],
       "dependencies": [],
       "priority": "P0",
       "roadmapTicket": "FE-UI-003",
-      "discrepancies": ["DR-001", "DR-002", "DR-020"],
+      "discrepancies": [
+        "DR-001",
+        "DR-002",
+        "DR-020",
+        "DR-029",
+        "DR-076",
+        "DR-077"
+      ],
       "notes": [
+        "Delivered by the Trello card numbered FE-UI-002, which carries this roadmap ticket's scope (see DR-077).",
         "Authoritative token values are the `.tp` / `.tp.dark` custom properties in theme.css inlined into every canonical file; see token-mapping.md."
       ]
     },

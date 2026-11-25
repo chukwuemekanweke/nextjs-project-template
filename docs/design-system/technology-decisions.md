@@ -2,20 +2,20 @@
 
 Each decision records: the design-system requirement, the current implementation, viable alternatives, the recommendation, trade-offs, migration complexity and long-term maintainability. Criteria applied throughout: suitability for the reference, accessibility, maintainability, performance, developer experience and reuse across future SaaS projects. Exact library versions are pinned in the pnpm `catalog` by the ticket that introduces them (choose the current stable release at that time); this document fixes the choice, not the version.
 
-Status legend: **Accepted** (recommended; implement in the referenced ticket) · **Proposed** (recommended but needs explicit sign-off listed in [discrepancy-register.md](./discrepancy-register.md#open-decisions)).
+Status legend: **Accepted** (recommended; implement in the referenced ticket) · **Proposed** (recommended but needs explicit sign-off listed in [discrepancy-register.md](./discrepancy-register.md#open-decisions)) · **Implemented** (in the repository; the ticket column keeps the roadmap ID, see [DR-077](./discrepancy-register.md#dr-077) for the Trello numbering).
 
 ## Summary
 
 | ID    | Decision                                                               | Status              | Ticket         |
 | ----- | ---------------------------------------------------------------------- | ------------------- | -------------- |
-| TD-01 | Keep Tailwind CSS v4 as the styling engine                             | Accepted            | FE-UI-003      |
-| TD-02 | Two-tier CSS-variable tokens, one `theme.css` in `ui-core`             | Accepted            | FE-UI-003      |
+| TD-01 | Keep Tailwind CSS v4 as the styling engine                             | Implemented         | FE-UI-003      |
+| TD-02 | Two-tier CSS-variable tokens, one `theme.css` in `ui-core`             | Implemented         | FE-UI-003      |
 | TD-03 | Radix UI primitives for interactive behaviour                          | Accepted            | FE-UI-005      |
 | TD-04 | Owned component source + `class-variance-authority` + `tailwind-merge` | Accepted            | FE-UI-004      |
 | TD-05 | `lucide-react` icons                                                   | Accepted            | FE-UI-004      |
-| TD-06 | Outfit + JetBrains Mono via `next/font` in all apps                    | Accepted            | FE-UI-003      |
-| TD-07 | `next-themes` for light/dark/system in all apps                        | Accepted            | FE-UI-003      |
-| TD-08 | Tailwind default breakpoints; phone < `md`, sidebar ≥ `lg`             | Accepted            | FE-UI-003      |
+| TD-06 | Outfit + JetBrains Mono via `next/font` in all apps                    | Implemented         | FE-UI-003      |
+| TD-07 | `next-themes` for light/dark/system in all apps                        | Implemented         | FE-UI-003      |
+| TD-08 | Tailwind default breakpoints; phone < `md`, sidebar ≥ `lg`             | Implemented         | FE-UI-003      |
 | TD-09 | Own `DataTable` with stacked phone mode; no data-grid engine           | Accepted            | FE-UI-006      |
 | TD-10 | Recharts for admin analytics, deferred                                 | Accepted (deferred) | FE-UI-031      |
 | TD-11 | Radix Dialog-based overlays with responsive sheet                      | Accepted            | FE-UI-005      |
@@ -50,6 +50,7 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 - **Trade-offs:** (a) doubles every colour decision and cannot express the reference's dark-mode role changes (e.g. tabs turn neutral) without per-component logic. (c) is worthwhile only with a design-tool sync, which the reference (static HTML) does not provide.
 - **Migration complexity:** medium. Provide temporary aliases (`--color-brand-500` → `--color-brand`, `gray-*` → semantic equivalents) so un-migrated components keep rendering until FE-UI-032 removes them.
 - **Maintainability:** high; theming and rebranding become token edits.
+- **Implemented:** semantic colours in `@theme static` swapped under `.dark`; per-theme or responsive non-colour values bound with `@theme inline`. Legacy `brand-*` points at the palette but stays theme-independent (see [foundations.md](./foundations.md#7-legacy-compatibility-temporary)).
 
 ## TD-03 Accessible headless primitives
 
@@ -99,6 +100,7 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 - **Recommendation:** `next-themes` in all apps via a `ui-core` `ThemeProvider` (class attribute, `enableSystem`, default `system`).
 - **Trade-offs:** cookie-based SSR theme avoids the script but needs per-request rendering of every page (conflicts with static marketing pages). `next-themes` is tiny, already a dependency, handles cross-tab sync.
 - **Migration complexity:** low; keep the `theme` storage key so stored preferences survive.
+- **Implemented:** `ThemeProvider`, `ThemeSwitch` and `ThemeSelect` in `ui-core`; provider composed in each app's `AppProviders`; `PublicUiProvider` removed.
 - **Maintainability:** high.
 
 ## TD-08 Breakpoints and responsive model

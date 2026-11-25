@@ -1,13 +1,21 @@
 @import "tailwindcss";
+@import "@template/ui-core/theme.css";
 
 @source "../../../../packages/public-ui/src";
+/* Shared theme controls and their icons (not the whole ui-core package). */
+@source "../../../../packages/ui-core/src/theme";
+@source "../../../../packages/ui-core/src/components/icons.tsx";
 
-@custom-variant dark (&:is(.dark *));
-
+/*
+ * Solid-derived marketing tokens (LICENSE.solid). Temporary: only the
+ * un-migrated public-ui sections use them; FE-UI-009/010 replace them with the
+ * shared semantic tokens from @template/ui-core/theme.css.
+ */
 @theme {
-  --font-*: initial;
-  /* Loaded with next/font in the root layout as --font-inter-loaded. */
-  --font-inter: var(--font-inter-loaded, Inter), ui-sans-serif, sans-serif;
+  /* Solid's corner radii, pinned so marketing sections keep their shape. */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
 
   --color-current: currentColor;
   --color-transparent: transparent;
@@ -86,24 +94,6 @@
   }
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
-}
-
 @utility dropdown {
   @apply border-stroke shadow-solid-13 dark:border-strokedark xl:before:border-stroke xl:dark:before:border-strokedark -left-7.5 mt-2 hidden min-w-max flex-col gap-4 rounded-md border bg-white px-8 py-5 duration-300 ease-in xl:invisible xl:absolute xl:mt-0 xl:flex xl:w-[250px] xl:translate-y-10 xl:opacity-0 xl:group-hover:visible xl:group-hover:translate-y-6.5 xl:group-hover:opacity-100 xl:before:absolute xl:before:-top-1.5 xl:before:left-10 xl:before:h-3 xl:before:w-3 xl:before:rotate-45 xl:before:border-t xl:before:border-l xl:before:bg-white dark:bg-black xl:dark:before:bg-black;
 }
@@ -143,7 +133,7 @@
 
 @layer base {
   body {
-    @apply font-inter text-regular text-waterloo dark:text-manatee relative z-1 font-normal;
+    @apply text-regular text-waterloo dark:text-manatee relative z-1 font-sans font-normal;
   }
 }
 

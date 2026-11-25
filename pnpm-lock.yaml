@@ -36,6 +36,9 @@ catalogs:
     next:
       specifier: 16.4.5
       version: 16.4.5
+    next-themes:
+      specifier: 0.4.6
+      version: 0.4.6
     postcss:
       specifier: 8.5.6
       version: 8.5.6
@@ -168,9 +171,6 @@ importers:
       next:
         specifier: 'catalog:'
         version: 16.4.5(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.10.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      next-themes:
-        specifier: 0.4.6
-        version: 0.4.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react:
         specifier: 'catalog:'
         version: 19.2.7
@@ -469,12 +469,12 @@ importers:
 
   packages/public-ui:
     dependencies:
+      '@template/ui-core':
+        specifier: workspace:*
+        version: link:../ui-core
       framer-motion:
         specifier: 12.42.2
         version: 12.42.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      next-themes:
-        specifier: 0.4.6
-        version: 0.4.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react-dom:
         specifier: '>=19'
         version: 19.2.7(react@19.2.7)
@@ -505,15 +505,9 @@ importers:
 
   packages/ui-core:
     dependencies:
-      next:
+      next-themes:
         specifier: 'catalog:'
-        version: 16.4.5(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.10.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      react:
-        specifier: 'catalog:'
-        version: 19.2.7
-      react-dom:
-        specifier: 'catalog:'
-        version: 19.2.7(react@19.2.7)
+        version: 0.4.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
     devDependencies:
       '@template/eslint-config':
         specifier: workspace:*
@@ -521,6 +515,9 @@ importers:
       '@template/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.10.1
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.14
@@ -530,6 +527,15 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.5(jiti@2.7.0)(supports-color@7.2.0)
+      next:
+        specifier: 'catalog:'
+        version: 16.4.5(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.10.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      react:
+        specifier: 'catalog:'
+        version: 19.2.7
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.7(react@19.2.7)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
