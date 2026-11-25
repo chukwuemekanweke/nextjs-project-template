@@ -63,6 +63,9 @@ status: stable
   move navigation, business state, routes, toasts, or product workflows into
   shared UI packages.
 
+This describes the current implementation. A design-first redesign is planned
+(`design-system-integration`); its tickets update this concept as they land.
+
 Keep existing package-level TailAdmin/Solid notices when adapting or
 distributing derived UI. Do not add repetitive source banners when the package
 notice satisfies the license.

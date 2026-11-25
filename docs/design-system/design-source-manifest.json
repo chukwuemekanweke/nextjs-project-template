@@ -1,0 +1,3989 @@
+{
+  "$schemaVersion": 1,
+  "ticket": "FE-UI-001",
+  "repository": "https://github.com/chukwuemekanweke/Project-Template-Design-System",
+  "defaultBranch": "main",
+  "commit": "d23eb85fbebd2bccbf038a2050a2a5bf82236076",
+  "commitDate": "2026-11-25T13:41:19+01:00",
+  "treeSha": "283445284715a4d4d746ffe6db66e863c1a8623a",
+  "discoveredOn": "2026-11-25",
+  "filesExamined": 563,
+  "filesByRole": {
+    "bundle-archive": 6,
+    "bundle-asset": 1,
+    "bundle-canvas-metadata": 1,
+    "bundle-editable-artboard": 239,
+    "bundle-portal-gallery": 1,
+    "bundle-readme": 1,
+    "bundle-runtime": 3,
+    "bundle-self-extracting-canvas": 4,
+    "canonical-static-screen": 307
+  },
+  "sourceOfTruth": {
+    "staticScreens": "0-foundations, 1-marketing-site, 2-authentication, 3-user-portal, 4-admin-portal (one static HTML file per artboard x viewport x theme x state; theme.css inlined)",
+    "tokensAndComponentClasses": "The <style> block inlined in every canonical file (identical in all 307; equals theme.css in 'Admin Portal/project-template-design-html-smaller.zip')",
+    "interactiveBehaviour": "'User Portal/Project Template — Complete Product Design-project/*.dc.html' (editable artboards with Theme and State props; Pricing yearly prices and Security tab switching live here)",
+    "canvasMetadata": "'User Portal/Project Template — Complete Product Design-project/canvas.json' (artboard sizes: desktop 1440 wide, mobile 390 wide; handoff note)"
+  },
+  "viewportsDesigned": {
+    "desktop": {
+      "width": 1440
+    },
+    "mobile": {
+      "width": 390,
+      "phoneLayoutBelowPx": 700
+    }
+  },
+  "directories": {
+    "0-foundations": "Canonical: foundations specimen page (1 file)",
+    "1-marketing-site": "Canonical: 8 artboards, 30 files",
+    "2-authentication": "Canonical: 15 artboards, 60 files",
+    "3-user-portal": "Canonical: 15 artboards, 122 files (billing, security, verification and checkout-result states split into files)",
+    "4-admin-portal": "Canonical: 24 artboards, 94 files",
+    "Foundations": "Bundle duplicates: project zip + self-extracting canvas HTML",
+    "Marketing Site": "Bundle duplicates: project zip + self-extracting canvas HTML",
+    "Authentication": "Bundle duplicates: project zip + self-extracting canvas HTML",
+    "User Portal": "Bundle duplicates: project zip + self-extracting canvas HTML + extracted editable project (239 .dc.html artboards, canvas.json, README.md, runtime, 1 css asset)",
+    "Admin Portal": "Bundle duplicates: project zip (later re-export, SVG serialisation differs only), per-portal gallery HTML, 'html-smaller' zip (static screens + theme.css + index.html)"
+  },
+  "equivalenceChecks": [
+    "Inlined CSS in all 307 canonical files is byte-identical to theme.css from project-template-design-html-smaller.zip.",
+    "Canonical file bodies equal the html-smaller zip screens apart from the inlined stylesheet and, for 156 mobile files, a preview-frame wrapper style.",
+    "Visible text of canonical files equals the matching .dc.html artboards except the <title> suffix and PublicPricing (static snapshot omits the yearly prices).",
+    "The two .dc.html bundles (Admin Portal zip vs extracted User Portal folder) differ only in SVG element serialisation and line endings.",
+    "Dark variants have identical visible text to their light variants for every artboard."
+  ],
+  "knownIssues": [
+    "canvas.json handoff note references design/screen-spec.md (screen -> route -> API map); the file is not present in any bundle (DR-001).",
+    "canvas.json handoff note references design/theme.css; it exists only inside 'Admin Portal/project-template-design-html-smaller.zip' (DR-001).",
+    "AdminRegistrations* contain an unrendered template token '1{k}:02' in Last login cells (DR-024).",
+    "Self-extracting canvas HTML files (4) are opaque compressed bundles; they were classified by title and not diffed.",
+    "Mobile-menu artboards (Public/User/Admin) exist only as mobile light/dark (expected)."
+  ],
+  "files": [
+    {
+      "path": "0-foundations/Main.html",
+      "blob": "c5b0c3669914488bb93867b8ab74cc40edde3c55",
+      "bytes": 36538,
+      "role": "canonical-static-screen",
+      "screenId": "FND-FOUNDATIONS"
+    },
+    {
+      "path": "1-marketing-site/PublicAbout.html",
+      "blob": "18bd329fb4a118cdf810248a911aacc023cd2d4a",
+      "bytes": 26324,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-ABOUT"
+    },
+    {
+      "path": "1-marketing-site/PublicAboutDark.html",
+      "blob": "fca2238a5a7f18d7a1c6aa2ff10374d9c61aa95f",
+      "bytes": 26388,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-ABOUT"
+    },
+    {
+      "path": "1-marketing-site/PublicAboutMobile.html",
+      "blob": "1270c57c7426939dfc1e189372b1b8b1a0fa7943",
+      "bytes": 26030,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-ABOUT"
+    },
+    {
+      "path": "1-marketing-site/PublicAboutMobileDark.html",
+      "blob": "921efa8420af7f31ba42ce0141f492e93aa7270d",
+      "bytes": 26070,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-ABOUT"
+    },
+    {
+      "path": "1-marketing-site/PublicBlog.html",
+      "blob": "fb48c277060fa7327627cbca7ec619e9d175ddaa",
+      "bytes": 30474,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-BLOG"
+    },
+    {
+      "path": "1-marketing-site/PublicBlogDark.html",
+      "blob": "c41b68a32401fc212f1cb616d631704c4d09bc66",
+      "bytes": 30538,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-BLOG"
+    },
+    {
+      "path": "1-marketing-site/PublicBlogMobile.html",
+      "blob": "980505232a4ebb5d6854b2f7b0939c7cad622a2c",
+      "bytes": 30180,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-BLOG"
+    },
+    {
+      "path": "1-marketing-site/PublicBlogMobileDark.html",
+      "blob": "cb790417764345039c90ab5a6e5dbd58442b56d3",
+      "bytes": 30220,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-BLOG"
+    },
+    {
+      "path": "1-marketing-site/PublicContact.html",
+      "blob": "75aa3413f2832eb4af2171585ad92d3dcabd0204",
+      "bytes": 27635,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-CONTACT"
+    },
+    {
+      "path": "1-marketing-site/PublicContactDark.html",
+      "blob": "c3a9b6b61936e0153a387fe5136bb6edd33361fe",
+      "bytes": 27699,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-CONTACT"
+    },
+    {
+      "path": "1-marketing-site/PublicContactMobile.html",
+      "blob": "15910e4550342eaee4757e6b995fe23e72ea0855",
+      "bytes": 27341,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-CONTACT"
+    },
+    {
+      "path": "1-marketing-site/PublicContactMobileDark.html",
+      "blob": "6b40442b8795c1561136c062039b388f1f13bd0b",
+      "bytes": 27381,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-CONTACT"
+    },
+    {
+      "path": "1-marketing-site/PublicFeatures.html",
+      "blob": "f42a252cc386a9533b505fd26bfc8ed6e516831b",
+      "bytes": 30626,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-FEATURES"
+    },
+    {
+      "path": "1-marketing-site/PublicFeaturesDark.html",
+      "blob": "ce91b1c5d21798cdddfce9054e5230a437971cce",
+      "bytes": 30690,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-FEATURES"
+    },
+    {
+      "path": "1-marketing-site/PublicFeaturesMobile.html",
+      "blob": "b82f87f1db3c66f3d7944def7e0d6a91a4a075a5",
+      "bytes": 30332,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-FEATURES"
+    },
+    {
+      "path": "1-marketing-site/PublicFeaturesMobileDark.html",
+      "blob": "3a4fa217594f340718b5d5a3f24dea7452a770c4",
+      "bytes": 30372,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-FEATURES"
+    },
+    {
+      "path": "1-marketing-site/PublicHome.html",
+      "blob": "895df6de253b519fa8b4d9c3a0f693bd3731db6f",
+      "bytes": 32874,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-HOME"
+    },
+    {
+      "path": "1-marketing-site/PublicHomeDark.html",
+      "blob": "a33879dc347b0b811eed2fd882c3eb55a517eb08",
+      "bytes": 32950,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-HOME"
+    },
+    {
+      "path": "1-marketing-site/PublicHomeMobile.html",
+      "blob": "21b376b00f32cab75f4ab2d1b6424df21daad349",
+      "bytes": 32598,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-HOME"
+    },
+    {
+      "path": "1-marketing-site/PublicHomeMobileDark.html",
+      "blob": "b4da62248e5b0e830750bdea05a83ee444120f0c",
+      "bytes": 32650,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-HOME"
+    },
+    {
+      "path": "1-marketing-site/PublicLegal.html",
+      "blob": "8af252c84ace456e5e6ed185a28313805b0f2918",
+      "bytes": 27980,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-LEGAL"
+    },
+    {
+      "path": "1-marketing-site/PublicLegalDark.html",
+      "blob": "4b77d9d49587335d520cd6c988f5100086a56e07",
+      "bytes": 28044,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-LEGAL"
+    },
+    {
+      "path": "1-marketing-site/PublicLegalMobile.html",
+      "blob": "ae0557270f365b0c147e0d4cc61ffa4c1bc55c60",
+      "bytes": 27688,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-LEGAL"
+    },
+    {
+      "path": "1-marketing-site/PublicLegalMobileDark.html",
+      "blob": "85043f9c12d3e701973391f5ae7e9547a3f94122",
+      "bytes": 27728,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-LEGAL"
+    },
+    {
+      "path": "1-marketing-site/PublicMobileMenuMobile.html",
+      "blob": "566a801c5b2bfb1fd913fffedcbd346be5d7e238",
+      "bytes": 36246,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-NAV-MOBILE"
+    },
+    {
+      "path": "1-marketing-site/PublicMobileMenuMobileDark.html",
+      "blob": "412363507034aa4d4bd7b6fbf64aa958fb0a1a8f",
+      "bytes": 36337,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-NAV-MOBILE"
+    },
+    {
+      "path": "1-marketing-site/PublicPricing.html",
+      "blob": "a2231c902ab6ec96dead2b40c879fd4b9491a212",
+      "bytes": 30382,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-PRICING"
+    },
+    {
+      "path": "1-marketing-site/PublicPricingDark.html",
+      "blob": "c779a8fa28f2c80389bd6bd8c57295c996986543",
+      "bytes": 30458,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-PRICING"
+    },
+    {
+      "path": "1-marketing-site/PublicPricingMobile.html",
+      "blob": "ceb70635ff44390f87ac51f7711f071bb0e79f09",
+      "bytes": 30106,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-PRICING"
+    },
+    {
+      "path": "1-marketing-site/PublicPricingMobileDark.html",
+      "blob": "ce783b5198b6750bf9361863ab8049f072259889",
+      "bytes": 30158,
+      "role": "canonical-static-screen",
+      "screenId": "MKT-PRICING"
+    },
+    {
+      "path": "2-authentication/AdminSignIn.html",
+      "blob": "c47ec5f285b0b69e715afea6b8fbd5b4c0cad66f",
+      "bytes": 26729,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SIGN-IN"
+    },
+    {
+      "path": "2-authentication/AdminSignInDark.html",
+      "blob": "68ffa95fd808154bbade6c9570248590f9ef3783",
+      "bytes": 26745,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SIGN-IN"
+    },
+    {
+      "path": "2-authentication/AdminSignInMobile.html",
+      "blob": "4f4b5b552b5d4a3ffd9b838e11c55c9ca0e86ef8",
+      "bytes": 26797,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SIGN-IN"
+    },
+    {
+      "path": "2-authentication/AdminSignInMobileDark.html",
+      "blob": "241cf3aca6de3760656fcd5c85ae042eabd0dddc",
+      "bytes": 26813,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SIGN-IN"
+    },
+    {
+      "path": "2-authentication/AuthConfirmEmail.html",
+      "blob": "8bec906d5d5a9fd22ca45660fe8aaaa5c427cb48",
+      "bytes": 27204,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-CONFIRM-EMAIL"
+    },
+    {
+      "path": "2-authentication/AuthConfirmEmailDark.html",
+      "blob": "dd243969c7b356104dd99d76773f3657e5fff717",
+      "bytes": 27224,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-CONFIRM-EMAIL"
+    },
+    {
+      "path": "2-authentication/AuthConfirmEmailMobile.html",
+      "blob": "28b713794890f32a0bf9551585192342ef19b405",
+      "bytes": 27278,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-CONFIRM-EMAIL"
+    },
+    {
+      "path": "2-authentication/AuthConfirmEmailMobileDark.html",
+      "blob": "8f1457355dab6830255491a6d4e6972ae4060f9d",
+      "bytes": 27298,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-CONFIRM-EMAIL"
+    },
+    {
+      "path": "2-authentication/AuthForgotPassword.html",
+      "blob": "d32e73d57d3077a17f1ee7614319c40764ff916f",
+      "bytes": 26445,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthForgotPasswordDark.html",
+      "blob": "c865c29ecc65e9b2247810eda05ebcc3ff8ec0e1",
+      "bytes": 26465,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthForgotPasswordMobile.html",
+      "blob": "208d33ba4e0dbafea82b7774bea2b69b3d643913",
+      "bytes": 26519,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthForgotPasswordMobileDark.html",
+      "blob": "23fa4f290300a63e4edce1e50582056a547a201f",
+      "bytes": 26539,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthForgotSent.html",
+      "blob": "018c06208da2eabbebe4b1d32246e0d84ec1e03b",
+      "bytes": 26685,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthForgotSentDark.html",
+      "blob": "d6cebc5fbed6448190d2605dc2956e53b8cf5f2c",
+      "bytes": 26705,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthForgotSentMobile.html",
+      "blob": "96cbfdb1501cb4b5abd3b0f59a648b9b139030f6",
+      "bytes": 26759,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthForgotSentMobileDark.html",
+      "blob": "1d029593f653d1073f51a7d5b61743048baeb0ae",
+      "bytes": 26779,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthGoogleLink.html",
+      "blob": "2a6a8fd03e37bd813f939f02c824c8a7067744a6",
+      "bytes": 27374,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-GOOGLE-LINK"
+    },
+    {
+      "path": "2-authentication/AuthGoogleLinkDark.html",
+      "blob": "167084c5dd0bccb79ebb5f14d2d136505cce196d",
+      "bytes": 27394,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-GOOGLE-LINK"
+    },
+    {
+      "path": "2-authentication/AuthGoogleLinkMobile.html",
+      "blob": "4ae99be071e971a48ef4cdd168cc025e7e315c1e",
+      "bytes": 27448,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-GOOGLE-LINK"
+    },
+    {
+      "path": "2-authentication/AuthGoogleLinkMobileDark.html",
+      "blob": "7756ba476e57b3b1f615dc44371386791d8e252a",
+      "bytes": 27468,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-GOOGLE-LINK"
+    },
+    {
+      "path": "2-authentication/AuthGoogleRegister.html",
+      "blob": "19fd940ae53468ff12d4d93b240c3ebaa9633fab",
+      "bytes": 27264,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-GOOGLE-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthGoogleRegisterDark.html",
+      "blob": "c1aa0ce7d452f644707801512258a6a2a5b12304",
+      "bytes": 27284,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-GOOGLE-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthGoogleRegisterMobile.html",
+      "blob": "3ef2c2d9f3524a46150ced82d946dae9937d1803",
+      "bytes": 27338,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-GOOGLE-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthGoogleRegisterMobileDark.html",
+      "blob": "d6d4b39be5500aea3ef930339f48eddf3b7a0a8a",
+      "bytes": 27358,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-GOOGLE-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthPasskeySetup.html",
+      "blob": "6b358c712e26edf3fa19c63ac90d1ced53709e56",
+      "bytes": 27107,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-PASSKEY-SETUP"
+    },
+    {
+      "path": "2-authentication/AuthPasskeySetupDark.html",
+      "blob": "91817b846c40c5d2d71c28e2b6fe8317219b5961",
+      "bytes": 27127,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-PASSKEY-SETUP"
+    },
+    {
+      "path": "2-authentication/AuthPasskeySetupMobile.html",
+      "blob": "0ba4c690baa60fe8bb839ec7b1907f4e9ef2310d",
+      "bytes": 27181,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-PASSKEY-SETUP"
+    },
+    {
+      "path": "2-authentication/AuthPasskeySetupMobileDark.html",
+      "blob": "7ae5a55ac65cfd8e6cf2bc8579264007e915f5e7",
+      "bytes": 27201,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-PASSKEY-SETUP"
+    },
+    {
+      "path": "2-authentication/AuthRegisterDetails.html",
+      "blob": "b05bd4648521e4865b25fecca15ad0823b079459",
+      "bytes": 27072,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthRegisterDetailsDark.html",
+      "blob": "c4d6137c786e606643ab68618120237bf575a8c7",
+      "bytes": 27092,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthRegisterDetailsMobile.html",
+      "blob": "e2a33228b308b92f515d139262d27b4189cd7258",
+      "bytes": 27146,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthRegisterDetailsMobileDark.html",
+      "blob": "d2cbd07fa3d0f3fc796e4bc5391c7808e649a480",
+      "bytes": 27166,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthRegisterEmail.html",
+      "blob": "57c70d30b16f5a7b1dc5b26da623f98ca4b9a44e",
+      "bytes": 27184,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthRegisterEmailDark.html",
+      "blob": "5b3f4e1974a729f84f798edd8009c143c90dfa11",
+      "bytes": 27204,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthRegisterEmailMobile.html",
+      "blob": "84c27950fec20b0c2059924cda716f5b2c3d7ebc",
+      "bytes": 27258,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthRegisterEmailMobileDark.html",
+      "blob": "71769e2313cb786d376db4c63aced07da2add780",
+      "bytes": 27278,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "2-authentication/AuthResetDone.html",
+      "blob": "81c8ab0cbfb62c1659b594e62083af908b498fb4",
+      "bytes": 25902,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthResetDoneDark.html",
+      "blob": "0190fadb72ea52ef54117d6b28808f23afcffc07",
+      "bytes": 25918,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthResetDoneMobile.html",
+      "blob": "9978a4663fb259a44ca4ec9e934933681fe7dd17",
+      "bytes": 25970,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthResetDoneMobileDark.html",
+      "blob": "d15fc0340fbd9efc761675ce6947180d7741bc8f",
+      "bytes": 25986,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthResetExpired.html",
+      "blob": "a8db8be082954436824a79be518b35d039ddf754",
+      "bytes": 26254,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthResetExpiredDark.html",
+      "blob": "7a9a8791d282a3e96e5970e77e85e5a7acd4c314",
+      "bytes": 26274,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthResetExpiredMobile.html",
+      "blob": "1ad759599cd5a400cf65579348005f7c64bbd2fd",
+      "bytes": 26328,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthResetExpiredMobileDark.html",
+      "blob": "aa6b091b40b4cf173e89a11dffc4497ff2be53ea",
+      "bytes": 26348,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthResetPassword.html",
+      "blob": "a06cec8e89f98b67a3aa21600e9ec64ecbcf2e29",
+      "bytes": 26093,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthResetPasswordDark.html",
+      "blob": "671d2337109a32cb4c17d2b92f788bd76d19f4d5",
+      "bytes": 26109,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthResetPasswordMobile.html",
+      "blob": "32bfde8dde6cb62790a06a91ad582bbf82c21406",
+      "bytes": 26161,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthResetPasswordMobileDark.html",
+      "blob": "a1881b03b123db9c267df4668f39b109d968194c",
+      "bytes": 26177,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "2-authentication/AuthSignIn.html",
+      "blob": "55c835acc12dd9c031e641395e2866c34b0d4b77",
+      "bytes": 27340,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-SIGN-IN"
+    },
+    {
+      "path": "2-authentication/AuthSignInDark.html",
+      "blob": "7fa969935cde33a38c4266ccaa652fb5a9e3e9f4",
+      "bytes": 27364,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-SIGN-IN"
+    },
+    {
+      "path": "2-authentication/AuthSignInMobile.html",
+      "blob": "874d2aefcb6aa2be4d1831e992fd3817251c93fa",
+      "bytes": 27420,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-SIGN-IN"
+    },
+    {
+      "path": "2-authentication/AuthSignInMobileDark.html",
+      "blob": "6f288306ef4ac070b503c68b5c9df8081a8c94c3",
+      "bytes": 27444,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-SIGN-IN"
+    },
+    {
+      "path": "2-authentication/AuthStates.html",
+      "blob": "73b14fe32bd63d5d51450a2009206e6fb396b9b8",
+      "bytes": 30492,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-MESSAGES"
+    },
+    {
+      "path": "2-authentication/AuthStatesDark.html",
+      "blob": "10512f6d576c7bbd71b9c66a64914407dd44939d",
+      "bytes": 30504,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-MESSAGES"
+    },
+    {
+      "path": "2-authentication/AuthStatesMobile.html",
+      "blob": "116e2c6536b16c8462d65227705dfb674263f8f1",
+      "bytes": 30554,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-MESSAGES"
+    },
+    {
+      "path": "2-authentication/AuthStatesMobileDark.html",
+      "blob": "331ab0ce6f15118d9f78c4e9208fea61d6b58e42",
+      "bytes": 30566,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-MESSAGES"
+    },
+    {
+      "path": "2-authentication/AuthTwoFactor.html",
+      "blob": "cc85def1b484801c26c96181b06773d8299f5b92",
+      "bytes": 26981,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-TWO-FACTOR"
+    },
+    {
+      "path": "2-authentication/AuthTwoFactorDark.html",
+      "blob": "362e336c0e774dfcb4c3e71187a9ababfe0e1e7a",
+      "bytes": 27001,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-TWO-FACTOR"
+    },
+    {
+      "path": "2-authentication/AuthTwoFactorMobile.html",
+      "blob": "929422f4e924d663404d3c8ae08cb7ac793aca6b",
+      "bytes": 27055,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-TWO-FACTOR"
+    },
+    {
+      "path": "2-authentication/AuthTwoFactorMobileDark.html",
+      "blob": "68443e5839b7ef595f00216fdd60de5ee81dd2a8",
+      "bytes": 27075,
+      "role": "canonical-static-screen",
+      "screenId": "AUTH-TWO-FACTOR"
+    },
+    {
+      "path": "3-user-portal/UserBilling-active.html",
+      "blob": "79f0a940a597cff7a094b4be2f6b39e11be99bf4",
+      "bytes": 30035,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBilling-cancelling.html",
+      "blob": "ee6ecca151100025024e6997b079c8f7ab5520a9",
+      "bytes": 30447,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBilling-expired.html",
+      "blob": "d2f67791e9b3bd99c1aa399e6cbc0bb0aac003cf",
+      "bytes": 33201,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBilling-none.html",
+      "blob": "d67d013c9de4a26d2edf00a21518902b30c3b54c",
+      "bytes": 32080,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBilling-pastdue.html",
+      "blob": "e061dd61bfbe5d2fa87ddf2784d2d20a6baa3f60",
+      "bytes": 30186,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBilling-pending.html",
+      "blob": "120225d561f7a4f991c3180e8fc25eaeca4e605b",
+      "bytes": 30141,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingDark-active.html",
+      "blob": "f32dd605149121fdb1837672d6eecd17489697f3",
+      "bytes": 30079,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingDark-cancelling.html",
+      "blob": "077e3c6fdcdcd82c9eae62322ffc8bd6ee6b3f92",
+      "bytes": 30491,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingDark-expired.html",
+      "blob": "698a7754c21e7d4ec87ad136d4b13b61ecf1fe54",
+      "bytes": 33257,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingDark-none.html",
+      "blob": "fefc4905b6e6e319846bf532bf462f458966ce26",
+      "bytes": 32132,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingDark-pastdue.html",
+      "blob": "4af35b54a6be05066bc2cbca9129afe8155142b5",
+      "bytes": 30230,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingDark-pending.html",
+      "blob": "2166ff576e411f02f19fcde2727b74bd73e4dba0",
+      "bytes": 30185,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingHistory.html",
+      "blob": "f097ad7ef703c8a958dac30d1dfeb17061fe4004",
+      "bytes": 31078,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING-HISTORY"
+    },
+    {
+      "path": "3-user-portal/UserBillingHistoryDark.html",
+      "blob": "388946a86ff597028765f7c2311d753ed822307b",
+      "bytes": 31138,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING-HISTORY"
+    },
+    {
+      "path": "3-user-portal/UserBillingHistoryMobile.html",
+      "blob": "c1787594898a396d4976fa36c17e3c3ec7283a10",
+      "bytes": 29193,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING-HISTORY"
+    },
+    {
+      "path": "3-user-portal/UserBillingHistoryMobileDark.html",
+      "blob": "4a5a276ff9fe4b8271ac745f31260db660f85b44",
+      "bytes": 29245,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING-HISTORY"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobile-active.html",
+      "blob": "890e99ed3929cc8dae5a644c0165f06904baa609",
+      "bytes": 28344,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobile-cancelling.html",
+      "blob": "be7b8f71fe2d1c4d0aeb62eee6762a0a55c85f79",
+      "bytes": 28756,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobile-expired.html",
+      "blob": "96e2bab670d5d416a0ee78d1e0314bf40808c0c4",
+      "bytes": 31528,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobile-none.html",
+      "blob": "2548cbe5bb9f3cfb493b8e39a7f91b57874a0032",
+      "bytes": 30401,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobile-pastdue.html",
+      "blob": "da0aae6e7921e34d76fdfbc3945ae797b805f783",
+      "bytes": 28495,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobile-pending.html",
+      "blob": "03d2b887cc5bb7f92023daf2e0c3da7753c2c8ce",
+      "bytes": 28450,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobileDark-active.html",
+      "blob": "eae0f05c99d2443cf02b6cdeec76c23c9ed4379f",
+      "bytes": 28380,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobileDark-cancelling.html",
+      "blob": "c221f4665fcb7d2a6d6511fb6b52c33e4e06c49d",
+      "bytes": 28792,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobileDark-expired.html",
+      "blob": "3b8d495949c573ab0e3a508b4839b9269b2b25c2",
+      "bytes": 31576,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobileDark-none.html",
+      "blob": "9eefe056f5b12bba387eb48a84d4b42b61ac67bd",
+      "bytes": 30445,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobileDark-pastdue.html",
+      "blob": "7ae0805cfccff27273e502d271b7461c1cb4ebe6",
+      "bytes": 28531,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserBillingMobileDark-pending.html",
+      "blob": "584bde88d7d22910a6588af80bf74815b2a35905",
+      "bytes": 28486,
+      "role": "canonical-static-screen",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "3-user-portal/UserCheckout.html",
+      "blob": "29728a50414cb9f89eaedafe6be2d40579b04408",
+      "bytes": 31393,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutDark.html",
+      "blob": "ff00a954ebf3e4fd72ef5b4c4808313549f08989",
+      "bytes": 31441,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutMobile.html",
+      "blob": "91da2aa71d6eb510454a889e274cbcd63f40d97e",
+      "bytes": 29489,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutMobileDark.html",
+      "blob": "28271981dd830eb344c3cc8c7a70cc71353eac91",
+      "bytes": 29529,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResult-cancelled.html",
+      "blob": "2549fbbb9e5a97b7aceea68898a43a5951de0c5b",
+      "bytes": 28662,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResult-pending.html",
+      "blob": "e414da40a7a17ab75cd20dc94caa4d79e6992ef5",
+      "bytes": 28932,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResult-success.html",
+      "blob": "08f05a89737162e9406cb68d2db193efdb513450",
+      "bytes": 28671,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResultDark-cancelled.html",
+      "blob": "47edefbeac29eee322a8ce1792a8b936a31af829",
+      "bytes": 28706,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResultDark-pending.html",
+      "blob": "a8149b6822cac373b46453e0299e131d045f8e17",
+      "bytes": 28968,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResultDark-success.html",
+      "blob": "e6c3ccd803bf2678aaf07495a4917825cde430ed",
+      "bytes": 28715,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResultMobile-cancelled.html",
+      "blob": "e6f245034b5ad00c1c0acc5e12f7adee240dcf20",
+      "bytes": 26535,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResultMobile-pending.html",
+      "blob": "9cddf49d14fa4a4be8361a5adb3ec8f5b566d138",
+      "bytes": 26793,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResultMobile-success.html",
+      "blob": "eccafec2d61fa998cf859aa7d71d9eeb7e9d9abe",
+      "bytes": 26544,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResultMobileDark-cancelled.html",
+      "blob": "270584669f42134c11f05699d68f83ca923976d5",
+      "bytes": 26571,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResultMobileDark-pending.html",
+      "blob": "93400794ba6386933613ada3500200752499c568",
+      "bytes": 26821,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserCheckoutResultMobileDark-success.html",
+      "blob": "8b0c176cd6da61ceb4811e5d774e8474adb48eb4",
+      "bytes": 26580,
+      "role": "canonical-static-screen",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "3-user-portal/UserDashboard.html",
+      "blob": "3dd6bec1ee89a556967450565956b40e5ed42642",
+      "bytes": 34034,
+      "role": "canonical-static-screen",
+      "screenId": "USR-DASHBOARD"
+    },
+    {
+      "path": "3-user-portal/UserDashboardDark.html",
+      "blob": "afaa78804657511e0729f35fd41e4a52aeac7e8d",
+      "bytes": 34098,
+      "role": "canonical-static-screen",
+      "screenId": "USR-DASHBOARD"
+    },
+    {
+      "path": "3-user-portal/UserDashboardMobile.html",
+      "blob": "ec1835e431556596bddd906682892e7ebee96ccc",
+      "bytes": 32372,
+      "role": "canonical-static-screen",
+      "screenId": "USR-DASHBOARD"
+    },
+    {
+      "path": "3-user-portal/UserDashboardMobileDark.html",
+      "blob": "f048584933bedf83ef8fcbe999660c5a37893976",
+      "bytes": 32428,
+      "role": "canonical-static-screen",
+      "screenId": "USR-DASHBOARD"
+    },
+    {
+      "path": "3-user-portal/UserMobileMenuMobile.html",
+      "blob": "92a574fa505456e5ac13cc8ac3a7615477a58e04",
+      "bytes": 36055,
+      "role": "canonical-static-screen",
+      "screenId": "USR-NAV-MOBILE"
+    },
+    {
+      "path": "3-user-portal/UserMobileMenuMobileDark.html",
+      "blob": "37fb3f2bdc13a5eafaf53ccb90f8ee2789f84077",
+      "bytes": 36150,
+      "role": "canonical-static-screen",
+      "screenId": "USR-NAV-MOBILE"
+    },
+    {
+      "path": "3-user-portal/UserPreferences.html",
+      "blob": "479f8f46624a55e7f1db6d9975763d476b48f3c8",
+      "bytes": 30910,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PREFERENCES"
+    },
+    {
+      "path": "3-user-portal/UserPreferencesDark.html",
+      "blob": "ebf4a6cacf0439337cfded518480b9338c43e49f",
+      "bytes": 30946,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PREFERENCES"
+    },
+    {
+      "path": "3-user-portal/UserPreferencesMobile.html",
+      "blob": "255dd5738906f8f79952b5c6353265685a1d69aa",
+      "bytes": 28985,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PREFERENCES"
+    },
+    {
+      "path": "3-user-portal/UserPreferencesMobileDark.html",
+      "blob": "a7d9d9a76ac3635387a85a7039950954b16a2bfc",
+      "bytes": 29013,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PREFERENCES"
+    },
+    {
+      "path": "3-user-portal/UserProfile.html",
+      "blob": "26c1936a7e44529bee5dcffa70f302e85f6109ce",
+      "bytes": 30058,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PROFILE"
+    },
+    {
+      "path": "3-user-portal/UserProfileDark.html",
+      "blob": "401a76a7b2f7732eb5d7d6eb0e8e21f625bab5a9",
+      "bytes": 30094,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PROFILE"
+    },
+    {
+      "path": "3-user-portal/UserProfileMobile.html",
+      "blob": "81d602fb5aa01a382e9526d6ccb81e1edf65594d",
+      "bytes": 28137,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PROFILE"
+    },
+    {
+      "path": "3-user-portal/UserProfileMobileDark.html",
+      "blob": "4cba560e8c382adfaf059e769dbafaccf4428f3a",
+      "bytes": 28165,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PROFILE"
+    },
+    {
+      "path": "3-user-portal/UserPurchaseDetail.html",
+      "blob": "564cb3bf6a382fdd974716663738f51d50ba911c",
+      "bytes": 29869,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PURCHASE-DETAIL"
+    },
+    {
+      "path": "3-user-portal/UserPurchaseDetailDark.html",
+      "blob": "effb89fee4f8fdad38f1317f1a929da19cb773f0",
+      "bytes": 29909,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PURCHASE-DETAIL"
+    },
+    {
+      "path": "3-user-portal/UserPurchaseDetailMobile.html",
+      "blob": "29039cf8b4a0fc5b7c98eb5a8ef91b8311ebd079",
+      "bytes": 27735,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PURCHASE-DETAIL"
+    },
+    {
+      "path": "3-user-portal/UserPurchaseDetailMobileDark.html",
+      "blob": "ef8ebb56980f2216c32f72c27497dc26f5d7e505",
+      "bytes": 27767,
+      "role": "canonical-static-screen",
+      "screenId": "USR-PURCHASE-DETAIL"
+    },
+    {
+      "path": "3-user-portal/UserSecurity-activity.html",
+      "blob": "fd5446d321bd12b0e4ffe48a567a9de5c67f9a23",
+      "bytes": 29657,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurity-overview.html",
+      "blob": "fc77b18877aa973171a2df6aee300af0253408ce",
+      "bytes": 30905,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurity-passkeys.html",
+      "blob": "a91217d5d7792fa5a2793287e20a09aefc925d71",
+      "bytes": 29476,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurity-password.html",
+      "blob": "3abd1a58f7a9ec876e20626e1ced882d34557ac2",
+      "bytes": 28936,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurity-sessions.html",
+      "blob": "f1d10890c8aa6a8c8fe7a06c14e2148c273b5eb0",
+      "bytes": 29650,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurity-twofa.html",
+      "blob": "6c164bde9b775e8b41a58e5fdfc4e21e74084234",
+      "bytes": 29124,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityDark-activity.html",
+      "blob": "5f2abb66b3c48ad00053327f0d96970bb80d96aa",
+      "bytes": 29693,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityDark-overview.html",
+      "blob": "af5ee842ca4d1a944dde10d8f528a2dc3d94b5b3",
+      "bytes": 30941,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityDark-passkeys.html",
+      "blob": "92c6d0cf6d12362e969b1877d2003f4822affc6f",
+      "bytes": 29512,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityDark-password.html",
+      "blob": "b2c36594cecd169f0d5f02e90751bbf1ef312d10",
+      "bytes": 28972,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityDark-sessions.html",
+      "blob": "f8a8f110b51778f81fe1e29cc484e4d6cab6d68c",
+      "bytes": 29686,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityDark-twofa.html",
+      "blob": "e63c14ee5541fd9cbc8f6879351b0c404e9133b6",
+      "bytes": 29164,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobile-activity.html",
+      "blob": "f31e9722affe53b70717bc1e9129ce712baa7744",
+      "bytes": 27735,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobile-overview.html",
+      "blob": "32cce44fa68b9236cad5175fa83f643673cfc0f6",
+      "bytes": 28983,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobile-passkeys.html",
+      "blob": "81a9076e9417aa63d6b71aade1126538dfd9305e",
+      "bytes": 27554,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobile-password.html",
+      "blob": "027a0997488e2e7e8a31b5b4c79b258574172357",
+      "bytes": 27014,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobile-sessions.html",
+      "blob": "9be0c5fc1a0f87a569e17999a0b8e85ab05a4574",
+      "bytes": 27728,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobile-twofa.html",
+      "blob": "2649d21c5e6fc368d6c3959050238932bd9c0029",
+      "bytes": 27208,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobileDark-activity.html",
+      "blob": "e68502e49878b8f446dbf825252976ac841f70cb",
+      "bytes": 27763,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobileDark-overview.html",
+      "blob": "76c807dab975c6864daa44491b261a0190336cda",
+      "bytes": 29011,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobileDark-passkeys.html",
+      "blob": "b0a29af18380076c7c303251721dbe3bee1e5401",
+      "bytes": 27582,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobileDark-password.html",
+      "blob": "24668c6bdb68895b3044f99af0e1be9af7858c55",
+      "bytes": 27042,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobileDark-sessions.html",
+      "blob": "ed505021f4ffd873eae5dc337b3ba3fc532ec4fa",
+      "bytes": 27756,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserSecurityMobileDark-twofa.html",
+      "blob": "52d821184dd60ca7ae0f7a1e33e9d291e5996ee8",
+      "bytes": 27240,
+      "role": "canonical-static-screen",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "3-user-portal/UserTwoFactorSetup.html",
+      "blob": "e5a9bc838634f35cb23d02d1bcc7eef83716557a",
+      "bytes": 40543,
+      "role": "canonical-static-screen",
+      "screenId": "USR-TWO-FACTOR-SETUP"
+    },
+    {
+      "path": "3-user-portal/UserTwoFactorSetupDark.html",
+      "blob": "f69eaa6e44e7fc1635f4c690cca350aaecaf05d2",
+      "bytes": 40579,
+      "role": "canonical-static-screen",
+      "screenId": "USR-TWO-FACTOR-SETUP"
+    },
+    {
+      "path": "3-user-portal/UserTwoFactorSetupMobile.html",
+      "blob": "2d1741ea62c13d1d341b3bfe6c8fefcb8d4df64f",
+      "bytes": 38394,
+      "role": "canonical-static-screen",
+      "screenId": "USR-TWO-FACTOR-SETUP"
+    },
+    {
+      "path": "3-user-portal/UserTwoFactorSetupMobileDark.html",
+      "blob": "e7892817d22b75a978ebc5d19b8e752e6b8b66a2",
+      "bytes": 38422,
+      "role": "canonical-static-screen",
+      "screenId": "USR-TWO-FACTOR-SETUP"
+    },
+    {
+      "path": "3-user-portal/UserVerification-expired.html",
+      "blob": "3ede217b7df56320c905174a6c8228db6978d479",
+      "bytes": 29527,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerification-inprogress.html",
+      "blob": "dc056db8e7f46ee0d7c4799dafbe1f17d1a7bfbf",
+      "bytes": 29492,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerification-notstarted.html",
+      "blob": "b42725b47c336a369f08e95bcb93877b743cc07f",
+      "bytes": 30055,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerification-pending.html",
+      "blob": "e61e253042b11621fe70a75e669872cb3b5f7b4f",
+      "bytes": 29774,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerification-rejected.html",
+      "blob": "a78ab5805e186f3d9c705bf2d66f5f8c605ad5e9",
+      "bytes": 29496,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerification-verified.html",
+      "blob": "6e31fe0475c958562471ce6040c29bb054dbcd47",
+      "bytes": 29416,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationDark-expired.html",
+      "blob": "dce2e519fa7b7d15663a02d32cc58df2b1f40649",
+      "bytes": 29563,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationDark-inprogress.html",
+      "blob": "30aa2cfdf6d47ee23fc28043195e86a8bdb7fd0b",
+      "bytes": 29528,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationDark-notstarted.html",
+      "blob": "07e32a1f5d236f16791c3c8957fd2c162c6e2ca7",
+      "bytes": 30091,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationDark-pending.html",
+      "blob": "691e3d7af9065e20464b460d73bc3dcda7e99639",
+      "bytes": 29810,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationDark-rejected.html",
+      "blob": "dd9f5e31acccac2cadd6813c65287b8eecff15e5",
+      "bytes": 29532,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationDark-verified.html",
+      "blob": "e7053cf9a5e959577064f541a6067cd0ff48cf70",
+      "bytes": 29452,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobile-expired.html",
+      "blob": "351927a821a1ef878c98adb34ec7a85f8264f726",
+      "bytes": 27601,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobile-inprogress.html",
+      "blob": "9030c35ca4c36e7a1d471e81ee2556f6c610cb40",
+      "bytes": 27566,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobile-notstarted.html",
+      "blob": "ebb37f63c4be41ce88e0e5bf0df110aecd34455e",
+      "bytes": 28129,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobile-pending.html",
+      "blob": "031a86e5f0f3d630f7a5006beba3b52b8c8e6ae2",
+      "bytes": 27848,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobile-rejected.html",
+      "blob": "c82574f2f181e718e78bbe775016e645bd8c7a1c",
+      "bytes": 27570,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobile-verified.html",
+      "blob": "4dc454d2beed7b4298158e88010e13685102826d",
+      "bytes": 27490,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobileDark-expired.html",
+      "blob": "c5ea7ee1a6000555bf66d60dc2f2468e95590ae0",
+      "bytes": 27629,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobileDark-inprogress.html",
+      "blob": "13a79739d1c88893d5d319494750a684fa02e4de",
+      "bytes": 27594,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobileDark-notstarted.html",
+      "blob": "0592e842adec2b16030b53dd16af0b964b29fd8b",
+      "bytes": 28157,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobileDark-pending.html",
+      "blob": "3ebe696f4187de93ce16146bd3b18aa65c14a4f5",
+      "bytes": 27876,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobileDark-rejected.html",
+      "blob": "4f6a288a66841cfb13e9a0eb8d99de59777bc405",
+      "bytes": 27598,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserVerificationMobileDark-verified.html",
+      "blob": "44745b915c8f46f0f40ef9cb4c1ba55a054642aa",
+      "bytes": 27518,
+      "role": "canonical-static-screen",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "3-user-portal/UserWallet.html",
+      "blob": "4436f1aee414daca9e3f578a49abd2c11dcb2f2c",
+      "bytes": 31905,
+      "role": "canonical-static-screen",
+      "screenId": "USR-WALLET"
+    },
+    {
+      "path": "3-user-portal/UserWalletDark.html",
+      "blob": "aa3efb6afe445e15b083e20624db522968fbe517",
+      "bytes": 31945,
+      "role": "canonical-static-screen",
+      "screenId": "USR-WALLET"
+    },
+    {
+      "path": "3-user-portal/UserWalletMobile.html",
+      "blob": "f7137e45411902007d357636f045159924991614",
+      "bytes": 30209,
+      "role": "canonical-static-screen",
+      "screenId": "USR-WALLET"
+    },
+    {
+      "path": "3-user-portal/UserWalletMobileDark.html",
+      "blob": "81f8f0448685bbd1c9fdf09b5d4902d944cdb1a6",
+      "bytes": 30241,
+      "role": "canonical-static-screen",
+      "screenId": "USR-WALLET"
+    },
+    {
+      "path": "3-user-portal/UserWalletTopUp.html",
+      "blob": "653e872ef2c4f2aaea9d54d2a4755c60ff1ce5e3",
+      "bytes": 33643,
+      "role": "canonical-static-screen",
+      "screenId": "USR-WALLET-TOP-UP"
+    },
+    {
+      "path": "3-user-portal/UserWalletTopUpDark.html",
+      "blob": "dea2af71a918a323cbc78e4c6ff245237e0b8b9c",
+      "bytes": 33683,
+      "role": "canonical-static-screen",
+      "screenId": "USR-WALLET-TOP-UP"
+    },
+    {
+      "path": "3-user-portal/UserWalletTopUpMobile.html",
+      "blob": "1c6d8dcd9eb25682735e5912afe860934590267c",
+      "bytes": 31947,
+      "role": "canonical-static-screen",
+      "screenId": "USR-WALLET-TOP-UP"
+    },
+    {
+      "path": "3-user-portal/UserWalletTopUpMobileDark.html",
+      "blob": "6e793bc4b104fac3b1f97519d4767d20e1136ef1",
+      "bytes": 31979,
+      "role": "canonical-static-screen",
+      "screenId": "USR-WALLET-TOP-UP"
+    },
+    {
+      "path": "4-admin-portal/AdminActiveUsers.html",
+      "blob": "331bfecf6b752c5de6637e6f62a90a7d34c9d5b2",
+      "bytes": 37739,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ACTIVE-USERS"
+    },
+    {
+      "path": "4-admin-portal/AdminActiveUsersDark.html",
+      "blob": "22c97a723bf2696f1eb59d7a091b2ec865b7e992",
+      "bytes": 37831,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ACTIVE-USERS"
+    },
+    {
+      "path": "4-admin-portal/AdminActiveUsersMobile.html",
+      "blob": "a150b3bafeae048fe54178ed788084b036471275",
+      "bytes": 31992,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ACTIVE-USERS"
+    },
+    {
+      "path": "4-admin-portal/AdminActiveUsersMobileDark.html",
+      "blob": "58ecbd82c00e4f477a805fab5151ac3268bcdecd",
+      "bytes": 32024,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ACTIVE-USERS"
+    },
+    {
+      "path": "4-admin-portal/AdminAllocate.html",
+      "blob": "7cc6b13d410e09a21264ac3fbec6bb855871a748",
+      "bytes": 34628,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ALLOCATE"
+    },
+    {
+      "path": "4-admin-portal/AdminAllocateDark.html",
+      "blob": "9c63abf0f45c4b671c642d5c3fe28b6158251f4b",
+      "bytes": 34704,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ALLOCATE"
+    },
+    {
+      "path": "4-admin-portal/AdminAllocateMobile.html",
+      "blob": "5eef53d984250bbd8f8e9d5575156d109d9ad460",
+      "bytes": 28653,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ALLOCATE"
+    },
+    {
+      "path": "4-admin-portal/AdminAllocateMobileDark.html",
+      "blob": "936999473b2915d6ad83dfae0da78d41154096d9",
+      "bytes": 28669,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ALLOCATE"
+    },
+    {
+      "path": "4-admin-portal/AdminAudit.html",
+      "blob": "b7bf9dc22497b5394ec1c22b6df8e1fbe357b11c",
+      "bytes": 34956,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-AUDIT"
+    },
+    {
+      "path": "4-admin-portal/AdminAuditDark.html",
+      "blob": "de4419eac3b4c32a426d428c202dc72c44d58de0",
+      "bytes": 35024,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-AUDIT"
+    },
+    {
+      "path": "4-admin-portal/AdminAuditMobile.html",
+      "blob": "0848568e7191afd8967b5fb7b052c08258f9859a",
+      "bytes": 29172,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-AUDIT"
+    },
+    {
+      "path": "4-admin-portal/AdminAuditMobileDark.html",
+      "blob": "2e2beaffdd5c041672400d8a89b66b382b85b031",
+      "bytes": 29180,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-AUDIT"
+    },
+    {
+      "path": "4-admin-portal/AdminDashboard.html",
+      "blob": "7902a76194d02513cc8b664b1e3be60638ffc472",
+      "bytes": 39889,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-DASHBOARD"
+    },
+    {
+      "path": "4-admin-portal/AdminDashboardDark.html",
+      "blob": "4148bf5d407413e5d0fe70a9275c7ede4b6d3d4c",
+      "bytes": 39973,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-DASHBOARD"
+    },
+    {
+      "path": "4-admin-portal/AdminDashboardMobile.html",
+      "blob": "bf8980e9273ffe0f10e5c8772fc07efbaffd0c99",
+      "bytes": 34311,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-DASHBOARD"
+    },
+    {
+      "path": "4-admin-portal/AdminDashboardMobileDark.html",
+      "blob": "30c646613376391166b1791ae509621b6d7923ae",
+      "bytes": 34335,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-DASHBOARD"
+    },
+    {
+      "path": "4-admin-portal/AdminForbidden.html",
+      "blob": "290a88270627ceb6eb76181dd7af62a1dd604fb9",
+      "bytes": 31440,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-FORBIDDEN"
+    },
+    {
+      "path": "4-admin-portal/AdminForbiddenDark.html",
+      "blob": "a632464141960553022491717f957a7d62dd4bdb",
+      "bytes": 31512,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-FORBIDDEN"
+    },
+    {
+      "path": "4-admin-portal/AdminForbiddenMobile.html",
+      "blob": "35e73102eee6910d7503412ea55daa2f6aeea36d",
+      "bytes": 25658,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-FORBIDDEN"
+    },
+    {
+      "path": "4-admin-portal/AdminForbiddenMobileDark.html",
+      "blob": "47fe1867068cce3484ae3cf39cd65fdcb49d6bac",
+      "bytes": 25670,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-FORBIDDEN"
+    },
+    {
+      "path": "4-admin-portal/AdminKyc.html",
+      "blob": "c9219bc6530b945b380370caf904b1d7c106c3ad",
+      "bytes": 37406,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-KYC"
+    },
+    {
+      "path": "4-admin-portal/AdminKycDark.html",
+      "blob": "150b949e0d12920eda43e3889c35baecbf5055d8",
+      "bytes": 37498,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-KYC"
+    },
+    {
+      "path": "4-admin-portal/AdminKycDetail.html",
+      "blob": "99a9b77ffe9fef00d3e08aa05df0e0826a91c799",
+      "bytes": 34398,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-KYC-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminKycDetailDark.html",
+      "blob": "65e5214502c0a5682b18566e3cd76964cced5432",
+      "bytes": 34474,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-KYC-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminKycDetailMobile.html",
+      "blob": "b59e35cfa9aa63057deec08e02534ce79efd3118",
+      "bytes": 28419,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-KYC-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminKycDetailMobileDark.html",
+      "blob": "8b21582383636b0f604b284251fdd684c4ee106f",
+      "bytes": 28435,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-KYC-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminKycMobile.html",
+      "blob": "28f6763b000cc7c2dde7071240d66fe083f2cfdb",
+      "bytes": 31657,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-KYC"
+    },
+    {
+      "path": "4-admin-portal/AdminKycMobileDark.html",
+      "blob": "2e15003b7d204ec509782cbbf55c77d193844b1a",
+      "bytes": 31689,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-KYC"
+    },
+    {
+      "path": "4-admin-portal/AdminMobileMenuMobile.html",
+      "blob": "6df5ddd27cca53046afbc0e540ac46fd97bd2e6e",
+      "bytes": 40533,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-NAV-MOBILE"
+    },
+    {
+      "path": "4-admin-portal/AdminMobileMenuMobileDark.html",
+      "blob": "9499deef2e0a1eddd7c08820c5e882ae9caa48df",
+      "bytes": 40628,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-NAV-MOBILE"
+    },
+    {
+      "path": "4-admin-portal/AdminPaymentAnalytics.html",
+      "blob": "13307480202f03f39de151ee9b099f70abd4e707",
+      "bytes": 39892,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENT-ANALYTICS"
+    },
+    {
+      "path": "4-admin-portal/AdminPaymentAnalyticsDark.html",
+      "blob": "a21f48f08e3671d98a697ff564ad4579c76129b6",
+      "bytes": 39964,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENT-ANALYTICS"
+    },
+    {
+      "path": "4-admin-portal/AdminPaymentAnalyticsMobile.html",
+      "blob": "c1052747d48d70ddda60933ab34d647309d71bbc",
+      "bytes": 34110,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENT-ANALYTICS"
+    },
+    {
+      "path": "4-admin-portal/AdminPaymentAnalyticsMobileDark.html",
+      "blob": "0517fb5dd094509f01b29cceaebb042cc6b9b46e",
+      "bytes": 34122,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENT-ANALYTICS"
+    },
+    {
+      "path": "4-admin-portal/AdminPaymentDetail.html",
+      "blob": "17c59663f7e08eec54d4a0c9b52a97d94e6e612f",
+      "bytes": 34168,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENT-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminPaymentDetailDark.html",
+      "blob": "60f9b0a24382536158d6a7cea172e56e7c592e23",
+      "bytes": 34244,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENT-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminPaymentDetailMobile.html",
+      "blob": "b444d9e321c69c784c7c739cd37b68c6ae225683",
+      "bytes": 28191,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENT-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminPaymentDetailMobileDark.html",
+      "blob": "7aad09a5439a3bbf4f9c24eab246e5f7548de307",
+      "bytes": 28207,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENT-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminPayments.html",
+      "blob": "376bb09fe4fbde2092a75273ad788c1b0fc693fb",
+      "bytes": 37705,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENTS"
+    },
+    {
+      "path": "4-admin-portal/AdminPaymentsDark.html",
+      "blob": "7ac2e8f0b9aa8564fe22a06a324061c6a69ddb9a",
+      "bytes": 37801,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENTS"
+    },
+    {
+      "path": "4-admin-portal/AdminPaymentsMobile.html",
+      "blob": "589f7357bbe8085b39078c0be77e973e5d49eda3",
+      "bytes": 31968,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENTS"
+    },
+    {
+      "path": "4-admin-portal/AdminPaymentsMobileDark.html",
+      "blob": "6318162ab8b0020a18bb792190a9a6f77480d7b2",
+      "bytes": 32004,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PAYMENTS"
+    },
+    {
+      "path": "4-admin-portal/AdminPlans.html",
+      "blob": "12ff39a78493d4b6dc5bc2010aa96ca481e58476",
+      "bytes": 36577,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PLANS"
+    },
+    {
+      "path": "4-admin-portal/AdminPlansDark.html",
+      "blob": "5f6fbf27c67d1c59ee6fcee786734391eaefeee2",
+      "bytes": 36645,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PLANS"
+    },
+    {
+      "path": "4-admin-portal/AdminPlansMobile.html",
+      "blob": "139c737845fc896f5ffe42a134b5a7c96d978edf",
+      "bytes": 30801,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PLANS"
+    },
+    {
+      "path": "4-admin-portal/AdminPlansMobileDark.html",
+      "blob": "9239044653349ec0d2192e965e6f7edbd7933a8e",
+      "bytes": 30809,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PLANS"
+    },
+    {
+      "path": "4-admin-portal/AdminProviders.html",
+      "blob": "89ee167324777cad6cff507dfed5066da2d2fbf9",
+      "bytes": 34576,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PROVIDERS"
+    },
+    {
+      "path": "4-admin-portal/AdminProvidersDark.html",
+      "blob": "2a5ce553643307ac4ca8f800e0bb4c1af8e7dacb",
+      "bytes": 34644,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PROVIDERS"
+    },
+    {
+      "path": "4-admin-portal/AdminProvidersMobile.html",
+      "blob": "1297da07194f10c8aafed1e1a5408152e2c0ba78",
+      "bytes": 28796,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PROVIDERS"
+    },
+    {
+      "path": "4-admin-portal/AdminProvidersMobileDark.html",
+      "blob": "97823c2b1075ca0c8f925092407047e525e4491c",
+      "bytes": 28804,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-PROVIDERS"
+    },
+    {
+      "path": "4-admin-portal/AdminReferenceData.html",
+      "blob": "f6c5714888adfd5d322f77b6e75fe161718385cb",
+      "bytes": 33053,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-REFERENCE-DATA"
+    },
+    {
+      "path": "4-admin-portal/AdminReferenceDataDark.html",
+      "blob": "74a9b3036f4dc73c2545a1463c72717b5c5c55db",
+      "bytes": 33121,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-REFERENCE-DATA"
+    },
+    {
+      "path": "4-admin-portal/AdminReferenceDataMobile.html",
+      "blob": "f2027cf29e5ee64735dae2b3bf7124f60a244890",
+      "bytes": 27268,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-REFERENCE-DATA"
+    },
+    {
+      "path": "4-admin-portal/AdminReferenceDataMobileDark.html",
+      "blob": "40cfb3a20a7079689ecbb1ac32aa930a27671ef1",
+      "bytes": 27276,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-REFERENCE-DATA"
+    },
+    {
+      "path": "4-admin-portal/AdminRegistrations.html",
+      "blob": "e888e0cc55fd123cd00a5565b527442bc385b108",
+      "bytes": 39016,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-REGISTRATIONS"
+    },
+    {
+      "path": "4-admin-portal/AdminRegistrationsDark.html",
+      "blob": "ea01d8bc7b97f5d0028858b0709bfdb10b2a5967",
+      "bytes": 39108,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-REGISTRATIONS"
+    },
+    {
+      "path": "4-admin-portal/AdminRegistrationsMobile.html",
+      "blob": "2104e698c8d4b8f197d876967db8ef32db93361a",
+      "bytes": 33268,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-REGISTRATIONS"
+    },
+    {
+      "path": "4-admin-portal/AdminRegistrationsMobileDark.html",
+      "blob": "92bd8fef82d2ec9bdf270720fa0b6ebba0e430e0",
+      "bytes": 33300,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-REGISTRATIONS"
+    },
+    {
+      "path": "4-admin-portal/AdminRoleEdit.html",
+      "blob": "f9278dad58eab08df9fcc5ca87ad3ba543e2e182",
+      "bytes": 39807,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ROLE-EDIT"
+    },
+    {
+      "path": "4-admin-portal/AdminRoleEditDark.html",
+      "blob": "47b7f20ea42b80f74b64b8d41e56545c25268df2",
+      "bytes": 39879,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ROLE-EDIT"
+    },
+    {
+      "path": "4-admin-portal/AdminRoleEditMobile.html",
+      "blob": "deb0adb3ba08bfed87412c2312bd55b5ab1d42d7",
+      "bytes": 33822,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ROLE-EDIT"
+    },
+    {
+      "path": "4-admin-portal/AdminRoleEditMobileDark.html",
+      "blob": "9c2a510516cbcde613fdbbca852a71936b5cbf77",
+      "bytes": 33834,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ROLE-EDIT"
+    },
+    {
+      "path": "4-admin-portal/AdminRoles.html",
+      "blob": "e32ce5a4fa2f86dc20548936e905c93560c74157",
+      "bytes": 46731,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ROLES"
+    },
+    {
+      "path": "4-admin-portal/AdminRolesDark.html",
+      "blob": "c65ec24e2309dea3b3f5ffd9a31b9204ef3eeebb",
+      "bytes": 46823,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ROLES"
+    },
+    {
+      "path": "4-admin-portal/AdminRolesMobile.html",
+      "blob": "6eaf806cea1ac0effe7c937d1dab45fb589981f3",
+      "bytes": 40977,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ROLES"
+    },
+    {
+      "path": "4-admin-portal/AdminRolesMobileDark.html",
+      "blob": "75e6b5efc78a495b8e38875b7ea08595588a7d4b",
+      "bytes": 41009,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-ROLES"
+    },
+    {
+      "path": "4-admin-portal/AdminStepUp.html",
+      "blob": "3311e280bb1324687b5273507047bae34f499790",
+      "bytes": 37576,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-STEP-UP"
+    },
+    {
+      "path": "4-admin-portal/AdminStepUpDark.html",
+      "blob": "83845aae8dcebb6972ea2ccf269956706770a050",
+      "bytes": 37664,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-STEP-UP"
+    },
+    {
+      "path": "4-admin-portal/AdminStepUpMobile.html",
+      "blob": "3d54d7cdf866c441c383b5241c5e15afea8cf363",
+      "bytes": 31615,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-STEP-UP"
+    },
+    {
+      "path": "4-admin-portal/AdminStepUpMobileDark.html",
+      "blob": "090337f27958f6cb0fd560f8f31c3c581ec47f1a",
+      "bytes": 31643,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-STEP-UP"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptionAnalytics.html",
+      "blob": "9b5ddd30aec2e091378087482b4711624f35299f",
+      "bytes": 41380,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTION-ANALYTICS"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptionAnalyticsDark.html",
+      "blob": "721d36d6fa21160ac1d5f95b4f9c742553fff9e7",
+      "bytes": 41448,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTION-ANALYTICS"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptionAnalyticsMobile.html",
+      "blob": "7f2c05f5bd7e9a838465b880081919f2f0e4c4bb",
+      "bytes": 35587,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTION-ANALYTICS"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptionAnalyticsMobileDark.html",
+      "blob": "63d645a9adb79340ec2789ec8e2f84117b66f895",
+      "bytes": 35595,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTION-ANALYTICS"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptionDetail.html",
+      "blob": "0c0e5ee1f67b8abce50567bfd682b23aeb4b4b06",
+      "bytes": 35539,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTION-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptionDetailDark.html",
+      "blob": "67889cbdca198a1a24b570a19785f6f92acb7019",
+      "bytes": 35615,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTION-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptionDetailMobile.html",
+      "blob": "f755dd3bd79c07e225f7cd5ca6787ea56f7a1d98",
+      "bytes": 29562,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTION-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptionDetailMobileDark.html",
+      "blob": "1388ef5d59acefca4b43e7e296f1191af0ff732e",
+      "bytes": 29578,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTION-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptions.html",
+      "blob": "702089bd3b45df5993ea1b010e51edde9ce6a3e5",
+      "bytes": 38044,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTIONS"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptionsDark.html",
+      "blob": "c7deb0df36e45074cdcb5fd64c4e0281d1bda896",
+      "bytes": 38144,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTIONS"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptionsMobile.html",
+      "blob": "aaa99cc8eadc446ce1759f8fab1bbae170d0a8f0",
+      "bytes": 32308,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTIONS"
+    },
+    {
+      "path": "4-admin-portal/AdminSubscriptionsMobileDark.html",
+      "blob": "009fe73e685fe44d248489bf85f2aa21ac776e60",
+      "bytes": 32348,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SUBSCRIPTIONS"
+    },
+    {
+      "path": "4-admin-portal/AdminSystemHealth.html",
+      "blob": "25f65b7276e738c55bc3f45f0177683572aed28f",
+      "bytes": 32572,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SYSTEM-HEALTH"
+    },
+    {
+      "path": "4-admin-portal/AdminSystemHealthDark.html",
+      "blob": "04762051c00cd65a44b18ea8d6e8bb6ec74be4a4",
+      "bytes": 32640,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SYSTEM-HEALTH"
+    },
+    {
+      "path": "4-admin-portal/AdminSystemHealthMobile.html",
+      "blob": "3abb69ff5ca9e637c70292df401b565757146647",
+      "bytes": 26788,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SYSTEM-HEALTH"
+    },
+    {
+      "path": "4-admin-portal/AdminSystemHealthMobileDark.html",
+      "blob": "beb3ee452382ef21eea41f0cce3ec20ba5c95372",
+      "bytes": 26796,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-SYSTEM-HEALTH"
+    },
+    {
+      "path": "4-admin-portal/AdminUserDetail.html",
+      "blob": "f81150a07cd25e60e2f85307bcc4785820157b8d",
+      "bytes": 35965,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-USER-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminUserDetailDark.html",
+      "blob": "47269ea6d527ac5c9e334fdc45240d448bb23a5e",
+      "bytes": 36053,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-USER-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminUserDetailMobile.html",
+      "blob": "e0d7cdb746942a775f76dc5fca319294c74ddcb6",
+      "bytes": 30004,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-USER-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminUserDetailMobileDark.html",
+      "blob": "646b3f0e3caededc7c6a5f60cb18fedbce66323a",
+      "bytes": 30032,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-USER-DETAIL"
+    },
+    {
+      "path": "4-admin-portal/AdminUsers.html",
+      "blob": "5acb12adeca536252c9690b258c2c7b77ce29bd9",
+      "bytes": 37802,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-USERS"
+    },
+    {
+      "path": "4-admin-portal/AdminUsersDark.html",
+      "blob": "23b88839dda2fbbde162b8c7e122392a65b67fd3",
+      "bytes": 37902,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-USERS"
+    },
+    {
+      "path": "4-admin-portal/AdminUsersMobile.html",
+      "blob": "af4420d78e86113158d28d6d9b82e3945efa88f4",
+      "bytes": 32074,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-USERS"
+    },
+    {
+      "path": "4-admin-portal/AdminUsersMobileDark.html",
+      "blob": "7f94a86d6f424499c22f260d8881fcbe150b63d4",
+      "bytes": 32114,
+      "role": "canonical-static-screen",
+      "screenId": "ADM-USERS"
+    },
+    {
+      "path": "Admin Portal/Project Template — Complete Product Design-project.zip",
+      "blob": "5987e4135f1c5574c73c7a7ceb9285f0e215327f",
+      "bytes": 2547754,
+      "role": "bundle-archive"
+    },
+    {
+      "path": "Admin Portal/admin-portal.html",
+      "blob": "96794542f6b15b12d6ae5e62c88b132e55bfa552",
+      "bytes": 1061090,
+      "role": "bundle-portal-gallery"
+    },
+    {
+      "path": "Admin Portal/project-template-design-html-smaller.zip",
+      "blob": "e6a83be9e656ef52db9a7caa74de47b06cb22a16",
+      "bytes": 832346,
+      "role": "bundle-archive"
+    },
+    {
+      "path": "Authentication/Project Template — Complete Product Design-project.zip",
+      "blob": "c07bb146cecb2e599e882a7b647630d05c28b727",
+      "bytes": 2525348,
+      "role": "bundle-archive"
+    },
+    {
+      "path": "Authentication/Project Template — Complete Product Design.html",
+      "blob": "7ac3321b0471f6e851c5209c45cd76180a4c0a3f",
+      "bytes": 15677972,
+      "role": "bundle-self-extracting-canvas"
+    },
+    {
+      "path": "Foundations/Project Template — Complete Product Design-project.zip",
+      "blob": "9242492ef759dc1ff7594ab03c8f399b5da3a84f",
+      "bytes": 2525348,
+      "role": "bundle-archive"
+    },
+    {
+      "path": "Foundations/Project Template — Complete Product Design.html",
+      "blob": "39e4f35973319ca0d3c584d7c00b42ec2ae5a37a",
+      "bytes": 263355,
+      "role": "bundle-self-extracting-canvas"
+    },
+    {
+      "path": "Marketing Site/Project Template — Complete Product Design-project.zip",
+      "blob": "9da530c8a203124b3c882707e81c9ead6dbd1965",
+      "bytes": 2525348,
+      "role": "bundle-archive"
+    },
+    {
+      "path": "Marketing Site/Project Template — Complete Product Design.html",
+      "blob": "a6afacffae2da6d13e15aa70507555f60c1c8acf",
+      "bytes": 5214142,
+      "role": "bundle-self-extracting-canvas"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project.zip",
+      "blob": "4b779e0dc4bd8416f3aa80116abeeaebf91517f0",
+      "bytes": 2525348,
+      "role": "bundle-archive"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminActiveUsers.dc.html",
+      "blob": "7167cb687690b5054f5b9c0ac19afb5923857e49",
+      "bytes": 15608,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ACTIVE-USERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminActiveUsersDark.dc.html",
+      "blob": "eebb05b8f6b95f7151fd61ea84feb696136eaf65",
+      "bytes": 15701,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ACTIVE-USERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminActiveUsersMobile.dc.html",
+      "blob": "e16011e080b150b1700de38e5c0d1afffb1028e2",
+      "bytes": 9486,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ACTIVE-USERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminActiveUsersMobileDark.dc.html",
+      "blob": "5b5c50e1096647b99ffa1fd7fb365b5e020bf179",
+      "bytes": 9519,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ACTIVE-USERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminAllocate.dc.html",
+      "blob": "cf8159294a8937ead1bd1da88dd15aa5e2a160e3",
+      "bytes": 12100,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ALLOCATE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminAllocateDark.dc.html",
+      "blob": "f12d45ab80c340cf073f181f34da019eb992451e",
+      "bytes": 12177,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ALLOCATE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminAllocateMobile.dc.html",
+      "blob": "0c186b6e75e2fade77aaa6c436e6978f701b70a6",
+      "bytes": 6070,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ALLOCATE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminAllocateMobileDark.dc.html",
+      "blob": "e2182c9e2fff733123c0c574648aee20a04c7c8e",
+      "bytes": 6087,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ALLOCATE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminAudit.dc.html",
+      "blob": "19404d4cb2d4c08a9a2c3310727d581c4df78f8f",
+      "bytes": 12425,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-AUDIT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminAuditDark.dc.html",
+      "blob": "cc754de23e814ef61734fdc02268d66b0d499108",
+      "bytes": 12494,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-AUDIT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminAuditMobile.dc.html",
+      "blob": "71e7bbee012c66c936d57cec4d253599bee2f542",
+      "bytes": 6586,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-AUDIT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminAuditMobileDark.dc.html",
+      "blob": "6d8e1a51c89d5a862c44915b78482b9faf50b4b8",
+      "bytes": 6595,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-AUDIT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminDashboard.dc.html",
+      "blob": "e4e097357a78342a6bd673a4150b28795bdc472c",
+      "bytes": 18024,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-DASHBOARD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminDashboardDark.dc.html",
+      "blob": "3706d6a23dd7e053d3331e11ec6e5ebff3fb8dfc",
+      "bytes": 18109,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-DASHBOARD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminDashboardMobile.dc.html",
+      "blob": "e35427517df6c05686609c50e354925c0bd9e40e",
+      "bytes": 12077,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-DASHBOARD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminDashboardMobileDark.dc.html",
+      "blob": "2228a1bedb94e7e5ec7a43ff244fd055ba748f69",
+      "bytes": 12102,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-DASHBOARD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminForbidden.dc.html",
+      "blob": "09eace8d91d2f7884ea7f53897b10c84832a484b",
+      "bytes": 8911,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-FORBIDDEN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminForbiddenDark.dc.html",
+      "blob": "aa9f8f0ee0ab1df831b440d45201a104e7510a8a",
+      "bytes": 8984,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-FORBIDDEN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminForbiddenMobile.dc.html",
+      "blob": "f04199bac1b8d323cd7829c8e8e2ab88ac3cb125",
+      "bytes": 3074,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-FORBIDDEN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminForbiddenMobileDark.dc.html",
+      "blob": "b7ed96d230425f5fddb9173fb9d54903b09f29f8",
+      "bytes": 3087,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-FORBIDDEN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminKyc.dc.html",
+      "blob": "58847a112fcf5c08887c6d32a5ec874d29eb2029",
+      "bytes": 14875,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-KYC"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminKycDark.dc.html",
+      "blob": "0b4d92fdbb1b277685172f229b99f7a3c114bc68",
+      "bytes": 14968,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-KYC"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminKycDetail.dc.html",
+      "blob": "77cabbd07369406fd3c67f35bbd8fe56b8162f84",
+      "bytes": 11870,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-KYC-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminKycDetailDark.dc.html",
+      "blob": "04657907ae99495017fa1365dcd992987c9a24fe",
+      "bytes": 11947,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-KYC-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminKycDetailMobile.dc.html",
+      "blob": "423e49c6cde5e3886a0d64ebd19227cc8b77a612",
+      "bytes": 5836,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-KYC-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminKycDetailMobileDark.dc.html",
+      "blob": "1dcc647b9734cf46b9f35e280f55b40f9d93fa52",
+      "bytes": 5853,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-KYC-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminKycMobile.dc.html",
+      "blob": "702b6667fe6304a3a9cd738fb61c5f09206d5fa5",
+      "bytes": 9071,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-KYC"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminKycMobileDark.dc.html",
+      "blob": "55a4d58ccf4089d80857f8eaef81ab0fd92cd2d9",
+      "bytes": 9104,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-KYC"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminMobileMenuMobile.dc.html",
+      "blob": "155c1e3486744a1fc5f0b57bee2adca8358b4cf8",
+      "bytes": 17997,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-NAV-MOBILE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminMobileMenuMobileDark.dc.html",
+      "blob": "e723e64806408076846ca4ade51da029438444cc",
+      "bytes": 18093,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-NAV-MOBILE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPaymentAnalytics.dc.html",
+      "blob": "19624f1577cb888c51d34c4e32eb6be41a3fffd4",
+      "bytes": 17962,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENT-ANALYTICS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPaymentAnalyticsDark.dc.html",
+      "blob": "922423020a35530d665988856cff6206d717d6d9",
+      "bytes": 17437,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENT-ANALYTICS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPaymentAnalyticsMobile.dc.html",
+      "blob": "0f654549fdf4bf521f4e2e9bfa9aeba1584e3d7d",
+      "bytes": 11527,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENT-ANALYTICS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPaymentAnalyticsMobileDark.dc.html",
+      "blob": "d7a6413a1b0015f89110cd998b9868d691837ed8",
+      "bytes": 11540,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENT-ANALYTICS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPaymentDetail.dc.html",
+      "blob": "95b65b91c2909141989e2b09a224461c7ee7df2f",
+      "bytes": 11640,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENT-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPaymentDetailDark.dc.html",
+      "blob": "a08b0467b821f76a08e2bbe603553dc741576f3c",
+      "bytes": 11717,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENT-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPaymentDetailMobile.dc.html",
+      "blob": "0456fcf02c79b01a528753c83078db93c83fdaf1",
+      "bytes": 5608,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENT-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPaymentDetailMobileDark.dc.html",
+      "blob": "5662349ab78a24ced9dd1911861506c084eb86cf",
+      "bytes": 5625,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENT-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPayments.dc.html",
+      "blob": "4a492b987e1aa943c223ffe8c47617f4c49e4cee",
+      "bytes": 15174,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENTS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPaymentsDark.dc.html",
+      "blob": "fc9b7af3973bb841dfae85e9eab2dc805c2c4e91",
+      "bytes": 15271,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENTS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPaymentsMobile.dc.html",
+      "blob": "2b131b8bad5d53e524537d9d9313776e19f84c0b",
+      "bytes": 9382,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENTS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPaymentsMobileDark.dc.html",
+      "blob": "b1d1a31615f52b890ecdbd980da541d088e6b9f8",
+      "bytes": 9419,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PAYMENTS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPlans.dc.html",
+      "blob": "1fcf9e9d599b405ab15678f83b88c6c804a4b198",
+      "bytes": 14045,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PLANS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPlansDark.dc.html",
+      "blob": "8f89148731efab104877848cece4369e645f0dc9",
+      "bytes": 14114,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PLANS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPlansMobile.dc.html",
+      "blob": "412b7a40f43db1092b7e2cf1584e3d4e6aff0ce1",
+      "bytes": 8214,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PLANS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminPlansMobileDark.dc.html",
+      "blob": "e4a860987dddfe23f0591a5aa99e0f406b29d7b5",
+      "bytes": 8223,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PLANS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminProviders.dc.html",
+      "blob": "bc4b296d13ce90e37cdfdc2be803eccb290fce85",
+      "bytes": 12044,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PROVIDERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminProvidersDark.dc.html",
+      "blob": "2378c9de245d6b2319c63d6484b25f7e9f5a656c",
+      "bytes": 12113,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PROVIDERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminProvidersMobile.dc.html",
+      "blob": "7c9a6ae2c0d767550a71f4b0d6b3644c7a0603ff",
+      "bytes": 6209,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PROVIDERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminProvidersMobileDark.dc.html",
+      "blob": "f925df0c8eb4ad29d6842e54b56278850a23b7dc",
+      "bytes": 6218,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-PROVIDERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminReferenceData.dc.html",
+      "blob": "a1ebe0e9f52c1a799f2657830506872c2f87bdc9",
+      "bytes": 10521,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-REFERENCE-DATA"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminReferenceDataDark.dc.html",
+      "blob": "712adcf9bfed5ae016887e620110adbec3f31b2e",
+      "bytes": 10590,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-REFERENCE-DATA"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminReferenceDataMobile.dc.html",
+      "blob": "bb3485f760e5037c357346f1e76dcf9b1207e4cf",
+      "bytes": 4681,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-REFERENCE-DATA"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminReferenceDataMobileDark.dc.html",
+      "blob": "566782fd0914d146e87b79fa023f2e2befc81399",
+      "bytes": 4690,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-REFERENCE-DATA"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRegistrations.dc.html",
+      "blob": "c0d7251e1b89351200baf1c8f6e33b992552de8d",
+      "bytes": 16947,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-REGISTRATIONS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRegistrationsDark.dc.html",
+      "blob": "f54091dc5bd05fdf73dd7cfa7ddf3a0c18b38ef8",
+      "bytes": 17040,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-REGISTRATIONS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRegistrationsMobile.dc.html",
+      "blob": "e872f0e3e6a1db62d6473334d0c9752443b0ae7c",
+      "bytes": 10824,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-REGISTRATIONS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRegistrationsMobileDark.dc.html",
+      "blob": "b88de7cee457fc532f2584d2779df3c9407437c4",
+      "bytes": 10857,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-REGISTRATIONS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRoleEdit.dc.html",
+      "blob": "88c3fa9334e964e6a13c3461d0b6a6111b63906f",
+      "bytes": 17279,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ROLE-EDIT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRoleEditDark.dc.html",
+      "blob": "a3bbe0de0bdf13929b5d063974a0f56e3d7e6c7d",
+      "bytes": 17352,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ROLE-EDIT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRoleEditMobile.dc.html",
+      "blob": "737c70f6fa29d9f336677834c3c3127521bb455a",
+      "bytes": 11239,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ROLE-EDIT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRoleEditMobileDark.dc.html",
+      "blob": "2b56d0836079e3223f4904c9421f8227afc66ba1",
+      "bytes": 11252,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ROLE-EDIT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRoles.dc.html",
+      "blob": "428e28a4afe6a8c76e76ab3766ddddefbf1ef15c",
+      "bytes": 24203,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ROLES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRolesDark.dc.html",
+      "blob": "3fa8ed6f8f58fcbb7383d93d36f593b4a4565726",
+      "bytes": 24296,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ROLES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRolesMobile.dc.html",
+      "blob": "ab8a6ceb4fd8f590ba15b154b916238b1ee874ce",
+      "bytes": 18394,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ROLES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminRolesMobileDark.dc.html",
+      "blob": "b473dfc977a009b577b39be57194e899d482b3d9",
+      "bytes": 18427,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-ROLES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSignIn.dc.html",
+      "blob": "429669d4a7865d7e5466e215db6ffe1d5dc52ea7",
+      "bytes": 4232,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SIGN-IN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSignInDark.dc.html",
+      "blob": "866a51cd7c27c6da1d51970c4b95e452529aa72d",
+      "bytes": 4249,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SIGN-IN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSignInMobile.dc.html",
+      "blob": "138e706986020e86278da082f401354618b7a1e9",
+      "bytes": 4290,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SIGN-IN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSignInMobileDark.dc.html",
+      "blob": "cacc6e94019ee1d397e111580ff1e0bd04c44945",
+      "bytes": 4307,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SIGN-IN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminStepUp.dc.html",
+      "blob": "0bf0a5d57c25afc6c4dbb78b05e5af21a4f83efe",
+      "bytes": 15051,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-STEP-UP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminStepUpDark.dc.html",
+      "blob": "8df7198f56160dcd4338beec238851f3271b35a3",
+      "bytes": 15140,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-STEP-UP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminStepUpMobile.dc.html",
+      "blob": "387cd473fa6bd397318222dc70b785cfaeebf1a1",
+      "bytes": 9035,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-STEP-UP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminStepUpMobileDark.dc.html",
+      "blob": "0ef7cfc030f390311962377b0b6e645550a68f1f",
+      "bytes": 9064,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-STEP-UP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionAnalytics.dc.html",
+      "blob": "449d917ddd284aad407a9d25b9c0b6f12787ae76",
+      "bytes": 18849,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTION-ANALYTICS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionAnalyticsDark.dc.html",
+      "blob": "67616e050f0ef045eddada00a1dfbb034b0ff23a",
+      "bytes": 18918,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTION-ANALYTICS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionAnalyticsMobile.dc.html",
+      "blob": "3d87dee29e0cb78ff0e003dcc07fefc031022cdb",
+      "bytes": 13001,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTION-ANALYTICS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionAnalyticsMobileDark.dc.html",
+      "blob": "9a38d5f4661db66d671e619b447eb5799f8bc1bb",
+      "bytes": 13010,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTION-ANALYTICS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionDetail.dc.html",
+      "blob": "267a5cb7aebeb8b4fb826b9f7292f25649b855be",
+      "bytes": 13011,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTION-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionDetailDark.dc.html",
+      "blob": "a4657a977cd855c72be7cc3cc680237cef5634c2",
+      "bytes": 13088,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTION-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionDetailMobile.dc.html",
+      "blob": "4b4db14b6507e47f7a1b4267558c97ad8af8dbfe",
+      "bytes": 6979,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTION-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionDetailMobileDark.dc.html",
+      "blob": "3354d1cf8a9b82c65dd49372fd1513405f318527",
+      "bytes": 6996,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTION-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptions.dc.html",
+      "blob": "6f913031c1030aad85cd75cb7e29fa8ff6cd94c5",
+      "bytes": 15516,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTIONS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionsDark.dc.html",
+      "blob": "6a885cb3313b46fc16118e5f667ac1de888ceb56",
+      "bytes": 15617,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTIONS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionsMobile.dc.html",
+      "blob": "c4df8be27e21e4708bfb69a17de2eddba3f39ca6",
+      "bytes": 9725,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTIONS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionsMobileDark.dc.html",
+      "blob": "59fd562a10554404c7b961208290b5c881a9b716",
+      "bytes": 9766,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SUBSCRIPTIONS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSystemHealth.dc.html",
+      "blob": "35e1461a73b1a124be87e2ae38de1165687df8dc",
+      "bytes": 10040,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SYSTEM-HEALTH"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSystemHealthDark.dc.html",
+      "blob": "0847ce56054c667e9ee19a1f4d82ae4438fb5037",
+      "bytes": 10109,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SYSTEM-HEALTH"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSystemHealthMobile.dc.html",
+      "blob": "746965fe13f8b0e03935d18a1e72870321aa1fd7",
+      "bytes": 4201,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SYSTEM-HEALTH"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminSystemHealthMobileDark.dc.html",
+      "blob": "59ffc0d591e433d5c1302dafdf89cb8ccfe234b6",
+      "bytes": 4210,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-SYSTEM-HEALTH"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminUserDetail.dc.html",
+      "blob": "3df30329c3d9c4addff99e837290ca905d568408",
+      "bytes": 13440,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-USER-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminUserDetailDark.dc.html",
+      "blob": "b40b8235a79f0c8972a85bedab8d2876a0afa382",
+      "bytes": 13529,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-USER-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminUserDetailMobile.dc.html",
+      "blob": "21a2195314b8b712131f645a31936f037c81453e",
+      "bytes": 7424,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-USER-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminUserDetailMobileDark.dc.html",
+      "blob": "ed1fc2f63423c89a2ce7dce2de27dd2f4c4a664f",
+      "bytes": 7453,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-USER-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminUsers.dc.html",
+      "blob": "e50ed1cf9eaf522e596148d30bd3f42f3447761d",
+      "bytes": 15271,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-USERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminUsersDark.dc.html",
+      "blob": "0a0e483cf7bdad5bc72f40d8d5176da20a91b695",
+      "bytes": 15372,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-USERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminUsersMobile.dc.html",
+      "blob": "2f7f39231375ff304fb6dd19d76a947c0edb3233",
+      "bytes": 9488,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-USERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AdminUsersMobileDark.dc.html",
+      "blob": "e911c702debcdf7a55421c84b3e6b159447d7445",
+      "bytes": 9529,
+      "role": "bundle-editable-artboard",
+      "screenId": "ADM-USERS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthConfirmEmail.dc.html",
+      "blob": "293b1aabb86474054bd482269dc168de8e4a994a",
+      "bytes": 4692,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-CONFIRM-EMAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthConfirmEmailDark.dc.html",
+      "blob": "ee513a2c5910b424f4281109dc231b38a464f874",
+      "bytes": 4713,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-CONFIRM-EMAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthConfirmEmailMobile.dc.html",
+      "blob": "5bc31875f4908d4e35216eec889d3309fe36471e",
+      "bytes": 4756,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-CONFIRM-EMAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthConfirmEmailMobileDark.dc.html",
+      "blob": "4ae7cdd5a29963e8531738e50f2e444a1177626c",
+      "bytes": 4777,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-CONFIRM-EMAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthForgotPassword.dc.html",
+      "blob": "84a5da7c4a6e5a8857dfcbec864df9eab2dfe4e9",
+      "bytes": 3939,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthForgotPasswordDark.dc.html",
+      "blob": "70bd646c98324e6ffa46a613e27a6f7b3cea5cab",
+      "bytes": 3960,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthForgotPasswordMobile.dc.html",
+      "blob": "86a03740ea9eebc30cafd19285591dc2e3b4b27e",
+      "bytes": 4003,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthForgotPasswordMobileDark.dc.html",
+      "blob": "de35a5dbdf867fafda87f0507e5ffe33529e2d21",
+      "bytes": 4024,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthForgotSent.dc.html",
+      "blob": "df07e18d98f637747a727e0df49d508842734d26",
+      "bytes": 4168,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthForgotSentDark.dc.html",
+      "blob": "713c5a9a41a6724807766c4f94d2922aa578db99",
+      "bytes": 4189,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthForgotSentMobile.dc.html",
+      "blob": "56abeb03dca3f2763f7e4e9af6e8afe88bc9b061",
+      "bytes": 4232,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthForgotSentMobileDark.dc.html",
+      "blob": "2b7af8ebc7d07f139a3c3321fc7d5980f07d4a94",
+      "bytes": 4253,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-FORGOT-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthGoogleLink.dc.html",
+      "blob": "7181eb7502e2575cf73ec2ab0d18cf4de8fd280a",
+      "bytes": 4875,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-GOOGLE-LINK"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthGoogleLinkDark.dc.html",
+      "blob": "aee8923dde31aff2bb57526321d6fee72452b509",
+      "bytes": 4896,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-GOOGLE-LINK"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthGoogleLinkMobile.dc.html",
+      "blob": "7613b28d83ef718aba08d5f77056fe95bd5468b8",
+      "bytes": 4939,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-GOOGLE-LINK"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthGoogleLinkMobileDark.dc.html",
+      "blob": "eb08b258eaa647b17442540a9274164153410544",
+      "bytes": 4960,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-GOOGLE-LINK"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthGoogleRegister.dc.html",
+      "blob": "3574aca2f28547fcedc6388fd7421585e2a11e76",
+      "bytes": 4756,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-GOOGLE-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthGoogleRegisterDark.dc.html",
+      "blob": "fba3615e477e8a94a468b103c58f8f792b1d6cea",
+      "bytes": 4777,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-GOOGLE-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthGoogleRegisterMobile.dc.html",
+      "blob": "b9350849012fc11bebe398b037f8b541cb642563",
+      "bytes": 4820,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-GOOGLE-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthGoogleRegisterMobileDark.dc.html",
+      "blob": "c9592377e51cebcc39cbfe08d4d7eb504e938e6b",
+      "bytes": 4841,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-GOOGLE-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthPasskeySetup.dc.html",
+      "blob": "03f502bc5c35323035535d20298bb50d0d824ca3",
+      "bytes": 4635,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-PASSKEY-SETUP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthPasskeySetupDark.dc.html",
+      "blob": "b29d05491aff248f96693e0df4c268b6dcae287c",
+      "bytes": 4656,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-PASSKEY-SETUP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthPasskeySetupMobile.dc.html",
+      "blob": "163bce1e59605085e5bcde7d2d9d072a0f2142dc",
+      "bytes": 4699,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-PASSKEY-SETUP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthPasskeySetupMobileDark.dc.html",
+      "blob": "7458622816d4f8d9286a871fb7c3611b167af5e5",
+      "bytes": 4720,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-PASSKEY-SETUP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthRegisterDetails.dc.html",
+      "blob": "d4dd45bb93768533ae747b773498880d699712e0",
+      "bytes": 4538,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthRegisterDetailsDark.dc.html",
+      "blob": "cb30603d0f6dd9e27601cf7efa2a33a620317b90",
+      "bytes": 4559,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthRegisterDetailsMobile.dc.html",
+      "blob": "102b4ec4d7f6e3e6fc5e624753a0533f5131bb18",
+      "bytes": 4602,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthRegisterDetailsMobileDark.dc.html",
+      "blob": "8a6302afce021ea49a3c24fe13968eb4d229a7db",
+      "bytes": 4623,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthRegisterEmail.dc.html",
+      "blob": "92ff1e2f0eed2a9f86b4fa13920c7bd6a1d8b9dc",
+      "bytes": 4670,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthRegisterEmailDark.dc.html",
+      "blob": "e6861a27880e621cb2b13f87bf433e345a6dda45",
+      "bytes": 4691,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthRegisterEmailMobile.dc.html",
+      "blob": "d0f33340dac72813d4ccba4d646fd5282c3ed915",
+      "bytes": 4734,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthRegisterEmailMobileDark.dc.html",
+      "blob": "9e1e9d0961ef5c1f2a311e5472bbaa233780758f",
+      "bytes": 4755,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-REGISTER"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetDone.dc.html",
+      "blob": "c0a65475aa801bc8892ebb5ec1cefcd6284a17e2",
+      "bytes": 3367,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetDoneDark.dc.html",
+      "blob": "f64d45469d2b847c9bebe34b04b394b1f3a5158c",
+      "bytes": 3384,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetDoneMobile.dc.html",
+      "blob": "0a36d35e92b50341afd61e408e7447f2e4cc0d2d",
+      "bytes": 3425,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetDoneMobileDark.dc.html",
+      "blob": "50f1fb193b373542f799f702f5d8cbc7be861c78",
+      "bytes": 3442,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetExpired.dc.html",
+      "blob": "cb34bece7bbc31ac751bbdca659c92de52c8c845",
+      "bytes": 3736,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetExpiredDark.dc.html",
+      "blob": "436b68769576f55f792286e674e6098aeeac0dda",
+      "bytes": 3757,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetExpiredMobile.dc.html",
+      "blob": "e3690cc39f59c229d98b995b0a86215ab0cb04d3",
+      "bytes": 3800,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetExpiredMobileDark.dc.html",
+      "blob": "be76d96978410403841a39e64c5af3159ac7bb35",
+      "bytes": 3821,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetPassword.dc.html",
+      "blob": "ddc4b844e9b7cc3aa3338d8db514e7546d6b1c75",
+      "bytes": 3552,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetPasswordDark.dc.html",
+      "blob": "9c9a2cd7944b5b1cdd62e7692274f23d62a0f9de",
+      "bytes": 3569,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetPasswordMobile.dc.html",
+      "blob": "19b2f223ad78dfafd9b4ced4100ae880c0afa2bb",
+      "bytes": 3610,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthResetPasswordMobileDark.dc.html",
+      "blob": "c7d5566b1d99f07b5ebfea006c92e04c32357b95",
+      "bytes": 3627,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-RESET-PASSWORD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthSignIn.dc.html",
+      "blob": "975a2b7d997a150b13813fba9677281cd157dbd6",
+      "bytes": 4856,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-SIGN-IN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthSignInDark.dc.html",
+      "blob": "012ae12ccd253e28014772c26eb2d575a074be93",
+      "bytes": 4881,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-SIGN-IN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthSignInMobile.dc.html",
+      "blob": "e32455d9539c6fc19d00cc1def4f16468703813f",
+      "bytes": 4926,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-SIGN-IN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthSignInMobileDark.dc.html",
+      "blob": "a3517cb3f4b70138016adb60a0b66ae2f4169531",
+      "bytes": 4951,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-SIGN-IN"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthStates.dc.html",
+      "blob": "a8730d9a52df64758c0bc57e6275cf0b92c51fa6",
+      "bytes": 8111,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-MESSAGES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthStatesDark.dc.html",
+      "blob": "3e3150c4db9902fed392a56cc73cfcf83ee419ff",
+      "bytes": 8124,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-MESSAGES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthStatesMobile.dc.html",
+      "blob": "39854923767aebc57f01ec6b20f560b627e90467",
+      "bytes": 8163,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-MESSAGES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthStatesMobileDark.dc.html",
+      "blob": "b95678b1fcc766d26512da9129ac8da4de08c9c4",
+      "bytes": 8176,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-MESSAGES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthTwoFactor.dc.html",
+      "blob": "1362eab5ae8678be463ac1bdf03475dd967f0dda",
+      "bytes": 4461,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-TWO-FACTOR"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthTwoFactorDark.dc.html",
+      "blob": "3a48bc5f1bc74e9254ff5e73755199ef92b87ec6",
+      "bytes": 4482,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-TWO-FACTOR"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthTwoFactorMobile.dc.html",
+      "blob": "2da9a840b5a35238b845704dcf965ed35351e356",
+      "bytes": 4525,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-TWO-FACTOR"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/AuthTwoFactorMobileDark.dc.html",
+      "blob": "06802e40ad2eeba2428f44adc663ca001c735c45",
+      "bytes": 4546,
+      "role": "bundle-editable-artboard",
+      "screenId": "AUTH-TWO-FACTOR"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/Main.dc.html",
+      "blob": "2a16aba94cc43e1632ee66e873a6f28867baf05c",
+      "bytes": 14077,
+      "role": "bundle-editable-artboard",
+      "screenId": "FND-FOUNDATIONS"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicAbout.dc.html",
+      "blob": "a384aff805194cae42e6227c9b4d584912454357",
+      "bytes": 3795,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-ABOUT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicAboutDark.dc.html",
+      "blob": "7f9fcdfa662095897ffc2cc92b40aae119cd00a8",
+      "bytes": 3860,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-ABOUT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicAboutMobile.dc.html",
+      "blob": "03b622ee80f48324b2ea02d17673926b60a2c749",
+      "bytes": 3473,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-ABOUT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicAboutMobileDark.dc.html",
+      "blob": "296d338f29da7f78db4e91f15fe474c603df8e11",
+      "bytes": 3514,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-ABOUT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicBlog.dc.html",
+      "blob": "298992374948936e2580c23e707a00ef4d157d02",
+      "bytes": 7982,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-BLOG"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicBlogDark.dc.html",
+      "blob": "0dfb1f821daae2799de26da2f732f14ca173f863",
+      "bytes": 8047,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-BLOG"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicBlogMobile.dc.html",
+      "blob": "9f71d62ec67b0740e5caec778cc9e60224d91dd6",
+      "bytes": 7660,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-BLOG"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicBlogMobileDark.dc.html",
+      "blob": "d608c25912fe92a3f2ab38317a542b168c160c81",
+      "bytes": 7701,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-BLOG"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicContact.dc.html",
+      "blob": "5d89455c2ae3fec5793d659f7055fc3c2a21398f",
+      "bytes": 5142,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-CONTACT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicContactDark.dc.html",
+      "blob": "2eb92fed547f14b65349af86c5387d3e58d7a90a",
+      "bytes": 5207,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-CONTACT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicContactMobile.dc.html",
+      "blob": "7d3e64c81ba44ae95bdc8b7bdcfd6c3b531d82cb",
+      "bytes": 4820,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-CONTACT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicContactMobileDark.dc.html",
+      "blob": "d13725e333126946ba006277384b5ebb18e030fb",
+      "bytes": 4861,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-CONTACT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicFeatures.dc.html",
+      "blob": "b0e308f0bc87fb7f676679ca437efb64507b76da",
+      "bytes": 8234,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-FEATURES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicFeaturesDark.dc.html",
+      "blob": "09bb8c350beedb514bb2116a0c09a65e5d017e52",
+      "bytes": 8299,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-FEATURES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicFeaturesMobile.dc.html",
+      "blob": "b665db45929e8ed8ef1f2e1f2f8e7b5069384186",
+      "bytes": 7912,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-FEATURES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicFeaturesMobileDark.dc.html",
+      "blob": "bec3477eb96122c613aa5d2f00a2c15934053d1f",
+      "bytes": 7953,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-FEATURES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicHome.dc.html",
+      "blob": "29b843de11be7283da22c949ad999e373b25fc2f",
+      "bytes": 10547,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-HOME"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicHomeDark.dc.html",
+      "blob": "77c4c9cc578172015986a8f26cec78f3e3dbb252",
+      "bytes": 10624,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-HOME"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicHomeMobile.dc.html",
+      "blob": "4e34888e5af642e7d8da1bfc5e1949c7df872876",
+      "bytes": 10243,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-HOME"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicHomeMobileDark.dc.html",
+      "blob": "f5fd318af25dca4bc4beef5ec0bfac9a7ac2dc86",
+      "bytes": 10296,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-HOME"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicLegal.dc.html",
+      "blob": "4f7b20e2f65544726555a1682bac26af7c7040b9",
+      "bytes": 5452,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-LEGAL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicLegalDark.dc.html",
+      "blob": "4b0146b810f75f54f88123e1ce46be6267a16a5e",
+      "bytes": 5517,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-LEGAL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicLegalMobile.dc.html",
+      "blob": "38e589c98e84e2a517d4382b345d9ded38a1e8fe",
+      "bytes": 5132,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-LEGAL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicLegalMobileDark.dc.html",
+      "blob": "7535a5fa33539ecdaffc7e9bf5cec25466805502",
+      "bytes": 5173,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-LEGAL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicMobileMenuMobile.dc.html",
+      "blob": "301170308ea756f0b76988b8d4ca7678092e5d7f",
+      "bytes": 13959,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-NAV-MOBILE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicMobileMenuMobileDark.dc.html",
+      "blob": "b13527dc7e5bceb708fb542631d34c96be094966",
+      "bytes": 14051,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-NAV-MOBILE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicPricing.dc.html",
+      "blob": "8a436009a6ad7f091360e0f487929edd961efae2",
+      "bytes": 9302,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-PRICING"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicPricingDark.dc.html",
+      "blob": "93e5f602d531c492f87d5aff89a4b1477a8c0cae",
+      "bytes": 9379,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-PRICING"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicPricingMobile.dc.html",
+      "blob": "1116d65f8d5a02ec0f9776fc4aaf4b06d2cbaf02",
+      "bytes": 8998,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-PRICING"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/PublicPricingMobileDark.dc.html",
+      "blob": "a8ccdd4f9ebabbfd37a665c900b58456a72a2294",
+      "bytes": 9051,
+      "role": "bundle-editable-artboard",
+      "screenId": "MKT-PRICING"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/README.md",
+      "blob": "55f457daeceed949daa762c4252203b0126a2e2d",
+      "bytes": 16275,
+      "role": "bundle-readme"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserBilling.dc.html",
+      "blob": "026c7e4938df35f982bece8d36650263ba8717d7",
+      "bytes": 19210,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserBillingDark.dc.html",
+      "blob": "255273783f793812a0f78304bbcd52d36a1309c8",
+      "bytes": 19267,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserBillingHistory.dc.html",
+      "blob": "cccff283c8d18f23dc054535c7f2aace3853c737",
+      "bytes": 8744,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-BILLING-HISTORY"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserBillingHistoryDark.dc.html",
+      "blob": "18867a6afc89c457dd807dc3a5bd9b97aebfd842",
+      "bytes": 8805,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-BILLING-HISTORY"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserBillingHistoryMobile.dc.html",
+      "blob": "d0a863cea863a2e07f0bfce63305581b9b69adfa",
+      "bytes": 6727,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-BILLING-HISTORY"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserBillingHistoryMobileDark.dc.html",
+      "blob": "86978e49048d00cd6365b08fee230a9d6dbdc649",
+      "bytes": 6780,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-BILLING-HISTORY"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserBillingMobile.dc.html",
+      "blob": "6f1b455b824bf00d09a262e1958cf571987fba5c",
+      "bytes": 17411,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserBillingMobileDark.dc.html",
+      "blob": "50a6e30525a4ad94fd30acca96a5a485d78fcb41",
+      "bytes": 17460,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-BILLING"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserCheckout.dc.html",
+      "blob": "aff0030bbf0675196c343bd2ee15d63c3a6dde3e",
+      "bytes": 9118,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-CHECKOUT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserCheckoutDark.dc.html",
+      "blob": "595c04cc12e24686b725b850cfb2d381febe5c21",
+      "bytes": 9167,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-CHECKOUT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserCheckoutMobile.dc.html",
+      "blob": "490852243bd5fcce66ea8d018f599c0ab324bac4",
+      "bytes": 7082,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-CHECKOUT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserCheckoutMobileDark.dc.html",
+      "blob": "12041c4672b25a40ddcf837f456d32b2798c9b18",
+      "bytes": 7123,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-CHECKOUT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserCheckoutResult.dc.html",
+      "blob": "870ef6d10d02a558c58a6fda331fb6a02ed53b4a",
+      "bytes": 8877,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserCheckoutResultDark.dc.html",
+      "blob": "d4ca86042fe9926afe5d82cf9ff18ce14107d942",
+      "bytes": 8930,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserCheckoutResultMobile.dc.html",
+      "blob": "e317ff65d513c2ffdb868758caa27ade07ecff29",
+      "bytes": 6624,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserCheckoutResultMobileDark.dc.html",
+      "blob": "fd322016a918e91c2a1cd737119aee5962767047",
+      "bytes": 6669,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-CHECKOUT-RESULT"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserDashboard.dc.html",
+      "blob": "7ae13272771cb241c77bc4e17586e03c9dc44493",
+      "bytes": 11802,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-DASHBOARD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserDashboardDark.dc.html",
+      "blob": "99d8a0ca36e4226b4253baa8f7f24b0bfb23f8e5",
+      "bytes": 11867,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-DASHBOARD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserDashboardMobile.dc.html",
+      "blob": "0515473a53b784e017db3ca66466a562027aa1d4",
+      "bytes": 10014,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-DASHBOARD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserDashboardMobileDark.dc.html",
+      "blob": "c6128e5a1863b65979618ca5d5b2e5bbebd1a4c5",
+      "bytes": 10071,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-DASHBOARD"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserMobileMenuMobile.dc.html",
+      "blob": "31f35e750431363bc06a7c62322106ac765eff36",
+      "bytes": 13921,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-NAV-MOBILE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserMobileMenuMobileDark.dc.html",
+      "blob": "63fd9d491e8d5186ae611f065b71a068bc3b7923",
+      "bytes": 14017,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-NAV-MOBILE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserPreferences.dc.html",
+      "blob": "c3049680925dcc58802eacb5ab28a28f37e57386",
+      "bytes": 8597,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PREFERENCES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserPreferencesDark.dc.html",
+      "blob": "5ee78d27b356d64486eba8f6adb1b5927b26f64d",
+      "bytes": 8634,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PREFERENCES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserPreferencesMobile.dc.html",
+      "blob": "6525e36e5a681c044e5e54f26becc2f55c2e1260",
+      "bytes": 6540,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PREFERENCES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserPreferencesMobileDark.dc.html",
+      "blob": "99a391425652bc57505560d000f4a36e81ea82cd",
+      "bytes": 6569,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PREFERENCES"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserProfile.dc.html",
+      "blob": "f38d922dd962bd46b4d4ffd3e44fd0d32a55a415",
+      "bytes": 7731,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PROFILE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserProfileDark.dc.html",
+      "blob": "b1eab3d4742e7132156824a10aa12e7600bf78be",
+      "bytes": 7768,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PROFILE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserProfileMobile.dc.html",
+      "blob": "386bbd0765d5c08d97d621714629de1c17e36a14",
+      "bytes": 5678,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PROFILE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserProfileMobileDark.dc.html",
+      "blob": "28c692d6a5d8d4f2837a81ce7227da0d6bb4763a",
+      "bytes": 5707,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PROFILE"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserPurchaseDetail.dc.html",
+      "blob": "58880b7db09b22d650adceeee5ddd5f2cc1185c7",
+      "bytes": 7550,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PURCHASE-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserPurchaseDetailDark.dc.html",
+      "blob": "34eed32186ea8e0a5dc80f45b9161463f8d9ef5e",
+      "bytes": 7591,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PURCHASE-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserPurchaseDetailMobile.dc.html",
+      "blob": "f3fdacc6b221a3572edaf13cf2509790ea7528fb",
+      "bytes": 5278,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PURCHASE-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserPurchaseDetailMobileDark.dc.html",
+      "blob": "6e85a8f18e4051b5127f838e39fe8dc53a010b84",
+      "bytes": 5311,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-PURCHASE-DETAIL"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserSecurity.dc.html",
+      "blob": "5d8db14ab45dc0ab863a316006c416041b2c4714",
+      "bytes": 17661,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserSecurityDark.dc.html",
+      "blob": "46261432c16c3501244cba689e9190d4f85133c5",
+      "bytes": 17702,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserSecurityMobile.dc.html",
+      "blob": "6900500e1444c09441e980bfc5aeac2512c0db21",
+      "bytes": 15613,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserSecurityMobileDark.dc.html",
+      "blob": "d29bd46e68fa61aad216d4c2e6dd4ebc5809550b",
+      "bytes": 15646,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-SECURITY"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserTwoFactorSetup.dc.html",
+      "blob": "d2ab1168c454ca641f0ad8da1a250bef33e023e0",
+      "bytes": 19512,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-TWO-FACTOR-SETUP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserTwoFactorSetupDark.dc.html",
+      "blob": "d68a3aaee02575bb3535042173705d099a453d11",
+      "bytes": 19549,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-TWO-FACTOR-SETUP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserTwoFactorSetupMobile.dc.html",
+      "blob": "f47ecbdd95d3678c323ab06519526d67f2865c52",
+      "bytes": 17225,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-TWO-FACTOR-SETUP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserTwoFactorSetupMobileDark.dc.html",
+      "blob": "841e206dfeaa3a73cf189d6d84e386a023547f9f",
+      "bytes": 17254,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-TWO-FACTOR-SETUP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserVerification.dc.html",
+      "blob": "28c884cbe85223c809dc42969052edfffbb304b1",
+      "bytes": 12271,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserVerificationDark.dc.html",
+      "blob": "0f6d179ef2bdb72dce69f9e2d8c97e93ec227e5e",
+      "bytes": 12308,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserVerificationMobile.dc.html",
+      "blob": "e1c231463b87f1fef31a93ef9b5b444736276c4d",
+      "bytes": 10213,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserVerificationMobileDark.dc.html",
+      "blob": "1f1e051d94d2bca94ca7fb90f490ab33cd1678c8",
+      "bytes": 10242,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-VERIFICATION"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserWallet.dc.html",
+      "blob": "7ce0ff8fb3a75aa12171c3587a751803637cfe4d",
+      "bytes": 9615,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-WALLET"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserWalletDark.dc.html",
+      "blob": "d49bdb728a6d04a7ed27a71acfa924a891c210a9",
+      "bytes": 9656,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-WALLET"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserWalletMobile.dc.html",
+      "blob": "b5cb05983305956f73fe53ce23842b44f551cde7",
+      "bytes": 7793,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-WALLET"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserWalletMobileDark.dc.html",
+      "blob": "bdd56417702a88c53dcc86027afb896981776df5",
+      "bytes": 7826,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-WALLET"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserWalletTopUp.dc.html",
+      "blob": "ca459013532b3bc5ac09c5a03708894a83591278",
+      "bytes": 11382,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-WALLET-TOP-UP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserWalletTopUpDark.dc.html",
+      "blob": "b49e318a37317a58ac90385a62fc9ad156436228",
+      "bytes": 11423,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-WALLET-TOP-UP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserWalletTopUpMobile.dc.html",
+      "blob": "3758c2abba287cb8b5e10a14281cb4a3f855b236",
+      "bytes": 9560,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-WALLET-TOP-UP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/UserWalletTopUpMobileDark.dc.html",
+      "blob": "f61ecf2578b593c9b24d3c06d8d0b359a09bde48",
+      "bytes": 9593,
+      "role": "bundle-editable-artboard",
+      "screenId": "USR-WALLET-TOP-UP"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/_runtime/react-dom.js",
+      "blob": "fb4e099c05623afac0779278631c0712676e2b65",
+      "bytes": 131835,
+      "role": "bundle-runtime"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/_runtime/react.js",
+      "blob": "9f467cace439d574903ae9d7aa6ef1068552c2f6",
+      "bytes": 10751,
+      "role": "bundle-runtime"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/_runtime/support.js",
+      "blob": "f9e8d9bddce5a07d09f6d24033b8f3cd24c0a5ee",
+      "bytes": 54955,
+      "role": "bundle-runtime"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/assets/b3e64677301dbd968a0d7aa4f4859832.css",
+      "blob": "55b6bca0de348a5abbb9040d2ec58294885eef1b",
+      "bytes": 23117,
+      "role": "bundle-asset"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design-project/canvas.json",
+      "blob": "83fa731da4aea643b4feaec0184a5f6395c18154",
+      "bytes": 50922,
+      "role": "bundle-canvas-metadata"
+    },
+    {
+      "path": "User Portal/Project Template — Complete Product Design.html",
+      "blob": "e3fc6ce522aef8b60e7d0a90c57da5976dfa23f8",
+      "bytes": 14172522,
+      "role": "bundle-self-extracting-canvas"
+    }
+  ]
+}
