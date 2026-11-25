@@ -13,6 +13,8 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       applyTheme(context.globals.theme === "dark" ? "dark" : "light");
+      // Full-page layouts (the dashboard shell) render edge to edge.
+      if (context.parameters.bare) return <Story />;
       return (
         <div className="bg-bg text-fg min-h-screen p-4 md:p-8">
           <Story />

@@ -5,6 +5,7 @@ import { useId, useSyncExternalStore } from "react";
 import type { ComponentType } from "react";
 import { MonitorIcon, MoonIcon, SunIcon } from "../components/icons";
 import type { IconProps } from "../components/icons";
+import { Switch } from "../components/switch";
 import type { ThemePreference } from "./theme-config";
 
 const noopSubscribe = () => () => undefined;
@@ -47,6 +48,39 @@ export function ThemeSwitch({
       <MoonIcon className="size-icon-md dark:hidden" />
       <SunIcon className="size-icon-md hidden dark:block" />
     </button>
+  );
+}
+
+/**
+ * Labelled "Dark mode" switch for navigation drawers (reference
+ * `.m-drawer .side-foot`). Choosing a side sets an explicit light or dark
+ * preference; the Preferences page (`ThemeSelect`) restores "System". The
+ * switch reports no state until hydration (the stored preference is unknown
+ * on the server); drawers are closed at that point.
+ */
+export function DarkModeSwitch({
+  className = "",
+  label = "Dark mode",
+}: Readonly<{ className?: string; label?: string }>) {
+  const { resolvedTheme, setTheme } = useTheme();
+  const hydrated = useHydrated();
+  const id = useId();
+
+  return (
+    <div
+      className={["flex items-center justify-between gap-3", className].join(
+        " ",
+      )}
+    >
+      <label className="text-small text-fg" htmlFor={id}>
+        {label}
+      </label>
+      <Switch
+        checked={hydrated && resolvedTheme === "dark"}
+        id={id}
+        onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+      />
+    </div>
   );
 }
 

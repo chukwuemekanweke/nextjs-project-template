@@ -5,6 +5,6 @@ import { ThemeSwitch } from "@template/ui-core";
  * for existing shells; it delegates to the shared `ThemeSwitch`, so the theme
  * is applied before paint by the application's `ThemeProvider`.
  */
-export function ThemeToggle() {
-  return <ThemeSwitch />;
+export function ThemeToggle({ className }: Readonly<{ className?: string }>) {
+  return <ThemeSwitch className={className} />;
 }

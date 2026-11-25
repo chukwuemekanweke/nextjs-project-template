@@ -11,7 +11,7 @@ vi.mock("next-themes", () => ({
   useTheme: () => themeState,
 }));
 
-import { ThemeSelect, ThemeSwitch } from "./theme-controls";
+import { DarkModeSwitch, ThemeSelect, ThemeSwitch } from "./theme-controls";
 import {
   THEME_STORAGE_KEY,
   isThemePreference,
@@ -38,6 +38,19 @@ describe("ThemeSwitch", () => {
     expect(renderToStaticMarkup(<ThemeSwitch className="ml-2" />)).toContain(
       "ml-2",
     );
+  });
+});
+
+describe("DarkModeSwitch", () => {
+  it("renders a labelled switch that is off until hydration", () => {
+    const html = renderToStaticMarkup(<DarkModeSwitch />);
+    const id =
+      /<button[^>]*role="switch"[^>]*id="([^"]+)"/.exec(html)?.[1] ??
+      /<button[^>]*id="([^"]+)"[^>]*role="switch"/.exec(html)?.[1];
+    expect(id).toBeDefined();
+    expect(html).toContain(`for="${id}"`);
+    expect(html).toContain(">Dark mode</label>");
+    expect(html).toContain('aria-checked="false"');
   });
 });
 

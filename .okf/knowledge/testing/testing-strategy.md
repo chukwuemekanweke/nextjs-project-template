@@ -31,29 +31,40 @@ durable boundaries and pure behavior rather than broad browser rendering:
 - `api-react`: key/options/hook policies and integration with domain clients.
 - `forms`: backend validation mapping.
 - `config`: schema validation and defaults.
-- `ui-core` and `forms` browser tests (`*.browser.test.tsx`, Vitest browser
+- `ui-core`, `forms` and `dashboard-ui` browser tests (`*.browser.test.tsx`, Vitest browser
   mode with Playwright Chromium and reduced motion, `pnpm test:component`):
   keyboard and focus (dialog trap/return, tabs, switch, segmented control,
   OTP), ARIA state, label/hint/error association, loading/duplicate-submit
   prevention, responsive `DataTable`, and React Hook Form integration. The
   node config excludes them.
 - Visual regression (`pnpm test:visual`, `tooling/ui-workbench/visual`):
-  `toMatchScreenshot` over composed workbench stories at 1440/390 × light/
-  dark plus open dialogs; Windows/Chromium baselines. Update only with `-u`
-  and review the diffs.
+  `toMatchScreenshot` over composed workbench stories (primitive galleries at
+  1440/390 × light/dark, dialogs, and a selective desktop dashboard-shell
+  set); Windows/Chromium baselines. Update only with `-u` and review the
+  diffs. Implementation tickets add selective shots only; the comprehensive
+  matrix is FE-UI-016.
 - `ui-core`: pure presentation helpers such as minor-unit money formatting;
   `styles/theme.test.ts` parses `theme.css` to assert reference token values,
   dark overrides and WCAG contrast (text 4.5:1, controls/focus 3:1); theme
   controls render accessible, hydration-safe markup (`renderToStaticMarkup`
   with a mocked `next-themes`).
-- `dashboard-ui`: sidebar active-state matching and expanded/collapsed
-  navigation rendering via `renderToStaticMarkup`.
+- `dashboard-ui`: active-route resolution (`navigation.test.ts`) and sidebar
+  grouping/rail rendering via `renderToStaticMarkup`; browser tests
+  (`dashboard-shell.browser.test.tsx`) cover the drawer (focus trap/return,
+  Escape, scrim, nav selection, scroll lock, closing at `lg`), rail tooltips
+  and names, account-menu keyboard use, theme switching and breakpoints.
 - applications: rendering via `renderToStaticMarkup` with mocked hooks (no DOM
   runner in apps; portalled Radix overlays do not server-render, so app tests
   assert dialog content through a stand-in and dialog semantics are covered
   in `ui-core`), BFF Route Handlers, session/cookie adapters, sign-in/logout, authorization,
   registration/profile/password helpers, navigation, environment, and portal
   configuration.
+
+Conventions: shared components get component tests and representative
+workbench stories; shared layouts get component tests and selective stories;
+feature pages are tested in their apps (no workbench duplication); API
+integration gets functional/integration tests, not stories or screenshots.
+The workbench is never a parallel copy of portal screens.
 
 Browser suites are not part of `pnpm test` or CI until OD-05 adds
 browser-capable jobs; run `pnpm test:component` and `pnpm test:visual` locally

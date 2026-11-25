@@ -185,5 +185,5 @@ Visible changes to un-migrated screens: Outfit replaces Inter in the public port
 
 - Migrate components from `brand-*`/`gray-*`/`dark:` pairs to semantic utilities (FE-UI-004 onwards), add the lint rule against raw palette classes (FE-UI-004), and delete the compatibility layer (FE-UI-032).
 - Replace the Solid marketing styles and their pinned radii (FE-UI-009/010); fixes [DR-078](./discrepancy-register.md#dr-078) and the remaining [DR-021](./discrepancy-register.md#dr-021) glyphs.
-- Dashboard shell dimensions (`w-sidebar`, `h-topbar`, `max-w-content`) are available but the shell still uses its own 224/72 px sidebar and 64 px top bar (FE-UI-008).
+- Dashboard shell dimensions: the shell (Trello FE-UI-004) uses `w-sidebar` (260px), `w-sidebar-collapsed` (72px rail), `min-h-topbar`/`min-h-topbar-mobile`, `w-nav-drawer`, `min-h-tabbar-item` and `max-w-content`; the drawer slides in with `animate-drawer-in-left` (skipped under reduced motion).
 - Decisions: OD-05 (workbench and browser test jobs), OD-08 (control-border sign-off), OD-17 (runtime brand colour), DR-076 (dark hover value).

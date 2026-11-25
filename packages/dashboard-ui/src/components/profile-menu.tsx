@@ -1,62 +1,118 @@
-import { ChevronDownIcon } from "@template/ui-core";
-import type { ReactNode } from "react";
+"use client";
 
-export function ProfileMenu({
-  name,
-  role,
+import {
+  Avatar,
+  ChevronDownIcon,
+  cn,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@template/ui-core";
+import type { ReactElement } from "react";
+
+/**
+ * Avatar with a name and secondary line (reference identity blocks in the
+ * top bar, sidebar footer and drawer). Values come from the application's
+ * authenticated account; long values truncate with the full text in `title`.
+ */
+export function AccountSummary({
+  avatarSrc,
+  className,
+  detail,
   meta,
-  actions,
+  name,
 }: Readonly<{
-  name: string;
-  role: string;
+  avatarSrc?: string | null;
+  className?: string;
+  /** Secondary line, for example an email address or a role. */
+  detail?: string;
+  /** Optional third line. */
   meta?: string;
-  actions?: readonly ReactNode[];
+  name: string;
 }>) {
   return (
-    <details className="group relative">
-      <summary
-        aria-label={`Account menu for ${name}`}
-        className="flex cursor-pointer list-none items-center gap-3 rounded-lg py-1 pr-1 pl-1 text-gray-700 transition-colors hover:bg-gray-100 sm:pr-2 dark:text-gray-300 dark:hover:bg-white/5 [&::-webkit-details-marker]:hidden"
-      >
-        <span
-          aria-hidden="true"
-          className="bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-300 flex h-10 w-10 items-center justify-center overflow-hidden rounded-full text-sm font-semibold"
-        >
-          {initials(name)}
-        </span>
-        <span className="hidden text-sm font-medium sm:block">{name}</span>
-        <ChevronDownIcon className="hidden h-4 w-4 text-gray-500 transition-transform group-open:rotate-180 sm:block" />
-      </summary>
-      <div className="shadow-theme-lg absolute right-0 z-50 mt-2 flex w-[260px] flex-col rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900">
-        <span className="block px-1 text-sm font-semibold text-gray-900 dark:text-white/90">
+    <div className={cn("flex min-w-0 items-center gap-3", className)}>
+      <Avatar decorative name={name} src={avatarSrc} />
+      <div className="min-w-0 leading-tight">
+        <p className="text-label text-fg truncate" title={name}>
           {name}
-        </span>
-        <span className="mt-0.5 block px-1 text-xs text-gray-600 dark:text-gray-400">
-          {role}
-        </span>
-        {meta ? (
-          <span className="mt-1 block px-1 text-xs text-gray-500">{meta}</span>
+        </p>
+        {detail ? (
+          <p
+            className="text-caption text-fg-subtle mt-0.5 truncate font-normal"
+            title={detail}
+          >
+            {detail}
+          </p>
         ) : null}
-        <div className="mt-3 flex flex-col gap-1 border-t border-gray-200 pt-3 dark:border-gray-800">
-          {actions?.map((action, index) => (
-            <div
-              className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"
-              key={index}
-            >
-              {action}
-            </div>
-          ))}
-        </div>
+        {meta ? (
+          <p className="text-caption text-fg-subtle mt-0.5 truncate font-normal">
+            {meta}
+          </p>
+        ) : null}
       </div>
-    </details>
+    </div>
   );
 }
 
-function initials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
+/**
+ * Top-bar account menu. The trigger shows the avatar, and from `md` the
+ * name and `role` line (reference user top bar). The menu repeats the
+ * identity and lists `actions`: each must be a single element that spreads
+ * the props it receives onto a link or button (for example `next/link` or
+ * an app's sign-out button), so it becomes a keyboard-operable menu item.
+ */
+export function ProfileMenu({
+  actions = [],
+  avatarSrc,
+  meta,
+  name,
+  role,
+}: Readonly<{
+  actions?: readonly ReactElement[];
+  avatarSrc?: string | null;
+  meta?: string;
+  name: string;
+  /** Secondary line: email address, role or portal name. */
+  role: string;
+}>) {
+  return (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <button
+          aria-label={`Account menu for ${name}`}
+          className="hover:bg-hover data-[state=open]:bg-hover flex max-w-64 min-w-0 shrink items-center gap-2.5 rounded-md p-0.5 text-left transition-colors md:pr-2"
+          type="button"
+        >
+          <Avatar decorative name={name} src={avatarSrc} />
+          <span className="hidden min-w-0 leading-tight md:block">
+            <span className="text-label text-fg block truncate">{name}</span>
+            <span className="text-caption text-fg-subtle block truncate font-normal">
+              {role}
+            </span>
+          </span>
+          <ChevronDownIcon className="size-icon-xs text-fg-subtle hidden shrink-0 md:block" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-72 max-w-[calc(100vw-1rem)]">
+        <DropdownMenuLabel>
+          <AccountSummary
+            avatarSrc={avatarSrc}
+            detail={role}
+            meta={meta}
+            name={name}
+          />
+        </DropdownMenuLabel>
+        {actions.length > 0 ? <DropdownMenuSeparator /> : null}
+        {actions.map((action, index) => (
+          <DropdownMenuItem asChild key={action.key ?? index}>
+            {action}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }

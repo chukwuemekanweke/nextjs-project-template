@@ -71,6 +71,10 @@ Controls are 44px tall. Form-control borders use `--color-control-border` (≥ 3
 - **`Dialog`** — Radix Dialog in a portal: labelled by `title`, described by `description`, focus trapped and returned to the previously focused element (even without a Radix trigger), background inert, scroll locked. Escape and the close button dismiss when `dismissible` (default); **scrim clicks never dismiss** ([DR-080](./discrepancy-register.md#dr-080)). Desktop: 520px (`compact` 440px) card 96px from the top; phones: bottom sheet with 16px margins. Body scrolls; header and footer stay. Footer buttons share width on phones.
 - **`ConfirmDialog`** — destructive or primary confirmation; while `pending`, cancel is disabled, confirm shows a spinner and the dialog cannot be dismissed. It never closes itself on confirm.
 - **`Modal`** (deprecated) — original props on `Dialog`. `onClose` runs from the close button and now also from Escape; without `onClose` the dialog is not dismissible (existing consumers already pass `undefined` while a request is pending).
+- **`Drawer`** / `DrawerClose` — Radix Dialog side panel (`side` left/right) with a visually hidden `title`: focus trap and return, Escape and **scrim click** dismiss, scroll lock, slide-in skipped under reduced motion. Panel styling (width, padding, layout) comes from `className`.
+- **`DropdownMenu`**, `DropdownMenuTrigger`, `DropdownMenuContent` (portal, `align="end"`, collision-aware), `DropdownMenuItem` (44px, `asChild` for links/buttons), `DropdownMenuLabel`, `DropdownMenuSeparator` — Radix menu: arrow keys, typeahead, Escape/outside dismissal, focus return.
+- **`Tooltip`** — Radix tooltip on hover and keyboard focus, portalled (never clipped), Escape dismisses. Not an accessible name: icon-only triggers still need `aria-label`.
+- **`DarkModeSwitch`** (theme controls) — labelled "Dark mode" `Switch` bound to the shared theme, for drawers.
 - **`Tabs`** — Radix Tabs; same `items` API plus `value`/`onValueChange` (controlled, e.g. `?tab=`) and per-item `disabled`. Automatic activation; brand underline in light, neutral in dark (`--color-tab-active-*`); scrolls horizontally.
 
 ### Data and asynchronous states
@@ -87,13 +91,15 @@ Controls are 44px tall. Form-control borders use `--color-control-border` (≥ 3
 
 ## 4. Preview and verification
 
-| Command                | What it does                                                                                                                                                                                                       |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `pnpm workbench`       | Storybook at `http://localhost:6006`: theme toolbar (light/dark `.dark` class), viewports (390 phone, 834 tablet, 1440 desktop), a11y panel. Stories in `tooling/ui-workbench/src/stories`.                        |
-| `pnpm workbench:build` | Static Storybook build (`storybook-static/`, ignored).                                                                                                                                                             |
-| `pnpm test:component`  | Vitest browser mode (Chromium via Playwright, reduced motion) for `ui-core` and `forms` `*.browser.test.tsx`: keyboard, focus trap/return, ARIA state, label/error association, responsive table, RHF integration. |
-| `pnpm test:visual`     | Screenshots the workbench galleries (desktop/phone × light/dark) and open dialogs; baselines in `tooling/ui-workbench/visual/__screenshots__`. Update with `pnpm test:visual -- -u` and review the diffs.          |
+| Command                | What it does                                                                                                                                                                                                                                                                                  |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm workbench`       | Storybook at `http://localhost:6006`: theme toolbar (light/dark `.dark` class), viewports (390 phone, 834 tablet, 1440 desktop), a11y panel. Stories in `tooling/ui-workbench/src/stories`.                                                                                                   |
+| `pnpm workbench:build` | Static Storybook build (`storybook-static/`, ignored).                                                                                                                                                                                                                                        |
+| `pnpm test:component`  | Vitest browser mode (Chromium via Playwright, reduced motion) for `ui-core`, `forms` and `dashboard-ui` `*.browser.test.tsx`: keyboard, focus trap/return, ARIA state, label/error association, responsive table, RHF integration, dashboard shell (drawer, rail, account menu, breakpoints). |
+| `pnpm test:visual`     | Screenshots the workbench galleries (desktop/phone × light/dark), open dialogs and a selective set of desktop dashboard-shell states; baselines in `tooling/ui-workbench/visual/__screenshots__`. Update with `pnpm test:visual -- -u` and review the diffs.                                  |
 
 One-time setup: `pnpm --filter @template/ui-core exec playwright install chromium`. These suites are **not** part of `pnpm test` or CI yet (OD-05); see [verification-strategy.md §8](./verification-strategy.md#8-implementation-status).
+
+Dashboard shell: `tooling/ui-workbench/src/stories/dashboard-shell.stories.tsx` previews the shared shell with the complete reference navigation (`__fixtures__/dashboard-navigation.tsx`, workbench-only) and placeholder page content.
 
 Preview fixtures live in `tooling/ui-workbench/src/stories/__fixtures__/`, are typed, and are deliberately generic (team members, an illustrative series): no payments, balances, identity, authentication or security outcomes are simulated.

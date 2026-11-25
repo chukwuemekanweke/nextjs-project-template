@@ -1,43 +1,55 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  AccountSummary,
   Breadcrumbs,
   DashboardBrand,
   DashboardShell,
   DashboardSidebar,
   DashboardSidebarNav,
-  MobileNav,
+  DashboardTopbar,
+  MobileNavDrawer,
   ProfileMenu,
-  ThemeToggle,
-  type DashboardNavItem,
+  type DashboardNavGroup,
 } from "@template/dashboard-ui";
 import {
-  ActivityIcon,
-  DatabaseIcon,
+  buttonVariants,
+  cn,
+  DarkModeSwitch,
   GridIcon,
-  HistoryIcon,
-  LockIcon,
-  UsersIcon,
 } from "@template/ui-core";
 import type { ReactNode } from "react";
-import { adminNavigation } from "@/config/navigation";
+import { adminBreadcrumbs, adminNavigation } from "@/config/navigation";
 import { branding } from "@/config/env";
 import { LogoutButton } from "./logout-button";
 
 const navigationIcons: Readonly<Record<string, ReactNode>> = {
   "/": <GridIcon />,
-  "/audit": <HistoryIcon />,
-  "/reference-data": <DatabaseIcon />,
-  "/roles": <LockIcon />,
-  "/system-health": <ActivityIcon />,
-  "/users": <UsersIcon />,
 };
 
-const navigationItems: readonly DashboardNavItem[] = adminNavigation.map(
-  (item) => ({ ...item, icon: navigationIcons[item.href] }),
+const navigationGroups: readonly DashboardNavGroup[] = adminNavigation.map(
+  (group) => ({
+    ...group,
+    items: group.items.map((item) => ({
+      ...item,
+      icon: navigationIcons[item.href],
+    })),
+  }),
 );
+
+const NAVIGATION_LABEL = "Admin navigation";
+const PORTAL_BADGE = "Admin";
+const sidebarActionClassName = cn(
+  buttonVariants({ fullWidth: true, variant: "ghost" }),
+  "justify-start",
+);
+
+/**
+ * The admin BFF exposes no profile or identity read yet, so the shell shows
+ * the role it admitted rather than a placeholder person (DR-027).
+ */
+const ADMIN_ACCOUNT_NAME = "Administrator";
 
 export function AdminLayoutShell({
   children,
@@ -48,68 +60,72 @@ export function AdminLayoutShell({
     return children;
   }
 
+  const brand = (
+    <DashboardBrand badge={PORTAL_BADGE} href="/" name={branding.productName} />
+  );
+  const navigation = (
+    <DashboardSidebarNav
+      activeHref={pathname}
+      ariaLabel={NAVIGATION_LABEL}
+      groups={navigationGroups}
+    />
+  );
+
   return (
     <DashboardShell
       mobileNav={
-        <MobileNav ariaLabel="Admin navigation" brand={branding.productName} />
+        <MobileNavDrawer
+          brand={brand}
+          footer={
+            <>
+              <AccountSummary
+                className="px-2 py-1"
+                detail={branding.portals.admin}
+                name={ADMIN_ACCOUNT_NAME}
+              />
+              <DarkModeSwitch className="px-2" />
+              <LogoutButton className={sidebarActionClassName} />
+            </>
+          }
+          title="Admin menu"
+        >
+          {navigation}
+        </MobileNavDrawer>
       }
       sidebar={
         <DashboardSidebar
-          brand={
-            <DashboardBrand
-              href="/"
-              name={branding.productName}
-              subtitle={branding.portals.admin}
-            />
-          }
+          brand={brand}
           brandMark={
             <DashboardBrand compact href="/" name={branding.productName} />
           }
+          footer={<LogoutButton className={sidebarActionClassName} />}
         >
-          <DashboardSidebarNav
-            activeHref={pathname}
-            ariaLabel="Admin navigation"
-            items={navigationItems}
-          />
+          {navigation}
         </DashboardSidebar>
       }
       topbar={
-        <div className="flex items-center justify-between gap-3">
-          <div className="hidden min-w-0 sm:block">
-            <Breadcrumbs
-              items={[
-                { href: "/", label: "Admin" },
-                { label: currentLabel(pathname) },
-              ]}
-            />
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <ThemeToggle />
+        <DashboardTopbar
+          actions={
             <ProfileMenu
-              actions={[
-                <Link href="/" key="preferences">
-                  Workspace settings
-                </Link>,
-                <Link href="/" key="audit">
-                  Review audit events
-                </Link>,
-                <LogoutButton key="logout" />,
-              ]}
+              actions={[<LogoutButton key="logout" />]}
               meta="Privileged session"
-              name="Signed-in administrator"
+              name={ADMIN_ACCOUNT_NAME}
               role={branding.portals.admin}
             />
-          </div>
-        </div>
+          }
+          brand={
+            <DashboardBrand
+              badge={PORTAL_BADGE}
+              href="/"
+              name={branding.productName}
+              size="sm"
+            />
+          }
+          breadcrumbs={<Breadcrumbs items={adminBreadcrumbs(pathname)} />}
+        />
       }
     >
       {children}
     </DashboardShell>
-  );
-}
-
-function currentLabel(pathname: string) {
-  return (
-    adminNavigation.find((item) => item.href === pathname)?.label ?? "Dashboard"
   );
 }

@@ -6,7 +6,14 @@
     "repository": "https://github.com/chukwuemekanweke/Project-Template-Design-System",
     "branch": "main",
     "commit": "d23eb85fbebd2bccbf038a2050a2a5bf82236076",
-    "manifest": "design-source-manifest.json"
+    "manifest": "design-source-manifest.json",
+    "scopedRevisions": [
+      {
+        "ticket": "FE-UI-004",
+        "commit": "a7e2a63411f4c406e577ccd2c72e42053fbce41e",
+        "scope": "USR-NAV-MOBILE, ADM-NAV-MOBILE and the dashboard shell of every authenticated screen; reference blobs elsewhere still describe 'commit' (DR-083)"
+      }
+    ]
   },
   "legend": {
     "status": "Implemented | Partial | Missing | Reference-only (current frontend implementation of the screen)",
@@ -629,14 +636,18 @@
         ]
       },
       "implementation": {
-        "status": "Partial",
+        "status": "Implemented",
         "classification": "B",
         "files": [
           "apps/admin-portal/src/components/admin-layout-shell.tsx",
-          "apps/admin-portal/src/config/navigation.ts"
+          "apps/admin-portal/src/config/navigation.ts",
+          "packages/dashboard-ui/src/components/dashboard-shell.tsx",
+          "packages/dashboard-ui/src/components/dashboard-topbar.tsx",
+          "packages/dashboard-ui/src/components/mobile-nav.tsx",
+          "packages/dashboard-ui/src/components/mobile-tab-bar.tsx"
         ],
         "existingFunctionality": [
-          "Off-canvas sidebar drawer with 6 flat items."
+          "FE-UI-004: mobile top bar (menu, brand with Admin chip, account menu) and a drawer with grouped navigation, the admitted role, a Dark mode switch and Sign out. Navigation lists only implemented routes (Dashboard)."
         ]
       },
       "backend": {
@@ -645,13 +656,17 @@
         "missingCapabilities": ["Global admin search API (top-bar search)"]
       },
       "uiGaps": [
-        "Reference: grouped navigation (Analytics, Operations, Platform) with 16 items, identity block, dark-mode switch; top-bar search button; no bottom tab bar."
+        "The 16 reference destinations (17 at a7e2a63 with Invoices) appear only with their routes and admin APIs (DR-070, DR-071); the complete grouped navigation is previewed in the UI workbench.",
+        "Top-bar search is omitted until a search API exists (DR-075).",
+        "Identity shows the admitted role, not a name: the admin portal has no profile read (DR-027)."
       ],
-      "dependencies": ["FE-UI-008"],
+      "dependencies": [],
       "priority": "P1",
-      "roadmapTicket": "FE-UI-008",
-      "discrepancies": ["DR-022", "DR-075"],
-      "notes": ["Mobile-only artboards."]
+      "roadmapTicket": "FE-UI-008 (delivered by Trello FE-UI-004)",
+      "discrepancies": ["DR-022", "DR-027", "DR-070", "DR-071", "DR-075"],
+      "notes": [
+        "Mobile-only artboards. Reference revision a7e2a63 adds 'Invoices' under Operations."
+      ]
     },
     {
       "id": "ADM-PAYMENT-ANALYTICS",
@@ -4347,15 +4362,19 @@
         ]
       },
       "implementation": {
-        "status": "Partial",
+        "status": "Implemented",
         "classification": "B",
         "files": [
           "apps/user-portal/src/components/user-layout-shell.tsx",
           "apps/user-portal/src/config/navigation.ts",
-          "packages/dashboard-ui/src/components/mobile-nav.tsx"
+          "packages/dashboard-ui/src/components/dashboard-shell.tsx",
+          "packages/dashboard-ui/src/components/dashboard-topbar.tsx",
+          "packages/dashboard-ui/src/components/mobile-nav.tsx",
+          "packages/dashboard-ui/src/components/mobile-tab-bar.tsx",
+          "packages/dashboard-ui/src/components/sidebar.tsx"
         ],
         "existingFunctionality": [
-          "Off-canvas sidebar drawer below lg with 4 nav items."
+          "FE-UI-004: mobile top bar (menu, brand, account menu), phone tab bar Home/Billing/Security/Account, and a 304px drawer with the profile identity, the four implemented destinations, a Dark mode switch and Sign out. Tablet (md-lg) uses the top bar and drawer without the tab bar."
         ]
       },
       "backend": {
@@ -4364,14 +4383,16 @@
         "missingCapabilities": []
       },
       "uiGaps": [
-        "Reference: mobile top bar + 5-item bottom tab bar (Home, Wallet, Billing, Security, Account) + left drawer with identity and dark-mode switch.",
-        "Tab bar includes Wallet which does not exist; 'Account' tab behaviour is undefined."
+        "Wallet (tab and drawer), Verification and Preferences are omitted until their routes ship (DR-023)."
       ],
-      "dependencies": ["FE-UI-008"],
+      "dependencies": [],
       "priority": "P1",
-      "roadmapTicket": "FE-UI-008",
+      "roadmapTicket": "FE-UI-008 (delivered by Trello FE-UI-004)",
       "discrepancies": ["DR-022", "DR-023"],
-      "notes": ["Mobile-only artboards."]
+      "notes": [
+        "Mobile-only artboards. Reference revision a7e2a63 (unchanged since d23eb85).",
+        "'Account' links to /profile, as the reference markup does (UserProfileMobile marks Account current)."
+      ]
     },
     {
       "id": "USR-PREFERENCES",

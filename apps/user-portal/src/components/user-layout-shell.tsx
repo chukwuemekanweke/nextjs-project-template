@@ -2,26 +2,37 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCurrentProfile } from "@template/api-react/profiles";
 import {
+  AccountSummary,
   Breadcrumbs,
   DashboardBrand,
   DashboardShell,
   DashboardSidebar,
   DashboardSidebarNav,
-  MobileNav,
+  DashboardTopbar,
+  MobileNavDrawer,
+  MobileTabBar,
   ProfileMenu,
-  ThemeToggle,
   type DashboardNavItem,
 } from "@template/dashboard-ui";
 import {
+  buttonVariants,
+  cn,
   CreditCardIcon,
+  DarkModeSwitch,
   HomeIcon,
   ShieldIcon,
   UserIcon,
 } from "@template/ui-core";
 import type { ReactNode } from "react";
-import { userNavigation } from "@/config/navigation";
+import {
+  userBreadcrumbs,
+  userNavigation,
+  userTabNavigation,
+} from "@/config/navigation";
 import { branding } from "@/config/env";
+import { hasProfileIdentity, profileName } from "@/lib/profile-display";
 import { usesDashboardShell } from "@/lib/user-layout";
 import { LogoutButton } from "./logout-button";
 import { PasskeyAddedModal } from "./passkey-added-modal";
@@ -33,9 +44,22 @@ const navigationIcons: Readonly<Record<string, ReactNode>> = {
   "/security": <ShieldIcon />,
 };
 
-const navigationItems: readonly DashboardNavItem[] = userNavigation.map(
-  (item) => ({ ...item, icon: navigationIcons[item.href] }),
+const withIcons = (
+  items: readonly { label: string; href: string }[],
+): DashboardNavItem[] =>
+  items.map((item) => ({ ...item, icon: navigationIcons[item.href] }));
+
+const navigationItems = withIcons(userNavigation);
+const tabItems = withIcons(userTabNavigation);
+
+const NAVIGATION_LABEL = "User navigation";
+const sidebarActionClassName = cn(
+  buttonVariants({ fullWidth: true, variant: "ghost" }),
+  "justify-start",
 );
+
+/** Shown until the profile loads, or if it cannot be loaded. */
+const FALLBACK_ACCOUNT_NAME = "Your account";
 
 export function UserLayoutShell({
   children,
@@ -47,19 +71,52 @@ export function UserLayoutShell({
   }
 
   return (
+    <UserDashboardShell pathname={pathname}>{children}</UserDashboardShell>
+  );
+}
+
+function UserDashboardShell({
+  children,
+  pathname,
+}: Readonly<{ children: ReactNode; pathname: string }>) {
+  const account = useAccountIdentity();
+  const brand = (
+    <DashboardBrand href="/dashboard" name={branding.productName} />
+  );
+  const navigation = (
+    <DashboardSidebarNav
+      activeHref={pathname}
+      ariaLabel={NAVIGATION_LABEL}
+      items={navigationItems}
+    />
+  );
+
+  return (
     <DashboardShell
       mobileNav={
-        <MobileNav ariaLabel="User navigation" brand={branding.productName} />
+        <MobileNavDrawer
+          brand={brand}
+          footer={
+            <>
+              <DarkModeSwitch />
+              <LogoutButton className={sidebarActionClassName} />
+            </>
+          }
+          header={
+            <AccountSummary
+              avatarSrc={account.avatarSrc}
+              className="border-border bg-surface-2 rounded-lg border p-3"
+              detail={account.email}
+              name={account.name}
+            />
+          }
+        >
+          {navigation}
+        </MobileNavDrawer>
       }
       sidebar={
         <DashboardSidebar
-          brand={
-            <DashboardBrand
-              href="/dashboard"
-              name={branding.productName}
-              subtitle={branding.portals.user}
-            />
-          }
+          brand={brand}
           brandMark={
             <DashboardBrand
               compact
@@ -67,42 +124,64 @@ export function UserLayoutShell({
               name={branding.productName}
             />
           }
+          footer={
+            <>
+              <div className="border-border bg-surface-2 text-small flex flex-col gap-2 rounded-lg border p-4">
+                <span className="text-fg font-semibold">Need help?</span>
+                <span className="text-fg-muted break-words">
+                  Email{" "}
+                  <a
+                    className="text-brand-ink underline-offset-2 hover:underline"
+                    href={`mailto:${branding.supportEmail}`}
+                  >
+                    {branding.supportEmail}
+                  </a>{" "}
+                  and our team will help.
+                </span>
+              </div>
+              <LogoutButton className={sidebarActionClassName} />
+            </>
+          }
         >
-          <DashboardSidebarNav
-            activeHref={pathname}
-            ariaLabel="User navigation"
-            items={navigationItems}
-          />
+          {navigation}
         </DashboardSidebar>
       }
+      tabBar={
+        <MobileTabBar
+          activeHref={pathname}
+          ariaLabel="Primary"
+          items={tabItems}
+        />
+      }
       topbar={
-        <div className="flex items-center justify-between gap-3">
-          <div className="hidden min-w-0 sm:block">
-            <Breadcrumbs
-              items={[
-                { href: "/dashboard", label: branding.portals.user },
-                { label: currentLabel(pathname) },
-              ]}
-            />
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <ThemeToggle />
+        <DashboardTopbar
+          actions={
             <ProfileMenu
               actions={[
                 <Link href="/profile" key="profile">
+                  <UserIcon />
                   View profile
                 </Link>,
-                <Link href="/" key="sessions">
-                  Manage sessions
+                <Link href="/security" key="security">
+                  <ShieldIcon />
+                  Security and sessions
                 </Link>,
                 <LogoutButton key="logout" />,
               ]}
-              meta="Verified account"
-              name="Signed-in user"
-              role={branding.portals.user}
+              avatarSrc={account.avatarSrc}
+              name={account.name}
+              role={account.email ?? branding.portals.user}
             />
-          </div>
-        </div>
+          }
+          brand={
+            <DashboardBrand
+              href="/dashboard"
+              name={branding.productName}
+              size="sm"
+            />
+          }
+          breadcrumbs={<Breadcrumbs items={userBreadcrumbs(pathname)} />}
+        />
       }
     >
       {children}
@@ -111,10 +190,24 @@ export function UserLayoutShell({
   );
 }
 
-function currentLabel(pathname: string) {
-  return (
-    userNavigation.find(
-      (item) => item.href === pathname || pathname.startsWith(`${item.href}/`),
-    )?.label ?? "Overview"
-  );
+/**
+ * The signed-in user's name, email and avatar from the current-profile
+ * query (shared with the profile page, so edits refresh it). Never a
+ * placeholder identity: while loading or on failure only a neutral label.
+ */
+function useAccountIdentity(): {
+  avatarSrc?: string | null;
+  email?: string;
+  name: string;
+} {
+  const { data: profile } = useCurrentProfile();
+  if (!profile || !hasProfileIdentity(profile)) {
+    return { name: FALLBACK_ACCOUNT_NAME };
+  }
+  const email = profile.emailAddress.trim();
+  return {
+    avatarSrc: profile.avatarUrl,
+    email: email || undefined,
+    name: profileName(profile),
+  };
 }

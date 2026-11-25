@@ -1,19 +1,25 @@
 "use client";
 
-import { GridIcon } from "@template/ui-core";
+import { cn, GridIcon, Tooltip } from "@template/ui-core";
 import Link from "next/link";
-import type { ReactNode } from "react";
-import type { DashboardNavItem } from "../types";
+import { createContext, useContext, useId, type ReactNode } from "react";
+import { resolveActiveNavHref } from "../navigation";
+import type { DashboardNavGroup, DashboardNavItem } from "../types";
 import { useSidebar } from "./sidebar-context";
 
 export const DASHBOARD_SIDEBAR_ID = "dashboard-sidebar";
 
-/** True when `href` is the current page or an ancestor of it. */
-export function isNavItemActive(href: string, pathname: string): boolean {
-  if (href === pathname) return true;
-  return href !== "/" && pathname.startsWith(`${href}/`);
-}
+/**
+ * True inside the collapsed desktop rail. The drawer and the expanded
+ * sidebar render navigation with labels.
+ */
+const NavRailContext = createContext(false);
 
+/**
+ * Persistent desktop navigation (reference `.side`) from the `lg`
+ * breakpoint: 260px with labels, or a 72px icon rail when collapsed. Below
+ * `lg` it is not rendered visually; `MobileNavDrawer` takes over.
+ */
 export function DashboardSidebar({
   brand,
   brandMark,
@@ -25,105 +31,168 @@ export function DashboardSidebar({
   /** Compact brand shown in the collapsed icon rail. */
   brandMark?: ReactNode;
   children: ReactNode;
+  /** Bottom content (help, sign out); hidden in the collapsed rail. */
   footer?: ReactNode;
 }>) {
-  const { isExpanded, isMobileOpen } = useSidebar();
-  const wide = isExpanded || isMobileOpen;
+  const { isExpanded } = useSidebar();
 
   return (
     <aside
-      className={[
-        "fixed inset-y-0 left-0 z-50 flex flex-col border-r border-gray-200 bg-white transition-[width,transform] duration-200 ease-in-out motion-reduce:transition-none dark:border-gray-800 dark:bg-gray-900",
-        wide ? "w-[224px]" : "w-[72px]",
-        isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-      ].join(" ")}
+      className={cn(
+        "border-border bg-nav-bg z-sticky fixed inset-y-0 left-0 hidden flex-col gap-5 border-r py-5 transition-[width] duration-200 ease-in-out motion-reduce:transition-none lg:flex",
+        isExpanded ? "w-sidebar px-4" : "w-sidebar-collapsed px-3.5",
+      )}
       id={DASHBOARD_SIDEBAR_ID}
     >
       <div
-        className={[
-          "flex h-16 shrink-0 items-center",
-          wide ? "px-5" : "justify-center",
-        ].join(" ")}
+        className={cn(
+          "flex min-h-10 shrink-0 items-center",
+          // The expanded brand fills the row so its portal chip sits right.
+          isExpanded ? "px-2 *:flex-1" : "justify-center",
+        )}
       >
-        {wide ? brand : brandMark}
+        {isExpanded ? brand : (brandMark ?? brand)}
       </div>
-      <div
-        className={[
-          "flex flex-1 flex-col px-3 pt-3 pb-6",
-          // The collapsed rail stays unclipped so item tooltips can overflow.
-          wide ? "no-scrollbar overflow-y-auto" : "",
-        ].join(" ")}
-      >
-        {children}
-        {footer && wide ? (
-          <div className="mt-auto rounded-xl bg-gray-50 p-4 text-sm text-gray-600 dark:bg-white/[0.03] dark:text-gray-400">
-            {footer}
-          </div>
-        ) : null}
+      {/* Long navigation scrolls here; brand and footer stay in place. The
+          padding keeps focus outlines and the rail's 44px links unclipped. */}
+      <div className="-mx-1 min-h-0 flex-1 [scrollbar-width:thin] overflow-y-auto px-1">
+        <NavRailContext value={!isExpanded}>{children}</NavRailContext>
       </div>
+      {footer && isExpanded ? (
+        <div className="border-border flex shrink-0 flex-col gap-2 border-t pt-4">
+          {footer}
+        </div>
+      ) : null}
     </aside>
   );
 }
 
+/**
+ * Navigation links, optionally grouped under section labels. Exactly one
+ * item — the most specific match for `activeHref` — is marked current.
+ * Selecting an item closes the mobile drawer.
+ */
 export function DashboardSidebarNav({
-  items,
   activeHref,
   ariaLabel,
+  groups,
+  items,
 }: Readonly<{
-  items: readonly DashboardNavItem[];
   activeHref: string;
   ariaLabel: string;
+  /** Labelled sections; takes precedence over `items`. */
+  groups?: readonly DashboardNavGroup[];
+  /** A single, unlabelled list. */
+  items?: readonly DashboardNavItem[];
 }>) {
-  const { closeMobileSidebar, isExpanded, isMobileOpen } = useSidebar();
-  const wide = isExpanded || isMobileOpen;
+  const navGroups: readonly DashboardNavGroup[] = groups ?? [
+    { items: items ?? [] },
+  ];
+  const activeItemHref = resolveActiveNavHref(
+    navGroups.flatMap((group) => group.items.map((item) => item.href)),
+    activeHref,
+  );
 
   return (
-    <nav aria-label={ariaLabel}>
-      <ul className="flex flex-col gap-1">
-        {items.map((item) => {
-          const active = isNavItemActive(item.href, activeHref);
-          return (
-            <li key={item.href}>
-              <Link
-                aria-current={active ? "page" : undefined}
-                className={[
-                  "group relative flex h-11 items-center gap-3 rounded-lg text-sm transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2",
-                  active
-                    ? "bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-300 font-semibold"
-                    : "font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-100",
-                  wide ? "px-3" : "justify-center",
-                ].join(" ")}
-                data-active={active ? "true" : undefined}
-                href={item.href}
-                onClick={closeMobileSidebar}
-              >
-                <span
-                  className={
-                    active
-                      ? "text-brand-500 dark:text-brand-400"
-                      : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-200"
-                  }
-                >
-                  {item.icon ?? <GridIcon />}
-                </span>
-                {wide ? (
-                  <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                ) : (
-                  // Visible on hover/focus; also the link's accessible name.
-                  <span className="shadow-theme-sm pointer-events-none absolute top-1/2 left-full z-50 ml-3 -translate-y-1/2 rounded-md bg-gray-900 px-2.5 py-1.5 text-xs font-medium whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 dark:bg-gray-700">
-                    {item.label}
-                  </span>
-                )}
-                {wide && item.badge ? (
-                  <span className="bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300 rounded-full px-2 py-0.5 text-xs font-medium">
-                    {item.badge}
-                  </span>
-                ) : null}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+    <nav aria-label={ariaLabel} className="flex flex-col">
+      {navGroups.map((group, index) => (
+        <NavGroup
+          activeHref={activeItemHref}
+          first={index === 0}
+          group={group}
+          key={group.label ?? index}
+        />
+      ))}
     </nav>
+  );
+}
+
+function NavGroup({
+  activeHref,
+  first,
+  group,
+}: Readonly<{
+  activeHref: string | undefined;
+  first: boolean;
+  group: DashboardNavGroup;
+}>) {
+  const rail = useContext(NavRailContext);
+  const labelId = useId();
+
+  return (
+    <div className={first ? undefined : rail ? "mt-2" : "mt-1"}>
+      {group.label ? (
+        <p
+          className={
+            rail
+              ? "sr-only"
+              : "text-micro text-fg-subtle truncate px-3 pt-3 pb-1.5 uppercase"
+          }
+          id={labelId}
+        >
+          {group.label}
+        </p>
+      ) : null}
+      {rail && !first ? (
+        <div aria-hidden="true" className="border-border mx-2 mb-2 border-t" />
+      ) : null}
+      <ul
+        aria-labelledby={group.label ? labelId : undefined}
+        className="flex flex-col gap-0.5"
+      >
+        {group.items.map((item) => (
+          <li key={item.href}>
+            <NavLink active={item.href === activeHref} item={item} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function NavLink({
+  active,
+  item,
+}: Readonly<{ active: boolean; item: DashboardNavItem }>) {
+  const rail = useContext(NavRailContext);
+  const { closeMobileSidebar } = useSidebar();
+
+  const link = (
+    <Link
+      aria-current={active ? "page" : undefined}
+      // In the rail the label is not rendered; it names the link instead.
+      aria-label={rail ? item.label : undefined}
+      className={cn(
+        "min-h-control text-body flex items-center gap-3 rounded-sm font-medium transition-colors focus-visible:-outline-offset-2",
+        "[&_svg]:size-icon-md [&_svg]:shrink-0",
+        active
+          ? "bg-nav-active-bg text-nav-active-fg"
+          : "text-fg-muted hover:bg-hover hover:text-fg",
+        rail ? "size-control justify-center" : "px-3 py-2.5",
+      )}
+      data-active={active ? "true" : undefined}
+      href={item.href}
+      onClick={closeMobileSidebar}
+    >
+      {item.icon ?? <GridIcon />}
+      {rail ? null : (
+        <>
+          <span className="min-w-0 flex-1 truncate">{item.label}</span>
+          {item.badge ? (
+            <span className="bg-brand-soft text-caption text-brand-ink rounded-full px-2 py-0.5">
+              {item.badge}
+            </span>
+          ) : null}
+        </>
+      )}
+    </Link>
+  );
+
+  return rail ? (
+    <Tooltip content={item.label} side="right">
+      {link}
+    </Tooltip>
+  ) : (
+    link
   );
 }

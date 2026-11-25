@@ -6,6 +6,41 @@
   "commit": "d23eb85fbebd2bccbf038a2050a2a5bf82236076",
   "commitDate": "2026-11-25T13:41:19+01:00",
   "treeSha": "283445284715a4d4d746ffe6db66e863c1a8623a",
+  "scopedRevisions": [
+    {
+      "ticket": "FE-UI-004",
+      "commit": "a7e2a63411f4c406e577ccd2c72e42053fbce41e",
+      "commitDate": "2026-11-25T16:35:46+01:00",
+      "treeSha": "b072416630718d3695f7cdf9b79b65115ecaafcb",
+      "scope": "Dashboard shell, navigation and responsive behaviour only. The per-file inventory, hashes and counts in this manifest still describe 'commit' (d23eb85); regenerating them for a7e2a63 is outstanding (DR-083).",
+      "filesInRevision": 994,
+      "changesSincePinnedCommit": {
+        "0-foundations": "unchanged",
+        "1-marketing-site": "unchanged",
+        "2-authentication": "unchanged",
+        "3-user-portal": "16 modified (billing history, purchase detail and wallet tables gain a Receipt column); UserDashboard*, UserMobileMenu* unchanged",
+        "4-admin-portal": "48 modified (sidebar and mobile menu gain an 'Invoices' item under Operations, between Payments and Subscriptions)",
+        "5-invoices-and-receipts": "30 added (user/admin invoice and receipt screens, print layouts) — FE-UI-018",
+        "6-emails": "88 added (transactional email templates) — out of scope, tracked separately",
+        "email-pages": "111 added (email gallery and live pages) — out of scope, tracked separately",
+        "bundles": "'Admin Portal/', 'User Portal/' and other bundle folders reorganised into 'project-template-design-html/' (458 files, mostly renames)"
+      },
+      "referencesUsed": [
+        "3-user-portal/UserDashboard.html",
+        "3-user-portal/UserDashboardDark.html",
+        "3-user-portal/UserDashboardMobile.html",
+        "3-user-portal/UserDashboardMobileDark.html",
+        "3-user-portal/UserMobileMenuMobile.html",
+        "3-user-portal/UserMobileMenuMobileDark.html",
+        "4-admin-portal/AdminDashboard.html",
+        "4-admin-portal/AdminDashboardDark.html",
+        "4-admin-portal/AdminDashboardMobile.html",
+        "4-admin-portal/AdminDashboardMobileDark.html",
+        "4-admin-portal/AdminMobileMenuMobile.html",
+        "4-admin-portal/AdminMobileMenuMobileDark.html"
+      ]
+    }
+  ],
   "discoveredOn": "2026-11-25",
   "filesExamined": 563,
   "filesByRole": {

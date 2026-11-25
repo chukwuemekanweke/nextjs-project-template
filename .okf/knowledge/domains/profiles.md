@@ -23,7 +23,9 @@ status: stable
 
 The profiles domain exposes current-profile retrieval, profile update, and a
 presigned avatar-upload lifecycle through the handwritten client. Authenticated
-create and complete operations use the User Portal's same-origin profile BFF;
+read (`GET /api/profile`, used by the dashboard shell's account identity),
+update, and avatar create/complete operations use the User Portal's
+same-origin profile BFF;
 the BFF never receives file bytes. The application uploads the selected `File`
 directly to the returned object-storage URL using the server-provided method and
 headers with browser credentials omitted, then completes the upload only after a

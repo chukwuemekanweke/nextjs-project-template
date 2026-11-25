@@ -91,6 +91,30 @@ describe("User Portal browser API", () => {
     );
   });
 
+  it("reads the current profile through the same-origin BFF", async () => {
+    const fetchImplementation = vi.fn<typeof fetch>().mockResolvedValue(
+      Response.json({
+        avatarUrl: null,
+        emailAddress: "ada@example.com",
+        firstName: "Ada",
+        isVerified: true,
+        lastName: "Byron",
+      }),
+    );
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+
+    await client.profiles.getProfile();
+
+    expect(fetchImplementation).toHaveBeenCalledOnce();
+    const [input, init] = fetchImplementation.mock.calls[0]!;
+    expect(input.toString()).toBe("/api/profile");
+    expect(init).toMatchObject({ credentials: "same-origin", method: "GET" });
+  });
+
   it("routes password changes through the authenticated same-origin BFF", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()

@@ -52,7 +52,11 @@ component list, variants and states are in
   not delete them before FE-UI-032.
 - `DataTable` defaults to horizontal scroll on phones; `mobileLayout="stack"`
   is opt-in per screen (billing history awaits OD-02).
-- New or changed primitives need a workbench story, browser interaction tests
-  (`*.browser.test.tsx`, `pnpm test:component`) and, for visual changes,
-  reviewed baselines (`pnpm test:visual`). Workbench fixtures are generic and
+- Overlays: `Dialog` (scrim never dismisses), `Drawer` (side panel, scrim
+  dismisses), `DropdownMenu` (`asChild` items must spread received props),
+  `Tooltip` (not an accessible name).
+- New or changed primitives need a representative workbench story and
+  browser interaction tests (`*.browser.test.tsx`, `pnpm test:component`);
+  visual baselines are selective (`pnpm test:visual`, full matrix in
+  FE-UI-016). Do not recreate portal screens in the workbench. Workbench fixtures are generic and
   never simulate payments, identity, authentication or security outcomes.

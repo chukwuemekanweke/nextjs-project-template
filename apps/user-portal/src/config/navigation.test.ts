@@ -1,5 +1,17 @@
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { userNavigation } from "./navigation";
+import {
+  userBreadcrumbs,
+  userNavigation,
+  userTabNavigation,
+} from "./navigation";
+
+function hasPage(href: string) {
+  return existsSync(
+    fileURLToPath(new URL(`../app${href}/page.tsx`, import.meta.url)),
+  );
+}
 
 describe("user navigation", () => {
   it("uses the dashboard as the overview destination", () => {
@@ -13,5 +25,58 @@ describe("user navigation", () => {
     expect(userNavigation.some(({ href }) => href.startsWith("/admin"))).toBe(
       false,
     );
+  });
+
+  it("links only to implemented routes", () => {
+    for (const { href } of [...userNavigation, ...userTabNavigation]) {
+      expect(hasPage(href), href).toBe(true);
+    }
+  });
+
+  it("does not expose unbuilt wallet, verification or preference screens", () => {
+    const labels = [...userNavigation, ...userTabNavigation].map(
+      ({ label }) => label,
+    );
+    expect(labels).not.toContain("Wallet");
+    expect(labels).not.toContain("Verification");
+    expect(labels).not.toContain("Preferences");
+  });
+
+  it("keeps the phone tab bar within five destinations", () => {
+    expect(userTabNavigation.length).toBeLessThanOrEqual(5);
+    expect(
+      userTabNavigation.find(({ label }) => label === "Account")?.href,
+    ).toBe("/profile");
+  });
+});
+
+describe("userBreadcrumbs", () => {
+  it("follows the reference trails", () => {
+    expect(userBreadcrumbs("/dashboard")).toEqual([{ label: "Overview" }]);
+    expect(userBreadcrumbs("/profile")).toEqual([
+      { label: "Account" },
+      { label: "Profile" },
+    ]);
+    expect(userBreadcrumbs("/billing/history")).toEqual([
+      { label: "Billing", href: "/billing" },
+      { label: "History" },
+    ]);
+  });
+
+  it("resolves dynamic and nested routes to the most specific trail", () => {
+    expect(userBreadcrumbs("/billing/purchases/p-123")).toEqual([
+      { label: "Billing", href: "/billing" },
+      { label: "History", href: "/billing/history" },
+      { label: "Purchase" },
+    ]);
+    expect(userBreadcrumbs("/billing/checkout/success")).toEqual([
+      { label: "Billing", href: "/billing" },
+      { label: "Checkout" },
+    ]);
+  });
+
+  it("does not match unrelated routes with a shared prefix", () => {
+    expect(userBreadcrumbs("/billing-archive")).toEqual([]);
+    expect(userBreadcrumbs("/unknown")).toEqual([]);
   });
 });
