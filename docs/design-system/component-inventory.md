@@ -40,7 +40,8 @@ Status vocabulary: **Implemented** (new, exported, tested) · **Extended** (exis
 | `SubmitButton`                                                                                                              | forms               | Extended      | renders `Button` with `loading`                                                 |
 | `ChartFrame`, `ChartLegend`, `chartSeriesColor`, `chartColors`                                                              | dashboard-ui/charts | Implemented   | foundations only (TD-10)                                                        |
 | `Steps`, `Timeline`, `CopyButton`, `PlanCard`, date formatter                                                               | ui-core             | Deferred      | with their first screens (FE-UI-011/012/017/018)                                |
-| `Drawer`, `Sheet`, `DropdownMenu`, `Popover`, `Tooltip`, date-range input                                                   | ui-core             | Deferred      | shell and filter tickets (FE-UI-008/009, admin)                                 |
+| `Drawer`, `DropdownMenu`, `Tooltip`                                                                                         | ui-core             | Implemented   | Trello FE-UI-004 (dashboard shell)                                              |
+| `Sheet`, `Popover`, date-range input                                                                                        | ui-core             | Deferred      | marketing shell and filter tickets (FE-UI-009, admin)                           |
 | `SelectField`, `TextareaField`, `CheckboxField`, `SwitchField`, `RadioCardGroupField`, `SegmentedField`, `PasswordStrength` | forms               | Deferred      | roadmap FE-UI-007 (controls exist in ui-core)                                   |
 | Charts (Recharts line, bar, donut)                                                                                          | dashboard-ui/charts | Deferred      | TD-10, first analytics screen                                                   |
 
@@ -87,15 +88,15 @@ Status vocabulary: **Implemented** (new, exported, tested) · **Extended** (exis
 
 ## 4. Navigation and disclosure — `@template/ui-core`
 
-| Pattern                                                  | Reference                              | Current                                                                                  | Decision                                                                               |
-| -------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Tabs (underline, scrollable, link or state)              | `.tabs`                                | `Tabs`                                                                                   | Extend on Radix Tabs; controlled mode for `?tab=`; link variant.                       |
-| Segmented control                                        | `.seg`                                 | `BillingIntervalToggle` (`apps/user-portal/src/app/billing/billing-interval-toggle.tsx`) | New `SegmentedControl` (Radix ToggleGroup, single). App toggle becomes a thin wrapper. |
-| Breadcrumbs                                              | `.crumbs`                              | `dashboard-ui` `Breadcrumbs`                                                             | Reuse (restyle).                                                                       |
-| Pager                                                    | `.pager`                               | `Pagination`                                                                             | New `Pager`; Deprecate `Pagination`.                                                   |
-| Dropdown menu (filter menus, identity menu, row actions) | "Status: Any" buttons; identity block  | `<details>` `ProfileMenu`                                                                | New `DropdownMenu` (Radix).                                                            |
-| Tooltip                                                  | rail tooltips today; none in reference | sidebar tooltip                                                                          | New `Tooltip` (icon-only buttons on desktop).                                          |
-| Popover                                                  | date-range button                      | —                                                                                        | New `Popover`.                                                                         |
+| Pattern                                                  | Reference                             | Current                                                                                  | Decision                                                                               |
+| -------------------------------------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Tabs (underline, scrollable, link or state)              | `.tabs`                               | `Tabs`                                                                                   | Extend on Radix Tabs; controlled mode for `?tab=`; link variant.                       |
+| Segmented control                                        | `.seg`                                | `BillingIntervalToggle` (`apps/user-portal/src/app/billing/billing-interval-toggle.tsx`) | New `SegmentedControl` (Radix ToggleGroup, single). App toggle becomes a thin wrapper. |
+| Breadcrumbs                                              | `.crumbs`                             | `dashboard-ui` `Breadcrumbs`                                                             | Reuse (restyle).                                                                       |
+| Pager                                                    | `.pager`                              | `Pagination`                                                                             | New `Pager`; Deprecate `Pagination`.                                                   |
+| Dropdown menu (filter menus, identity menu, row actions) | "Status: Any" buttons; identity block | `ProfileMenu`                                                                            | Done (FE-UI-004): `DropdownMenu` (Radix); `ProfileMenu` uses it.                       |
+| Tooltip                                                  | rail tooltips; none in reference      | sidebar rail                                                                             | Done (FE-UI-004): `Tooltip` (Radix) in the collapsed rail.                             |
+| Popover                                                  | date-range button                     | —                                                                                        | New `Popover`.                                                                         |
 
 ## 5. Form controls — `@template/ui-core` (controls) and `@template/forms` (connected fields)
 
@@ -134,19 +135,19 @@ Status vocabulary: **Implemented** (new, exported, tested) · **Extended** (exis
 
 ## 8. Application chrome — `@template/dashboard-ui`
 
-| Pattern                                            | Reference                                                | Current              | Decision                                                                     |
-| -------------------------------------------------- | -------------------------------------------------------- | -------------------- | ---------------------------------------------------------------------------- |
-| App shell (sidebar + top bar + content)            | `.shell`, `.side`, `.main`, `.top`, `.content`           | `DashboardShell`     | Extend → `AppShell`.                                                         |
-| Sidebar with grouped nav, portal chip, footer slot | `.nav`, `.nav-label`, `.side-foot`                       | `DashboardSidebar`   | Extend (groups, footer); remove collapsed rail.                              |
-| Brand mark                                         | `.logo`, `.logo-mark`                                    | `DashboardBrand`     | Extend → `BrandMark`.                                                        |
-| User identity block                                | avatar + name + email/role                               | `ProfileMenu`        | New `UserIdentity` (+ `DropdownMenu`); data supplied by app.                 |
-| Mobile top bar                                     | `.m-top`                                                 | `MobileNav`          | New `MobileTopBar`.                                                          |
-| Mobile bottom tab bar                              | `.m-tabs`                                                | —                    | New `MobileTabBar` (user portal only; config from app).                      |
-| Mobile nav drawer                                  | `.m-drawer`                                              | off-canvas sidebar   | New `MobileNavDrawer`.                                                       |
-| Page header                                        | `.page-head`                                             | `DashboardHeader`    | Extend → `PageHeader` (back link, actions stretch on phones).                |
-| Filter bar                                         | search + "Field: Value" buttons + date range             | —                    | New `FilterBar` (slots; app owns filter state in URL).                       |
-| Auth split layout                                  | `.auth`, `.auth-form`, `.auth-box`, `.auth-art`, `.glow` | hand-rolled per page | New `AuthLayout` (panel content from app; hidden on phones).                 |
-| In-shell forbidden state                           | `AdminForbidden`                                         | —                    | App (admin) using `EmptyState` variant; promote if the user portal needs it. |
+| Pattern                                            | Reference                                                | Current              | Decision                                                                        |
+| -------------------------------------------------- | -------------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------- |
+| App shell (sidebar + top bar + content)            | `.shell`, `.side`, `.main`, `.top`, `.content`           | `DashboardShell`     | Done (FE-UI-004): kept the name; `DashboardTopbar` added.                       |
+| Sidebar with grouped nav, portal chip, footer slot | `.nav`, `.nav-label`, `.side-foot`                       | `DashboardSidebar`   | Done (FE-UI-004): groups, footer, portal chip; collapsed rail kept (DR-025).    |
+| Brand mark                                         | `.logo`, `.logo-mark`                                    | `DashboardBrand`     | Done (FE-UI-004): `badge`, `size="sm"`; kept the name.                          |
+| User identity block                                | avatar + name + email/role                               | `ProfileMenu`        | Done (FE-UI-004): `AccountSummary` + Radix `ProfileMenu`; data supplied by app. |
+| Mobile top bar                                     | `.m-top`                                                 | `MobileNav`          | Done (FE-UI-004): part of `DashboardTopbar` below `lg`.                         |
+| Mobile bottom tab bar                              | `.m-tabs`                                                | —                    | Done (FE-UI-004): `MobileTabBar` (user portal only; config from app).           |
+| Mobile nav drawer                                  | `.m-drawer`                                              | off-canvas sidebar   | Done (FE-UI-004): `MobileNavDrawer` on `ui-core` `Drawer`.                      |
+| Page header                                        | `.page-head`                                             | `DashboardHeader`    | Extend → `PageHeader` (back link, actions stretch on phones).                   |
+| Filter bar                                         | search + "Field: Value" buttons + date range             | —                    | New `FilterBar` (slots; app owns filter state in URL).                          |
+| Auth split layout                                  | `.auth`, `.auth-form`, `.auth-box`, `.auth-art`, `.glow` | hand-rolled per page | New `AuthLayout` (panel content from app; hidden on phones).                    |
+| In-shell forbidden state                           | `AdminForbidden`                                         | —                    | App (admin) using `EmptyState` variant; promote if the user portal needs it.    |
 
 ## 9. Marketing — `@template/public-ui`
 

@@ -432,36 +432,54 @@ importers:
         specifier: workspace:*
         version: link:../ui-core
     devDependencies:
+      '@tailwindcss/postcss':
+        specifier: 'catalog:'
+        version: 4.3.2
       '@template/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
       '@template/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.10.1
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.14
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.14)
+      '@vitest/browser-playwright':
+        specifier: 'catalog:'
+        version: 4.1.10(msw@2.15.0(@types/node@24.10.1)(typescript@5.9.3))(playwright@1.65.1)(vite@8.1.4(@types/node@24.10.1)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))(vitest@4.1.10)
       eslint:
         specifier: 'catalog:'
         version: 9.39.5(jiti@2.7.0)(supports-color@7.2.0)
       next:
         specifier: 'catalog:'
         version: 16.4.5(@babel/core@7.29.7(supports-color@7.2.0))(@types/node@24.10.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      playwright:
+        specifier: 'catalog:'
+        version: 1.65.1
       react:
         specifier: 'catalog:'
         version: 19.2.7
       react-dom:
         specifier: 'catalog:'
         version: 19.2.7(react@19.2.7)
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.3.2
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@24.10.1)(@vitest/browser-playwright@4.1.10)(msw@2.15.0(@types/node@24.10.1)(typescript@5.9.3))(vite@8.1.4(@types/node@24.10.1)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+      vitest-browser-react:
+        specifier: 'catalog:'
+        version: 2.3.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.10)
 
   packages/eslint-config:
     dependencies:

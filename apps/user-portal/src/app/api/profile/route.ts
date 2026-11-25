@@ -1,9 +1,19 @@
 import {
+  getProfile,
   updateProfile,
   type UpdateProfileMutationRequest,
 } from "@template/api-client/profiles";
 import { apiRouteError } from "@/lib/api-route-error";
 import { createAppServerApiClient } from "@/lib/server-api";
+
+/** Current profile for browser views (dashboard shell account identity). */
+export async function GET() {
+  try {
+    return Response.json(await getProfile(await createAppServerApiClient()));
+  } catch (error) {
+    return apiRouteError(error);
+  }
+}
 
 export async function PUT(request: Request) {
   try {

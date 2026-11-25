@@ -28,9 +28,12 @@ export * from "./components/switch";
 
 // Navigation, overlays and data
 export * from "./components/dialog";
+export * from "./components/drawer";
+export * from "./components/dropdown-menu";
 export * from "./components/pagination";
 export * from "./components/table";
 export * from "./components/tabs";
+export * from "./components/tooltip";
 
 // Formatting and theme
 export * from "./formatting/money";

@@ -1,53 +1,61 @@
 "use client";
 
-import { CloseIcon, MenuIcon, PanelLeftIcon } from "@template/ui-core";
+import { CloseIcon, Drawer, DrawerClose, IconButton } from "@template/ui-core";
 import type { ReactNode } from "react";
-import { DASHBOARD_SIDEBAR_ID } from "./sidebar";
 import { useSidebar } from "./sidebar-context";
 
-const controlClassName =
-  "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200";
+export const MOBILE_NAV_DRAWER_ID = "dashboard-mobile-nav";
 
 /**
- * Leading header controls: the off-canvas navigation toggle below `lg`, the
- * sidebar collapse toggle from `lg`, and the brand on narrow screens.
+ * Navigation drawer below `lg` (reference `.m-drawer`, 304px, capped at
+ * 86% of the viewport): brand and close button, optional `header` (account
+ * summary), the navigation, and a `footer` (dark-mode switch, sign out).
+ *
+ * Opened by the top-bar menu button and closed by the close button, Escape,
+ * the scrim, selecting a navigation item, or growing into the desktop
+ * layout. While open, focus is trapped, the page behind is inert and does
+ * not scroll; on close focus returns to the menu button.
  */
-export function MobileNav({
+export function MobileNavDrawer({
   brand,
-  ariaLabel,
+  children,
+  footer,
+  header,
+  title = "Menu",
 }: Readonly<{
   brand: ReactNode;
-  /** Accessible name of the navigation the menu button opens. */
-  ariaLabel: string;
+  children: ReactNode;
+  footer?: ReactNode;
+  header?: ReactNode;
+  /** Accessible name of the drawer (reference `aria-label="Menu"`). */
+  title?: string;
 }>) {
-  const { isExpanded, isMobileOpen, toggleMobileSidebar, toggleSidebar } =
-    useSidebar();
+  const { closeMobileSidebar, isMobileOpen, openMobileSidebar } = useSidebar();
 
   return (
-    <div className="flex min-w-0 shrink-0 items-center gap-2">
-      <button
-        aria-controls={DASHBOARD_SIDEBAR_ID}
-        aria-expanded={isMobileOpen}
-        aria-label={`${isMobileOpen ? "Close" : "Open"} ${ariaLabel.toLowerCase()}`}
-        className={`${controlClassName} -ml-2 lg:hidden`}
-        onClick={toggleMobileSidebar}
-        type="button"
-      >
-        {isMobileOpen ? <CloseIcon /> : <MenuIcon />}
-      </button>
-      <button
-        aria-controls={DASHBOARD_SIDEBAR_ID}
-        aria-expanded={isExpanded}
-        aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
-        className={`${controlClassName} -ml-2 hidden lg:flex`}
-        onClick={toggleSidebar}
-        type="button"
-      >
-        <PanelLeftIcon />
-      </button>
-      <span className="truncate text-sm font-semibold text-gray-900 sm:hidden dark:text-white/90">
-        {brand}
-      </span>
-    </div>
+    <Drawer
+      className="border-border bg-nav-bg w-nav-drawer max-w-[86vw] gap-4 border-r p-4 lg:hidden"
+      id={MOBILE_NAV_DRAWER_ID}
+      onOpenChange={(open) =>
+        open ? openMobileSidebar() : closeMobileSidebar()
+      }
+      open={isMobileOpen}
+      side="left"
+      title={title}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center">{brand}</div>
+        <DrawerClose asChild>
+          <IconButton icon={<CloseIcon />} label="Close menu" />
+        </DrawerClose>
+      </div>
+      {header}
+      {children}
+      {footer ? (
+        <div className="border-border mt-auto flex flex-col gap-2 border-t pt-4">
+          {footer}
+        </div>
+      ) : null}
+    </Drawer>
   );
 }

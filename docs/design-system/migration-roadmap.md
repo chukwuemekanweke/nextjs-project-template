@@ -130,6 +130,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 ### FE-UI-008 — Dashboard chrome and auth layout
 
+- **Status:** dashboard chrome delivered by Trello FE-UI-004 (design revision `a7e2a63`, [DR-083](./discrepancy-register.md#dr-083)): `DashboardShell`, grouped `DashboardSidebar` (rail kept, OD-07 decided "keep"), `DashboardTopbar`, `MobileNavDrawer`, `MobileTabBar`, `AccountSummary`/`ProfileMenu`, `ui-core` `Drawer`/`DropdownMenu`/`Tooltip`; both app shells migrated; DR-027 and DR-071 fixed. Outstanding: `AuthLayout`, `FilterBar`, `PageHeader` back link, dashboard `not-found.tsx`; phone/tablet shell baselines (FE-UI-016, [DR-085](./discrepancy-register.md#dr-085)).
 - **Screens:** `USR-NAV-MOBILE`, `ADM-NAV-MOBILE` (and the shell of every dashboard screen).
 - **Scope:** `AppShell`, grouped `Sidebar`, `MobileTopBar`, `MobileTabBar`, `MobileNavDrawer`, `UserIdentity`, `PageHeader`, `FilterBar`, `AuthLayout`, `BrandMark`; migrate `user-layout-shell.tsx` and `admin-layout-shell.tsx`; identity from profile/session; fix DR-027; hide admin items without routes (DR-071); add grouped admin navigation model; remove the collapsible rail (OD-07); add dashboard `not-found.tsx`.
 - **Affects:** `dashboard-ui`, `apps/user-portal/src/components`, `apps/admin-portal/src/components`, both `config/navigation.ts`.

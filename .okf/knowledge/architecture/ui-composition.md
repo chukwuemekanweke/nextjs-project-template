@@ -37,14 +37,25 @@ status: stable
   money formatter (also used by the Public Portal); and the shared theme
   (`theme.css`, `ThemeProvider`, `ThemeSwitch`, `ThemeSelect`).
 - `@template/dashboard-ui` (depends on `ui-core`) exposes reusable dashboard
-  layout mechanics: shell, sidebar state and rendering (expanded 224px /
-  collapsed 72px rail with tooltips / mobile drawer), `DashboardBrand`, header
-  controls (`MobileNav`, `ThemeToggle` = shared `ThemeSwitch`), breadcrumbs, the page header
-  (`DashboardHeader`, optional icon tile), and profile-menu presentation. Apps
-  supply items, nav icons, destinations, identity text, actions, and
-  authorization-aware composition. `@template/dashboard-ui/charts` holds
-  chart foundations (`ChartFrame`, `ChartLegend`, series colour helpers);
-  Recharts is deferred (TD-10).
+  layout mechanics (FE-UI-004): `DashboardShell` (sidebar from `lg`, sticky
+  `DashboardTopbar`, 1280px content, optional phone `MobileTabBar`),
+  `DashboardSidebar`/`DashboardSidebarNav` (labelled groups; 260px or a 72px
+  rail with tooltips, widths from the `w-sidebar*` tokens), `MobileNavDrawer`
+  (below `lg`, on `ui-core` `Drawer`), `DashboardBrand` (portal `badge`),
+  `Breadcrumbs`, `ProfileMenu`/`AccountSummary` (Radix dropdown),
+  `ThemeToggle` (= `ThemeSwitch`), the page header `DashboardHeader`, and pure
+  `isNavItemActive`/`resolveActiveNavHref` (one current item: the most
+  specific matching href). It owns no routes, session, permissions or API
+  calls: apps supply navigation data and icons, breadcrumb trails, identity,
+  account actions (each spreads the props a menu item passes), sign-out and
+  feature availability. `@template/dashboard-ui/charts` holds chart
+  foundations (`ChartFrame`, `ChartLegend`, series colour helpers); Recharts
+  is deferred (TD-10).
+- App navigation (`apps/*/src/config/navigation.ts`) lists only implemented
+  routes (tests check a `page.tsx` exists for each); the complete reference
+  navigation is a workbench fixture. User identity comes from
+  `useCurrentProfile` via the profile BFF; the admin portal has no identity
+  read and shows the admitted role.
 - Dashboard pages start with `DashboardHeader` on the page background, then
   cards. New work uses `Card` + `CardHeader` + `ListRow`/`KeyValueList`;
   existing pages still use `SectionHeader` + `SettingsRow`. Feature

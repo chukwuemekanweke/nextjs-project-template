@@ -36,6 +36,7 @@ require valid environment values; CI copies each app's safe `.env.example` to
 `.env.local` before `pnpm build`.
 
 Shared UI changes (`packages/ui-core`, `forms`, `dashboard-ui`) additionally
-run `pnpm test:component` and `pnpm test:visual` locally (browser suites,
-not yet in CI — OD-05) and, when relevant, `pnpm workbench:build`. Report
+run `pnpm test:component` locally (browser suites, not yet in CI — OD-05)
+and, when relevant, `pnpm workbench:build`; `pnpm test:visual` is selective
+during implementation (comprehensive visual QA is FE-UI-016). Report
 which of these ran.

@@ -116,8 +116,11 @@ export function createUserPortalBrowserApi({
         });
       }
       if (
-        init?.method === profilesOperations.updateProfile.method &&
-        requestUrl.pathname === profilesOperations.updateProfile.path
+        [profilesOperations.getProfile, profilesOperations.updateProfile].some(
+          (operation) =>
+            init?.method === operation.method &&
+            requestUrl.pathname === operation.path,
+        )
       ) {
         return fetchImplementation(PROFILE_BFF_PATH, {
           ...init,

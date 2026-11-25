@@ -407,6 +407,7 @@
   --spacing-icon-md: 1.25rem; /* 20px navigation and icon-button icons */
   --spacing-icon-lg: 1.375rem; /* 22px mobile tab bar icons */
   --spacing-sidebar: 16.25rem; /* 260px */
+  --spacing-sidebar-collapsed: 4.5rem; /* 72px icon rail (DR-025) */
   --spacing-topbar: 4.25rem; /* 68px */
   --spacing-topbar-mobile: 4rem; /* 64px */
   --spacing-tabbar-item: 3.25rem; /* 52px */
@@ -425,6 +426,8 @@
   --animate-overlay-in: overlay-in 150ms ease-out;
   --animate-dialog-in: dialog-in 180ms ease-out;
   --animate-sheet-in: sheet-in 220ms ease-out;
+  --animate-drawer-in-left: drawer-in-left 220ms ease-out;
+  --animate-drawer-in-right: drawer-in-right 220ms ease-out;
 
   @keyframes overlay-in {
     from {
@@ -442,6 +445,18 @@
   @keyframes sheet-in {
     from {
       transform: translateY(100%);
+    }
+  }
+
+  @keyframes drawer-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes drawer-in-right {
+    from {
+      transform: translateX(100%);
     }
   }
 

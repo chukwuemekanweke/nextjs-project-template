@@ -1,10 +1,20 @@
 "use client";
 
 import { useApiQueryClient } from "@template/api-react/query-client";
-import { useState } from "react";
+import { LogOutIcon } from "@template/ui-core";
+import { useState, type ComponentProps } from "react";
 import { logoutPortalSession } from "@/lib/logout";
 
-export function LogoutButton() {
+/**
+ * Signs out and clears private client state. Extra props (class names, and
+ * the role, handlers and ref a menu item passes through `asChild`) are
+ * applied to the button.
+ */
+export function LogoutButton({
+  className,
+  onClick,
+  ...props
+}: Omit<ComponentProps<"button">, "children" | "type">) {
   const queryClient = useApiQueryClient();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -22,12 +32,20 @@ export function LogoutButton() {
 
   return (
     <button
+      {...props}
       aria-busy={isLoggingOut}
-      className="w-full text-left disabled:cursor-wait disabled:opacity-60"
+      className={[
+        "disabled:cursor-wait disabled:opacity-60",
+        className ?? "w-full text-left",
+      ].join(" ")}
       disabled={isLoggingOut}
-      onClick={() => void handleLogout()}
+      onClick={(event) => {
+        onClick?.(event);
+        void handleLogout();
+      }}
       type="button"
     >
+      <LogOutIcon />
       {isLoggingOut ? "Signing out…" : "Sign out"}
     </button>
   );

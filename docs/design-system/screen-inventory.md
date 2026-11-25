@@ -1,6 +1,6 @@
 # Screen inventory
 
-Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the authoritative, machine-readable inventory. Both are produced from the same data; when they disagree, the JSON wins. Design source: [`design-source-manifest.json`](./design-source-manifest.json) (commit `d23eb85`).
+Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the authoritative, machine-readable inventory. Both are produced from the same data; when they disagree, the JSON wins. Design source: [`design-source-manifest.json`](./design-source-manifest.json) (commit `d23eb85`; the dashboard shell and navigation records use revision `a7e2a63` — see the manifest's `scopedRevisions` and [DR-083](./discrepancy-register.md#dr-083)).
 
 ## How to read this
 
@@ -81,7 +81,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | [`USR-CHECKOUT`](#usr-checkout)                 | Checkout                                                                | page           | user-portal | `/billing/checkout`                                                                | —                                                                              | Implemented | A     | Existing     | P1       | FE-UI-018 |
 | [`USR-CHECKOUT-RESULT`](#usr-checkout-result)   | Checkout result                                                         | state-flow     | user-portal | `/billing/checkout/success, /billing/checkout/cancelled, /billing/checkout/return` | —                                                                              | Implemented | A     | Existing     | P1       | FE-UI-018 |
 | [`USR-DASHBOARD`](#usr-dashboard)               | Overview dashboard                                                      | page           | user-portal | `/dashboard`                                                                       | —                                                                              | Partial     | B     | Partial      | P1       | FE-UI-015 |
-| [`USR-NAV-MOBILE`](#usr-nav-mobile)             | User portal mobile navigation (top bar, tab bar, drawer)                | layout-pattern | user-portal | —                                                                                  | —                                                                              | Partial     | B     | Not required | P1       | FE-UI-008 |
+| [`USR-NAV-MOBILE`](#usr-nav-mobile)             | User portal mobile navigation (top bar, tab bar, drawer)                | layout-pattern | user-portal | —                                                                                  | —                                                                              | Implemented | B     | Not required | P1       | FE-UI-008 |
 | [`USR-PREFERENCES`](#usr-preferences)           | Preferences                                                             | page           | user-portal | —                                                                                  | `/preferences`                                                                 | Missing     | C     | Partial      | P2       | FE-UI-020 |
 | [`USR-PROFILE`](#usr-profile)                   | Profile                                                                 | page           | user-portal | `/profile`                                                                         | —                                                                              | Implemented | A     | Partial      | P1       | FE-UI-016 |
 | [`USR-PURCHASE-DETAIL`](#usr-purchase-detail)   | Purchase detail                                                         | page           | user-portal | `/billing/purchases/[purchaseId]`                                                  | —                                                                              | Partial     | B     | Partial      | P2       | FE-UI-018 |
@@ -93,32 +93,32 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 ### Admin portal (24)
 
-| Screen ID                                                   | Screen                                       | Kind           | App          | Existing route | Proposed route                                           | Status  | Class | Backend      | Priority | Ticket    |
-| ----------------------------------------------------------- | -------------------------------------------- | -------------- | ------------ | -------------- | -------------------------------------------------------- | ------- | ----- | ------------ | -------- | --------- |
-| [`ADM-ACTIVE-USERS`](#adm-active-users)                     | Active-user analytics                        | page           | admin-portal | —              | `/analytics/active-users`                                | Missing | D     | Missing      | P3       | FE-UI-031 |
-| [`ADM-ALLOCATE`](#adm-allocate)                             | Allocate subscription                        | page           | admin-portal | —              | `/subscriptions/allocate`                                | Missing | D     | Missing      | P3       | FE-UI-026 |
-| [`ADM-AUDIT`](#adm-audit)                                   | Audit history                                | page           | admin-portal | —              | `/audit`                                                 | Missing | D     | Missing      | P3       | FE-UI-030 |
-| [`ADM-DASHBOARD`](#adm-dashboard)                           | Operations overview                          | page           | admin-portal | `/`            | —                                                        | Partial | C     | Missing      | P2       | FE-UI-023 |
-| [`ADM-FORBIDDEN`](#adm-forbidden)                           | 403 forbidden state                          | state-flow     | admin-portal | —              | `(in-place state on any admin route)`                    | Missing | C     | Partial      | P2       | FE-UI-023 |
-| [`ADM-KYC`](#adm-kyc)                                       | KYC monitoring                               | page           | admin-portal | —              | `/kyc`                                                   | Missing | D     | Missing      | P3       | FE-UI-028 |
-| [`ADM-KYC-DETAIL`](#adm-kyc-detail)                         | KYC detail                                   | page           | admin-portal | —              | `/kyc/[verificationId]`                                  | Missing | D     | Missing      | P3       | FE-UI-028 |
-| [`ADM-NAV-MOBILE`](#adm-nav-mobile)                         | Admin mobile navigation (top bar and drawer) | layout-pattern | admin-portal | —              | —                                                        | Partial | B     | Not required | P1       | FE-UI-008 |
-| [`ADM-PAYMENT-ANALYTICS`](#adm-payment-analytics)           | Payment analytics                            | page           | admin-portal | —              | `/analytics/payments`                                    | Missing | D     | Missing      | P3       | FE-UI-031 |
-| [`ADM-PAYMENT-DETAIL`](#adm-payment-detail)                 | Payment detail                               | page           | admin-portal | —              | `/payments/[paymentId]`                                  | Missing | D     | Missing      | P3       | FE-UI-027 |
-| [`ADM-PAYMENTS`](#adm-payments)                             | Payments                                     | page           | admin-portal | —              | `/payments`                                              | Missing | D     | Missing      | P3       | FE-UI-027 |
-| [`ADM-PLANS`](#adm-plans)                                   | Plans and plan editor drawer                 | page           | admin-portal | —              | `/plans (edit drawer; optional ?edit={planId})`          | Missing | D     | Partial      | P3       | FE-UI-026 |
-| [`ADM-PROVIDERS`](#adm-providers)                           | Providers                                    | page           | admin-portal | —              | `/providers`                                             | Missing | D     | Partial      | P3       | FE-UI-029 |
-| [`ADM-REFERENCE-DATA`](#adm-reference-data)                 | Reference data                               | page           | admin-portal | —              | `/reference-data?tab={countries\|languages\|currencies}` | Missing | D     | Partial      | P2       | FE-UI-029 |
-| [`ADM-REGISTRATIONS`](#adm-registrations)                   | Registration analytics                       | page           | admin-portal | —              | `/analytics/registrations`                               | Missing | D     | Missing      | P3       | FE-UI-031 |
-| [`ADM-ROLE-EDIT`](#adm-role-edit)                           | Role editor                                  | page           | admin-portal | —              | `/roles/[roleId] and /roles/new`                         | Missing | D     | Missing      | P3       | FE-UI-025 |
-| [`ADM-ROLES`](#adm-roles)                                   | Roles and permissions                        | page           | admin-portal | —              | `/roles`                                                 | Missing | D     | Missing      | P3       | FE-UI-025 |
-| [`ADM-STEP-UP`](#adm-step-up)                               | Step-up MFA confirmation dialog              | overlay        | admin-portal | —              | `(dialog on sensitive admin actions)`                    | Missing | D     | Missing      | P3       | FE-UI-024 |
-| [`ADM-SUBSCRIPTION-ANALYTICS`](#adm-subscription-analytics) | Subscription analytics                       | page           | admin-portal | —              | `/analytics/subscriptions`                               | Missing | D     | Missing      | P3       | FE-UI-031 |
-| [`ADM-SUBSCRIPTION-DETAIL`](#adm-subscription-detail)       | Subscription detail                          | page           | admin-portal | —              | `/subscriptions/[subscriptionId]`                        | Missing | D     | Missing      | P3       | FE-UI-026 |
-| [`ADM-SUBSCRIPTIONS`](#adm-subscriptions)                   | Subscriptions                                | page           | admin-portal | —              | `/subscriptions`                                         | Missing | D     | Missing      | P3       | FE-UI-026 |
-| [`ADM-SYSTEM-HEALTH`](#adm-system-health)                   | System health                                | page           | admin-portal | —              | `/system-health`                                         | Missing | D     | Missing      | P3       | FE-UI-030 |
-| [`ADM-USER-DETAIL`](#adm-user-detail)                       | User detail                                  | page           | admin-portal | —              | `/users/[userId]`                                        | Missing | D     | Missing      | P3       | FE-UI-024 |
-| [`ADM-USERS`](#adm-users)                                   | Users                                        | page           | admin-portal | —              | `/users`                                                 | Missing | D     | Missing      | P3       | FE-UI-024 |
+| Screen ID                                                   | Screen                                       | Kind           | App          | Existing route | Proposed route                                           | Status      | Class | Backend      | Priority | Ticket    |
+| ----------------------------------------------------------- | -------------------------------------------- | -------------- | ------------ | -------------- | -------------------------------------------------------- | ----------- | ----- | ------------ | -------- | --------- |
+| [`ADM-ACTIVE-USERS`](#adm-active-users)                     | Active-user analytics                        | page           | admin-portal | —              | `/analytics/active-users`                                | Missing     | D     | Missing      | P3       | FE-UI-031 |
+| [`ADM-ALLOCATE`](#adm-allocate)                             | Allocate subscription                        | page           | admin-portal | —              | `/subscriptions/allocate`                                | Missing     | D     | Missing      | P3       | FE-UI-026 |
+| [`ADM-AUDIT`](#adm-audit)                                   | Audit history                                | page           | admin-portal | —              | `/audit`                                                 | Missing     | D     | Missing      | P3       | FE-UI-030 |
+| [`ADM-DASHBOARD`](#adm-dashboard)                           | Operations overview                          | page           | admin-portal | `/`            | —                                                        | Partial     | C     | Missing      | P2       | FE-UI-023 |
+| [`ADM-FORBIDDEN`](#adm-forbidden)                           | 403 forbidden state                          | state-flow     | admin-portal | —              | `(in-place state on any admin route)`                    | Missing     | C     | Partial      | P2       | FE-UI-023 |
+| [`ADM-KYC`](#adm-kyc)                                       | KYC monitoring                               | page           | admin-portal | —              | `/kyc`                                                   | Missing     | D     | Missing      | P3       | FE-UI-028 |
+| [`ADM-KYC-DETAIL`](#adm-kyc-detail)                         | KYC detail                                   | page           | admin-portal | —              | `/kyc/[verificationId]`                                  | Missing     | D     | Missing      | P3       | FE-UI-028 |
+| [`ADM-NAV-MOBILE`](#adm-nav-mobile)                         | Admin mobile navigation (top bar and drawer) | layout-pattern | admin-portal | —              | —                                                        | Implemented | B     | Not required | P1       | FE-UI-008 |
+| [`ADM-PAYMENT-ANALYTICS`](#adm-payment-analytics)           | Payment analytics                            | page           | admin-portal | —              | `/analytics/payments`                                    | Missing     | D     | Missing      | P3       | FE-UI-031 |
+| [`ADM-PAYMENT-DETAIL`](#adm-payment-detail)                 | Payment detail                               | page           | admin-portal | —              | `/payments/[paymentId]`                                  | Missing     | D     | Missing      | P3       | FE-UI-027 |
+| [`ADM-PAYMENTS`](#adm-payments)                             | Payments                                     | page           | admin-portal | —              | `/payments`                                              | Missing     | D     | Missing      | P3       | FE-UI-027 |
+| [`ADM-PLANS`](#adm-plans)                                   | Plans and plan editor drawer                 | page           | admin-portal | —              | `/plans (edit drawer; optional ?edit={planId})`          | Missing     | D     | Partial      | P3       | FE-UI-026 |
+| [`ADM-PROVIDERS`](#adm-providers)                           | Providers                                    | page           | admin-portal | —              | `/providers`                                             | Missing     | D     | Partial      | P3       | FE-UI-029 |
+| [`ADM-REFERENCE-DATA`](#adm-reference-data)                 | Reference data                               | page           | admin-portal | —              | `/reference-data?tab={countries\|languages\|currencies}` | Missing     | D     | Partial      | P2       | FE-UI-029 |
+| [`ADM-REGISTRATIONS`](#adm-registrations)                   | Registration analytics                       | page           | admin-portal | —              | `/analytics/registrations`                               | Missing     | D     | Missing      | P3       | FE-UI-031 |
+| [`ADM-ROLE-EDIT`](#adm-role-edit)                           | Role editor                                  | page           | admin-portal | —              | `/roles/[roleId] and /roles/new`                         | Missing     | D     | Missing      | P3       | FE-UI-025 |
+| [`ADM-ROLES`](#adm-roles)                                   | Roles and permissions                        | page           | admin-portal | —              | `/roles`                                                 | Missing     | D     | Missing      | P3       | FE-UI-025 |
+| [`ADM-STEP-UP`](#adm-step-up)                               | Step-up MFA confirmation dialog              | overlay        | admin-portal | —              | `(dialog on sensitive admin actions)`                    | Missing     | D     | Missing      | P3       | FE-UI-024 |
+| [`ADM-SUBSCRIPTION-ANALYTICS`](#adm-subscription-analytics) | Subscription analytics                       | page           | admin-portal | —              | `/analytics/subscriptions`                               | Missing     | D     | Missing      | P3       | FE-UI-031 |
+| [`ADM-SUBSCRIPTION-DETAIL`](#adm-subscription-detail)       | Subscription detail                          | page           | admin-portal | —              | `/subscriptions/[subscriptionId]`                        | Missing     | D     | Missing      | P3       | FE-UI-026 |
+| [`ADM-SUBSCRIPTIONS`](#adm-subscriptions)                   | Subscriptions                                | page           | admin-portal | —              | `/subscriptions`                                         | Missing     | D     | Missing      | P3       | FE-UI-026 |
+| [`ADM-SYSTEM-HEALTH`](#adm-system-health)                   | System health                                | page           | admin-portal | —              | `/system-health`                                         | Missing     | D     | Missing      | P3       | FE-UI-030 |
+| [`ADM-USER-DETAIL`](#adm-user-detail)                       | User detail                                  | page           | admin-portal | —              | `/users/[userId]`                                        | Missing     | D     | Missing      | P3       | FE-UI-024 |
+| [`ADM-USERS`](#adm-users)                                   | Users                                        | page           | admin-portal | —              | `/users`                                                 | Missing     | D     | Missing      | P3       | FE-UI-024 |
 
 ## Screen details
 
@@ -492,15 +492,13 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 **User portal mobile navigation (top bar, tab bar, drawer)** — layout-pattern; target `user-portal`; auth: authenticated.
 
-- **Artboards:** `UserMobileMenu` — 2 reference files (mobile; dark/light).
-- **Status:** Partial (B); **backend:** Not required; **priority:** P1; **ticket:** FE-UI-008.
-- **Implementation:** `apps/user-portal/src/components/user-layout-shell.tsx`, `apps/user-portal/src/config/navigation.ts`, `packages/dashboard-ui/src/components/mobile-nav.tsx`
-- **Works today:** Off-canvas sidebar drawer below lg with 4 nav items.
-- **Operations:** getProfile (identity in drawer)
-- **Gap:** Reference: mobile top bar + 5-item bottom tab bar (Home, Wallet, Billing, Security, Account) + left drawer with identity and dark-mode switch.
-- **Gap:** Tab bar includes Wallet which does not exist; 'Account' tab behaviour is undefined.
-- **Depends on:** FE-UI-008
-- **Note:** Mobile-only artboards.
+- **Artboards:** `UserMobileMenu` — 2 reference files (mobile; dark/light), revision `a7e2a63` (unchanged since `d23eb85`).
+- **Status:** Implemented (B); **backend:** Not required; **priority:** P1; **ticket:** FE-UI-008 (delivered by Trello FE-UI-004).
+- **Implementation:** `apps/user-portal/src/components/user-layout-shell.tsx`, `apps/user-portal/src/config/navigation.ts`, `packages/dashboard-ui/src/components/{dashboard-shell,dashboard-topbar,mobile-nav,mobile-tab-bar,sidebar}.tsx`
+- **Works today:** Mobile top bar (menu, brand, account menu); phone tab bar Home, Billing, Security, Account; 304px drawer with profile identity, the implemented destinations, Dark mode switch and Sign out. Tablet (`md`–`lg`) uses top bar + drawer without the tab bar.
+- **Operations:** getProfile (identity in top bar and drawer)
+- **Gap:** Wallet (tab and drawer), Verification and Preferences are omitted until their routes ship.
+- **Note:** Mobile-only artboards. "Account" links to `/profile`, as the reference markup does.
 - **Discrepancies:** [DR-022](./discrepancy-register.md#dr-022), [DR-023](./discrepancy-register.md#dr-023)
 
 ### USR-PREFERENCES
@@ -706,15 +704,15 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 **Admin mobile navigation (top bar and drawer)** — layout-pattern; target `admin-portal`; auth: admin.
 
-- **Artboards:** `AdminMobileMenu` — 2 reference files (mobile; dark/light).
-- **Status:** Partial (B); **backend:** Not required; **priority:** P1; **ticket:** FE-UI-008.
-- **Implementation:** `apps/admin-portal/src/components/admin-layout-shell.tsx`, `apps/admin-portal/src/config/navigation.ts`
-- **Works today:** Off-canvas sidebar drawer with 6 flat items.
+- **Artboards:** `AdminMobileMenu` — 2 reference files (mobile; dark/light), revision `a7e2a63` (adds Invoices under Operations).
+- **Status:** Implemented (B); **backend:** Not required; **priority:** P1; **ticket:** FE-UI-008 (delivered by Trello FE-UI-004).
+- **Implementation:** `apps/admin-portal/src/components/admin-layout-shell.tsx`, `apps/admin-portal/src/config/navigation.ts`, `packages/dashboard-ui/src/components/{dashboard-shell,dashboard-topbar,mobile-nav,sidebar}.tsx`
+- **Works today:** Mobile top bar (menu, brand with Admin chip, account menu); drawer with grouped navigation, the admitted role, Dark mode switch and Sign out. Only implemented routes are listed (Dashboard).
 - **Unsupported / missing backend:** Global admin search API (top-bar search)
-- **Gap:** Reference: grouped navigation (Analytics, Operations, Platform) with 16 items, identity block, dark-mode switch; top-bar search button; no bottom tab bar.
-- **Depends on:** FE-UI-008
+- **Gap:** The 17 reference destinations appear only with their routes and admin APIs; the full grouped navigation is previewed in the UI workbench.
+- **Gap:** Identity shows the admitted role, not a name (no admin profile read).
 - **Note:** Mobile-only artboards.
-- **Discrepancies:** [DR-022](./discrepancy-register.md#dr-022), [DR-075](./discrepancy-register.md#dr-075)
+- **Discrepancies:** [DR-022](./discrepancy-register.md#dr-022), [DR-027](./discrepancy-register.md#dr-027), [DR-070](./discrepancy-register.md#dr-070), [DR-071](./discrepancy-register.md#dr-071), [DR-075](./discrepancy-register.md#dr-075)
 
 ### ADM-PAYMENT-ANALYTICS
 

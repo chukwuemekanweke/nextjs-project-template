@@ -26,7 +26,10 @@ status: stable
 
 The UI is being redesigned design-first against the Project Template design
 system, pinned at commit `d23eb85` of
-`chukwuemekanweke/Project-Template-Design-System` (canonical files: the
+`chukwuemekanweke/Project-Template-Design-System`; the dashboard shell
+(FE-UI-004) follows revision `a7e2a63`, recorded as a scoped revision in the
+manifest (full manifest regeneration outstanding, DR-083; invoices/receipts
+are FE-UI-018, email templates are tracked separately) (canonical files: the
 numbered `0-foundations` … `4-admin-portal` directories). Detailed planning
 lives in `docs/design-system/`; load it only for UI redesign work.
 
@@ -53,7 +56,8 @@ lives in `docs/design-system/`; load it only for UI redesign work.
   migrations next.
 - Trello card numbers can differ from roadmap IDs (DR-077: Trello FE-UI-002
   delivered roadmap FE-UI-003; Trello FE-UI-003 delivered most of roadmap
-  FE-UI-004–006 and the local part of the FE-UI-002 harness — workbench,
+  FE-UI-004–006 and the local part of the FE-UI-002 harness; Trello FE-UI-004
+  delivered roadmap FE-UI-008's dashboard chrome — workbench,
   browser-mode and primitive visual tests — while CI wiring, journeys and axe
   automation remain outstanding). Treat the current card as authoritative and record the
   mapping rather than renumbering the roadmap. Existing package ownership rules
