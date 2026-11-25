@@ -5,7 +5,14 @@ description: Required repository checks and when filtered checks are insufficien
 resource: okf://knowledge/workflows/verification
 tags: [constraint, workflow, verification, pnpm, turbo]
 governance: constraint
-code_refs: [package.json, turbo.json, .github/workflows/frontend-ci.yml]
+code_refs:
+  [
+    package.json,
+    turbo.json,
+    .github/workflows/frontend-ci.yml,
+    packages/*/vitest.browser.config.ts,
+    tooling/ui-workbench/package.json,
+  ]
 sources:
   - kind: file
     path: package.json
@@ -27,3 +34,8 @@ shared packages, root tooling, application boundaries, deployment, or
 repository-wide architecture must finish with the complete root sequence. Builds
 require valid environment values; CI copies each app's safe `.env.example` to
 `.env.local` before `pnpm build`.
+
+Shared UI changes (`packages/ui-core`, `forms`, `dashboard-ui`) additionally
+run `pnpm test:component` and `pnpm test:visual` locally (browser suites,
+not yet in CI — OD-05) and, when relevant, `pnpm workbench:build`. Report
+which of these ran.

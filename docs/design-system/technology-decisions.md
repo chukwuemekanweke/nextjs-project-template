@@ -2,7 +2,7 @@
 
 Each decision records: the design-system requirement, the current implementation, viable alternatives, the recommendation, trade-offs, migration complexity and long-term maintainability. Criteria applied throughout: suitability for the reference, accessibility, maintainability, performance, developer experience and reuse across future SaaS projects. Exact library versions are pinned in the pnpm `catalog` by the ticket that introduces them (choose the current stable release at that time); this document fixes the choice, not the version.
 
-Status legend: **Accepted** (recommended; implement in the referenced ticket) · **Proposed** (recommended but needs explicit sign-off listed in [discrepancy-register.md](./discrepancy-register.md#open-decisions)) · **Implemented** (in the repository; the ticket column keeps the roadmap ID, see [DR-077](./discrepancy-register.md#dr-077) for the Trello numbering).
+Status legend: **Accepted** (recommended; implement in the referenced ticket) · **Proposed** (recommended but needs explicit sign-off listed in [discrepancy-register.md](./discrepancy-register.md#open-decisions)) · **Implemented** (in the repository; the ticket column keeps the roadmap ID, see [DR-077](./discrepancy-register.md#dr-077) for the Trello numbering) · **Implemented (local)** (available as local scripts; CI wiring awaits OD-05). Component APIs: [shared-components.md](./shared-components.md).
 
 ## Summary
 
@@ -10,21 +10,21 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 | ----- | ---------------------------------------------------------------------- | ------------------- | -------------- |
 | TD-01 | Keep Tailwind CSS v4 as the styling engine                             | Implemented         | FE-UI-003      |
 | TD-02 | Two-tier CSS-variable tokens, one `theme.css` in `ui-core`             | Implemented         | FE-UI-003      |
-| TD-03 | Radix UI primitives for interactive behaviour                          | Accepted            | FE-UI-005      |
-| TD-04 | Owned component source + `class-variance-authority` + `tailwind-merge` | Accepted            | FE-UI-004      |
-| TD-05 | `lucide-react` icons                                                   | Accepted            | FE-UI-004      |
+| TD-03 | Radix UI primitives for interactive behaviour                          | Implemented         | FE-UI-005      |
+| TD-04 | Owned component source + `class-variance-authority` + `tailwind-merge` | Implemented         | FE-UI-004      |
+| TD-05 | `lucide-react` icons                                                   | Implemented         | FE-UI-004      |
 | TD-06 | Outfit + JetBrains Mono via `next/font` in all apps                    | Implemented         | FE-UI-003      |
 | TD-07 | `next-themes` for light/dark/system in all apps                        | Implemented         | FE-UI-003      |
 | TD-08 | Tailwind default breakpoints; phone < `md`, sidebar ≥ `lg`             | Implemented         | FE-UI-003      |
-| TD-09 | Own `DataTable` with stacked phone mode; no data-grid engine           | Accepted            | FE-UI-006      |
+| TD-09 | Own `DataTable` with stacked phone mode; no data-grid engine           | Implemented         | FE-UI-006      |
 | TD-10 | Recharts for admin analytics, deferred                                 | Accepted (deferred) | FE-UI-031      |
-| TD-11 | Radix Dialog-based overlays with responsive sheet                      | Accepted            | FE-UI-005      |
+| TD-11 | Radix Dialog-based overlays with responsive sheet                      | Partly implemented  | FE-UI-005      |
 | TD-12 | No toast library; inline alerts                                        | Accepted            | —              |
 | TD-13 | Keep React Hook Form + Zod                                             | Accepted            | FE-UI-007      |
 | TD-14 | Keep the four UI packages, re-scoped; no new design-system package     | Accepted            | FE-UI-003..009 |
-| TD-15 | Storybook workbench in `tooling/ui-workbench`                          | Proposed            | FE-UI-002      |
-| TD-16 | Vitest browser mode for component interaction tests                    | Proposed            | FE-UI-002      |
-| TD-17 | Playwright for visual regression, a11y scans and journeys              | Proposed            | FE-UI-002      |
+| TD-15 | Storybook workbench in `tooling/ui-workbench`                          | Implemented (local) | FE-UI-002      |
+| TD-16 | Vitest browser mode for component interaction tests                    | Implemented (local) | FE-UI-002      |
+| TD-17 | Playwright for visual regression, a11y scans and journeys              | Partly implemented  | FE-UI-002      |
 | TD-18 | Remove `framer-motion`; CSS-only motion                                | Accepted            | FE-UI-009      |
 | TD-19 | Native date inputs in a popover for date ranges (initially)            | Accepted            | FE-UI-006      |
 | TD-20 | Remove TailAdmin/Solid-derived code and notices after replacement      | Proposed            | FE-UI-032      |
@@ -62,6 +62,8 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 - **Migration complexity:** medium; replaces `Modal`, `Tabs`, menus during FE-UI-005.
 - **Maintainability:** high; behaviour bugs are fixed upstream; our code is styling and API shape only.
 
+- **Implemented (Trello FE-UI-003):** `radix-ui` (unified package) for Dialog, Tabs, Switch, ToggleGroup and Slot. Native checkbox, radio and select are used where they satisfy the requirement; DropdownMenu, Popover and Tooltip are deferred until a consumer needs them.
+
 ## TD-04 Component authoring model
 
 - **Requirement:** variant-rich primitives (6 button variants × 2 sizes × block, 5 badge tones, 4 alert tones, …) that apps can extend without forking.
@@ -72,6 +74,8 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 - **Migration complexity:** low per component; high overall surface (every `apps/*` usage of `buttonClassName` and hand-written classes).
 - **Maintainability:** high; one place per pattern, typed variants.
 
+- **Implemented (Trello FE-UI-003):** `cn()` in `ui-core/src/lib/cn.ts` (tailwind-merge extended with the theme's custom font-size, spacing, container and z-index names); `cva` variants beside each component; `buttonClassName` kept as a deprecated wrapper over `buttonVariants`.
+
 ## TD-05 Icons
 
 - **Requirement:** ~60 outline icons, 24 px grid, 1.8 stroke, round caps; nav (20 px), buttons (18 px), tab bar (22 px).
@@ -81,6 +85,8 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 - **Trade-offs:** the reference geometry matches Lucide (e.g. `layout-grid`, `trending-up`, `activity` paths); tree-shaken per icon; maintaining a hand-drawn set does not scale to the ~60 icons needed.
 - **Migration complexity:** low.
 - **Maintainability:** high.
+
+- **Implemented (Trello FE-UI-003):** `ui-core/src/components/icons.tsx` wraps Lucide glyphs with `aria-hidden`, 1.8 stroke, `data-icon` and size presets; the 33 legacy export names are kept (now Lucide-drawn) and ~30 icons were added.
 
 ## TD-06 Typography
 
@@ -123,6 +129,8 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 - **Migration complexity:** low–medium (billing history, security activity, sessions).
 - **Maintainability:** high.
 
+- **Implemented (Trello FE-UI-003):** `DataTable` (alignment, `mobileLabel`, opt-in `mobileLayout="stack"`, loading/empty/error) and `Pager`; `Pagination` kept as deprecated. Existing consumers keep horizontal scrolling until OD-02 is decided.
+
 ## TD-10 Charts
 
 - **Requirement:** line/area, grouped and stacked bars, donut, horizontal bars; token colours; dark mode; accessible alternative.
@@ -133,6 +141,8 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 - **Migration complexity:** none now; isolated subpath export keeps it out of the user and public bundles.
 - **Maintainability:** good; wrappers limit coupling to the library.
 
+- **Foundations (Trello FE-UI-003):** `@template/dashboard-ui/charts` exports `ChartFrame`, `ChartLegend`, `chartSeriesColor` and `chartColors` (sizes, states, text alternative). Recharts itself is still not installed.
+
 ## TD-11 Overlays
 
 - **Requirement:** modal (bottom sheet on phones), right drawer, left nav drawer, full-screen menu sheet; scrim; focus trap; `Esc`; return focus.
@@ -142,6 +152,8 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 - **Trade-offs:** native `<dialog>` lacks consistent scroll locking and animation hooks; Vaul adds drag gestures the reference does not show.
 - **Migration complexity:** medium (≈10 existing modals in the user portal).
 - **Maintainability:** high.
+
+- **Partly implemented (Trello FE-UI-003):** `Dialog` (desktop card, phone bottom sheet), `ConfirmDialog`, and `Modal` re-implemented on `Dialog` behind its props. `Drawer`, `Sheet` and `MobileNavDrawer` are deferred to the shell tickets (FE-UI-008/009).
 
 ## TD-12 Notifications
 
@@ -177,6 +189,8 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 - **Migration complexity:** medium (one-time setup; Next-specific APIs like `next/link` are mocked).
 - **Maintainability:** good if stories live next to components and the workbench only aggregates them.
 
+- **Implemented locally (Trello FE-UI-003):** `tooling/ui-workbench` with stories for the shared primitives (`pnpm workbench`). The `tooling/*` workspace glob was added. CI job pending OD-05.
+
 ## TD-16 Component interaction tests
 
 - **Requirement:** verify focus trapping, keyboard navigation, ARIA state and variants of primitives.
@@ -186,6 +200,8 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 - **Trade-offs:** jsdom lacks layout, pointer capture and real focus behaviour that Radix relies on, producing polyfill-heavy, low-fidelity tests. Browser mode reuses the Playwright install from TD-17.
 - **Migration complexity:** low (additive).
 
+- **Implemented locally (Trello FE-UI-003):** `ui-core` and `forms` `*.browser.test.tsx` (`pnpm test:component`).
+
 ## TD-17 Visual regression, accessibility scanning, journeys
 
 - **Requirement:** protect live journeys while the presentation is replaced; compare against the reference; check WCAG.
@@ -194,6 +210,8 @@ Status legend: **Accepted** (recommended; implement in the referenced ticket) ·
 - **Recommendation:** Playwright with screenshots generated in the official Playwright container image for determinism, `@axe-core/playwright` for scans, and MSW-backed API mocking for app journeys.
 - **Trade-offs:** hosted services give review UIs but add cost and send screenshots to a third party; self-hosted baselines need disciplined update reviews.
 - **Migration complexity:** medium; see [verification-strategy.md](./verification-strategy.md).
+
+- **Partly implemented (Trello FE-UI-003):** primitive visual regression uses Vitest browser mode `toMatchScreenshot` over composed workbench stories (one Playwright-driven runner instead of a second framework). Baselines are Windows/Chromium until CI generates Linux baselines; Playwright journeys with MSW, `@axe-core/playwright` and app-page screenshots remain outstanding.
 
 ## TD-18 Motion
 

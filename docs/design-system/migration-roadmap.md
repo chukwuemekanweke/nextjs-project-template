@@ -11,7 +11,7 @@ How to move from today's TailAdmin/Solid-derived presentation layer to the [targ
 5. **Capability-gated screens.** Screens that need backend work (class D) wait for their API. The frontend prepares shells, navigation groups and primitives so that each later screen is pure composition.
 6. **Docs move with code.** Each ticket updates its screen records (`implementation.status`, `uiGaps`), the discrepancy register and, where architecture changes, OKF and `docs/architecture/`.
 
-> **Numbering ([DR-077](./discrepancy-register.md#dr-077)).** The Trello card FE-UI-002 delivered the scope listed below as **FE-UI-003 — Tokens, theme and typography** (see [foundations.md](./foundations.md)). The verification harness listed below as FE-UI-002 has **not** been delivered and remains a prerequisite for screen tickets. Ticket IDs in this roadmap are unchanged until the backlog is reconciled.
+> **Numbering ([DR-077](./discrepancy-register.md#dr-077)).** Trello cards are authoritative; roadmap IDs below are unchanged until the backlog is reconciled. Trello **FE-UI-002** delivered roadmap **FE-UI-003** (tokens, theme, typography — [foundations.md](./foundations.md)). Trello **FE-UI-003** (shared UI primitives) delivered most of roadmap **FE-UI-004, 005 and 006**, the presentational controls of **FE-UI-007**, and the local part of **FE-UI-002** (workbench, browser-mode interaction tests, primitive visual regression) — see [shared-components.md](./shared-components.md). Each ticket below has a status line listing what remains.
 
 ## 2. Dependency graph
 
@@ -62,6 +62,8 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 ### FE-UI-002 — Verification harness and UI workbench
 
+- **Status:** partly delivered by Trello FE-UI-003: `tooling/ui-workbench` (Storybook), Vitest browser mode in `ui-core`/`forms`, and primitive visual baselines (Windows/Chromium). Outstanding: CI jobs (OD-05), Playwright journeys with MSW, `@axe-core/playwright`, app-page screenshots, Linux baselines, fixture-isolation lint.
+
 - **Scope:** add `tooling/ui-workbench` (Storybook, React + Vite, a11y addon, theme and viewport toolbar), Vitest browser mode for UI packages, Playwright project(s) with MSW-mocked backend, `@axe-core/playwright`, a fixture-isolation ESLint rule, and CI wiring through the devops-toolkit callers.
 - **Affects:** root `pnpm-workspace.yaml` (`tooling/*`), `package.json` scripts, `turbo.json`, `packages/eslint-config`, `.github/workflows/*` (callers only), new `tooling/ui-workbench`, `e2e/` (or per-app `tests/e2e`).
 - **Prerequisites:** OD-05.
@@ -84,6 +86,8 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 ### FE-UI-004 — Core primitives and icons
 
+- **Status:** delivered by Trello FE-UI-003 except `CopyButton`, `PlanCard`, `Steps`, `Timeline`, the date formatter (built with their first screens) and the hex/palette lint rule.
+
 - **Scope:** `cn`/`cva`, `Button`/`IconButton`, `Badge`, `Chip`, `Avatar`, `IconTile`, `Card` (extended), `Panel`, `Alert` (extended), `KeyValueList`, `ListRow`, `Stat`/`StatGrid`, `Progress`, `Spinner`, `Divider`, `EmptyState`/`ErrorState`, `CopyButton`, `PlanCard`, date formatter, Lucide icon module; lint rule against hex values and raw palette classes (warning level until FE-UI-032).
 - **Affects:** `ui-core`; `buttonClassName` kept as a deprecated wrapper over `buttonVariants`.
 - **Prerequisites:** FE-UI-003.
@@ -92,6 +96,8 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 - **Done when:** primitives exported, documented in the workbench, tested; `component-inventory.md` statuses updated.
 
 ### FE-UI-005 — Overlays and interactive controls (Radix)
+
+- **Status:** delivered by Trello FE-UI-003: `Dialog` (phone bottom sheet), `ConfirmDialog`, `Modal` on `Dialog`, Radix `Tabs` (controlled), `SegmentedControl`, `Switch`, native `Checkbox`/`RadioGroup`/`RadioCard`. Deferred: `Drawer`, `Sheet`, `DropdownMenu`, `Popover`, `Tooltip`, the tabs link variant.
 
 - **Scope:** `Dialog`, `ResponsiveDialog`, `ConfirmDialog`, `Drawer`, `Sheet`, `DropdownMenu`, `Popover`, `Tooltip`, `Tabs` (controlled + link variant), `SegmentedControl`, `Switch`, `Checkbox`, `RadioGroup`/`RadioCard`. Re-implement the existing `Modal` on `Dialog` behind its current props.
 - **Affects:** `ui-core`; every existing modal benefits automatically.
@@ -102,6 +108,8 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 ### FE-UI-006 — Data display
 
+- **Status:** delivered by Trello FE-UI-003: `DataTable` (alignment, `mobileLabel`, opt-in stacked phone mode, loading/empty/error), `Pager`, `SearchInput`, chart foundations. Deferred: `Timeline`, `Steps`, date-range popover. Existing tables keep scrolling on phones until OD-02.
+
 - **Scope:** `DataTable` (alignment, `mobileLabel`, stacked phone mode, loading/empty/error rows), `Pager`, `Timeline`, `Steps`, `SearchInput`, date-range `Popover` with native inputs (TD-19).
 - **Affects:** `ui-core`; `Pagination` deprecated.
 - **Prerequisites:** FE-UI-004.
@@ -110,6 +118,8 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 - **Done when:** components exported and tested.
 
 ### FE-UI-007 — Form fields
+
+- **Status:** Trello FE-UI-003 rebuilt `TextField`, `PasswordField`, `ConfirmationCodeField` (on `OtpInput`), `SearchableSelectField` and `SubmitButton` on the new controls with unchanged RHF behaviour. The new connected fields and `PasswordStrength` remain.
 
 - **Scope:** rebuild `TextField`, `PasswordField`, `SearchableSelectField`, `OtpField` (from `ConfirmationCodeField`), `SubmitButton`; add `SelectField`, `TextareaField`, `CheckboxField`, `SwitchField`, `RadioCardGroupField`, `SegmentedField`, `PasswordStrength`.
 - **Affects:** `forms`; consumers in user/admin portals compile unchanged where the API is kept.

@@ -7,38 +7,73 @@ import {
   type HTMLAttributes,
   type ReactNode,
 } from "react";
+import { cn } from "../lib/cn";
+import {
+  CircleAlertIcon,
+  CircleCheckIcon,
+  CloseIcon,
+  InfoIcon,
+  TriangleAlertIcon,
+  type IconComponent,
+} from "./icons";
 
 export type AlertVariant = "error" | "info" | "success" | "warning";
 
 const EXIT_DURATION_MS = 300;
 
 const variantClasses: Record<AlertVariant, string> = {
-  error:
-    "border-red-200 bg-red-50 text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300",
-  info: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300",
-  success:
-    "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300",
-  warning:
-    "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300",
+  error: "bg-danger-bg",
+  info: "bg-info-bg",
+  success: "bg-success-bg",
+  warning: "bg-warning-bg",
 };
 
+const iconClasses: Record<AlertVariant, string> = {
+  error: "text-danger",
+  info: "text-info",
+  success: "text-success",
+  warning: "text-warning",
+};
+
+const variantIcons: Record<AlertVariant, IconComponent> = {
+  error: CircleAlertIcon,
+  info: InfoIcon,
+  success: CircleCheckIcon,
+  warning: TriangleAlertIcon,
+};
+
+/**
+ * Inline feedback (reference `.alert`, `.a-info/ok/warn/bad`). Errors and
+ * warnings use `role="alert"`; information and success use a polite
+ * `role="status"`. Each tone has its own icon, so meaning never depends on
+ * colour alone. `onDismiss` adds a labelled close button; `autoDismissAfter`
+ * (ms, requires `onDismiss`) removes the alert after a delay.
+ */
 export function Alert({
+  action,
   autoDismissAfter,
   children,
-  className = "",
+  className,
   dismissLabel = "Dismiss alert",
+  hideIcon = false,
   onDismiss,
+  title,
   variant = "info",
   ...props
-}: Omit<HTMLAttributes<HTMLDivElement>, "role"> & {
+}: Omit<HTMLAttributes<HTMLDivElement>, "role" | "title"> & {
+  /** Inline action, for example a "Retry" button or a link. */
+  action?: ReactNode;
   autoDismissAfter?: number;
   children: ReactNode;
   dismissLabel?: string;
+  hideIcon?: boolean;
   onDismiss?: () => void;
+  title?: ReactNode;
   variant?: AlertVariant;
 }) {
   const [closing, setClosing] = useState(false);
   const manualDismissTimer = useRef<number | null>(null);
+  const Icon = variantIcons[variant];
 
   useEffect(() => {
     if (!onDismiss || !autoDismissAfter || autoDismissAfter < 1) {
@@ -79,42 +114,43 @@ export function Alert({
 
   return (
     <div
-      className={`grid transition-[grid-template-rows,opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
+      className={cn(
+        "grid transition-[grid-template-rows,opacity,transform] duration-300 ease-out motion-reduce:transition-none",
         closing
           ? "-translate-y-1 grid-rows-[0fr] opacity-0"
-          : "grid-rows-[1fr] opacity-100"
-      } ${className}`}
+          : "grid-rows-[1fr] opacity-100",
+        className,
+      )}
     >
       <div className="min-h-0 overflow-hidden">
         <div
           {...props}
-          className={`flex items-start justify-between gap-3 rounded-lg border px-4 py-3 text-sm ${variantClasses[variant]}`}
+          className={cn(
+            "text-label text-fg flex items-start gap-3 rounded-lg px-4 py-3.5 font-normal max-md:flex-wrap",
+            variantClasses[variant],
+          )}
           role={
             variant === "error" || variant === "warning" ? "alert" : "status"
           }
         >
-          <div className="min-w-0">{children}</div>
+          {hideIcon ? null : (
+            <Icon className={cn("mt-px", iconClasses[variant])} />
+          )}
+          <div className="min-w-0 flex-1">
+            {title ? <p className="font-semibold">{title}</p> : null}
+            <div className={cn(title ? "text-fg-muted mt-0.5" : undefined)}>
+              {children}
+            </div>
+          </div>
+          {action ? <div className="shrink-0 self-center">{action}</div> : null}
           {onDismiss ? (
             <button
               aria-label={dismissLabel}
-              className="-m-1 shrink-0 rounded-md p-1 opacity-70 transition hover:opacity-100 focus:ring-2 focus:ring-current focus:outline-none"
+              className="text-fg-muted hover:bg-hover hover:text-fg focus-visible:outline-focus -m-1 shrink-0 rounded-sm p-1 transition-colors focus-visible:outline-2"
               onClick={dismiss}
               type="button"
             >
-              <svg
-                aria-hidden="true"
-                fill="none"
-                height="16"
-                viewBox="0 0 16 16"
-                width="16"
-              >
-                <path
-                  d="m4 4 8 8m0-8-8 8"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeWidth="1.5"
-                />
-              </svg>
+              <CloseIcon size="xs" />
             </button>
           ) : null}
         </div>

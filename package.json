@@ -14,7 +14,11 @@
     "test": "turbo test",
     "sync:openapi": "pnpm --filter @template/api-client sync:openapi",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:component": "turbo test:component",
+    "test:visual": "pnpm --filter @template/ui-workbench test:visual",
+    "workbench": "pnpm --filter @template/ui-workbench dev",
+    "workbench:build": "pnpm --filter @template/ui-workbench build-storybook"
   },
   "devDependencies": {
     "prettier": "3.9.5",

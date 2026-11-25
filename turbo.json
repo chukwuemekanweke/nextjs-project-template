@@ -17,6 +17,10 @@
     },
     "test": {
       "dependsOn": ["^test"]
+    },
+    "test:component": {
+      "dependsOn": ["^test:component"],
+      "cache": false
     }
   }
 }

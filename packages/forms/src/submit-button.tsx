@@ -1,27 +1,20 @@
 "use client";
 
-import type { ButtonHTMLAttributes } from "react";
+import { Button, type ButtonProps } from "@template/ui-core";
 import { useFormContext } from "react-hook-form";
 
+/**
+ * Form submit button on the shared `Button`. While the form is submitting
+ * (or `pending` is set by the caller) it shows a spinner, sets `aria-busy`
+ * and ignores further activation, so a submission cannot be sent twice.
+ */
 export function SubmitButton({
-  children,
-  disabled,
   pending = false,
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { pending?: boolean }) {
+}: Omit<ButtonProps, "asChild" | "loading" | "type"> & { pending?: boolean }) {
   const {
     formState: { isSubmitting },
   } = useFormContext();
-  const isPending = pending || isSubmitting;
 
-  return (
-    <button
-      {...props}
-      aria-busy={isPending}
-      disabled={disabled || isPending}
-      type="submit"
-    >
-      {children}
-    </button>
-  );
+  return <Button {...props} loading={pending || isSubmitting} type="submit" />;
 }

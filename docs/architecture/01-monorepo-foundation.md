@@ -60,7 +60,7 @@ pnpm dev
   its application-owned port.
 ```
 
-The UI packages currently define lint and typecheck scripts, but no `build`, `test`, or `dev` scripts. Consequently, Turbo's dependency ordering is meaningful for their lint/typecheck tasks, while the apps' `build` tasks transpile their package source directly (see [Application architecture](./02-application-architecture.md)).
+The UI packages define lint, typecheck and Vitest `test` scripts, but no `build` or `dev` scripts; `ui-core` and `forms` also define `test:component` (Vitest browser mode, run by the root `pnpm test:component` and not by `pnpm test`). The private `tooling/ui-workbench` workspace hosts Storybook (`pnpm workbench`, `pnpm workbench:build`) and primitive visual regression (`pnpm test:visual`); it is never deployed and no app depends on it. Consequently, Turbo's dependency ordering is meaningful for their lint/typecheck tasks, while the apps' `build` tasks transpile their package source directly (see [Application architecture](./02-application-architecture.md)).
 
 ## Independent applications
 

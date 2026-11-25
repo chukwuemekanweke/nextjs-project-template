@@ -1,6 +1,6 @@
 "use client";
 
-import { FormField, Input } from "@template/ui-core";
+import { ChevronDownIcon, FormField, Input, cn } from "@template/ui-core";
 import { useId, useState, type KeyboardEvent } from "react";
 import {
   get,
@@ -139,23 +139,13 @@ export function SearchableSelectField<TValues extends FieldValues>({
           role="combobox"
           value={displayValue}
         />
-        <svg
-          aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-gray-500"
-          fill="none"
-          viewBox="0 0 20 20"
-        >
-          <path
-            d="m6 8 4 4 4-4"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.5"
-          />
-        </svg>
+        <ChevronDownIcon
+          className="text-fg-subtle pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2"
+          size="xs"
+        />
         {open && !disabled && !loading ? (
           <div
-            className="absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-y-auto rounded-lg border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+            className="border-border bg-surface z-popover absolute top-full right-0 left-0 mt-1 max-h-60 overflow-y-auto rounded-md border p-1 shadow-lg"
             id={listId}
             role="listbox"
           >
@@ -163,11 +153,10 @@ export function SearchableSelectField<TValues extends FieldValues>({
               filteredOptions.map((option, index) => (
                 <button
                   aria-selected={index === activeIndex}
-                  className={`flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-100 dark:text-gray-100 dark:hover:bg-gray-700 ${
-                    index === activeIndex
-                      ? "bg-brand-50 text-brand-700 dark:bg-gray-700 dark:text-white"
-                      : ""
-                  }`}
+                  className={cn(
+                    "text-label text-fg hover:bg-hover flex min-h-10 w-full items-center justify-between gap-3 rounded-sm px-3 py-2 text-left font-normal",
+                    index === activeIndex && "bg-brand-soft text-brand-ink",
+                  )}
                   id={`${listId}-${index}`}
                   key={option.value}
                   onClick={() => selectOption(option)}
@@ -178,14 +167,14 @@ export function SearchableSelectField<TValues extends FieldValues>({
                 >
                   <span>{option.label}</span>
                   {option.secondaryLabel ? (
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-caption text-fg-subtle font-normal">
                       {option.secondaryLabel}
                     </span>
                   ) : null}
                 </button>
               ))
             ) : (
-              <p className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-label text-fg-subtle px-3 py-2 font-normal">
                 No matching options.
               </p>
             )}

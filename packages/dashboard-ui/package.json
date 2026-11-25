@@ -9,7 +9,11 @@
       "types": "./src/index.ts",
       "default": "./src/index.ts"
     },
-    "./tailadmin-theme.css": "./src/tailadmin-theme.css"
+    "./tailadmin-theme.css": "./src/tailadmin-theme.css",
+    "./charts": {
+      "types": "./src/charts/index.ts",
+      "default": "./src/charts/index.ts"
+    }
   },
   "scripts": {
     "lint": "eslint src --max-warnings 0",

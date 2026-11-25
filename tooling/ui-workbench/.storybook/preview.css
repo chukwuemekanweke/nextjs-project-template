@@ -1,0 +1,18 @@
+/*
+ * Workbench styles: the production Tailwind build of the shared theme, with
+ * Outfit and JetBrains Mono self-hosted from @fontsource (the apps load the
+ * same faces with next/font).
+ */
+@import "@fontsource-variable/outfit";
+@import "@fontsource-variable/jetbrains-mono";
+@import "tailwindcss";
+@import "@template/ui-core/theme.css";
+
+@source "../src";
+@source "../../../packages/ui-core/src";
+@source "../../../packages/dashboard-ui/src";
+
+:root {
+  --font-outfit-loaded: "Outfit Variable";
+  --font-jetbrains-mono-loaded: "JetBrains Mono Variable";
+}
