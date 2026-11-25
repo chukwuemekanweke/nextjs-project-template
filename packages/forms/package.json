@@ -13,7 +13,8 @@
   "scripts": {
     "lint": "eslint src --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:component": "vitest run --config vitest.browser.config.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "catalog:",
@@ -24,11 +25,18 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "catalog:",
     "@template/eslint-config": "workspace:*",
     "@template/typescript-config": "workspace:*",
     "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
     "eslint": "catalog:",
+    "playwright": "catalog:",
+    "react-dom": "catalog:",
+    "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "vitest-browser-react": "catalog:"
   }
 }

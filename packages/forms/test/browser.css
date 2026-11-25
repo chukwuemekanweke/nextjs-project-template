@@ -1,0 +1,6 @@
+/* Production styles for browser tests: Tailwind + the shared theme. */
+@import "tailwindcss";
+@import "../../ui-core/src/styles/theme.css";
+
+@source "../src";
+@source "../../ui-core/src";

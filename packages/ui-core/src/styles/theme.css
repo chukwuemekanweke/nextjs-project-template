@@ -127,6 +127,10 @@
   --color-on-brand: var(--palette-white);
   --color-focus: var(--color-brand);
 
+  /* Active tab: brand in light, neutral in dark (reference `.tabs .on`). */
+  --color-tab-active-fg: var(--palette-blue-600);
+  --color-tab-active-border: var(--palette-blue-500);
+
   /* Navigation. */
   --color-nav-bg: var(--palette-slate-0);
   --color-nav-active-bg: var(--palette-blue-50);
@@ -243,6 +247,9 @@
     );
     --color-brand-ink: var(--palette-blue-300);
     --color-on-brand: var(--palette-white);
+
+    --color-tab-active-fg: var(--palette-zinc-50);
+    --color-tab-active-border: var(--palette-zinc-50);
 
     --color-nav-bg: var(--palette-zinc-925);
     --color-nav-active-bg: var(--palette-zinc-825);
@@ -412,6 +419,31 @@
   --container-marketing: 75rem; /* 1200px marketing wrap */
   --container-dialog: 32.5rem; /* 520px */
   --container-auth-form: 26.25rem; /* 420px */
+
+  /* Overlay motion (`animate-dialog-in`, ...). Entry only; disabled under
+     prefers-reduced-motion by the base rule below. */
+  --animate-overlay-in: overlay-in 150ms ease-out;
+  --animate-dialog-in: dialog-in 180ms ease-out;
+  --animate-sheet-in: sheet-in 220ms ease-out;
+
+  @keyframes overlay-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+
+  @keyframes sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+  }
 
   /* Breakpoints: Tailwind defaults are kept (TD-08). Phone < md (768px),
      tablet md..lg, persistent dashboard navigation from lg (1024px). */

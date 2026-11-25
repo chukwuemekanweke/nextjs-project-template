@@ -46,12 +46,16 @@ lives in `docs/design-system/`; load it only for UI redesign work.
 - Fixtures live in `__fixtures__/` beside the view they serve, are typed with
   `api-client` contracts, and may be imported only by stories and tests.
 - Target direction (adopted ticket by ticket, see
-  `docs/design-system/migration-roadmap.md`): semantic CSS-variable tokens in
-  `@template/ui-core/theme.css` and `next-themes` in all apps (both landed,
-  see `design-tokens-theming`), then Radix-based primitives and Lucide icons.
+  `docs/design-system/migration-roadmap.md`): semantic tokens and
+  `next-themes` (landed, `design-tokens-theming`); Radix-based primitives,
+  Lucide icons, `DataTable`/`Pager` and chart foundations (landed, see
+  `ui-components` and `docs/design-system/shared-components.md`); screen
+  migrations next.
 - Trello card numbers can differ from roadmap IDs (DR-077: Trello FE-UI-002
-  delivered roadmap FE-UI-003; the roadmap's verification harness is still
-  outstanding). Treat the current card as authoritative and record the
+  delivered roadmap FE-UI-003; Trello FE-UI-003 delivered most of roadmap
+  FE-UI-004–006 and the local part of the FE-UI-002 harness — workbench,
+  browser-mode and primitive visual tests — while CI wiring, journeys and axe
+  automation remain outstanding). Treat the current card as authoritative and record the
   mapping rather than renumbering the roadmap. Existing package ownership rules
   (`ui-composition`, `package-dependency-rules`) remain in force; describe the
   current implementation there as each ticket lands.

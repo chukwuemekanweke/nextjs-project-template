@@ -15,6 +15,7 @@ code_refs:
     apps/*/src/app/globals.css,
     apps/*/src/components/*-layout-shell.tsx,
     packages/public-ui/**,
+    packages/dashboard-ui/src/charts/**,
     apps/*/src/app/**,
     apps/*/src/components/**,
   ]
@@ -25,31 +26,36 @@ generated: { at: "2026-09-24T00:00:00Z", by: human }
 status: stable
 ---
 
-- `@template/ui-core` exposes general controls such as alerts, cards, form
-  controls, modals, pagination, skeletons, tables, and accessible tabs; the
-  outlined icon set (`icons.tsx`); `buttonClassName` variants (primary,
-  secondary, accent, destructive, danger); settings primitives
-  (`SectionHeader`, `SettingsRow`, `StatusBadge`, `IconContainer`,
-  `EmptyState`); the presentation-only `formatMinorUnits` money formatter
-  (also used by the Public Portal); and the shared theme (`theme.css`,
-  `ThemeProvider`, `ThemeSwitch`, `ThemeSelect`) used by all three apps.
+- `@template/ui-core` exposes the design-system component foundation (see
+  `ui-components` and `docs/design-system/shared-components.md`): `cn`,
+  curated Lucide icons, actions, indicators, surfaces, native-first form
+  controls, Radix `Dialog`/`ConfirmDialog`/`Tabs`/`Switch`/
+  `SegmentedControl`, `DataTable`, `Pager`, `Alert`, skeletons and
+  empty/error states; deprecated compatibility APIs (`buttonClassName`,
+  `Modal`, `Pagination`, `StatusBadge`, `IconContainer`, `StatCard`,
+  `SectionHeader`, `SettingsRow`); the presentation-only `formatMinorUnits`
+  money formatter (also used by the Public Portal); and the shared theme
+  (`theme.css`, `ThemeProvider`, `ThemeSwitch`, `ThemeSelect`).
 - `@template/dashboard-ui` (depends on `ui-core`) exposes reusable dashboard
   layout mechanics: shell, sidebar state and rendering (expanded 224px /
   collapsed 72px rail with tooltips / mobile drawer), `DashboardBrand`, header
   controls (`MobileNav`, `ThemeToggle` = shared `ThemeSwitch`), breadcrumbs, the page header
   (`DashboardHeader`, optional icon tile), and profile-menu presentation. Apps
   supply items, nav icons, destinations, identity text, actions, and
-  authorization-aware composition.
+  authorization-aware composition. `@template/dashboard-ui/charts` holds
+  chart foundations (`ChartFrame`, `ChartLegend`, series colour helpers);
+  Recharts is deferred (TD-10).
 - Dashboard pages start with `DashboardHeader` on the page background, then
-  cards built from `Card` + `SectionHeader` + bordered `SettingsRow`s. Feature
+  cards. New work uses `Card` + `CardHeader` + `ListRow`/`KeyValueList`;
+  existing pages still use `SectionHeader` + `SettingsRow`. Feature
   compositions (for example the Security cards) stay in the app.
 - Visual foundations (semantic colour tokens, type scale, sizes, radius,
   elevation, layers, theme provider and controls) come from
   `@template/ui-core`; see `design-tokens-theming`. New or modified
   components use semantic utilities (`bg-surface`, `text-fg-muted`,
   `bg-brand`, `bg-success-bg text-success`) without `dark:` colour pairs or
-  hex values. Existing components still use the legacy `brand-*`/slate
-  `gray-*` + `dark:` pairs from the temporary
+  hex values; shared packages already do. Un-migrated app screens still use
+  the legacy `brand-*`/slate `gray-*` + `dark:` pairs from the temporary
   `@template/dashboard-ui/tailadmin-theme.css` until their migration ticket.
 - App `globals.css` resets must stay inside `@layer base`; unlayered rules
   override Tailwind utilities (an unlayered `a { color: inherit }` broke link

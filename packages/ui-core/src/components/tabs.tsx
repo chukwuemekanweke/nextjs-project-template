@@ -1,109 +1,84 @@
 "use client";
 
-import type { KeyboardEvent, ReactNode } from "react";
-import { useId, useRef, useState } from "react";
+import { Tabs as TabsPrimitive } from "radix-ui";
+import type { ReactNode } from "react";
+import { cn } from "../lib/cn";
 
 export type TabItem<TValue extends string = string> = Readonly<{
   content: ReactNode;
+  disabled?: boolean;
   label: ReactNode;
   value: TValue;
 }>;
 
+/**
+ * Underline tabs (reference `.tabs`) on Radix Tabs: `tablist` / `tab` /
+ * `tabpanel` roles and relationships, roving focus with Arrow/Home/End
+ * (automatic activation), disabled tabs skipped, and a horizontally
+ * scrolling list on narrow screens. Active colours swap per theme (brand in
+ * light, neutral in dark) through `--color-tab-active-*`.
+ *
+ * Uncontrolled with `defaultValue`, or controlled with `value` +
+ * `onValueChange` (for example to mirror `?tab=` in the URL).
+ */
 export function Tabs<TValue extends string>({
   ariaLabel,
-  className = "",
+  className,
   defaultValue,
   items,
-  panelClassName = "",
+  onValueChange,
+  panelClassName,
+  value,
 }: Readonly<{
   ariaLabel: string;
   className?: string;
-  defaultValue: TValue;
+  defaultValue?: TValue;
   items: readonly TabItem<TValue>[];
+  onValueChange?: (value: TValue) => void;
   panelClassName?: string;
+  value?: TValue;
 }>) {
-  const [activeValue, setActiveValue] = useState<TValue>(defaultValue);
-  const tabsId = useId();
-  const tabRefs = useRef(new Map<TValue, HTMLButtonElement | null>());
-  const activeIndex = items.findIndex((item) => item.value === activeValue);
-  const activeItem = items[activeIndex];
-
-  function selectTab(value: TValue) {
-    setActiveValue(value);
-    tabRefs.current.get(value)?.focus();
-  }
-
-  function handleKeyDown(
-    event: KeyboardEvent<HTMLButtonElement>,
-    currentIndex: number,
-  ) {
-    const nextIndex = getNextTabIndex(currentIndex, event.key, items.length);
-    if (nextIndex === undefined) return;
-    const nextItem = items[nextIndex];
-    if (!nextItem) return;
-    event.preventDefault();
-    selectTab(nextItem.value);
-  }
-
-  if (!activeItem) return null;
-
   return (
-    <div className={className}>
-      <div
+    <TabsPrimitive.Root
+      className={className}
+      defaultValue={defaultValue}
+      onValueChange={
+        onValueChange ? (next) => onValueChange(next as TValue) : undefined
+      }
+      value={value}
+    >
+      <TabsPrimitive.List
         aria-label={ariaLabel}
-        className="border-b border-gray-200 dark:border-gray-800"
-        role="tablist"
+        className="border-border flex [scrollbar-width:none] gap-1 overflow-x-auto border-b [&::-webkit-scrollbar]:hidden"
       >
-        <div className="no-scrollbar -mb-px flex gap-2 overflow-x-auto">
-          {items.map((item, index) => {
-            const selected = activeValue === item.value;
-            return (
-              <button
-                aria-controls={`${tabsId}-panel-${index}`}
-                aria-selected={selected}
-                className={`focus-visible:outline-brand-500 relative shrink-0 rounded-t-md border-b-2 px-4 pt-1 pb-3 text-[15px] font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 ${
-                  selected
-                    ? "border-brand-500 text-brand-500 dark:border-brand-400 dark:text-brand-400"
-                    : "border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-200"
-                }`}
-                id={`${tabsId}-tab-${index}`}
-                key={item.value}
-                onClick={() => selectTab(item.value)}
-                onKeyDown={(event) => handleKeyDown(event, index)}
-                ref={(element) => {
-                  tabRefs.current.set(item.value, element);
-                }}
-                role="tab"
-                tabIndex={selected ? 0 : -1}
-                type="button"
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      <div
-        aria-labelledby={`${tabsId}-tab-${activeIndex}`}
-        className={["mt-6", panelClassName].join(" ")}
-        id={`${tabsId}-panel-${activeIndex}`}
-        role="tabpanel"
-        tabIndex={0}
-      >
-        {activeItem.content}
-      </div>
-    </div>
+        {items.map((item) => (
+          <TabsPrimitive.Trigger
+            className={cn(
+              "min-h-control text-body text-fg-muted -mb-px shrink-0 border-b-2 border-transparent px-3 py-3 font-medium whitespace-nowrap transition-colors md:px-4",
+              "hover:text-fg focus-visible:outline-focus focus-visible:outline-2 focus-visible:-outline-offset-2",
+              "data-[state=active]:border-tab-active-border data-[state=active]:text-tab-active-fg",
+              "disabled:pointer-events-none disabled:opacity-50",
+            )}
+            disabled={item.disabled}
+            key={item.value}
+            value={item.value}
+          >
+            {item.label}
+          </TabsPrimitive.Trigger>
+        ))}
+      </TabsPrimitive.List>
+      {items.map((item) => (
+        <TabsPrimitive.Content
+          className={cn(
+            "focus-visible:outline-focus mt-6 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4",
+            panelClassName,
+          )}
+          key={item.value}
+          value={item.value}
+        >
+          {item.content}
+        </TabsPrimitive.Content>
+      ))}
+    </TabsPrimitive.Root>
   );
-}
-
-function getNextTabIndex(
-  currentIndex: number,
-  key: string,
-  itemCount: number,
-): number | undefined {
-  if (key === "Home") return 0;
-  if (key === "End") return itemCount - 1;
-  if (key === "ArrowRight") return (currentIndex + 1) % itemCount;
-  if (key === "ArrowLeft") return (currentIndex - 1 + itemCount) % itemCount;
-  return undefined;
 }

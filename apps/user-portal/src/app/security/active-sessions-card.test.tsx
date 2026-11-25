@@ -145,7 +145,7 @@ describe("ActiveSessionsCard", () => {
 
     expect(chromeRow).toContain('fill="#4285F4"');
     expect(androidRow).not.toContain('fill="#4285F4"');
-    expect(androidRow).toContain('rx="2.5" width="11"');
+    expect(androidRow).toContain('data-icon="SmartphoneIcon"');
   });
 
   it("hides the sign-out-all action when only the current session exists", () => {

@@ -1,6 +1,8 @@
 packages:
   - "apps/*"
   - "packages/*"
+  # Private, non-deployed developer tooling (UI workbench).
+  - "tooling/*"
 
 allowBuilds:
   # Native dependencies required by Next.js image processing and ESLint resolution.
@@ -10,22 +12,37 @@ allowBuilds:
   unrs-resolver: true
 
 catalog:
-  "@tailwindcss/postcss": 4.3.2
+  "@fontsource-variable/jetbrains-mono": 5.3.0
+  "@fontsource-variable/outfit": 5.3.0
   "@hookform/resolvers": 5.7.1
+  "@storybook/addon-a11y": 10.6.7
+  "@storybook/react": 10.6.7
+  "@storybook/react-vite": 10.6.7
+  "@tailwindcss/postcss": 4.3.2
   "@tanstack/react-query": 5.101.4
   "@tanstack/react-query-devtools": 5.101.4
   "@types/node": 24.10.1
   "@types/react": 19.2.14
   "@types/react-dom": 19.2.3
+  "@vitest/browser-playwright": 4.1.10
+  class-variance-authority: 0.7.1
+  clsx: 2.1.1
   eslint: 9.39.5
   eslint-config-next: 16.4.5
+  lucide-react: 1.70.0
   next: 16.4.5
   next-themes: 0.4.6
+  playwright: 1.65.1
   postcss: 8.5.6
+  radix-ui: 1.8.1
   react: 19.2.7
   react-dom: 19.2.7
   react-hook-form: 7.84.0
+  storybook: 10.6.7
+  tailwind-merge: 3.7.1
   tailwindcss: 4.3.2
   typescript: 5.9.3
+  vite: 8.1.4
   vitest: 4.1.10
+  vitest-browser-react: 2.3.0
   zod: 4.3.6

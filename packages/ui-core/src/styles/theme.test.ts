@@ -158,6 +158,8 @@ const reference: ReadonlyArray<[string, string, string]> = [
   ["--color-chart-4", "#0F766E", "#2DD4BF"],
   ["--color-grid", "#EEF1F5", "#26262B"],
   ["--color-scrim", "#0F172A@0.45", "#000000@0.6"],
+  ["--color-tab-active-fg", "#1D4ED8", "#F4F4F5"],
+  ["--color-tab-active-border", "#2563EB", "#F4F4F5"],
 ];
 
 describe("theme.css semantic colours", () => {
@@ -195,6 +197,8 @@ const textPairs: ReadonlyArray<[string, string]> = [
   ["--color-neutral", "--color-neutral-bg"],
   ["--color-on-danger", "--color-danger-solid"],
   ["--color-chart-axis", "--color-surface"],
+  ["--color-tab-active-fg", "--color-bg"],
+  ["--color-tab-active-fg", "--color-surface"],
 ];
 
 // WCAG 1.4.11: control boundaries and focus indicators need 3:1.
@@ -205,6 +209,7 @@ const nonTextPairs: ReadonlyArray<[string, string]> = [
   ["--color-switch-track", "--color-surface"],
   ["--color-focus", "--color-surface"],
   ["--color-focus", "--color-bg"],
+  ["--color-tab-active-border", "--color-bg"],
 ];
 
 describe.each([

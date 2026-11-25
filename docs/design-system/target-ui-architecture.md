@@ -147,6 +147,8 @@ React Hook Form + Zod (`useValidatedForm`, `ValidatedForm`, `applyBackendValidat
 
 Details: [verification-strategy.md](./verification-strategy.md).
 
+> **Current state (Trello FE-UI-003).** The workbench and Vitest browser mode exist and run locally; primitive visual regression uses Vitest `toMatchScreenshot` over workbench stories, and Playwright journeys, axe automation and CI jobs are outstanding (OD-05). See [verification-strategy.md §8](./verification-strategy.md#8-implementation-status) and [shared-components.md](./shared-components.md).
+
 ## 16. Package boundaries (target)
 
 | Package                  | Owns                                                                                                                                                               | Must not own                                                                                |

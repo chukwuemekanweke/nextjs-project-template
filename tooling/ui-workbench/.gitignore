@@ -1,0 +1,5 @@
+storybook-static/
+# Vitest visual-regression output (diffs and actual images of failed runs).
+.vitest-attachments/
+visual/__screenshots__/**/*-actual*.png
+visual/__screenshots__/**/*-diff*.png

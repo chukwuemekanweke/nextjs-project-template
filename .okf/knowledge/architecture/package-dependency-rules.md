@@ -19,8 +19,11 @@ status: stable
 `config`. `api-react` depends on `api-client`; `forms` depends on `api-client`
 only for normalized errors and on `ui-core` for controls; `dashboard-ui`
 and `public-ui` depend on `ui-core` for icons, presentation primitives and the
-shared theme controls (never the reverse); `next-themes` is a dependency of
-`ui-core` only. `api-client` has no
+shared theme controls (never the reverse); `next-themes`, `radix-ui`,
+`lucide-react`, `class-variance-authority`, `clsx` and `tailwind-merge` are
+dependencies of `ui-core` only (other packages use its exports, including
+`cn` and the icon set). The private `tooling/ui-workbench` workspace may
+depend on UI packages; nothing depends on it. `api-client` has no
 React or TanStack Query dependency.
 
 ## Rules
