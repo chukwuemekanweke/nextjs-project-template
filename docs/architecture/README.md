@@ -16,6 +16,8 @@ Read in this order:
 10. [CI/CD and deployment](./10-ci-cd-and-deployment.md)
 11. [Subscriptions and billing](./11-subscriptions-and-billing.md)
 
+The planned design-system redesign (pinned design source, screen inventory, target UI architecture and migration roadmap) is documented separately in [`docs/design-system/`](../design-system/README.md). These architecture documents describe the current implementation until each redesign ticket lands.
+
 ## Summary
 
 `apps/user-portal`, `apps/admin-portal`, and `apps/public-portal` are separate Next.js applications. They share tooling, presentation infrastructure, validated configuration, the handwritten `@template/api-client`, `@template/api-react` server-state policy, and `@template/forms` composition—not route or feature composition. The two dashboard applications consume `@template/ui-core`, `@template/dashboard-ui`, and `@template/config`; the marketing application consumes `@template/public-ui` and `@template/config`, plus the `@template/ui-core` money formatter for backend plan prices. pnpm links these workspace packages, Turborepo runs their tasks in dependency order, and each application builds a standalone container on its own port.
