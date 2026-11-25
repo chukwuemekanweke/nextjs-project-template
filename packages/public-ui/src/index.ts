@@ -1,5 +1,4 @@
 ﻿export * from "./types";
-export * from "./components/provider";
 export * from "./components/header";
 export * from "./components/footer";
 export * from "./components/hero";

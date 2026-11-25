@@ -2,10 +2,24 @@
 
 Reference token values (pinned commit `d23eb85`) compared with today's tokens, and the semantic token set proposed for `@template/ui-core/theme.css` (decision TD-02). Reference values come from the `.tp` (light) and `.tp.dark` (dark) custom properties inlined, byte-identically, in all 307 canonical files; `0-foundations/Main.html` shows the same values as swatches.
 
-Current sources:
+Sources before FE-UI-002 (kept for the comparison columns below):
 
 - Dashboards: `packages/dashboard-ui/src/tailadmin-theme.css` (`brand-*`, slate `gray-*`, `shadow-theme-*`, breakpoints, `z-index-*`; status uses raw Tailwind `green/emerald/red/amber/blue`).
 - Public Portal: Solid `@theme` in `apps/public-portal/src/app/globals.css` (`primary` = `var(--brand-primary, #006bff)`, `stroke`, `blacksection`, `waterloo`, …) — removed entirely by the migration.
+
+## 0. Implementation status (Trello FE-UI-002)
+
+Implemented in `packages/ui-core/src/styles/theme.css`, exported as `@template/ui-core/theme.css` and imported by all three apps. Usage, rebranding and extension are described in [foundations.md](./foundations.md); `packages/ui-core/src/styles/theme.test.ts` asserts every §2 value and the §11 contrast pairs.
+
+Differences from the proposal below:
+
+- **Token binding.** Semantic colours are declared in `@theme static` (always emitted, so SVG can read `var(--color-chart-1)`) and redefined under `.dark`. Shadows, the responsive type sizes and page/card padding are bound with `@theme inline` to raw variables (`--elevation-*`, `--type-*`, `--space-*`) that change per theme or below `md`.
+- **Additional tokens.** `--color-surface-selected` (segmented/selected item: surface light, hover dark), `--color-control-border` and `--color-switch-track` (DR-029), `--color-focus` (= brand), `--color-on-danger`, `--color-neutral` (neutral badge text), `--color-chart-axis` (= `fg-subtle`), `--color-chart-area` (chart-1 at 12%).
+- **Accessibility adjustments.** Dark `--color-brand-hover` is `#3A6EEF`, not `#3B6FF0` ([DR-076](./discrepancy-register.md#dr-076)). `--color-border-strong` keeps the reference value; form controls use `--color-control-border` ([DR-029](./discrepancy-register.md#dr-029), OD-08).
+- **Type utilities** (§4): `text-display`, `text-section`, `text-h1`, `text-h2`, `text-h3`, `text-lead`, `text-body`, `text-label` (14/500), `text-small` (13), `text-caption` (12/500), `text-overline` (12/600/0.06em), `text-micro` (11/600/0.08em, nav labels), `text-stat`, `text-price`, `text-mono` (13; use with `font-mono`), plus the `eyebrow` utility. Display, section, h1, h2, lead, stat and price switch to their phone sizes below `md`.
+- **Size utilities** (§5) use Tailwind's namespaces: `--spacing-control` / `control-sm` / `touch` / `icon-xs…lg` / `sidebar` / `topbar` / `topbar-mobile` / `tabbar-item` / `nav-drawer` / `drawer` / `section`, responsive `--spacing-page` / `card` / `topbar-x`, and `--container-content` / `marketing` / `dialog` / `auth-form` (`max-w-content`, …).
+- **Layers** (§7) are `--z-index-sticky … tooltip` (`z-sticky`, …).
+- **Radius** (§6) applies under Tailwind's standard names in the dashboards. The public portal pins Solid's previous `sm`/`md`/`lg` values until FE-UI-009/010 replace its sections.
 
 ## 1. Naming
 
@@ -160,7 +174,7 @@ Sidebar 260 px, padding 20/16, item min-height 44, radius 8, icon 20, gap 12; se
 
 ## 11. Contrast verification (computed, WCAG 2.2)
 
-All text/background pairs used by the reference pass AA (4.5:1) in both themes. Lowest: light `--text-3` on `--bg` 5.03:1, light `--text-3` on `--surface-2` 5.16:1, light `--on-brand` on `--brand` 5.17:1, light `--warning` on `--warning-bg` 5.20:1, dark `--danger` on `--danger-bg` 5.41:1, dark white on `#DC2626` 4.83:1.
+All text/background pairs used by the reference pass AA (4.5:1) in both themes, except white on the dark hover colour `#3B6FF0` (4.45:1), which FE-UI-002 adjusts to `#3A6EEF` (4.51:1, [DR-076](./discrepancy-register.md#dr-076)). Lowest: light `--text-3` on `--bg` 5.03:1, light `--text-3` on `--surface-2` 5.16:1, light `--on-brand` on `--brand` 5.17:1, light `--warning` on `--warning-bg` 5.20:1, dark `--danger` on `--danger-bg` 5.41:1, dark white on `#DC2626` 4.83:1.
 
 Non-text contrast (1.4.11, 3:1) issues:
 
@@ -174,8 +188,8 @@ Non-text contrast (1.4.11, 3:1) issues:
 
 ## 12. Migration with minimal breakage
 
-1. FE-UI-003 adds `theme.css` with the semantic tokens **and** temporary aliases: `--color-brand-500/600/700/50/100` → semantic brand tokens, `--color-gray-*` kept as palette values, so every un-migrated component renders unchanged in light mode and acceptably in dark mode.
-2. Apps switch their `globals.css` import from `tailadmin-theme.css` to `@template/ui-core/theme.css` in the same ticket; the public portal drops the Solid `@theme` once FE-UI-009 replaces its sections.
+1. Done (Trello FE-UI-002): `theme.css` holds the semantic tokens; `@template/dashboard-ui/tailadmin-theme.css` is a temporary compatibility layer imported after it. Its `brand-*` scale points at `--palette-blue-*` but stays theme-independent (mapping it to semantic tokens would break the existing `dark:` pairs), and its slate `gray-*` scale and `shadow-theme-*` keep their values, so un-migrated components render as before. Unused aliases (`font-outfit`, `text-theme-*`, `z-index-*`, `custom-scrollbar`, `2xsm`/`xsm`/`3xl`) were removed.
+2. Done: dashboards import `@template/ui-core/theme.css` then the compatibility layer; the public portal imports `theme.css` and keeps the Solid `@theme` (with pinned radii) until FE-UI-009/010 replace its sections.
 3. Each component ticket moves its components from `brand-*`/`gray-*`/`dark:` pairs to semantic utilities.
 4. A lint rule (FE-UI-004) blocks hex/rgb literals and raw Tailwind palette colour classes (`green-*`, `emerald-*`, `red-*`, `amber-*`, `blue-*`, `slate-*`) in `packages/*/src` and `apps/*/src`, with an allow-list for brand logos.
 5. FE-UI-032 deletes the aliases and `tailadmin-theme.css`.

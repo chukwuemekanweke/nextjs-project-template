@@ -1,0 +1,508 @@
+/*
+ * @template/ui-core/theme.css — shared design foundations for every portal.
+ *
+ * Source: Project Template design system, pinned commit d23eb85
+ * (0-foundations/Main.html; `.tp` / `.tp.dark` custom properties). The token
+ * catalogue and rationale live in docs/design-system/token-mapping.md.
+ *
+ * Usage (application globals.css, after Tailwind):
+ *   @import "tailwindcss";
+ *   @import "@template/ui-core/theme.css";
+ *
+ * Two tiers:
+ *   1. Palette  (`--palette-*`, :root only) — raw design values. Never used by
+ *      components directly; rebranding replaces these.
+ *   2. Semantic (`--color-*`, sizes, type, radius, elevation, layers) — what
+ *      components use, through Tailwind utilities such as `bg-surface`,
+ *      `text-fg-muted`, `border-border`, `bg-brand hover:bg-brand-hover`.
+ *      Theme-dependent values are redefined under `.dark` (set on <html> by
+ *      the shared ThemeProvider), so components never pair `dark:` classes
+ *      for colour.
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+/* ------------------------------------------------------------------------ */
+/* 1. Palette tier                                                           */
+/* ------------------------------------------------------------------------ */
+
+@layer theme {
+  :root {
+    /* Brand blue. Rebrand by replacing this scale (keep the same steps). */
+    --palette-blue-25: #f5f9ff;
+    --palette-blue-50: #eff6ff;
+    --palette-blue-100: #dbeafe;
+    --palette-blue-200: #bfdbfe;
+    --palette-blue-300: #93c5fd;
+    --palette-blue-400: #60a5fa;
+    --palette-blue-450: #3a6eef; /* reference #3B6FF0, darkened for AA (DR-076) */
+    --palette-blue-500: #2563eb;
+    --palette-blue-600: #1d4ed8;
+    --palette-blue-700: #1e40af;
+    --palette-blue-800: #1e3a8a;
+    --palette-blue-900: #1e3070;
+    --palette-blue-950: #172554;
+
+    /* Light-theme neutrals (reference `.tp`). */
+    --palette-slate-0: #ffffff;
+    --palette-slate-25: #f8fafc;
+    --palette-slate-50: #f5f7fb;
+    --palette-slate-75: #f2f4f7;
+    --palette-slate-100: #f1f5f9;
+    --palette-slate-125: #eef1f5;
+    --palette-slate-200: #e4e7ec;
+    --palette-slate-300: #d0d5dd;
+    --palette-slate-450: #828da0; /* accessible control border (DR-029) */
+    --palette-slate-500: #5d6b82;
+    --palette-slate-600: #475467;
+    --palette-slate-900: #0f172a;
+
+    /* Dark-theme neutrals (reference `.tp.dark`, zinc family). */
+    --palette-zinc-50: #f4f4f5;
+    --palette-zinc-300: #b4b4bc;
+    --palette-zinc-400: #9a9aa3;
+    --palette-zinc-500: #71717a; /* accessible control border (DR-029) */
+    --palette-zinc-650: #3f3f46;
+    --palette-zinc-700: #3a3a40;
+    --palette-zinc-800: #2a2a2f;
+    --palette-zinc-825: #26262b;
+    --palette-zinc-850: #232327;
+    --palette-zinc-875: #1c1c20;
+    --palette-zinc-900: #18181b;
+    --palette-zinc-925: #141416;
+    --palette-zinc-950: #0f0f11;
+
+    /* Status and chart hues. */
+    --palette-green-50: #ecfdf3;
+    --palette-green-400: #4ade80;
+    --palette-green-700: #067647;
+    --palette-amber-50: #fffaeb;
+    --palette-amber-400: #fbbf24;
+    --palette-amber-500: #f59e0b;
+    --palette-amber-700: #b54708;
+    --palette-red-50: #fef3f2;
+    --palette-red-400: #f87171;
+    --palette-red-600: #dc2626;
+    --palette-red-700: #b42318;
+    --palette-teal-400: #2dd4bf;
+    --palette-teal-700: #0f766e;
+    --palette-white: #ffffff;
+  }
+}
+
+/* ------------------------------------------------------------------------ */
+/* 2. Semantic colours — light values; `.dark` below swaps them.             */
+/*    `static` keeps every token emitted so SVG/inline styles can read      */
+/*    var(--color-*) even when no utility uses it.                           */
+/* ------------------------------------------------------------------------ */
+
+@theme static {
+  /* Application background and surface elevation. */
+  --color-bg: var(--palette-slate-50);
+  --color-surface: var(--palette-slate-0);
+  --color-surface-2: var(--palette-slate-25);
+  --color-surface-3: var(--palette-slate-100);
+  --color-hover: var(--palette-slate-100);
+  /* Selected item inside a track (segmented control, theme select). */
+  --color-surface-selected: var(--palette-slate-0);
+
+  /* Borders and separators. */
+  --color-border: var(--palette-slate-200);
+  --color-border-strong: var(--palette-slate-300);
+  /* Form-control and switch-track boundary: >= 3:1 (WCAG 1.4.11, DR-029). */
+  --color-control-border: var(--palette-slate-450);
+
+  /* Foreground. */
+  --color-fg: var(--palette-slate-900);
+  --color-fg-muted: var(--palette-slate-600);
+  --color-fg-subtle: var(--palette-slate-500);
+
+  /* Brand and primary actions. */
+  --color-brand: var(--palette-blue-500);
+  --color-brand-hover: var(--palette-blue-600);
+  --color-brand-press: var(--palette-blue-700);
+  --color-brand-soft: var(--palette-blue-50);
+  --color-brand-soft-2: var(--palette-blue-100);
+  --color-brand-ink: var(--palette-blue-600);
+  --color-on-brand: var(--palette-white);
+  --color-focus: var(--color-brand);
+
+  /* Navigation. */
+  --color-nav-bg: var(--palette-slate-0);
+  --color-nav-active-bg: var(--palette-blue-50);
+  --color-nav-active-fg: var(--palette-blue-600);
+
+  /* Status: foreground on its tinted background; neutral uses fg-muted. */
+  --color-success: var(--palette-green-700);
+  --color-success-bg: var(--palette-green-50);
+  --color-warning: var(--palette-amber-700);
+  --color-warning-bg: var(--palette-amber-50);
+  --color-danger: var(--palette-red-700);
+  --color-danger-bg: var(--palette-red-50);
+  --color-danger-solid: var(--palette-red-700);
+  --color-on-danger: var(--palette-white);
+  --color-info: var(--palette-blue-600);
+  --color-info-bg: var(--palette-blue-50);
+  --color-neutral: var(--palette-slate-600);
+  --color-neutral-bg: var(--palette-slate-75);
+
+  /* Charts (SVG reads these directly: stroke="var(--color-chart-1)"). */
+  --color-chart-1: var(--palette-blue-500);
+  --color-chart-2: var(--palette-blue-300);
+  --color-chart-3: var(--palette-amber-500);
+  --color-chart-4: var(--palette-teal-700);
+  --color-grid: var(--palette-slate-125);
+  --color-chart-axis: var(--palette-slate-500);
+  --color-chart-area: color-mix(
+    in srgb,
+    var(--palette-blue-500) 12%,
+    transparent
+  );
+
+  /* Overlays and fixed-colour details the reference hard-codes. */
+  --color-scrim: rgb(15 23 42 / 0.45);
+  --color-auth-panel: var(--palette-blue-500);
+  --color-switch-thumb: var(--palette-white);
+  --color-switch-track: var(--palette-slate-450);
+}
+
+/* ------------------------------------------------------------------------ */
+/* 3. Responsive and theme-dependent raw values bound below with inline.    */
+/*    Phone values apply below `md` (768px, TD-08).                          */
+/* ------------------------------------------------------------------------ */
+
+@layer theme {
+  :root {
+    color-scheme: light;
+
+    /* Elevation: dark mode relies on surface steps instead (see `.dark`). */
+    --elevation-xs: 0 1px 2px rgb(16 24 40 / 0.05);
+    --elevation-sm: 0 1px 3px rgb(16 24 40 / 0.12);
+    --elevation-lg: 0 12px 32px rgb(16 24 40 / 0.14);
+
+    --type-display: 2.375rem; /* 38px phone */
+    --type-section: 1.625rem; /* 26px phone */
+    --type-h1: 1.5rem; /* 24px phone */
+    --type-h2: 1.125rem; /* 18px phone */
+    --type-lead: 1.0625rem; /* 17px phone */
+    --type-stat: 1.25rem; /* 20px phone */
+    --type-price: 2rem; /* 32px phone */
+
+    --space-page: 1.25rem; /* 20px phone */
+    --space-card: 1rem; /* 16px phone */
+    --space-topbar-x: 1.25rem; /* 20px phone */
+  }
+
+  @media (width >= 48rem) {
+    :root {
+      --type-display: 3.5rem; /* 56px */
+      --type-section: 2.25rem; /* 36px */
+      --type-h1: 1.75rem; /* 28px */
+      --type-h2: 1.25rem; /* 20px */
+      --type-lead: 1.1875rem; /* 19px */
+      --type-stat: 1.75rem; /* 28px */
+      --type-price: 2.5rem; /* 40px */
+
+      --space-page: 2rem; /* 32px */
+      --space-card: 1.5rem; /* 24px */
+      --space-topbar-x: 2rem; /* 32px */
+    }
+  }
+
+  /* Dark theme: <html class="dark">, set before paint by next-themes. */
+  .dark {
+    color-scheme: dark;
+
+    --color-bg: var(--palette-zinc-950);
+    --color-surface: var(--palette-zinc-900);
+    --color-surface-2: var(--palette-zinc-875);
+    --color-surface-3: var(--palette-zinc-850);
+    --color-hover: var(--palette-zinc-825);
+    --color-surface-selected: var(--palette-zinc-825);
+
+    --color-border: var(--palette-zinc-800);
+    --color-border-strong: var(--palette-zinc-700);
+    --color-control-border: var(--palette-zinc-500);
+
+    --color-fg: var(--palette-zinc-50);
+    --color-fg-muted: var(--palette-zinc-300);
+    --color-fg-subtle: var(--palette-zinc-400);
+
+    --color-brand: var(--palette-blue-500);
+    --color-brand-hover: var(--palette-blue-450);
+    --color-brand-press: var(--palette-blue-600);
+    --color-brand-soft: color-mix(
+      in srgb,
+      var(--palette-blue-400) 12%,
+      transparent
+    );
+    --color-brand-soft-2: color-mix(
+      in srgb,
+      var(--palette-blue-400) 20%,
+      transparent
+    );
+    --color-brand-ink: var(--palette-blue-300);
+    --color-on-brand: var(--palette-white);
+
+    --color-nav-bg: var(--palette-zinc-925);
+    --color-nav-active-bg: var(--palette-zinc-825);
+    --color-nav-active-fg: var(--palette-white);
+
+    --color-success: var(--palette-green-400);
+    --color-success-bg: color-mix(
+      in srgb,
+      var(--palette-green-400) 12%,
+      transparent
+    );
+    --color-warning: var(--palette-amber-400);
+    --color-warning-bg: color-mix(
+      in srgb,
+      var(--palette-amber-400) 12%,
+      transparent
+    );
+    --color-danger: var(--palette-red-400);
+    --color-danger-bg: color-mix(
+      in srgb,
+      var(--palette-red-400) 12%,
+      transparent
+    );
+    --color-danger-solid: var(--palette-red-600);
+    --color-info: var(--palette-blue-300);
+    --color-info-bg: color-mix(
+      in srgb,
+      var(--palette-blue-400) 12%,
+      transparent
+    );
+    --color-neutral: var(--palette-zinc-300);
+    --color-neutral-bg: var(--palette-zinc-825);
+
+    --color-chart-1: var(--palette-blue-400);
+    --color-chart-2: var(--palette-zinc-650);
+    --color-chart-3: var(--palette-amber-400);
+    --color-chart-4: var(--palette-teal-400);
+    --color-grid: var(--palette-zinc-825);
+    --color-chart-axis: var(--palette-zinc-400);
+    --color-chart-area: color-mix(
+      in srgb,
+      var(--palette-blue-400) 12%,
+      transparent
+    );
+
+    --color-scrim: rgb(0 0 0 / 0.6);
+    --color-auth-panel: var(--palette-zinc-900);
+    --color-switch-thumb: var(--palette-white);
+    --color-switch-track: var(--palette-zinc-500);
+
+    --elevation-xs: none;
+    --elevation-sm: none;
+    --elevation-lg: 0 16px 40px rgb(0 0 0 / 0.5);
+  }
+}
+
+@theme inline {
+  /* Shadows. `shadow-xs` cards, `shadow-sm` selected segment, `shadow-lg`
+     menus/dialogs. Values change per theme through --elevation-*. */
+  --shadow-xs: var(--elevation-xs);
+  --shadow-sm: var(--elevation-sm);
+  --shadow-lg: var(--elevation-lg);
+
+  /* Responsive type scale: `text-h1`, `text-body`, `text-caption`, ... */
+  --text-display: var(--type-display);
+  --text-display--line-height: 1.08;
+  --text-display--font-weight: 600;
+  --text-display--letter-spacing: -0.025em;
+  --text-section: var(--type-section);
+  --text-section--line-height: 1.2;
+  --text-section--font-weight: 600;
+  --text-section--letter-spacing: -0.02em;
+  --text-h1: var(--type-h1);
+  --text-h1--line-height: 1.2;
+  --text-h1--font-weight: 600;
+  --text-h1--letter-spacing: -0.01em;
+  --text-h2: var(--type-h2);
+  --text-h2--line-height: 1.3;
+  --text-h2--font-weight: 600;
+  --text-lead: var(--type-lead);
+  --text-lead--line-height: 1.5;
+  --text-stat: var(--type-stat);
+  --text-stat--line-height: 1.2;
+  --text-stat--font-weight: 600;
+  --text-stat--letter-spacing: -0.01em;
+  --text-price: var(--type-price);
+  --text-price--line-height: 1.1;
+  --text-price--font-weight: 600;
+  --text-price--letter-spacing: -0.02em;
+
+  /* Responsive layout spacing: `p-page`, `p-card`, `px-topbar-x`. */
+  --spacing-page: var(--space-page);
+  --spacing-card: var(--space-card);
+  --spacing-topbar-x: var(--space-topbar-x);
+}
+
+/* ------------------------------------------------------------------------ */
+/* 4. Static scales                                                          */
+/* ------------------------------------------------------------------------ */
+
+@theme {
+  /* Fonts. Apps load the faces with next/font and expose these variables. */
+  --font-sans:
+    var(--font-outfit-loaded, "Outfit"), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    var(--font-jetbrains-mono-loaded, "JetBrains Mono"), ui-monospace,
+    SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Fixed-size type. */
+  --text-h3: 1rem; /* 16px card titles */
+  --text-h3--line-height: 1.4;
+  --text-h3--font-weight: 600;
+  --text-body: 0.9375rem; /* 15px base body */
+  --text-body--line-height: 1.5;
+  --text-label: 0.875rem; /* 14px form labels */
+  --text-label--line-height: 1.4;
+  --text-label--font-weight: 500;
+  --text-small: 0.8125rem; /* 13px hints, secondary lines */
+  --text-small--line-height: 1.5;
+  --text-caption: 0.75rem; /* 12px captions */
+  --text-caption--line-height: 1.5;
+  --text-caption--font-weight: 500;
+  --text-overline: 0.75rem; /* 12px eyebrows, table headers (+ uppercase) */
+  --text-overline--line-height: 1.5;
+  --text-overline--font-weight: 600;
+  --text-overline--letter-spacing: 0.06em;
+  --text-micro: 0.6875rem; /* 11px navigation group labels (+ uppercase) */
+  --text-micro--line-height: 1.4;
+  --text-micro--font-weight: 600;
+  --text-micro--letter-spacing: 0.08em;
+  --text-mono: 0.8125rem; /* 13px references and codes, with font-mono */
+  --text-mono--line-height: 1.5;
+
+  /* Radius scale (token-mapping §6). `rounded-full` stays 9999px. */
+  --radius-sm: 8px; /* small buttons, nav items, chips */
+  --radius-md: 10px; /* buttons, inputs, icon buttons, icon tiles */
+  --radius-lg: 12px; /* alerts, soft panels, segmented track */
+  --radius-xl: 14px; /* cards */
+  --radius-2xl: 18px; /* dialogs */
+
+  /* Layers: `z-sticky`, `z-tabbar`, `z-overlay`, ... Use only these. */
+  --z-index-sticky: 20;
+  --z-index-tabbar: 30;
+  --z-index-overlay: 40;
+  --z-index-drawer: 50;
+  --z-index-popover: 60;
+  --z-index-tooltip: 70;
+
+  /* Recurring dimensions: `h-control`, `size-icon-md`, `w-sidebar`, ... */
+  --spacing-control: 2.75rem; /* 44px buttons, inputs, nav items, tabs */
+  --spacing-control-sm: 2.25rem; /* 36px small buttons, segmented items */
+  --spacing-touch: 2.75rem; /* 44px minimum touch target */
+  --spacing-icon-xs: 1rem; /* 16px inline icons */
+  --spacing-icon-sm: 1.125rem; /* 18px button icons */
+  --spacing-icon-md: 1.25rem; /* 20px navigation and icon-button icons */
+  --spacing-icon-lg: 1.375rem; /* 22px mobile tab bar icons */
+  --spacing-sidebar: 16.25rem; /* 260px */
+  --spacing-topbar: 4.25rem; /* 68px */
+  --spacing-topbar-mobile: 4rem; /* 64px */
+  --spacing-tabbar-item: 3.25rem; /* 52px */
+  --spacing-nav-drawer: 19rem; /* 304px, capped at 86vw by the component */
+  --spacing-drawer: 32.5rem; /* 520px */
+  --spacing-section: 5rem; /* 80px marketing section padding */
+
+  /* Content constraints: `max-w-content`, `max-w-marketing`, ... */
+  --container-content: 80rem; /* 1280px dashboard content */
+  --container-marketing: 75rem; /* 1200px marketing wrap */
+  --container-dialog: 32.5rem; /* 520px */
+  --container-auth-form: 26.25rem; /* 420px */
+
+  /* Breakpoints: Tailwind defaults are kept (TD-08). Phone < md (768px),
+     tablet md..lg, persistent dashboard navigation from lg (1024px). */
+}
+
+/* ------------------------------------------------------------------------ */
+/* 5. Foundational base styles                                               */
+/* ------------------------------------------------------------------------ */
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-border, currentColor);
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+
+  :where(code, kbd, samp, pre) {
+    font-family: var(--font-mono);
+  }
+
+  /* Tabular figures keep amounts and dates aligned in tables. */
+  :where(td, th, data, time) {
+    font-variant-numeric: tabular-nums;
+  }
+
+  a,
+  button,
+  summary,
+  [role="button"],
+  [role="tab"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  /* Visible keyboard focus everywhere (DR-028); components may add a ring. */
+  :where(
+    a,
+    button,
+    summary,
+    input,
+    select,
+    textarea,
+    [tabindex],
+    [role="button"]
+  ):focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  /* Disabled and busy semantics. Components add `disabled:opacity-50`. */
+  :where(button, input, select, textarea, fieldset):disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  [aria-busy="true"] {
+    cursor: progress;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Eyebrow / table-header label: `eyebrow`. */
+@utility eyebrow {
+  color: var(--color-fg-subtle);
+  font-size: var(--text-overline);
+  font-weight: var(--text-overline--font-weight);
+  letter-spacing: var(--text-overline--letter-spacing);
+  line-height: var(--text-overline--line-height);
+  text-transform: uppercase;
+}

@@ -47,7 +47,11 @@ lives in `docs/design-system/`; load it only for UI redesign work.
   `api-client` contracts, and may be imported only by stories and tests.
 - Target direction (adopted ticket by ticket, see
   `docs/design-system/migration-roadmap.md`): semantic CSS-variable tokens in
-  `@template/ui-core/theme.css`, Radix-based primitives, Lucide icons, and
-  `next-themes` in all apps. Existing package ownership rules
+  `@template/ui-core/theme.css` and `next-themes` in all apps (both landed,
+  see `design-tokens-theming`), then Radix-based primitives and Lucide icons.
+- Trello card numbers can differ from roadmap IDs (DR-077: Trello FE-UI-002
+  delivered roadmap FE-UI-003; the roadmap's verification harness is still
+  outstanding). Treat the current card as authoritative and record the
+  mapping rather than renumbering the roadmap. Existing package ownership rules
   (`ui-composition`, `package-dependency-rules`) remain in force; describe the
   current implementation there as each ticket lands.

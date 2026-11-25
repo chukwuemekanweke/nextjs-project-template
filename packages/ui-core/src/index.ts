@@ -10,3 +10,6 @@ export * from "./components/skeleton";
 export * from "./components/table";
 export * from "./components/tabs";
 export * from "./formatting/money";
+export * from "./theme/theme-config";
+export * from "./theme/theme-controls";
+export * from "./theme/theme-provider";

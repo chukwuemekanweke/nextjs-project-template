@@ -11,6 +11,8 @@ How to move from today's TailAdmin/Solid-derived presentation layer to the [targ
 5. **Capability-gated screens.** Screens that need backend work (class D) wait for their API. The frontend prepares shells, navigation groups and primitives so that each later screen is pure composition.
 6. **Docs move with code.** Each ticket updates its screen records (`implementation.status`, `uiGaps`), the discrepancy register and, where architecture changes, OKF and `docs/architecture/`.
 
+> **Numbering ([DR-077](./discrepancy-register.md#dr-077)).** The Trello card FE-UI-002 delivered the scope listed below as **FE-UI-003 — Tokens, theme and typography** (see [foundations.md](./foundations.md)). The verification harness listed below as FE-UI-002 has **not** been delivered and remains a prerequisite for screen tickets. Ticket IDs in this roadmap are unchanged until the backlog is reconciled.
+
 ## 2. Dependency graph
 
 ```mermaid
@@ -69,6 +71,8 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 - **Done when:** journeys pass against the current UI; a fixture import from production code fails lint; the workbench builds; OKF `testing-strategy` and `verification` concepts updated.
 
 ### FE-UI-003 — Tokens, theme and typography
+
+- **Status:** delivered by Trello card FE-UI-002 (2026-11-25). The Foundations specimen is a development-only route in the public portal rather than a workbench story (OD-05 open); the harness prerequisite was not available, so verification used unit tests and manual browser checks ([foundations.md §10](./foundations.md#10-preview-and-verification)).
 
 - **Screens:** `FND-FOUNDATIONS`.
 - **Scope:** `packages/ui-core/src/styles/theme.css` (palette + semantic tokens, `@theme inline`, dark variant, radius/shadow/size/z tokens, breakpoints), compatibility aliases, `ThemeProvider`/`ThemeSwitch`/`ThemeSelect` (`next-themes`), Outfit + JetBrains Mono via `next/font` in all three root layouts, the `--brand-primary` decision (DR-005), and a Foundations story page.

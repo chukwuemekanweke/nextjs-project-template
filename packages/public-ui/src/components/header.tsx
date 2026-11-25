@@ -1,24 +1,11 @@
 ﻿"use client";
 
+import { ThemeSwitch } from "@template/ui-core";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import type { Action, LinkItem } from "../types";
-
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  return (
-    <button
-      aria-label="toggle color theme"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="bg-stroke dark:bg-hoverdark flex h-8 w-8 items-center justify-center rounded-full"
-    >
-      {theme === "dark" ? "â˜€" : "â˜¾"}
-    </button>
-  );
-}
 
 export function Header({
   logoAlt,
@@ -94,7 +81,7 @@ export function Header({
             </ul>
           </nav>
           <div className="mt-7 flex items-center gap-6 xl:mt-0">
-            <ThemeToggle />
+            <ThemeSwitch />
             <Link
               href={signIn.href}
               className="text-waterloo hover:text-primary font-medium"
