@@ -65,7 +65,12 @@ durable boundaries and pure behavior rather than broad browser rendering:
   registration/profile/password helpers, navigation, environment, and portal
   configuration. Auth forms are rendered statically per state (headings,
   supported methods, omitted design-only controls, links keeping `returnTo`);
-  status-to-alert mapping is tested as pure functions.
+  status-to-alert mapping is tested as pure functions. Apps with interactive
+  feature compositions also have a browser config
+  (`vitest.browser.config.ts`, `*.browser.test.tsx`, `pnpm test:component`)
+  for form input, confirmation lifecycles, pending/duplicate submission and
+  stale-data behaviour; a pure-function test is not enough when the rendered
+  component could still expose stale state.
 
 Conventions: shared components get component tests and representative
 workbench stories; shared layouts get component tests and selective stories;
