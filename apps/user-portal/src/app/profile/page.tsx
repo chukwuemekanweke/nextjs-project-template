@@ -3,13 +3,13 @@ import { DashboardHeader } from "@template/dashboard-ui";
 import {
   Card,
   CardContent,
-  CardDescription,
+  CardHeader,
   CardTitle,
+  EmptyState,
+  UserIcon,
 } from "@template/ui-core";
-import { portalName } from "@/lib/portal";
 import {
   hasProfileIdentity,
-  profileInitials,
   profileName,
   toProfileDisplay,
 } from "@/lib/profile-display";
@@ -19,6 +19,15 @@ import { ProfileEditForm } from "./profile-edit-form";
 
 export const metadata: Metadata = { title: "Profile" };
 
+const PAGE_DESCRIPTION = "The personal details tied to your account.";
+
+/**
+ * Profile (USR-PROFILE). The profile is read on the server through the
+ * authenticated server client; editing and the avatar upload are client
+ * workflows on the profile BFF. Reference fields without a backend source —
+ * country, "last updated", photo removal, upload percentage and the
+ * connected Google sign-in card — are not rendered (DR-019).
+ */
 export default async function ProfilePage() {
   const api = await createAppServerApiClient();
   const profile = toProfileDisplay(await api.profiles.getProfile());
@@ -27,109 +36,45 @@ export default async function ProfilePage() {
     return <EmptyProfile />;
   }
 
-  const displayName = profileName(profile);
-
   return (
-    <section className="mx-auto max-w-5xl space-y-6 sm:space-y-8">
-      <DashboardHeader
-        description="Review the personal information associated with your account."
-        eyebrow={portalName}
-        title="Your profile"
-      />
+    <section className="space-y-6">
+      <DashboardHeader description={PAGE_DESCRIPTION} title="Profile" />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(17rem,1fr)]">
-        <Card>
-          <CardContent>
-            <div className="border-b border-gray-100 pb-6 dark:border-gray-800">
-              <AvatarUploadControl
-                avatarUrl={profile.avatarUrl}
-                emailAddress={profile.emailAddress}
-                initials={profileInitials(profile)}
-                name={displayName}
-              />
-            </div>
+      <Card aria-labelledby="profile-photo-heading" role="region">
+        <CardHeader>
+          <CardTitle id="profile-photo-heading">Photo</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AvatarUploadControl
+            avatarUrl={profile.avatarUrl}
+            name={profileName(profile)}
+          />
+        </CardContent>
+      </Card>
 
-            <div className="mt-6">
-              <CardTitle>Personal information</CardTitle>
-              <CardDescription>
-                Update the names associated with your account. Your email
-                address is read-only.
-              </CardDescription>
-              <ProfileEditForm
-                firstName={profile.firstName}
-                lastName={profile.lastName}
-              />
-              <dl className="mt-6 border-t border-gray-100 pt-5 dark:border-gray-800">
-                <ProfileField
-                  label="Email address"
-                  value={profile.emailAddress}
-                />
-              </dl>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="self-start">
-          <CardContent>
-            <p className="text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-              Account status
-            </p>
-            <div className="mt-4 flex items-center gap-3">
-              <span
-                aria-hidden="true"
-                className={`h-2.5 w-2.5 shrink-0 rounded-full ${
-                  profile.isVerified ? "bg-emerald-500" : "bg-amber-500"
-                }`}
-              />
-              <p className="font-semibold text-gray-900 dark:text-white">
-                {profile.isVerified ? "Verified" : "Verification pending"}
-              </p>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-gray-500 dark:text-gray-400">
-              {profile.isVerified
-                ? "Your email address and account verification are complete."
-                : "Your account is active while verification is pending."}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <ProfileEditForm
+          emailAddress={profile.emailAddress}
+          firstName={profile.firstName}
+          isVerified={profile.isVerified}
+          lastName={profile.lastName}
+        />
+      </Card>
     </section>
-  );
-}
-
-function ProfileField({
-  className = "",
-  label,
-  value,
-}: Readonly<{ className?: string; label: string; value: string }>) {
-  const displayValue = value.trim() || "Not provided";
-
-  return (
-    <div className={className}>
-      <dt className="text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-        {label}
-      </dt>
-      <dd className="mt-2 text-sm font-medium break-words text-gray-900 dark:text-white">
-        {displayValue}
-      </dd>
-    </div>
   );
 }
 
 function EmptyProfile() {
   return (
-    <section className="mx-auto max-w-3xl space-y-6">
-      <DashboardHeader
-        description="Your session is active, but no personal information is available yet."
-        eyebrow={portalName}
-        title="Your profile"
-      />
+    <section className="space-y-6">
+      <DashboardHeader description={PAGE_DESCRIPTION} title="Profile" />
       <Card>
         <CardContent>
-          <CardTitle>Profile information is unavailable</CardTitle>
-          <CardDescription>
-            Try again later or contact support if your profile remains empty.
-          </CardDescription>
+          <EmptyState
+            description="Try again later or contact support if your profile remains empty."
+            icon={<UserIcon />}
+            title="Profile information is unavailable"
+          />
         </CardContent>
       </Card>
     </section>
