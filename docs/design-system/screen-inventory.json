@@ -12,6 +12,11 @@
         "ticket": "FE-UI-004",
         "commit": "a7e2a63411f4c406e577ccd2c72e42053fbce41e",
         "scope": "USR-NAV-MOBILE, ADM-NAV-MOBILE and the dashboard shell of every authenticated screen; reference blobs elsewhere still describe 'commit' (DR-083)"
+      },
+      {
+        "ticket": "Trello FE-UI-010",
+        "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+        "scope": "USR-BILLING, USR-BILLING-HISTORY, USR-CHECKOUT, USR-CHECKOUT-RESULT, USR-PURCHASE-DETAIL (reference blobs in the records still describe 'commit', DR-083)"
       }
     ]
   },
@@ -39,9 +44,9 @@
       "state-flow": 10
     },
     "byStatus": {
-      "Implemented": 28,
+      "Implemented": 29,
       "Missing": 27,
-      "Partial": 3,
+      "Partial": 2,
       "Reference-only": 0
     },
     "byClassification": {
@@ -3892,10 +3897,13 @@
           "apps/user-portal/src/app/billing/billing-overview.tsx",
           "apps/user-portal/src/app/billing/current-subscription-card.tsx",
           "apps/user-portal/src/app/billing/subscription-plan-grid.tsx",
-          "apps/user-portal/src/lib/billing-view.ts"
+          "apps/user-portal/src/lib/billing-view.ts",
+          "apps/user-portal/src/lib/billing-presentation.ts",
+          "apps/user-portal/src/app/billing/__fixtures__/billing-states.fixtures.ts"
         ],
         "existingFunctionality": [
-          "View switch (loading/error/discovery/pending/subscription) from current subscription; plan grid with interval toggle; cancel at period end with confirmation; history placement rules."
+          "View switch (loading/error/discovery/pending/subscription) from current subscription; plan grid with interval toggle; cancel at period end with confirmation; history placement rules.",
+          "UI implemented (Trello FE-UI-010, design ad9386e): page head with Billing history link, current-subscription card (plan, lifecycle badge, interval chip, renewal sentence, period bar from backend dates, cancel at period end), none/ended banner, plan grid with interval segment; past due, cancelling, expired and unknown states covered by typed test fixtures; Keep subscription, Pay now, Resume payment and Most popular omitted (DR-055)."
         ]
       },
       "backend": {
@@ -3988,7 +3996,8 @@
           "apps/user-portal/src/app/billing/billing-history-card.tsx"
         ],
         "existingFunctionality": [
-          "Server-paginated table (page size 20) with 7 columns, reference copy button, empty/loading/error."
+          "Server-paginated table (page size 20) with 7 columns, reference copy button, empty/loading/error.",
+          "UI implemented (Trello FE-UI-010): seven columns stacked on phones (OD-02), server record count, Pager; filter, Export CSV and invoice/receipt actions omitted (DR-058)."
         ]
       },
       "backend": {
@@ -4072,10 +4081,12 @@
           "apps/user-portal/src/app/billing/checkout/checkout-view.tsx",
           "apps/user-portal/src/app/billing/checkout/plan-picker.tsx",
           "apps/user-portal/src/lib/checkout-submission.ts",
-          "apps/user-portal/src/lib/checkout-attempt.ts"
+          "apps/user-portal/src/lib/checkout-attempt.ts",
+          "apps/user-portal/src/app/billing/checkout/order-summary.tsx"
         ],
         "existingFunctionality": [
-          "Plan picker or order summary; eligible providers; PaymentLink/BankTransfer (Card disabled); auto-renew; idempotent purchase; hosted redirect or bank-transfer instructions."
+          "Plan picker or order summary; eligible providers; PaymentLink/BankTransfer (Card disabled); auto-renew; idempotent purchase; hosted redirect or bank-transfer instructions.",
+          "UI implemented (Trello FE-UI-010): provider radio cards, auto-renew switch, order summary with Change link and Pay action, selected-provider next-step disclosure; no VAT or next-charge rows (DR-056)."
         ]
       },
       "backend": {
@@ -4224,7 +4235,8 @@
           "apps/user-portal/src/lib/payment-return.ts"
         ],
         "existingFunctionality": [
-          "Outcome resolved only from purchase status polling (3 s x 40); ~10 views (checking, missing, active, activating, pending, not completed, cancelled, failed/expired, underpaid/blocked, unknown)."
+          "Outcome resolved only from purchase status polling (3 s x 40); ~10 views (checking, missing, active, activating, pending, not completed, cancelled, failed/expired, underpaid/blocked, unknown).",
+          "UI implemented (Trello FE-UI-010): one result template (tone icon, Plan/Amount/Reference, actions) for every backend outcome; View payment details instead of View receipt (DR-057)."
         ]
       },
       "backend": {
@@ -4660,14 +4672,15 @@
         ]
       },
       "implementation": {
-        "status": "Partial",
+        "status": "Implemented",
         "classification": "B",
         "files": [
           "apps/user-portal/src/app/billing/purchases/[purchaseId]/page.tsx",
           "apps/user-portal/src/app/billing/purchases/[purchaseId]/purchase-status-view.tsx"
         ],
         "existingFunctionality": [
-          "Purchase status card with polling, bank-transfer details and blocked/underpaid warnings."
+          "Purchase status card with polling, bank-transfer details and blocked/underpaid warnings.",
+          "UI implemented (Trello FE-UI-010): Details card and a timeline of recorded timestamps only; invoice/receipt buttons omitted until FE-UI-018 (DR-057)."
         ]
       },
       "backend": {

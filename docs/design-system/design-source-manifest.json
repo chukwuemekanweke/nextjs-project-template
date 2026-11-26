@@ -63,6 +63,24 @@
         "2-authentication/AuthTwoFactor.html (+Dark, Mobile, MobileDark)",
         "2-authentication/AuthStates.html (+Dark, Mobile, MobileDark)"
       ]
+    },
+    {
+      "ticket": "FE-UI-010 (Trello)",
+      "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+      "commitDate": "2026-11-25T21:19:56+01:00",
+      "treeSha": "1000fc95c79c4cda8f3c6361d73f3b5d485cd0c2",
+      "scope": "User billing, checkout, checkout result, billing history and purchase detail screens only. Per-file inventory, hashes and counts still describe commit (DR-083).",
+      "filesInRevision": 994,
+      "changesSincePinnedCommit": {
+        "3-user-portal": "8 billing references modified: UserBillingHistory* (Invoice and Receipt row links) and UserPurchaseDetail* (View invoice / View receipt actions); UserBilling-*, UserCheckout* and UserCheckoutResult-* unchanged. Invoice/receipt targets are FE-UI-018."
+      },
+      "referencesUsed": [
+        "3-user-portal/UserBilling-{active,cancelling,expired,none,pastdue,pending}.html (+Dark, Mobile, MobileDark)",
+        "3-user-portal/UserBillingHistory.html (+Dark, Mobile, MobileDark)",
+        "3-user-portal/UserCheckout.html (+Dark, Mobile, MobileDark)",
+        "3-user-portal/UserCheckoutResult-{cancelled,pending,success}.html (+Dark, Mobile, MobileDark)",
+        "3-user-portal/UserPurchaseDetail.html (+Dark, Mobile, MobileDark)"
+      ]
     }
   ],
   "discoveredOn": "2026-11-25",

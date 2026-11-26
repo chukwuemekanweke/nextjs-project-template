@@ -234,6 +234,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 - **At risk:** idempotency/attempt storage, payment-link safety, polling, cancel at period end, history pagination.
 - **Verification:** existing billing tests unchanged; checkout/return journeys; visual baselines for each billing state (active, cancelling, past due, pending, discovery).
 - **Done when:** parity for supported states; unsupported actions absent (DR-055–058).
+- **Status:** delivered by Trello FE-UI-010 (design `ad9386e`): all five screens restyled on the shared primitives with `billing-view.ts`, `payment-return.ts`, checkout attempt/idempotency, polling and BFF routes unchanged; history stacks on phones (OD-02); purchase timeline from recorded timestamps only; unsupported actions omitted ([DR-055](./discrepancy-register.md#dr-055)–[DR-058](./discrepancy-register.md#dr-058)). Invoice/receipt screens and print layouts remain with Trello FE-UI-018; visual baselines with FE-UI-016.
 
 ### FE-UI-020 — Preferences
 

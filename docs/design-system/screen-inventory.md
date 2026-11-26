@@ -22,9 +22,9 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | Screens with an existing route or in-app state                | 26    |
 | Screens with a proposed route only                            | 27    |
 | Screens whose design assumes unsupported backend capabilities | 44    |
-| Status: Implemented                                           | 28    |
+| Status: Implemented                                           | 29    |
 | Status: Missing                                               | 27    |
-| Status: Partial                                               | 3     |
+| Status: Partial                                               | 2     |
 | Status: Reference-only                                        | 0     |
 | Classification A                                              | 15    |
 | Classification B                                              | 8     |
@@ -84,7 +84,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | [`USR-NAV-MOBILE`](#usr-nav-mobile)             | User portal mobile navigation (top bar, tab bar, drawer)                | layout-pattern | user-portal | —                                                                                  | —                                                                              | Implemented | B     | Not required | P1       | FE-UI-008 |
 | [`USR-PREFERENCES`](#usr-preferences)           | Preferences                                                             | page           | user-portal | `/preferences`                                                                     | —                                                                              | Implemented | C     | Partial      | P2       | FE-UI-020 |
 | [`USR-PROFILE`](#usr-profile)                   | Profile                                                                 | page           | user-portal | `/profile`                                                                         | —                                                                              | Implemented | A     | Partial      | P1       | FE-UI-016 |
-| [`USR-PURCHASE-DETAIL`](#usr-purchase-detail)   | Purchase detail                                                         | page           | user-portal | `/billing/purchases/[purchaseId]`                                                  | —                                                                              | Partial     | B     | Partial      | P2       | FE-UI-018 |
+| [`USR-PURCHASE-DETAIL`](#usr-purchase-detail)   | Purchase detail                                                         | page           | user-portal | `/billing/purchases/[purchaseId]`                                                  | —                                                                              | Implemented | B     | Partial      | P2       | FE-UI-018 |
 | [`USR-SECURITY`](#usr-security)                 | Security (overview, password, passkeys, two-factor, sessions, activity) | state-flow     | user-portal | `/security`                                                                        | `/security?tab={overview\|password\|passkeys\|two-factor\|sessions\|activity}` | Implemented | A     | Existing     | P1       | FE-UI-017 |
 | [`USR-TWO-FACTOR-SETUP`](#usr-two-factor-setup) | Two-factor setup dialog and recovery codes                              | overlay        | user-portal | `/security (dialog)`                                                               | —                                                                              | Implemented | A     | Existing     | P1       | FE-UI-017 |
 | [`USR-VERIFICATION`](#usr-verification)         | Identity verification (KYC)                                             | state-flow     | user-portal | —                                                                                  | `/verification`                                                                | Missing     | D     | Missing      | P3       | FE-UI-022 |
@@ -409,7 +409,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Billing and plans** — state-flow; target `user-portal`; auth: authenticated.
 
 - **Artboards:** `UserBilling` — 24 reference files (desktop/mobile; dark/light; states: active, cancelling, expired, none, pastdue, pending).
-- **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-018.
+- **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-018 (UI delivered by Trello FE-UI-010, design `ad9386e`; see DR-055–DR-058).
 - **Implementation:** `apps/user-portal/src/app/billing/page.tsx`, `apps/user-portal/src/app/billing/billing-overview.tsx`, `apps/user-portal/src/app/billing/current-subscription-card.tsx`, `apps/user-portal/src/app/billing/subscription-plan-grid.tsx`, `apps/user-portal/src/lib/billing-view.ts`
 - **Works today:** View switch (loading/error/discovery/pending/subscription) from current subscription; plan grid with interval toggle; cancel at period end with confirmation; history placement rules.
 - **Operations:** `getCurrentSubscription`; `listSubscriptionPlans`; `getBillingHistory`; `cancelSubscriptionAtPeriodEnd`
@@ -426,7 +426,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Billing history** — page; target `user-portal`; auth: authenticated.
 
 - **Artboards:** `UserBillingHistory` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Implemented (A); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-018.
+- **Status:** Implemented (A); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-018 (UI delivered by Trello FE-UI-010, design `ad9386e`; see DR-055–DR-058).
 - **Implementation:** `apps/user-portal/src/app/billing/history/page.tsx`, `apps/user-portal/src/app/billing/billing-history-card.tsx`
 - **Works today:** Server-paginated table (page size 20) with 7 columns, reference copy button, empty/loading/error.
 - **Operations:** `getBillingHistory`
@@ -442,7 +442,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Checkout** — page; target `user-portal`; auth: authenticated.
 
 - **Artboards:** `UserCheckout` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-018.
+- **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-018 (UI delivered by Trello FE-UI-010, design `ad9386e`; see DR-055–DR-058).
 - **Implementation:** `apps/user-portal/src/app/billing/checkout/page.tsx`, `apps/user-portal/src/app/billing/checkout/checkout-view.tsx`, `apps/user-portal/src/app/billing/checkout/plan-picker.tsx`, `apps/user-portal/src/lib/checkout-submission.ts`, `apps/user-portal/src/lib/checkout-attempt.ts`
 - **Works today:** Plan picker or order summary; eligible providers; PaymentLink/BankTransfer (Card disabled); auto-renew; idempotent purchase; hosted redirect or bank-transfer instructions.
 - **Operations:** `listSubscriptionPlans`; `listEligiblePaymentProviders`; `purchaseSubscription`
@@ -458,7 +458,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Checkout result** — state-flow; target `user-portal`; auth: authenticated.
 
 - **Artboards:** `UserCheckoutResult` — 12 reference files (desktop/mobile; dark/light; states: cancelled, pending, success).
-- **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-018.
+- **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-018 (UI delivered by Trello FE-UI-010, design `ad9386e`; see DR-055–DR-058).
 - **Implementation:** `apps/user-portal/src/app/billing/checkout/payment-return.tsx`, `apps/user-portal/src/app/billing/checkout/payment-result.tsx`, `apps/user-portal/src/lib/payment-return.ts`
 - **Works today:** Outcome resolved only from purchase status polling (3 s x 40); ~10 views (checking, missing, active, activating, pending, not completed, cancelled, failed/expired, underpaid/blocked, unknown).
 - **Operations:** `getSubscriptionPurchaseStatus`; `listSubscriptionPlans`
@@ -526,7 +526,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Purchase detail** — page; target `user-portal`; auth: authenticated.
 
 - **Artboards:** `UserPurchaseDetail` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Partial (B); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-018.
+- **Status:** Implemented (B); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-018 (UI delivered by Trello FE-UI-010, design `ad9386e`; see DR-055–DR-058).
 - **Implementation:** `apps/user-portal/src/app/billing/purchases/[purchaseId]/page.tsx`, `apps/user-portal/src/app/billing/purchases/[purchaseId]/purchase-status-view.tsx`
 - **Works today:** Purchase status card with polling, bank-transfer details and blocked/underpaid warnings.
 - **Operations:** `getSubscriptionPurchaseStatus`
