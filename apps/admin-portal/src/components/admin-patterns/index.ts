@@ -2,7 +2,13 @@
 // docs/design-system/admin-patterns.md. Generic primitives stay in
 // @template/ui-core and @template/dashboard-ui.
 
+export * from "./admin-action-failure";
+export * from "./admin-dates";
 export * from "./admin-metric";
+export * from "./admin-read-state";
+export * from "./admin-states";
+export * from "./admin-status";
+export * from "./admin-values";
 export * from "./chart-section";
 export * from "./filter-bar";
 export * from "./forbidden";
