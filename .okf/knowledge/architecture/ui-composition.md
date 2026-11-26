@@ -75,7 +75,10 @@ status: stable
   or production import; actions are intents passed through an `onAction`
   callback and render disabled without one. Its app tests are the preview
   harness (not the workbench) and fail if production code imports the
-  fixtures or adds the route early. The User Portal dashboard composes existing
+  fixtures or adds the route early. The wallet and top-up dialog (Trello
+  FE-UI-011, `apps/user-portal/src/features/wallet`) follow the same pattern:
+  unsupported figures and columns are unavailable or omitted, never zero or
+  guessed. The User Portal dashboard composes existing
   api-react hooks (plan, two-factor, passkeys, sessions, billing history) and
   adds no API operations; `/preferences` uses `ThemeSelect` and marks language
   and notification settings as preview-only (DR-087–DR-090).
