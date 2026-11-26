@@ -1,7 +1,6 @@
 import type { PasskeyResponse } from "@template/api-client/authentication";
 import { describe, expect, it } from "vitest";
 import {
-  PASSWORD_OVERVIEW_STATUS,
   passkeyOverviewStatus,
   securityScore,
   twoFactorOverviewStatus,
@@ -17,14 +16,6 @@ const passkey: PasskeyResponse = {
 };
 
 describe("security overview", () => {
-  it("reports the password as set because every account has one by default", () => {
-    expect(PASSWORD_OVERVIEW_STATUS).toEqual({
-      label: "Set",
-      state: "ready",
-      tone: "success",
-    });
-  });
-
   it("derives passkey status from the cached passkey list", () => {
     expect(passkeyOverviewStatus({ isError: false, isPending: true })).toEqual({
       state: "loading",
@@ -98,31 +89,43 @@ describe("security score", () => {
     ).toEqual({ state: "unavailable" });
   });
 
-  it("counts only the password when nothing else is set up", () => {
+  it("scores nothing when no backend-supported step is done", () => {
     const score = securityScore(ready([]), disabled);
     expect(score).toMatchObject({
-      completed: 1,
+      completed: 0,
       level: "Basic protection",
       state: "ready",
       tone: "warning",
-      total: 4,
+      total: 3,
     });
     expect(
       score.state === "ready" && score.steps.map((step) => step.label),
     ).toEqual([
-      "Password set",
       "Turn on two-factor authentication",
       "Add a passkey",
       "Add a backup passkey",
     ]);
   });
 
-  it("matches the reference '3 of 4' state with two-factor and one passkey", () => {
+  it("reports fair protection with one step done", () => {
+    expect(securityScore(ready([]), enabled)).toMatchObject({
+      completed: 1,
+      level: "Fair protection",
+      tone: "warning",
+    });
+    expect(securityScore(ready([passkey]), disabled)).toMatchObject({
+      completed: 1,
+      level: "Fair protection",
+    });
+  });
+
+  it("reports good protection with two-factor and one passkey (2 of 3)", () => {
     const score = securityScore(ready([passkey]), enabled);
     expect(score).toMatchObject({
-      completed: 3,
+      completed: 2,
       level: "Good protection",
       tone: "brand",
+      total: 3,
     });
     expect(
       score.state === "ready" &&
@@ -136,13 +139,21 @@ describe("security score", () => {
       enabled,
     );
     expect(score).toMatchObject({
-      completed: 4,
+      completed: 3,
       level: "Strong protection",
       tone: "success",
+      total: 3,
     });
-    expect(score.state === "ready" && score.steps[2]?.label).toBe(
+    expect(score.state === "ready" && score.steps[1]?.label).toBe(
       "2 passkeys registered",
     );
+  });
+
+  it("never scores the password, which the backend does not report", () => {
+    const score = securityScore(ready([]), disabled);
+    const ids =
+      score.state === "ready" ? score.steps.map((step) => step.id) : [];
+    expect(ids).not.toContain("password");
   });
 
   it("does not claim a strong or recently changed password", () => {

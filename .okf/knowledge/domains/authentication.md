@@ -55,7 +55,8 @@ Security page layout (Trello FE-UI-008): one route, `/security`, with six
 `sessions`, `activity`; absent/unknown values show the overview). The URL is
 the source of truth: `SecurityTabs` derives the tab from `useSearchParams()`
 via `security-tab.ts` and switches with `history.replaceState`. Inactive tabs are unmounted. The overview score uses
-only backend facts (password set, two-factor on, one and two passkeys); it is
+three backend facts (two-factor on, one and two passkeys; the password is
+never scored or given a status); it is
 pending while a query loads and "unavailable" when one fails, never guessed.
 Two-factor setup is a three-step dialog (explain, scan + six-digit verify,
 recovery codes); its codes step can be left only after "I have saved my

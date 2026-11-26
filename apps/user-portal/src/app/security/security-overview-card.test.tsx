@@ -64,7 +64,10 @@ describe("SecurityOverview", () => {
     const markup = render();
 
     expect(markup).toContain("Sign-in methods");
-    expect(markup).toContain("Password status: </span>Set");
+    // No backend fact exists for the password, so it gets a link, not a status.
+    expect(markup).not.toContain("Password status");
+    expect(markup).toContain(">Change password</a>");
+    expect(markup).toContain('href="/security?tab=password"');
     expect(markup).toContain("Passkeys status: </span>Not set");
     expect(markup).toContain("Two-factor auth status: </span>Enabled");
   });
@@ -84,9 +87,11 @@ describe("SecurityOverview", () => {
     const markup = render();
 
     expect(markup).toContain("Good protection");
-    expect(markup).toContain("3 of 4 recommended steps done");
+    expect(markup).toContain("2 of 3 recommended steps done");
     expect(markup).toContain('role="progressbar"');
-    expect(markup).toContain('aria-valuenow="3"');
+    expect(markup).toContain('aria-valuenow="2"');
+    expect(markup).toContain('aria-valuemax="3"');
+    expect(markup).not.toContain("Password set");
     expect(markup).toContain("One passkey registered");
     expect(markup).toContain("To do: </span>Add a backup passkey");
     expect(markup).toContain('href="/security?tab=passkeys"');

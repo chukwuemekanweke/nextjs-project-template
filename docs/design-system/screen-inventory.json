@@ -4889,7 +4889,7 @@
         "existingFunctionality": [
           "Trello FE-UI-008 (roadmap FE-UI-017): six URL-addressable tabs (?tab=overview|password|passkeys|two-factor|sessions|activity; absent/unknown -> overview) on design-system primitives, light/dark, phone to desktop.",
           "UI implemented, existing integration preserved: password change (backend validation mapping), passkey register/rename/remove (WebAuthn ceremony), 2FA status/setup/verify/regenerate/disable with proof, sessions revoke one/others (each confirmed), cursor-paginated activity (Load more).",
-          "Overview: protection score from real facts only (password set, 2FA on, one passkey, backup passkey; unavailable when a query fails, pending while loading), three newest activity events from the shared activity query, sign-in method statuses linking to tabs.",
+          "Overview: protection score out of three backend facts (2FA on, one passkey, backup passkey; the password is never scored; unavailable when a query fails, pending while loading), three newest activity events from the shared activity query, passkey and 2FA statuses plus a 'Change password' link (no password status).",
           "Preview-only: none. Unsupported (omitted): passkey last-used, password last-changed/strength, password-change 'sign out other sessions', 2FA enrollment date and total code count."
         ]
       },

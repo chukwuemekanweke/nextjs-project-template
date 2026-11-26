@@ -35,7 +35,6 @@ import {
   securityLinkClassName,
 } from "./activity-presentation";
 import {
-  PASSWORD_OVERVIEW_STATUS,
   passkeyOverviewStatus,
   securityScore,
   twoFactorOverviewStatus,
@@ -57,7 +56,6 @@ const RECENT_EVENT_COUNT = 3;
 const STEP_TABS: Readonly<Record<SecurityStepId, SecurityTab>> = {
   "backup-passkey": "passkeys",
   passkey: "passkeys",
-  password: "password",
   "two-factor": "two-factor",
 };
 
@@ -87,9 +85,9 @@ export function SecurityOverview() {
         </CardHeader>
         <ul aria-label="Sign-in methods">
           <MethodRow
+            actionLabel="Change password"
             icon={<KeyIcon />}
             label="Password"
-            status={PASSWORD_OVERVIEW_STATUS}
             tab="password"
           />
           <MethodRow
@@ -275,40 +273,48 @@ function RecentEventsCard() {
 }
 
 function MethodRow({
+  actionLabel = "Manage",
   icon,
   label,
   status,
   tab,
 }: Readonly<{
+  actionLabel?: string;
   icon: ReactNode;
   label: string;
-  status: OverviewStatus;
+  /** Omitted when no backend fact exists (the password). */
+  status?: OverviewStatus;
   tab: SecurityTab;
 }>) {
   return (
     <ListRow
       actions={
         <SecurityTabLink className={securityLinkClassName} tab={tab}>
-          Manage<span className="sr-only"> {label}</span>
+          {actionLabel}
+          {actionLabel === "Manage" ? (
+            <span className="sr-only"> {label}</span>
+          ) : null}
         </SecurityTabLink>
       }
       as="li"
       leading={<IconTile tone="neutral">{icon}</IconTile>}
       title={label}
     >
-      <div className="mt-1">
-        {status.state === "loading" ? (
-          <span aria-busy="true" role="status">
-            <span className="sr-only">Checking {label} status</span>
-            <Skeleton className="h-6 w-16 rounded-full" />
-          </span>
-        ) : (
-          <Badge tone={status.tone}>
-            <span className="sr-only">{label} status: </span>
-            {status.label}
-          </Badge>
-        )}
-      </div>
+      {status ? (
+        <div className="mt-1">
+          {status.state === "loading" ? (
+            <span aria-busy="true" role="status">
+              <span className="sr-only">Checking {label} status</span>
+              <Skeleton className="h-6 w-16 rounded-full" />
+            </span>
+          ) : (
+            <Badge tone={status.tone}>
+              <span className="sr-only">{label} status: </span>
+              {status.label}
+            </Badge>
+          )}
+        </div>
+      ) : null}
     </ListRow>
   );
 }

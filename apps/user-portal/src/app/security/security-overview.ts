@@ -19,16 +19,6 @@ const UNAVAILABLE: OverviewStatus = {
   tone: "neutral",
 };
 
-/**
- * Every account has a password set by default, so the backend exposes no
- * password flag. Passkey and two-factor statuses come from their own queries.
- */
-export const PASSWORD_OVERVIEW_STATUS: OverviewStatus = {
-  label: "Set",
-  state: "ready",
-  tone: "success",
-};
-
 export function passkeyOverviewStatus(
   query: QueryState<readonly PasskeyResponse[]>,
 ): OverviewStatus {
@@ -53,8 +43,7 @@ export function twoFactorOverviewStatus(
     : { label: "Disabled", state: "ready", tone: "neutral" };
 }
 
-export type SecurityStepId =
-  "password" | "two-factor" | "passkey" | "backup-passkey";
+export type SecurityStepId = "two-factor" | "passkey" | "backup-passkey";
 
 export type SecurityStep = Readonly<{
   done: boolean;
@@ -76,13 +65,24 @@ export type SecurityScore =
       total: number;
     };
 
+/** Level for the number of completed steps (0–3). */
+function securityLevel(completed: number): {
+  level: string;
+  tone: SecurityLevelTone;
+} {
+  if (completed >= 3) return { level: "Strong protection", tone: "success" };
+  if (completed === 2) return { level: "Good protection", tone: "brand" };
+  if (completed === 1) return { level: "Fair protection", tone: "warning" };
+  return { level: "Basic protection", tone: "warning" };
+}
+
 /**
- * Protection score from backend facts only: the account password (always
- * set), authenticator two-factor status and the registered passkey count
- * (one, then a backup). Password age and strength are not exposed by the
- * backend, so they are never scored or claimed (DR-053). While either query
- * loads the score is pending; if either fails it is unavailable rather than
- * guessed.
+ * Protection score from backend facts only, out of three steps: two-factor
+ * on, one passkey, and a backup passkey (a second). The password is never
+ * scored: the backend exposes no password flag, age or strength, so there is
+ * no authoritative fact to count (DR-053, DR-096).
+ * While either query loads the score is pending; if either fails it is
+ * unavailable rather than guessed.
  */
 export function securityScore(
   passkeys: QueryState<readonly PasskeyResponse[]>,
@@ -100,7 +100,6 @@ export function securityScore(
   const passkeyCount = passkeys.data.length;
   const twoFactorEnabled = twoFactor.data.enabled;
   const steps: SecurityStep[] = [
-    { done: true, id: "password", label: "Password set" },
     {
       done: twoFactorEnabled,
       id: "two-factor",
@@ -128,34 +127,11 @@ export function securityScore(
     },
   ];
   const completed = steps.filter((step) => step.done).length;
-  const total = steps.length;
-
-  if (completed === total) {
-    return {
-      completed,
-      level: "Strong protection",
-      state: "ready",
-      steps,
-      tone: "success",
-      total,
-    };
-  }
-  if (completed === total - 1) {
-    return {
-      completed,
-      level: "Good protection",
-      state: "ready",
-      steps,
-      tone: "brand",
-      total,
-    };
-  }
   return {
     completed,
-    level: completed <= 1 ? "Basic protection" : "Fair protection",
+    ...securityLevel(completed),
     state: "ready",
     steps,
-    tone: "warning",
-    total,
+    total: steps.length,
   };
 }
