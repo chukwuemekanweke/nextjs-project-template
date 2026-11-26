@@ -5,15 +5,16 @@ import {
 
 /**
  * User portal navigation. Only implemented routes are listed: the design's
- * Verification, Wallet and Preferences items are added by the tickets that
- * build those screens (see docs/design-system/route-mapping.md). Order
- * follows the reference sidebar.
+ * Verification and Wallet items are added by the tickets that build those
+ * screens (see docs/design-system/route-mapping.md). Order follows the
+ * reference sidebar.
  */
 export const userNavigation = [
   { label: "Overview", href: "/dashboard" },
   { label: "Profile", href: "/profile" },
   { label: "Billing", href: "/billing" },
   { label: "Security", href: "/security" },
+  { label: "Preferences", href: "/preferences" },
 ] as const;
 
 /**
@@ -35,6 +36,7 @@ const userBreadcrumbTrails: Readonly<
   "/dashboard": [{ label: "Overview" }],
   "/profile": [{ label: "Account" }, { label: "Profile" }],
   "/security": [{ label: "Account" }, { label: "Security" }],
+  "/preferences": [{ label: "Account" }, { label: "Preferences" }],
   "/billing": [{ label: "Billing" }],
   "/billing/checkout": [
     { label: "Billing", href: "/billing" },

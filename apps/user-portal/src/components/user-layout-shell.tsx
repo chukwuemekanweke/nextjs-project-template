@@ -22,6 +22,7 @@ import {
   CreditCardIcon,
   DarkModeSwitch,
   HomeIcon,
+  SettingsIcon,
   ShieldIcon,
   UserIcon,
 } from "@template/ui-core";
@@ -40,6 +41,7 @@ import { PasskeyAddedModal } from "./passkey-added-modal";
 const navigationIcons: Readonly<Record<string, ReactNode>> = {
   "/billing": <CreditCardIcon />,
   "/dashboard": <HomeIcon />,
+  "/preferences": <SettingsIcon />,
   "/profile": <UserIcon />,
   "/security": <ShieldIcon />,
 };

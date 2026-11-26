@@ -4,109 +4,109 @@ import {
   useCompleteAvatarUpload,
   useCreateAvatarUpload,
 } from "@template/api-react/profiles";
-import { Alert } from "@template/ui-core";
+import {
+  Alert,
+  Avatar,
+  Button,
+  FieldHint,
+  Panel,
+  Spinner,
+  UploadIcon,
+} from "@template/ui-core";
 import { useRouter } from "next/navigation";
-import { useRef, useState, type CSSProperties } from "react";
+import { useCallback, useRef, useState } from "react";
 import { uploadAvatarFile } from "@/lib/avatar-upload";
+import { createAvatarUploadGuard } from "./avatar-upload-guard";
 
+const SUCCESS_MESSAGE = "Your profile photo was updated.";
+
+/**
+ * Profile photo (reference "Photo" card). The file goes straight to object
+ * storage through the signed upload sequence in `uploadAvatarFile`; the
+ * profile query is invalidated by the completion mutation and the server
+ * components refresh afterwards. The transport reports no byte progress, so
+ * the pending state is indeterminate. Removing a photo has no API (DR-019).
+ */
 export function AvatarUploadControl({
   avatarUrl,
-  emailAddress,
-  initials,
   name,
-}: Readonly<{
-  avatarUrl: string | null;
-  emailAddress: string;
-  initials: string;
-  name: string;
-}>) {
+}: Readonly<{ avatarUrl: string | null; name: string }>) {
   const router = useRouter();
   const createUpload = useCreateAvatarUpload();
   const completeUpload = useCompleteAvatarUpload();
   const inputRef = useRef<HTMLInputElement>(null);
-  const uploadActive = useRef(false);
+  const [guard] = useState(createAvatarUploadGuard);
   const [error, setError] = useState<string>();
-  const [isUploading, setIsUploading] = useState(false);
-  const normalizedAvatarUrl = avatarUrl?.trim();
-  const avatarStyle = normalizedAvatarUrl
-    ? ({
-        backgroundImage: `url(${JSON.stringify(normalizedAvatarUrl)})`,
-      } as CSSProperties)
-    : undefined;
+  const [confirmation, setConfirmation] = useState<string>();
+  const [uploadingFile, setUploadingFile] = useState<string>();
+  const dismissError = useCallback(() => setError(undefined), []);
+  const dismissConfirmation = useCallback(() => setConfirmation(undefined), []);
+  const isUploading = uploadingFile !== undefined;
+  const normalizedAvatarUrl = avatarUrl?.trim() || null;
 
   async function upload(file: File) {
-    if (uploadActive.current) return;
+    if (guard.active) return;
 
-    uploadActive.current = true;
-    setIsUploading(true);
+    setUploadingFile(file.name);
     setError(undefined);
-    try {
-      await uploadAvatarFile(file, {
+    setConfirmation(undefined);
+    const outcome = await guard.run(() =>
+      uploadAvatarFile(file, {
         create: (request) => createUpload.mutateAsync(request),
         complete: (uploadId) => completeUpload.mutateAsync({ uploadId }),
-      });
+      }),
+    );
+    setUploadingFile(undefined);
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+
+    if (outcome.status === "uploaded") {
       router.refresh();
-    } catch (caughtError) {
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Your profile photo could not be updated.",
-      );
-    } finally {
-      uploadActive.current = false;
-      setIsUploading(false);
-      if (inputRef.current) {
-        inputRef.current.value = "";
-      }
+      setConfirmation(SUCCESS_MESSAGE);
+    } else if (outcome.status === "failed") {
+      setError(outcome.message);
     }
   }
 
   return (
-    <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-      <div className="relative h-20 w-20 shrink-0">
-        <div
-          aria-hidden="true"
-          className="bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400 flex h-20 w-20 items-center justify-center rounded-full bg-cover bg-center text-2xl font-semibold"
-          style={avatarStyle}
-        >
-          {normalizedAvatarUrl ? null : initials}
+    <div className="flex flex-col gap-5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
+      <Avatar name={name} size="lg" src={normalizedAvatarUrl} />
+      <div className="grid min-w-0 flex-1 gap-2.5">
+        <div>
+          <p className="text-fg font-semibold">Profile photo</p>
+          <FieldHint id="avatar-hint">
+            Choose an image file. Square images work best.
+          </FieldHint>
         </div>
-        {isUploading ? (
-          <div
-            aria-label="Uploading profile photo"
-            className="absolute inset-0 flex items-center justify-center rounded-full bg-gray-950/55"
-            role="status"
-          >
-            <span className="h-7 w-7 animate-spin rounded-full border-2 border-white/40 border-t-white motion-reduce:animate-none" />
-          </div>
-        ) : null}
-      </div>
-      <div className="min-w-0">
-        <p className="text-xl font-semibold break-words text-gray-900 dark:text-white">
-          {name}
-        </p>
-        <p className="mt-1 text-sm break-all text-gray-500 dark:text-gray-400">
-          {emailAddress.trim()}
-        </p>
-        <div className="mt-3 space-y-3">
-          {error ? (
-            <Alert onDismiss={() => setError(undefined)} variant="error">
-              {error}
-            </Alert>
-          ) : null}
-          <button
-            className="inline-flex items-center rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
-            disabled={isUploading}
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            aria-describedby="avatar-hint"
+            leadingIcon={<UploadIcon />}
+            loading={isUploading}
             onClick={() => inputRef.current?.click()}
-            type="button"
+            size="sm"
+            variant="secondary"
           >
-            {isUploading ? "Uploading…" : "Change photo"}
-          </button>
+            {isUploading ? "Uploading…" : "Upload new photo"}
+          </Button>
+          {normalizedAvatarUrl ? (
+            <Button
+              aria-describedby="avatar-remove-unavailable"
+              disabled
+              size="sm"
+              variant="ghost"
+            >
+              Remove
+            </Button>
+          ) : null}
           <input
             ref={inputRef}
             accept="image/*"
+            aria-label="Profile photo file"
             className="sr-only"
             disabled={isUploading}
+            tabIndex={-1}
             type="file"
             onChange={(event) => {
               const file = event.currentTarget.files?.[0];
@@ -114,7 +114,40 @@ export function AvatarUploadControl({
             }}
           />
         </div>
+        {normalizedAvatarUrl ? (
+          <FieldHint id="avatar-remove-unavailable">
+            Removing a photo is not available yet. Upload a new photo to replace
+            it.
+          </FieldHint>
+        ) : null}
+        {error ? (
+          <Alert onDismiss={dismissError} variant="error">
+            {error}
+          </Alert>
+        ) : null}
+        {confirmation ? (
+          <Alert
+            autoDismissAfter={5_000}
+            onDismiss={dismissConfirmation}
+            variant="success"
+          >
+            {confirmation}
+          </Alert>
+        ) : null}
       </div>
+      {isUploading ? (
+        <Panel
+          aria-live="polite"
+          className="flex w-full items-center gap-3 sm:max-w-sm"
+          role="status"
+        >
+          <Spinner decorative size="sm" />
+          <span className="text-small min-w-0 flex-1">
+            <span className="text-fg block truncate">{uploadingFile}</span>
+            <span className="text-fg-muted">Uploading your photo…</span>
+          </span>
+        </Panel>
+      ) : null}
     </div>
   );
 }

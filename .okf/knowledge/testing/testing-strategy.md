@@ -34,7 +34,7 @@ durable boundaries and pure behavior rather than broad browser rendering:
 - `ui-core`, `forms` and `dashboard-ui` browser tests (`*.browser.test.tsx`, Vitest browser
   mode with Playwright Chromium and reduced motion, `pnpm test:component`):
   keyboard and focus (dialog trap/return, tabs, switch, segmented control,
-  OTP), ARIA state, label/hint/error association, loading/duplicate-submit
+  OTP, `ThemeSelect` applying and storing Light/Dark/System), ARIA state, label/hint/error association, loading/duplicate-submit
   prevention, responsive `DataTable`, and React Hook Form integration. The
   node config excludes them.
 - Visual regression (`pnpm test:visual`, `tooling/ui-workbench/visual`):

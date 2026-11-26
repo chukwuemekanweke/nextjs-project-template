@@ -63,6 +63,15 @@ status: stable
   navigation is a workbench fixture. User identity comes from
   `useCurrentProfile` via the profile BFF; the admin portal has no identity
   read and shows the admitted role.
+- Reference sample data (names, balances, scores, sessions, payments) never
+  renders as account data. Feature data without a backend source shows an
+  honest unavailable state or is omitted; typed preview fixtures live beside
+  the feature (for example `app/dashboard/dashboard-preview.fixtures.ts`), are
+  imported only by tests, and are never a fallback for a failed request or
+  behind a production toggle. The User Portal dashboard composes existing
+  api-react hooks (plan, two-factor, passkeys, sessions, billing history) and
+  adds no API operations; `/preferences` uses `ThemeSelect` and marks language
+  and notification settings as preview-only (DR-087–DR-090).
 - Dashboard pages start with `DashboardHeader` on the page background, then
   cards. New work uses `Card` + `CardHeader` + `ListRow`/`KeyValueList`;
   existing pages still use `SectionHeader` + `SettingsRow`. Feature
