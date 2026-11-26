@@ -1,30 +1,43 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { DashboardHeader } from "@template/dashboard-ui";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardTitle,
+  EmptyState,
+  UserIcon,
+  buttonVariants,
 } from "@template/ui-core";
-import { portalName } from "@/lib/portal";
+import { billingRoutes } from "@/config/billing";
 import {
   hasProfileIdentity,
-  profileInitials,
   profileName,
+  toProfileDisplay,
 } from "@/lib/profile-display";
 import { createAppServerApiClient } from "@/lib/server-api";
+import {
+  DashboardMetrics,
+  RecentBillingActivityCard,
+  SecurityChecklistCard,
+} from "./dashboard-live";
+import { greetingName } from "./dashboard-overview";
+import { ProfileSummaryCard } from "./dashboard-sections";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
-const metricSlots = [
-  ["Activity", "Recent account events will appear here."],
-  ["Usage", "Product usage metrics will appear here."],
-  ["Applications", "Application progress will appear here."],
-] as const;
+const PAGE_DESCRIPTION = "Here is the state of your account today.";
 
+/**
+ * Overview dashboard (USR-DASHBOARD). Identity is read on the server; plan,
+ * security and session tiles, the checklist and billing activity load in the
+ * browser from the portal's existing queries. Reference content without a
+ * backend source is not rendered as data: the wallet tile is unavailable,
+ * and the KYC callout, "Top up wallet", country/language/member-since and
+ * wallet activity are omitted (DR-018, DR-050, DR-054, DR-059).
+ */
 export default async function DashboardPage() {
   const api = await createAppServerApiClient();
-  const profile = await api.profiles.getProfile();
+  const profile = toProfileDisplay(await api.profiles.getProfile());
 
   if (!hasProfileIdentity(profile)) {
     return <EmptyProfile />;
@@ -33,105 +46,59 @@ export default async function DashboardPage() {
   const displayName = profileName(profile);
 
   return (
-    <section className="mx-auto max-w-7xl space-y-8">
+    <section className="space-y-6">
       <DashboardHeader
-        description="Review your identity and the current status of your account."
-        eyebrow={portalName}
-        title={`Welcome back, ${displayName}`}
+        actions={
+          <Link
+            className={buttonVariants({ variant: "secondary" })}
+            href={billingRoutes.overview}
+          >
+            View billing
+          </Link>
+        }
+        description={PAGE_DESCRIPTION}
+        title={`Welcome back, ${greetingName(profile, displayName)}`}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
-        <Card>
-          <CardContent className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <div
-              aria-hidden="true"
-              className="bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400 flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-xl font-semibold"
-            >
-              {profileInitials(profile)}
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-                Signed-in identity
-              </p>
-              <p className="mt-2 truncate text-xl font-semibold text-gray-900 dark:text-white">
-                {displayName}
-              </p>
-              <p className="mt-1 truncate text-sm text-gray-500 dark:text-gray-400">
-                {profile.emailAddress}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+      <DashboardMetrics />
 
-        <Card>
-          <CardContent>
-            <p className="text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">
-              Account status
-            </p>
-            <div className="mt-4 flex items-center gap-3">
-              <span
-                aria-hidden="true"
-                className={`h-2.5 w-2.5 rounded-full ${
-                  profile.isVerified ? "bg-emerald-500" : "bg-amber-500"
-                }`}
-              />
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                {profile.isVerified ? "Verified" : "Verification pending"}
-              </p>
-            </div>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              {profile.isVerified
-                ? "Your account verification is complete."
-                : "Your account is active while verification is pending."}
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <ProfileSummaryCard
+          avatarUrl={profile.avatarUrl}
+          emailAddress={profile.emailAddress}
+          isVerified={profile.isVerified}
+          name={displayName}
+        />
+        <SecurityChecklistCard />
       </div>
 
-      <section aria-labelledby="metrics-heading" className="space-y-4">
-        <div>
-          <h2
-            className="text-lg font-semibold text-gray-900 dark:text-white"
-            id="metrics-heading"
-          >
-            Account overview
-          </h2>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            These extension points are ready for application-specific metrics.
-          </p>
-        </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {metricSlots.map(([title, description]) => (
-            <Card data-metric-slot={title.toLowerCase()} key={title}>
-              <CardContent>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
-                <p className="mt-5 text-sm font-medium text-gray-400 dark:text-gray-500">
-                  No data available yet
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
+      <RecentBillingActivityCard />
     </section>
   );
 }
 
 function EmptyProfile() {
   return (
-    <section className="mx-auto max-w-3xl space-y-6">
+    <section className="space-y-6">
       <DashboardHeader
         description="Your session is active, but no profile details are available yet."
-        eyebrow={portalName}
         title="Complete your account"
       />
       <Card>
         <CardContent>
-          <CardTitle>Profile information is unavailable</CardTitle>
-          <CardDescription>
-            Add profile details when profile management becomes available.
-          </CardDescription>
+          <EmptyState
+            action={
+              <Link
+                className={buttonVariants({ size: "sm", variant: "secondary" })}
+                href="/profile"
+              >
+                Open profile
+              </Link>
+            }
+            description="Profile details will appear here once they are available."
+            icon={<UserIcon />}
+            title="Profile information is unavailable"
+          />
         </CardContent>
       </Card>
     </section>
