@@ -19,12 +19,12 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | Design artboards                                              | 62    |
 | Canonical static reference files mapped                       | 307   |
 | Editable `.dc.html` artboards mapped                          | 239   |
-| Screens with an existing route or in-app state                | 25    |
-| Screens with a proposed route only                            | 28    |
+| Screens with an existing route or in-app state                | 26    |
+| Screens with a proposed route only                            | 27    |
 | Screens whose design assumes unsupported backend capabilities | 44    |
-| Status: Implemented                                           | 26    |
-| Status: Missing                                               | 28    |
-| Status: Partial                                               | 4     |
+| Status: Implemented                                           | 28    |
+| Status: Missing                                               | 27    |
+| Status: Partial                                               | 3     |
 | Status: Reference-only                                        | 0     |
 | Classification A                                              | 15    |
 | Classification B                                              | 8     |
@@ -80,9 +80,9 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | [`USR-BILLING-HISTORY`](#usr-billing-history)   | Billing history                                                         | page           | user-portal | `/billing/history`                                                                 | —                                                                              | Implemented | A     | Partial      | P1       | FE-UI-018 |
 | [`USR-CHECKOUT`](#usr-checkout)                 | Checkout                                                                | page           | user-portal | `/billing/checkout`                                                                | —                                                                              | Implemented | A     | Existing     | P1       | FE-UI-018 |
 | [`USR-CHECKOUT-RESULT`](#usr-checkout-result)   | Checkout result                                                         | state-flow     | user-portal | `/billing/checkout/success, /billing/checkout/cancelled, /billing/checkout/return` | —                                                                              | Implemented | A     | Existing     | P1       | FE-UI-018 |
-| [`USR-DASHBOARD`](#usr-dashboard)               | Overview dashboard                                                      | page           | user-portal | `/dashboard`                                                                       | —                                                                              | Partial     | B     | Partial      | P1       | FE-UI-015 |
+| [`USR-DASHBOARD`](#usr-dashboard)               | Overview dashboard                                                      | page           | user-portal | `/dashboard`                                                                       | —                                                                              | Implemented | B     | Partial      | P1       | FE-UI-015 |
 | [`USR-NAV-MOBILE`](#usr-nav-mobile)             | User portal mobile navigation (top bar, tab bar, drawer)                | layout-pattern | user-portal | —                                                                                  | —                                                                              | Implemented | B     | Not required | P1       | FE-UI-008 |
-| [`USR-PREFERENCES`](#usr-preferences)           | Preferences                                                             | page           | user-portal | —                                                                                  | `/preferences`                                                                 | Missing     | C     | Partial      | P2       | FE-UI-020 |
+| [`USR-PREFERENCES`](#usr-preferences)           | Preferences                                                             | page           | user-portal | `/preferences`                                                                     | —                                                                              | Implemented | C     | Partial      | P2       | FE-UI-020 |
 | [`USR-PROFILE`](#usr-profile)                   | Profile                                                                 | page           | user-portal | `/profile`                                                                         | —                                                                              | Implemented | A     | Partial      | P1       | FE-UI-016 |
 | [`USR-PURCHASE-DETAIL`](#usr-purchase-detail)   | Purchase detail                                                         | page           | user-portal | `/billing/purchases/[purchaseId]`                                                  | —                                                                              | Partial     | B     | Partial      | P2       | FE-UI-018 |
 | [`USR-SECURITY`](#usr-security)                 | Security (overview, password, passkeys, two-factor, sessions, activity) | state-flow     | user-portal | `/security`                                                                        | `/security?tab={overview\|password\|passkeys\|two-factor\|sessions\|activity}` | Implemented | A     | Existing     | P1       | FE-UI-017 |
@@ -473,17 +473,15 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Overview dashboard** — page; target `user-portal`; auth: authenticated.
 
 - **Artboards:** `UserDashboard` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Partial (B); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-015.
-- **Implementation:** `apps/user-portal/src/app/dashboard/page.tsx`, `apps/user-portal/src/app/dashboard/loading.tsx`, `apps/user-portal/src/app/dashboard/error.tsx`
-- **Works today:** Server Component: identity card, verified/pending status, three placeholder metric slots.
-- **Operations:** `getProfile`; `getCurrentSubscription`; `listActiveSessions`; `getTwoFactorStatus`; `listPasskeys`; `getBillingHistory`; `getWalletTransactions`
-- **Unsupported / missing backend:** Wallet balance; KYC status; Profile country/language/member-since; Password last-changed date
-- **Gap:** Reference: greeting header with actions, KYC banner, 4 stat tiles (wallet balance, plan, security score, sessions), profile card, security checklist, recent activity table.
-- **Gap:** Wallet balance, KYC banner, country/language/member-since and 'password changed 2 months ago' have no backend source.
-- **Gap:** Recent activity mixes wallet and billing events; no unified activity endpoint.
-- **Depends on:** FE-UI-008 shell; FE-UI-004 Stat/KeyValue
-- **Note:** Render only tiles backed by real data; omit (not mock) unsupported tiles until endpoints exist.
-- **Discrepancies:** [DR-018](./discrepancy-register.md#dr-018), [DR-050](./discrepancy-register.md#dr-050)
+- **Status:** Implemented (B); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-015 (delivered by Trello FE-UI-007).
+- **Implementation:** `apps/user-portal/src/app/dashboard/page.tsx`, `dashboard-live.tsx`, `dashboard-sections.tsx`, `dashboard-overview.ts`, `dashboard-preview.fixtures.ts`, `loading.tsx`, `error.tsx`
+- **UI implemented:** greeting header with View billing, four metric tiles, profile summary, security checklist, recent billing activity (stacked rows on phones); per-widget loading, empty, error and retry states.
+- **Existing integration preserved:** identity from the server-side `getProfile`; empty-profile state.
+- **Live (existing hooks, no new operations or BFF routes):** current plan (`getCurrentSubscription`), security score and checklist (`getTwoFactorStatus`, `listPasskeys`), active sessions (`listActiveSessions`), recent billing activity (first `getBillingHistory` page, shared with Billing).
+- **Unsupported, shown honestly:** wallet tile "Not available"; KYC callout, "Top up wallet", country/language/member-since and wallet activity are not rendered.
+- **Preview-only:** typed reference fixtures (wallet balance, KYC callout, mixed wallet/billing rows) used by tests only; a test forbids production imports.
+- **Gap:** security score counts three backend-reported steps; the password is not scored ([DR-087](./discrepancy-register.md#dr-087)). Recent activity is billing history only.
+- **Discrepancies:** [DR-018](./discrepancy-register.md#dr-018), [DR-050](./discrepancy-register.md#dr-050), [DR-087](./discrepancy-register.md#dr-087), [DR-088](./discrepancy-register.md#dr-088)
 
 ### USR-NAV-MOBILE
 
@@ -494,7 +492,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Implementation:** `apps/user-portal/src/components/user-layout-shell.tsx`, `apps/user-portal/src/config/navigation.ts`, `packages/dashboard-ui/src/components/{dashboard-shell,dashboard-topbar,mobile-nav,mobile-tab-bar,sidebar}.tsx`
 - **Works today:** Mobile top bar (menu, brand, account menu); phone tab bar Home, Billing, Security, Account; 304px drawer with profile identity, the implemented destinations, Dark mode switch and Sign out. Tablet (`md`–`lg`) uses top bar + drawer without the tab bar.
 - **Operations:** getProfile (identity in top bar and drawer)
-- **Gap:** Wallet (tab and drawer), Verification and Preferences are omitted until their routes ship.
+- **Gap:** Wallet (tab and drawer) and Verification are omitted until their routes ship. Preferences (Trello FE-UI-007) is in the sidebar and drawer, not the tab bar.
 - **Note:** Mobile-only artboards. "Account" links to `/profile`, as the reference markup does.
 - **Discrepancies:** [DR-022](./discrepancy-register.md#dr-022), [DR-023](./discrepancy-register.md#dr-023)
 
@@ -503,28 +501,25 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Preferences** — page; target `user-portal`; auth: authenticated.
 
 - **Artboards:** `UserPreferences` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Missing (C); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-020.
-- **Implementation:** `packages/dashboard-ui/src/components/theme-toggle.tsx`
-- **Works today:** Only a header theme toggle (light/dark, localStorage 'theme').
-- **Unsupported / missing backend:** Language preference persistence; Email notification preferences (marked 'Proposed' in the reference)
-- **Gap:** Theme (Light/Dark/Match system) can ship client-side; language and notifications need backend support.
-- **Depends on:** FE-UI-003 theme provider
-- **Note:** Ship theme only; hide or disable language/notification sections until endpoints exist (do not persist locally as if saved).
-- **Discrepancies:** [DR-051](./discrepancy-register.md#dr-051)
+- **Status:** Implemented (C); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-020 (delivered by Trello FE-UI-007).
+- **Implementation:** `apps/user-portal/src/app/preferences/page.tsx`; navigation in `config/navigation.ts` and `components/user-layout-shell.tsx`.
+- **UI implemented:** Theme card with the shared `ThemeSelect` (Light/Dark/System), applied immediately and stored per portal origin by the existing `ThemeProvider`; sidebar item after Security; breadcrumb Account › Preferences. Not in the phone tab bar.
+- **Preview-only:** Language (disabled, English only) and Email notifications ("Proposed": security alerts always on and not toggleable; billing and product updates "Not available"). No save action or success message.
+- **Unsupported / missing backend:** language preference and localization; email notification preferences; account-level (cross-device) theme.
+- **Discrepancies:** [DR-051](./discrepancy-register.md#dr-051), [DR-090](./discrepancy-register.md#dr-090)
 
 ### USR-PROFILE
 
 **Profile** — page; target `user-portal`; auth: authenticated.
 
 - **Artboards:** `UserProfile` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Implemented (A); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-016.
-- **Implementation:** `apps/user-portal/src/app/profile/page.tsx`, `apps/user-portal/src/app/profile/profile-edit-form.tsx`, `apps/user-portal/src/app/profile/avatar-upload-control.tsx`, `apps/user-portal/src/lib/avatar-upload.ts`
-- **Works today:** Name edit with validation mapping, read-only email, presigned avatar upload, success/error alerts.
+- **Status:** Implemented (A); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-016 (delivered by Trello FE-UI-007).
+- **Implementation:** `apps/user-portal/src/app/profile/page.tsx`, `profile-edit-form.tsx`, `profile-update-submission.ts`, `avatar-upload-control.tsx`, `avatar-upload-guard.ts`; `apps/user-portal/src/lib/avatar-upload.ts`, `profile-editing.ts`, `profile-display.ts`
+- **UI implemented:** Photo card and Personal information card (Cancel resets, Save changes); verification badge in the card header; indeterminate upload status and a success message only after completion.
+- **Existing integration preserved:** server-side `getProfile`; `updateProfile` with Zod and backend validation mapping and profile cache invalidation; signed direct avatar upload (create → storage request without credentials → complete) with duplicate-upload guard, input reset and refresh; BFF routes unchanged.
 - **Operations:** `getProfile`; `updateProfile`; `createAvatarUpload`; `completeAvatarUpload`
-- **Unsupported / missing backend:** Country on profile (UpdateProfileRequest has firstName/lastName only); Remove avatar; Upload progress percentage; Google link status / 'Connected sign-in' read model; Profile 'last updated' timestamp
-- **Gap:** Reference adds Country select, Remove photo, upload progress %, 'Connected sign-in' card and Cancel button.
-- **Depends on:** FE-UI-007; FE-UI-008
-- **Discrepancies:** [DR-019](./discrepancy-register.md#dr-019)
+- **Unsupported, shown honestly:** Remove is disabled with an explanation; Country, "Last updated" and the Connected sign-in card are not rendered; no 5 MB / JPG, PNG, WebP claim (no client or contract limit exists).
+- **Discrepancies:** [DR-019](./discrepancy-register.md#dr-019), [DR-089](./discrepancy-register.md#dr-089)
 
 ### USR-PURCHASE-DETAIL
 

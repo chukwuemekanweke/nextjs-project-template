@@ -206,6 +206,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 - **Prerequisites:** FE-UI-008.
 - **At risk:** Server Component data loading, `loading.tsx`/`error.tsx`.
 - **Done when:** no placeholder metrics; nothing rendered without a backend source.
+- **Status:** delivered by Trello FE-UI-007: live plan, security score (2FA + passkeys, three steps — [DR-087](./discrepancy-register.md#dr-087)), sessions, profile card, checklist and billing-only recent activity from existing hooks; wallet tile shown as unavailable; KYC callout and wallet actions only in typed test fixtures ([DR-088](./discrepancy-register.md#dr-088)).
 
 ### FE-UI-016 — Profile
 
@@ -213,6 +214,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 - **Prerequisites:** FE-UI-008, FE-UI-007.
 - **At risk:** avatar direct-upload sequence, name update and validation mapping.
 - **Done when:** parity for supported fields; unsupported fields recorded (DR-019).
+- **Status:** delivered by Trello FE-UI-007: Photo and Personal information cards on the new primitives; avatar direct-upload sequence, validation mapping and BFF routes unchanged; indeterminate upload status; Remove disabled, Country/"Last updated"/Connected sign-in omitted ([DR-089](./discrepancy-register.md#dr-089)).
 
 ### FE-UI-017 — Security
 
@@ -235,6 +237,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 ### FE-UI-020 — Preferences
 
 - **Screens:** `USR-PREFERENCES`. Theme selection only (OD/DR-051); navigation item added.
+- **Status:** delivered by Trello FE-UI-007: `/preferences` with the shared `ThemeSelect`; language and email notifications preview-only, no save action ([DR-090](./discrepancy-register.md#dr-090)); sidebar item and breadcrumb added.
 
 ### FE-UI-021 — Wallet (backend-gated)
 
