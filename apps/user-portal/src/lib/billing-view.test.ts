@@ -85,9 +85,10 @@ describe("resolveBillingView", () => {
     "offers plans for an ended %s subscription",
     (status) => {
       const data = subscription({ lifecycleStatus: status, status });
-      expect(resolveBillingView({ data, isPending: false }).kind).toBe(
-        "discovery",
-      );
+      expect(resolveBillingView({ data, isPending: false })).toEqual({
+        ended: data,
+        kind: "discovery",
+      });
     },
   );
 });

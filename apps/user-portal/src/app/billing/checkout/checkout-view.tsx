@@ -4,6 +4,7 @@ import {
   defaultSubscriptionPlanPrice,
   findSubscriptionPlanPrice,
   subscriptionPlanPrices,
+  type EligiblePaymentProviderResponse,
   type SubscriptionPlanResponse,
 } from "@template/api-client/subscriptions";
 import {
@@ -13,9 +14,18 @@ import {
 } from "@template/api-react/subscriptions";
 import {
   Alert,
+  ArrowRightIcon,
+  Button,
   Card,
   CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CreditCardIcon,
+  IconTile,
+  LockIcon,
   Skeleton,
+  Spinner,
   formatMinorUnits,
 } from "@template/ui-core";
 import Link from "next/link";
@@ -36,14 +46,8 @@ import {
   type CheckoutOutcome,
 } from "@/lib/checkout-submission";
 import { useRememberedCheckoutAttempt } from "@/lib/use-checkout-attempt";
+import { checkoutNextStepDisclosure } from "@/lib/billing-presentation";
 import { BillingIntervalToggle } from "../billing-interval-toggle";
-import { largePrimaryButtonClass } from "../billing-ui";
-import {
-  ArrowRightIcon,
-  LockIcon,
-  PaymentCardIcon,
-  SpinnerIcon,
-} from "./checkout-icons";
 import { SubscriptionOrderSummary } from "./order-summary";
 import { PaymentInstructions } from "./payment-instructions";
 import { ProviderRedirect } from "./provider-redirect";
@@ -187,140 +191,206 @@ function PlanCheckout({
     setOutcome(result);
   }
 
+  const nextStep = checkoutNextStepDisclosure(selectedProvider);
+
+  if (outcome) {
+    return (
+      <div className={checkoutGridClass}>
+        <Card>
+          <CardContent>
+            {outcome.type === "redirect" ? (
+              <ProviderRedirect
+                href={outcome.href}
+                providerName={outcome.response.paymentProviderName}
+              />
+            ) : (
+              <>
+                <PaymentCardHeader
+                  description="Your checkout was created. Follow the steps below."
+                  title="Complete your payment"
+                />
+                <div className="mt-6">
+                  <PaymentInstructions amount={price} outcome={outcome} />
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+        <SubscriptionOrderSummary
+          autoRenew={renewsAutomatically}
+          billingInterval={billingInterval}
+          plan={plan}
+          price={price}
+        />
+      </div>
+    );
+  }
+
   return (
-    // The summary comes first in reading order so small screens show the plan
-    // before payment; on wide screens it moves to the right-hand column.
-    <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] xl:gap-8">
+    // Payment method first, then the summary with the pay action, in reading
+    // order on every viewport (reference `UserCheckout`).
+    <form
+      aria-busy={purchase.isPending}
+      className={checkoutGridClass}
+      onSubmit={submit}
+    >
+      <div className="min-w-0 space-y-6">
+        {previousAttempt?.purchaseId ? (
+          <Alert variant="info">
+            You already started a checkout for this plan.{" "}
+            <Link
+              className="font-medium underline"
+              href={billingRoutes.purchase(previousAttempt.purchaseId)}
+            >
+              Check its payment status
+            </Link>{" "}
+            before paying again.
+          </Alert>
+        ) : null}
+        {error ? (
+          <Alert onDismiss={() => setError(undefined)} variant="error">
+            {error}{" "}
+            <Link
+              className="font-medium underline"
+              href={billingRoutes.overview}
+            >
+              View billing
+            </Link>
+          </Alert>
+        ) : null}
+        <Card aria-labelledby="payment-method-heading" role="region">
+          <CardHeader>
+            <div className="min-w-0">
+              <CardTitle id="payment-method-heading">Payment method</CardTitle>
+              <CardDescription>
+                Choose how you would like to pay for {plan.name}.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <PaymentMethodSelector
+              disabled={purchase.isPending}
+              onSelect={setProviderId}
+              providers={providers}
+              selectedId={providerId}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <AutoRenewSwitch
+              cadence={billingCadence(billingInterval)}
+              checked={autoRenew}
+              disabled={purchase.isPending}
+              onChange={setAutoRenew}
+              provider={selectedProvider}
+            />
+          </CardContent>
+        </Card>
+      </div>
       <SubscriptionOrderSummary
         autoRenew={renewsAutomatically}
         billingInterval={billingInterval}
-        className="xl:col-start-2 xl:row-start-1"
+        changeHref={billingRoutes.checkout}
+        intervalControl={
+          offeredIntervals.length > 1 ? (
+            <BillingIntervalToggle
+              disabled={purchase.isPending}
+              intervals={offeredIntervals}
+              name="billingInterval"
+              onChange={setChosenInterval}
+              value={billingInterval}
+            />
+          ) : null
+        }
         plan={plan}
         price={price}
-      />
-      <Card className="shadow-theme-sm xl:col-start-1 xl:row-start-1">
-        <CardContent className="sm:p-8">
-          {outcome?.type === "redirect" ? (
-            <ProviderRedirect
-              href={outcome.href}
-              providerName={outcome.response.paymentProviderName}
-            />
-          ) : outcome ? (
-            <>
-              <PaymentCardHeader
-                description="Your checkout was created. Follow the steps below."
-                title="Complete your payment"
-              />
-              <div className="mt-6">
-                <PaymentInstructions amount={price} outcome={outcome} />
-              </div>
-            </>
-          ) : (
-            <form aria-busy={purchase.isPending} onSubmit={submit}>
-              <PaymentCardHeader
-                description={`Choose how you would like to pay for ${plan.name}.`}
-                title="Payment"
-              />
-              <div className="mt-8 space-y-6">
-                {previousAttempt?.purchaseId ? (
-                  <Alert variant="info">
-                    You already started a checkout for this plan.{" "}
-                    <Link
-                      className="font-medium underline"
-                      href={billingRoutes.purchase(previousAttempt.purchaseId)}
-                    >
-                      Check its payment status
-                    </Link>{" "}
-                    before paying again.
-                  </Alert>
-                ) : null}
-                {error ? (
-                  <Alert onDismiss={() => setError(undefined)} variant="error">
-                    {error}{" "}
-                    <Link
-                      className="font-medium underline"
-                      href={billingRoutes.overview}
-                    >
-                      View billing
-                    </Link>
-                  </Alert>
-                ) : null}
-                {offeredIntervals.length > 1 ? (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                      Billing interval
-                    </p>
-                    <BillingIntervalToggle
-                      disabled={purchase.isPending}
-                      intervals={offeredIntervals}
-                      name="billingInterval"
-                      onChange={setChosenInterval}
-                      value={billingInterval}
-                    />
-                  </div>
-                ) : null}
-                <PaymentMethodSelector
-                  disabled={purchase.isPending}
-                  onSelect={setProviderId}
-                  providers={providers}
-                  selectedId={providerId}
-                />
-                <div>
-                  <label className="flex cursor-pointer items-center gap-3 has-disabled:cursor-not-allowed">
-                    <input
-                      checked={autoRenew}
-                      className="accent-brand-500 focus-visible:outline-brand-500 h-5 w-5 shrink-0 rounded focus-visible:outline-2 focus-visible:outline-offset-2"
-                      disabled={purchase.isPending}
-                      name="autoRenew"
-                      onChange={(event) => setAutoRenew(event.target.checked)}
-                      type="checkbox"
-                    />
-                    <span className="text-sm text-gray-800 sm:text-base dark:text-white/90">
-                      Renew automatically at the end of each{" "}
-                      {billingCadence(billingInterval)}
-                    </span>
-                  </label>
-                  {autoRenew &&
-                  selectedProvider &&
-                  !selectedProvider.supportsRecurringPayments ? (
-                    <p className="mt-2 pl-8 text-sm text-amber-700 dark:text-amber-400">
-                      {selectedProvider.name} does not support automatic
-                      recurring charges.
-                    </p>
-                  ) : null}
-                </div>
-                <div className="space-y-3">
-                  <button
-                    className={largePrimaryButtonClass}
-                    disabled={!canSubmit}
-                    type="submit"
-                  >
-                    {purchase.isPending ? (
-                      <>
-                        <SpinnerIcon />
-                        <span>Starting checkout…</span>
-                      </>
-                    ) : (
-                      <>
-                        {`Pay ${price}`}
-                        <ArrowRightIcon />
-                      </>
-                    )}
-                  </button>
-                  <p className="flex items-center justify-center gap-2 text-center text-sm text-gray-500 dark:text-gray-400">
-                    <LockIcon className="h-4 w-4 shrink-0" />
-                    <span>
-                      Secure payment. Your payment is processed by our billing
-                      service.
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </form>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+      >
+        <div className="space-y-3">
+          <Button
+            disabled={!canSubmit}
+            fullWidth
+            leadingIcon={
+              purchase.isPending ? <Spinner decorative size="sm" /> : undefined
+            }
+            trailingIcon={purchase.isPending ? undefined : <ArrowRightIcon />}
+            type="submit"
+          >
+            {purchase.isPending ? "Starting checkout…" : `Pay ${price}`}
+          </Button>
+          {nextStep ? (
+            <p className="text-caption text-fg-subtle" data-next-step="">
+              {nextStep}
+            </p>
+          ) : null}
+          <p className="text-caption text-fg-subtle flex items-start gap-2">
+            <LockIcon className="mt-0.5 shrink-0" size="xs" />
+            <span>
+              Secure payment. Your payment is processed by our billing service.
+            </span>
+          </p>
+        </div>
+      </SubscriptionOrderSummary>
+    </form>
+  );
+}
+
+/**
+ * Auto-renew preference (reference `.switch` card). A native checkbox with
+ * `role="switch"` keeps form semantics. The provider's recurring capability
+ * decides whether renewal is promised; the stored preference is unchanged.
+ */
+function AutoRenewSwitch({
+  cadence,
+  checked,
+  disabled,
+  onChange,
+  provider,
+}: Readonly<{
+  cadence: string;
+  checked: boolean;
+  disabled: boolean;
+  onChange: (checked: boolean) => void;
+  provider: EligiblePaymentProviderResponse | undefined;
+}>) {
+  const unsupported = checked && provider?.supportsRecurringPayments === false;
+  return (
+    <label className="flex cursor-pointer items-start justify-between gap-4 has-disabled:cursor-not-allowed">
+      <span className="min-w-0">
+        <span className="text-fg block font-medium">
+          Renew automatically at the end of each {cadence}
+        </span>
+        {unsupported ? (
+          <span className="text-small text-warning mt-0.5 block">
+            {provider.name} does not support automatic recurring charges.
+          </span>
+        ) : (
+          <span className="text-small text-fg-muted mt-0.5 block">
+            Renewal needs a provider that supports auto-renew. You can cancel at
+            period end from Billing.
+          </span>
+        )}
+      </span>
+      <span className="relative inline-flex h-11 w-11 shrink-0 items-center">
+        <input
+          checked={checked}
+          className="peer absolute inset-0 z-10 cursor-pointer opacity-0 disabled:cursor-not-allowed"
+          disabled={disabled}
+          name="autoRenew"
+          onChange={(event) => onChange(event.target.checked)}
+          role="switch"
+          type="checkbox"
+        />
+        <span
+          aria-hidden="true"
+          className="bg-switch-track peer-checked:bg-brand peer-focus-visible:outline-focus h-6 w-11 rounded-full transition-colors peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-disabled:opacity-50"
+        />
+        <span
+          aria-hidden="true"
+          className="bg-switch-thumb pointer-events-none absolute left-[3px] size-[18px] rounded-full shadow-[0_1px_2px_rgb(0_0_0/0.2)] transition-transform peer-checked:translate-x-5"
+        />
+      </span>
+    </label>
   );
 }
 
@@ -329,32 +399,31 @@ function PaymentCardHeader({
   title,
 }: Readonly<{ description: string; title: string }>) {
   return (
-    <div className="flex items-center gap-4 sm:gap-5">
-      <span className="bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl sm:h-14 sm:w-14">
-        <PaymentCardIcon className="h-6 w-6" />
-      </span>
+    <div className="flex items-center gap-4">
+      <IconTile size="lg">
+        <CreditCardIcon />
+      </IconTile>
       <div className="min-w-0">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          {title}
-        </h2>
-        <p className="mt-1 text-sm break-words text-gray-600 sm:text-base dark:text-gray-400">
-          {description}
-        </p>
+        <h2 className="text-h2 text-fg">{title}</h2>
+        <p className="text-fg-muted mt-1 break-words">{description}</p>
       </div>
     </div>
   );
 }
+
+const checkoutGridClass =
+  "grid items-start gap-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]";
 
 function CheckoutSkeleton() {
   return (
     <div
       aria-busy="true"
       aria-label="Loading checkout"
-      className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] xl:gap-8"
+      className={checkoutGridClass}
       role="status"
     >
-      <Skeleton className="h-96 w-full rounded-2xl" />
-      <Skeleton className="h-80 w-full rounded-2xl" />
+      <Skeleton className="h-96 w-full rounded-xl" />
+      <Skeleton className="h-80 w-full rounded-xl" />
     </div>
   );
 }

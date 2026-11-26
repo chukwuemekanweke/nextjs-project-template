@@ -157,6 +157,18 @@ describe("PaymentReturn success route", () => {
     );
   });
 
+  it("shows the backend reference and links to the purchase, never a receipt", () => {
+    hooks.useSubscriptionPurchaseStatus.mockReturnValue(queryState(active));
+    const markup = render("success");
+    expect(markup).toMatch(/Reference<\/dt><dd[^>]*><span[^>]*>pay_1</);
+    expect(markup).toMatch(
+      new RegExp(
+        `href="/billing/purchases/${attempt.purchaseId}"[^>]*>View payment details`,
+      ),
+    );
+    expect(markup).not.toContain("receipt");
+  });
+
   it("shows activation in progress, not success, while fulfillment is pending", () => {
     hooks.useSubscriptionPurchaseStatus.mockReturnValue(
       queryState(

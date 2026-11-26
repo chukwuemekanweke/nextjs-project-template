@@ -144,6 +144,9 @@ function givenCurrent(value: unknown) {
   });
 }
 
+/** The inline table region; the page header always links to history. */
+const HISTORY_TABLE = 'id="billing-history-heading"';
+
 const SEVEN_COLUMNS = [
   "Date",
   "Plan",
@@ -212,16 +215,15 @@ describe("Billing overview: subscription state", () => {
     );
     expect(markup).toContain("Current subscription");
     expect(markup).toContain("Pro Monthly");
-    expect(markup).toContain("NGN 7,500.00");
-    expect(markup).toContain("/ month");
+    expect(markup).toContain("NGN 7,500.00 per month");
     expect(markup).toMatch(/data-tone="success"[^>]*>Active</);
-    expect(markup).toContain("Current period ends");
-    expect(markup).toContain("Dec 23, 2026");
+    expect(markup).toContain("Current period");
+    expect(markup).toContain("Nov 23, 2026 – Dec 23, 2026");
     expect(markup).toContain("Next billing date");
-    expect(markup).toContain("Dec 22, 2026");
+    expect(markup).toContain("renews automatically on Dec 22, 2026");
     expect(markup).toContain("Enabled");
     expect(markup).toContain('data-subscription-status="Active"');
-    expect(markup).toContain("Billing history");
+    expect(markup).toContain(HISTORY_TABLE);
     expect(markup).not.toContain("Choose plan");
   });
 
@@ -371,7 +373,7 @@ describe("Billing overview: plan count and history visibility", () => {
   it("hides history when there are no records", () => {
     hooks.useBillingHistory.mockReturnValue(historyPage([]));
     const markup = renderOverview();
-    expect(markup).not.toContain("Billing history");
+    expect(markup).not.toContain(HISTORY_TABLE);
     expect(markup).not.toContain("No billing activity yet.");
     expect(markup).not.toContain("after you activate");
   });
@@ -385,10 +387,10 @@ describe("Billing overview: plan count and history visibility", () => {
       });
       hooks.useBillingHistory.mockReturnValue(historyPage([historyItem()]));
       const markup = renderOverview();
-      expect(markup).toContain("Billing history");
+      expect(markup).toContain(HISTORY_TABLE);
       for (const column of SEVEN_COLUMNS)
         expect(markup).toContain(`>${column}<`);
-      expect(markup).not.toContain('href="/billing/history"');
+      expect(markup).not.toContain("View billing history");
     },
   );
 
@@ -413,7 +415,7 @@ describe("Billing overview: plan count and history visibility", () => {
     hooks.useBillingHistory.mockReturnValue(historyPage([historyItem()]));
     const markup = renderOverview();
     expect(markup).toContain("<table");
-    expect(markup).not.toContain('href="/billing/history"');
+    expect(markup).not.toContain("View billing history");
   });
 });
 
@@ -466,11 +468,11 @@ describe("SubscriptionPlanGrid", () => {
       }),
     );
     // Every layout uses the same full pricing card as the three-plan design.
-    expect(markup.match(/<h2 class="mt-5[^"]*text-2xl/g)).toHaveLength(2);
-    expect(markup.match(/<hr /g)).toHaveLength(2);
+    expect(markup.match(/<article /g)).toHaveLength(2);
+    expect(markup.match(/data-plan-description=""/g)).toHaveLength(2);
     expect(markup).toContain("Everything you need to get started.");
     expect(markup).toContain("More power for growing teams.");
-    expect(markup.match(/<li class="flex gap-3">/g)).toHaveLength(3);
+    expect(markup.match(/data-plan-feature=""/g)).toHaveLength(3);
     expect(markup).toContain(">Email support<");
     expect(markup).toContain(">Priority support<");
   });
@@ -481,8 +483,8 @@ describe("SubscriptionPlanGrid", () => {
         plans: [plan(0, { description: null, features: null }), plan(1)],
       }),
     );
-    expect(markup).not.toContain('<p class="mt-2 text-base leading-6');
-    expect(markup).not.toContain('<li class="flex gap-3">');
+    expect(markup).not.toContain("data-plan-description");
+    expect(markup).not.toContain("data-plan-feature");
     expect(markup).not.toContain("Most popular");
     expect(markup).not.toContain("Everything you need");
   });
@@ -593,11 +595,13 @@ describe("BillingHistoryCard", () => {
     expect(markup).toContain(">pay_019…708f3d<");
   });
 
-  it("contains horizontal overflow inside the table", () => {
+  it("stacks every column into labelled rows on phones (OD-02)", () => {
     hooks.useBillingHistory.mockReturnValue(historyPage([historyItem()]));
     const markup = renderHistory();
-    expect(markup).toContain('class="overflow-x-auto"');
-    expect(markup).toContain("whitespace-nowrap");
+    expect(markup).toContain("max-md:overflow-visible");
+    for (const column of SEVEN_COLUMNS)
+      expect(markup).toContain(`data-label="${column}"`);
+    expect(markup).toContain('role="table"');
   });
 
   it("paginates from server totals on the current route", () => {
@@ -611,7 +615,9 @@ describe("BillingHistoryCard", () => {
     });
     expect(markup).toContain('aria-label="Pagination"');
     expect(markup).toContain('href="/billing?page=3"');
-    expect(markup).toMatch(/aria-current="page"[^>]*>2</);
+    expect(markup).toContain('href="/billing"');
+    expect(markup).toContain("Showing 21–40 of 45");
+    expect(markup).toContain("45 records");
     expect(billingHistoryPageHref(1)).toBe("/billing");
 
     const historyRoute = renderHistory(2, "/billing/history");

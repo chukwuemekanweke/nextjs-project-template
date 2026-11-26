@@ -11,10 +11,25 @@ import {
   useSubscriptionPlans,
 } from "@template/api-react/subscriptions";
 import { DashboardHeader } from "@template/dashboard-ui";
-import { Alert, Card, CardContent, Skeleton } from "@template/ui-core";
+import {
+  Alert,
+  ArrowRightIcon,
+  Card,
+  CardContent,
+  CreditCardIcon,
+  ErrorState,
+  HistoryIcon,
+  IconTile,
+  Skeleton,
+  buttonVariants,
+} from "@template/ui-core";
 import Link from "next/link";
 import { billingRoutes, resolveBillingOwnerType } from "@/config/billing";
-import { describeBillingLoadError } from "@/lib/billing-display";
+import {
+  describeBillingLoadError,
+  describeSubscription,
+  formatBillingDate,
+} from "@/lib/billing-display";
 import {
   resolveBillingHistoryPlacement,
   resolveBillingView,
@@ -23,8 +38,7 @@ import {
 } from "@/lib/billing-view";
 import { useRememberedCheckoutAttempt } from "@/lib/use-checkout-attempt";
 import { BillingHistoryCard } from "./billing-history-card";
-import { secondaryButtonClass, textLinkClass } from "./billing-ui";
-import { ArrowRightIcon } from "./checkout/checkout-icons";
+import { StatusBadge, textLinkClass } from "./billing-ui";
 import {
   CurrentSubscriptionCard,
   PendingSubscriptionCard,
@@ -40,9 +54,10 @@ const descriptions: Record<BillingView["kind"], string> = {
 };
 
 /**
- * Unified Billing entry point. The backend current subscription selects the
- * view; plan count and history totals then select the layout through
- * `lib/billing-view.ts`. Checkout, payment, and polling stay in `/checkout`.
+ * Unified Billing entry point (reference `UserBilling-*`). The backend
+ * current subscription selects the view; plan count and history totals then
+ * select the layout through `lib/billing-view.ts`. Checkout, payment, and
+ * polling stay in `/checkout`.
  */
 export function BillingOverview({
   eyebrow,
@@ -59,10 +74,19 @@ export function BillingOverview({
 
   return (
     <section
-      className={`mx-auto space-y-6 sm:space-y-8 ${view.kind === "discovery" ? "max-w-6xl" : "max-w-5xl"}`}
+      className={`mx-auto space-y-6 ${view.kind === "discovery" ? "max-w-6xl" : "max-w-5xl"}`}
       data-billing-view={view.kind}
     >
       <DashboardHeader
+        actions={
+          <Link
+            className={buttonVariants({ variant: "secondary" })}
+            href={billingRoutes.history}
+          >
+            <HistoryIcon />
+            Billing history
+          </Link>
+        }
         description={descriptions[view.kind]}
         eyebrow={eyebrow}
         title="Billing"
@@ -71,19 +95,15 @@ export function BillingOverview({
         <LoadingSubscription />
       ) : view.kind === "error" ? (
         <Card>
-          <CardContent className="space-y-4">
-            <Alert variant="error">
-              {describeBillingLoadError(view.error, "your subscription")}
-            </Alert>
-            <button
-              className={secondaryButtonClass}
-              disabled={current.isFetching}
-              onClick={() => void current.refetch()}
-              type="button"
-            >
-              Try again
-            </button>
-          </CardContent>
+          <ErrorState
+            description={describeBillingLoadError(
+              view.error,
+              "your subscription",
+            )}
+            onRetry={() => void current.refetch()}
+            retrying={current.isFetching}
+            title="We couldn't load your subscription"
+          />
         </Card>
       ) : view.kind === "subscription" ? (
         <>
@@ -103,7 +123,7 @@ export function BillingOverview({
           supportEmail={supportEmail}
         />
       ) : (
-        <PlanDiscovery ownerType={ownerType} page={page} />
+        <PlanDiscovery ended={view.ended} ownerType={ownerType} page={page} />
       )}
     </section>
   );
@@ -112,7 +132,7 @@ export function BillingOverview({
 function LoadingSubscription() {
   return (
     <Card aria-busy="true" aria-label="Loading subscription" role="status">
-      <CardContent className="space-y-4 sm:p-8">
+      <CardContent className="space-y-4">
         <Skeleton className="h-4 w-40" />
         <Skeleton className="h-8 w-64 max-w-full" />
         <Skeleton className="h-10 w-48" />
@@ -173,10 +193,56 @@ function PendingPurchase({
   );
 }
 
+/**
+ * Status banner above the plans (reference `none` and `expired`). The
+ * expired wording is used only when the backend actually returned an ended
+ * subscription; a `404` reads as "no active subscription".
+ */
+export function NoActiveSubscription({
+  ended,
+}: Readonly<{ ended?: GetCurrentSubscriptionQueryResponse | undefined }>) {
+  const endedOn = ended
+    ? formatBillingDate(
+        ended.cancellationEffectiveAtUtc ?? ended.currentPeriodEndUtc,
+      )
+    : undefined;
+  const status = ended ? describeSubscription(ended) : undefined;
+
+  return (
+    <Card data-ended-subscription={ended?.lifecycleStatus}>
+      <CardContent className="flex items-start gap-4">
+        <IconTile size="lg" tone={ended ? "warning" : "brand"}>
+          <CreditCardIcon />
+        </IconTile>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-h3 text-fg break-words">
+            {ended
+              ? `Your ${ended.planName} subscription has ended`
+              : "No active subscription"}
+          </h2>
+          <p className="text-fg-muted mt-1">
+            {ended
+              ? `${endedOn ? `It ended on ${endedOn}. ` : ""}Choose a plan to restore access.`
+              : "Choose a plan below to get started."}
+          </p>
+        </div>
+        {status ? (
+          <StatusBadge tone={status.tone}>{status.label}</StatusBadge>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
 function PlanDiscovery({
+  ended,
   ownerType,
   page,
-}: Readonly<{ ownerType: BillingAccountOwnerType; page: number }>) {
+}: Readonly<{
+  ended?: GetCurrentSubscriptionQueryResponse | undefined;
+  ownerType: BillingAccountOwnerType;
+  page: number;
+}>) {
   const plans = useSubscriptionPlans();
   const history = useHistoryState(ownerType, page);
   const placement = resolveBillingHistoryPlacement({
@@ -187,6 +253,7 @@ function PlanDiscovery({
 
   return (
     <>
+      <NoActiveSubscription ended={ended} />
       {plans.isPending ? (
         <div
           aria-busy="true"
@@ -194,28 +261,36 @@ function PlanDiscovery({
           className="grid grid-cols-1 gap-6 md:grid-cols-2"
           role="status"
         >
-          <Skeleton className="h-80 w-full rounded-2xl" />
-          <Skeleton className="h-80 w-full rounded-2xl" />
+          <Skeleton className="h-80 w-full rounded-xl" />
+          <Skeleton className="h-80 w-full rounded-xl" />
         </div>
       ) : plans.isError ? (
         <Alert variant="error">
           {describeBillingLoadError(plans.error, "subscription plans")}
         </Alert>
       ) : (
-        <SubscriptionPlanGrid plans={plans.data} />
+        <SubscriptionPlanGrid
+          heading={
+            <div>
+              <h2 className="text-h2 text-fg">Plans</h2>
+              <p className="text-small text-fg-muted mt-0.5">
+                Prices, currencies, and billing intervals are set by our billing
+                service.
+              </p>
+            </div>
+          }
+          plans={plans.data}
+        />
       )}
       {placement === "inline" ? <BillingHistoryCard page={page} /> : null}
       {placement === "link" ? (
         <Card className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-small text-fg-muted">
             Looking for past payments and renewal attempts?
           </p>
-          <Link
-            className={`${textLinkClass} inline-flex items-center gap-1.5 text-sm`}
-            href={billingRoutes.history}
-          >
+          <Link className={textLinkClass} href={billingRoutes.history}>
             View billing history
-            <ArrowRightIcon className="h-4 w-4" />
+            <ArrowRightIcon size="xs" />
           </Link>
         </Card>
       ) : null}

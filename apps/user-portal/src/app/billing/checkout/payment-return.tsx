@@ -9,7 +9,7 @@ import {
   useSubscriptionPlans,
   useSubscriptionPurchaseStatus,
 } from "@template/api-react/subscriptions";
-import { formatMinorUnits } from "@template/ui-core";
+import { ArrowRightIcon, formatMinorUnits } from "@template/ui-core";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
@@ -31,7 +31,6 @@ import {
 } from "@/lib/payment-return";
 import { useRememberedCheckoutAttempt } from "@/lib/use-checkout-attempt";
 import { largePrimaryButtonClass, textLinkClass } from "../billing-ui";
-import { ArrowRightIcon } from "./checkout-icons";
 import {
   PaymentResultCard,
   PaymentResultSummary,
@@ -170,6 +169,12 @@ function VerifiedPaymentReturn({
             </button>
           ) : null}
           {content.secondary}
+          <Link
+            className={textLinkClass}
+            href={billingRoutes.purchase(purchaseId)}
+          >
+            View payment details
+          </Link>
         </>
       }
       busy={polling}
@@ -205,6 +210,7 @@ function VerifiedPaymentReturn({
             : undefined
         }
         planName={plan?.name}
+        reference={status.data.merchantReference}
       />
     </PaymentResultCard>
   );
@@ -247,16 +253,13 @@ function describeView(
     <>
       Contact{" "}
       <a
-        className="text-brand-500 font-medium underline"
+        className="text-brand-ink font-medium underline"
         href={`mailto:${supportEmail}`}
       >
         {supportEmail}
       </a>{" "}
       with reference{" "}
-      <span className="font-mono text-gray-700 dark:text-gray-300">
-        {data.merchantReference}
-      </span>
-      .
+      <span className="text-fg font-mono">{data.merchantReference}</span>.
     </>
   );
   const backendCopy = describePurchaseStatus(data.status);

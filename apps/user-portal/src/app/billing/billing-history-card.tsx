@@ -6,17 +6,20 @@ import {
   useBillingHistory,
 } from "@template/api-react/subscriptions";
 import {
-  Alert,
   Card,
-  CardContent,
   CardDescription,
+  CardHeader,
   CardTitle,
+  CheckIcon,
+  CopyIcon,
   DataTable,
-  Pagination,
+  ErrorState,
+  Pager,
   Skeleton,
   formatMinorUnits,
   type TableColumn,
 } from "@template/ui-core";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { billingRoutes, resolveBillingOwnerType } from "@/config/billing";
 import {
@@ -24,9 +27,9 @@ import {
   describePaymentStatus,
   formatBillingDate,
 } from "@/lib/billing-display";
+import { formatBillingPeriod } from "@/lib/billing-presentation";
 import { abbreviateReference } from "@/lib/billing-view";
 import { StatusBadge } from "./billing-ui";
-import { CopyIcon, SmallCheckIcon } from "./checkout/checkout-icons";
 
 export function billingHistoryPageHref(
   page: number,
@@ -39,9 +42,10 @@ export function billingHistoryPageHref(
 
 /** Backend period boundaries only; never derived from the plan interval. */
 export function billingPeriod(item: BillingHistoryItemResponse): string {
-  const start = formatBillingDate(item.billingPeriodStartUtc);
-  const end = formatBillingDate(item.billingPeriodEndUtc);
-  return start && end ? `${start} – ${end}` : "—";
+  return (
+    formatBillingPeriod(item.billingPeriodStartUtc, item.billingPeriodEndUtc) ??
+    "—"
+  );
 }
 
 /** Copies text, resolving `false` instead of throwing when unavailable. */
@@ -77,7 +81,7 @@ function MerchantReference({ reference }: Readonly<{ reference: string }>) {
       </span>
       <button
         aria-label={`Copy reference ${reference}`}
-        className="hover:text-brand-600 focus-visible:ring-brand-500/40 dark:hover:text-brand-400 rounded-md p-1 text-gray-500 focus-visible:ring-3 focus-visible:outline-none dark:text-gray-400"
+        className="text-fg-subtle hover:text-brand-ink focus-visible:outline-focus rounded-sm p-1 focus-visible:outline-2"
         data-reference={reference}
         onClick={() => {
           void copyText(reference).then((copied) =>
@@ -87,9 +91,9 @@ function MerchantReference({ reference }: Readonly<{ reference: string }>) {
         type="button"
       >
         {feedback === "copied" ? (
-          <SmallCheckIcon className="h-4 w-4 text-emerald-600" />
+          <CheckIcon className="text-success" size="xs" />
         ) : (
-          <CopyIcon />
+          <CopyIcon size="xs" />
         )}
       </button>
       <span aria-live="polite" className="sr-only">
@@ -117,7 +121,7 @@ export const billingHistoryColumns: ReadonlyArray<
       ) : (
         <span>
           {formatBillingDate(item.createdAtUtc)}
-          <span className="block text-xs text-gray-400">Not paid</span>
+          <span className="text-caption text-fg-subtle block">Not paid</span>
         </span>
       ),
   },
@@ -128,7 +132,7 @@ export const billingHistoryColumns: ReadonlyArray<
     align: "right",
     className: nowrap,
     cell: (item) => (
-      <span className="font-medium text-gray-800 tabular-nums dark:text-white/90">
+      <span className="text-fg font-medium tabular-nums">
         {formatMinorUnits(item.amount, item.currencyCode)}
       </span>
     ),
@@ -159,7 +163,7 @@ export function BillingHistoryCard({
   page,
 }: Readonly<{
   basePath?: string;
-  /** Hide the card heading when the page heading already names the table. */
+  /** Hide the card title when the page heading already names the table. */
   heading?: boolean;
   page: number;
 }>) {
@@ -171,72 +175,99 @@ export function BillingHistoryCard({
   const totalPages = history.data
     ? Math.max(1, Math.ceil(history.data.totalCount / history.data.pageSize))
     : 1;
+  const totalCount = history.data?.totalCount;
 
   return (
     <Card
       aria-labelledby="billing-history-heading"
-      className="min-w-0"
+      className="min-w-0 overflow-hidden"
       role="region"
     >
-      <CardContent>
-        <CardTitle
-          className={heading ? "text-xl font-semibold" : "sr-only"}
-          id="billing-history-heading"
-        >
-          Billing history
-        </CardTitle>
-        <CardDescription>
-          Initial purchases and renewal attempts, newest first, including
-          payments that did not complete.
-        </CardDescription>
-        <div className="mt-5 space-y-4">
-          {history.isPending ? (
-            <div
-              aria-busy="true"
-              aria-label="Loading billing history"
-              className="space-y-3"
-              role="status"
-            >
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-          ) : history.isError && !history.data ? (
-            <Alert variant="error">
-              {describeBillingLoadError(history.error, "billing history")}
-            </Alert>
-          ) : (
-            <>
-              <div
-                aria-busy={history.isPlaceholderData || undefined}
-                className={
-                  history.isPlaceholderData
-                    ? "opacity-60 transition"
-                    : undefined
-                }
-              >
-                <DataTable
-                  columns={billingHistoryColumns}
-                  emptyMessage={
-                    history.data.totalCount === 0
-                      ? "No billing activity yet."
-                      : "No billing activity on this page."
-                  }
-                  keyField={(item) => item.paymentTransactionId}
-                  rows={history.data.items}
-                />
-              </div>
-              {totalPages > 1 ? (
-                <Pagination
-                  currentPage={Math.min(page, totalPages)}
-                  getHref={(target) => billingHistoryPageHref(target, basePath)}
-                  totalPages={totalPages}
-                />
-              ) : null}
-            </>
-          )}
+      <CardHeader>
+        <div className="min-w-0">
+          <CardTitle
+            as="h3"
+            className={heading ? undefined : "sr-only"}
+            id="billing-history-heading"
+          >
+            Billing history
+          </CardTitle>
+          <CardDescription>
+            Initial purchases and renewal attempts, newest first, including
+            payments that did not complete.
+          </CardDescription>
         </div>
-      </CardContent>
+        <div className="flex items-center gap-3">
+          {totalCount !== undefined && totalCount > 0 ? (
+            <span className="text-small text-fg-muted" data-record-count="">
+              {totalCount === 1 ? "1 record" : `${totalCount} records`}
+            </span>
+          ) : null}
+          {basePath === billingRoutes.overview ? (
+            <Link
+              className="text-small text-brand-ink font-medium hover:underline"
+              href={billingRoutes.history}
+            >
+              View all
+            </Link>
+          ) : null}
+        </div>
+      </CardHeader>
+      {history.isPending ? (
+        <div
+          aria-busy="true"
+          aria-label="Loading billing history"
+          className="space-y-3 p-4 md:p-6"
+          role="status"
+        >
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      ) : history.isError && !history.data ? (
+        <ErrorState
+          description={describeBillingLoadError(
+            history.error,
+            "billing history",
+          )}
+          onRetry={() => void history.refetch()}
+          retrying={history.isFetching}
+          title="We couldn't load your billing history"
+        />
+      ) : (
+        <>
+          <div
+            aria-busy={history.isPlaceholderData || undefined}
+            className={
+              history.isPlaceholderData ? "opacity-60 transition" : undefined
+            }
+          >
+            <DataTable
+              caption="Billing history"
+              columns={billingHistoryColumns}
+              emptyMessage={
+                history.data.totalCount === 0
+                  ? "No billing activity yet."
+                  : "No billing activity on this page."
+              }
+              keyField={(item) => item.paymentTransactionId}
+              mobileLayout="stack"
+              rows={history.data.items}
+              variant="embedded"
+            />
+          </div>
+          {totalPages > 1 ? (
+            <Pager
+              getHref={(target) => billingHistoryPageHref(target, basePath)}
+              loading={history.isPlaceholderData}
+              page={Math.min(page, totalPages)}
+              pageSize={history.data.pageSize}
+              totalItems={history.data.totalCount}
+              totalPages={totalPages}
+            />
+          ) : null}
+        </>
+      )}
     </Card>
   );
 }

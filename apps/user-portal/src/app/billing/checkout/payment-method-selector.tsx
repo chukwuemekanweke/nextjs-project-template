@@ -3,13 +3,19 @@
 import { isApiError } from "@template/api-client";
 import type { EligiblePaymentProviderResponse } from "@template/api-client/subscriptions";
 import type { useEligiblePaymentProviders } from "@template/api-react/subscriptions";
-import { Alert, Skeleton } from "@template/ui-core";
+import {
+  Alert,
+  CreditCardIcon,
+  IconTile,
+  Skeleton,
+  cn,
+} from "@template/ui-core";
 import {
   describeBillingLoadError,
   isPortalSupportedPaymentMethod,
-  paymentMethodLabel,
 } from "@/lib/billing-display";
-import { BankIcon, PaymentCardIcon } from "./checkout-icons";
+import { paymentProviderDescription } from "@/lib/billing-presentation";
+import { BankIcon } from "./checkout-icons";
 
 /**
  * Backend-discovered payment providers as a native radio group. Native radios
@@ -35,8 +41,8 @@ export function PaymentMethodSelector({
         className="space-y-3"
         role="status"
       >
-        <Skeleton className="h-[4.5rem] w-full rounded-xl" />
-        <Skeleton className="h-[4.5rem] w-full rounded-xl" />
+        <Skeleton className="h-[4.5rem] w-full rounded-lg" />
+        <Skeleton className="h-[4.5rem] w-full rounded-lg" />
       </div>
     );
   }
@@ -58,9 +64,7 @@ export function PaymentMethodSelector({
   }
   return (
     <fieldset className="min-w-0" disabled={disabled}>
-      <legend className="mb-4 text-base font-semibold text-gray-900 dark:text-white">
-        Payment method
-      </legend>
+      <legend className="sr-only">Payment provider</legend>
       <div className="space-y-3">
         {providers.data.map((provider) => (
           <PaymentMethodCard
@@ -88,56 +92,48 @@ export function PaymentMethodCard({
   provider: EligiblePaymentProviderResponse;
 }>) {
   const supported = isPortalSupportedPaymentMethod(provider.paymentMethodType);
-  const method = paymentMethodLabel(provider.paymentMethodType);
   const interactive = supported && !disabled;
+  const descriptionId = `payment-provider-${provider.id}-description`;
   return (
     <label
-      className={[
-        "flex items-center gap-4 rounded-xl border px-4 py-4 transition-colors sm:gap-5 sm:px-6 sm:py-5",
-        "has-[input:focus-visible]:ring-brand-500/20 has-[input:focus-visible]:ring-3",
-        checked
-          ? "border-brand-500 ring-brand-500 bg-brand-25 dark:bg-brand-500/10 ring-1"
-          : "border-gray-200 bg-white dark:border-gray-800 dark:bg-transparent",
-        interactive && !checked
-          ? "hover:border-gray-300 hover:bg-gray-50 dark:hover:border-gray-700 dark:hover:bg-white/[0.03]"
-          : "",
+      className={cn(
+        "border-border-strong bg-surface flex items-center gap-3 rounded-lg border p-4 transition-colors",
+        "has-[input:focus-visible]:outline-focus has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2",
+        checked && "border-brand bg-brand-soft ring-brand ring-1",
+        interactive && !checked && "hover:bg-hover",
         interactive ? "cursor-pointer" : "cursor-not-allowed",
-        supported ? "" : "opacity-60",
-      ].join(" ")}
+        !supported && "opacity-60",
+      )}
       data-selected={checked ? "true" : undefined}
     >
       <input
+        aria-describedby={descriptionId}
         checked={checked}
-        className="checked:border-brand-500 dark:checked:border-brand-500 h-5 w-5 shrink-0 appearance-none rounded-full border border-gray-300 bg-white transition-[border-width] outline-none checked:border-[6px] disabled:cursor-not-allowed dark:border-gray-600 dark:bg-gray-900"
+        className="accent-brand size-[18px] shrink-0 focus-visible:outline-none disabled:cursor-not-allowed"
         disabled={!supported}
         name="paymentProviderId"
         onChange={() => onSelect(provider.id)}
         type="radio"
         value={provider.id}
       />
-      <span
-        className={`hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg sm:flex ${
-          checked
-            ? "bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400"
-            : "bg-gray-100 text-gray-500 dark:bg-white/[0.05] dark:text-gray-400"
-        }`}
-      >
+      <IconTile className="max-sm:hidden" tone={checked ? "brand" : "neutral"}>
         {provider.paymentMethodType === "BankTransfer" ? (
-          <BankIcon className="h-6 w-6" />
+          <BankIcon />
         ) : (
-          <PaymentCardIcon className="h-6 w-6" />
+          <CreditCardIcon />
         )}
-      </span>
-      <span className="min-w-0">
+      </IconTile>
+      <span className="grid min-w-0 flex-1 gap-0.5">
         <span
-          className={`block text-base break-words text-gray-900 dark:text-white ${
-            checked ? "font-semibold" : "font-medium"
-          }`}
+          className={cn(
+            "text-fg break-words",
+            checked ? "font-semibold" : "font-medium",
+          )}
         >
           {provider.name}
         </span>
-        <span className="mt-0.5 block text-sm text-gray-500 sm:text-base dark:text-gray-400">
-          {supported ? method : `${method} is not available in this portal yet`}
+        <span className="text-small text-fg-muted" id={descriptionId}>
+          {paymentProviderDescription(provider)}
         </span>
       </span>
     </label>
