@@ -33,13 +33,35 @@ describe("user navigation", () => {
     }
   });
 
-  it("does not expose unbuilt wallet, verification or preference screens", () => {
+  it("does not expose unbuilt wallet or verification screens", () => {
     const labels = [...userNavigation, ...userTabNavigation].map(
       ({ label }) => label,
     );
     expect(labels).not.toContain("Wallet");
     expect(labels).not.toContain("Verification");
-    expect(labels).not.toContain("Preferences");
+  });
+
+  it("lists Preferences after Security, as in the reference sidebar", () => {
+    expect(userNavigation.map(({ label }) => label)).toEqual([
+      "Overview",
+      "Profile",
+      "Billing",
+      "Security",
+      "Preferences",
+    ]);
+    expect(userNavigation.at(-1)).toEqual({
+      label: "Preferences",
+      href: "/preferences",
+    });
+  });
+
+  it("keeps Preferences out of the phone tab bar (reached via the drawer)", () => {
+    expect(userTabNavigation.map(({ label }) => label)).toEqual([
+      "Home",
+      "Billing",
+      "Security",
+      "Account",
+    ]);
   });
 
   it("keeps the phone tab bar within five destinations", () => {
@@ -56,6 +78,10 @@ describe("userBreadcrumbs", () => {
     expect(userBreadcrumbs("/profile")).toEqual([
       { label: "Account" },
       { label: "Profile" },
+    ]);
+    expect(userBreadcrumbs("/preferences")).toEqual([
+      { label: "Account" },
+      { label: "Preferences" },
     ]);
     expect(userBreadcrumbs("/billing/history")).toEqual([
       { label: "Billing", href: "/billing" },

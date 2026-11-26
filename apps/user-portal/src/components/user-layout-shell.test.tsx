@@ -88,6 +88,18 @@ describe("UserLayoutShell", () => {
     expect(markup).toContain('aria-label="Primary"');
   });
 
+  it("shows Preferences in the sidebar and marks it current on /preferences", () => {
+    state.pathname = "/preferences";
+    const markup = render();
+
+    const current = markup.match(/<a[^>]*aria-current="page"[^>]*>/g) ?? [];
+    // Sidebar only: Preferences is not a phone tab, so no tab is current.
+    expect(current).toHaveLength(1);
+    expect(current[0]).toContain('href="/preferences"');
+    expect(markup).toMatch(/aria-current="page"[^>]*>Preferences<\/span>/);
+    expect(markup).toContain(">Account<");
+  });
+
   it("renders the reference breadcrumb trail", () => {
     state.pathname = "/billing/purchases/p-1";
     const markup = render();
