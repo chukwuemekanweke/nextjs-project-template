@@ -175,7 +175,7 @@ status, or `check` to run the repository validation suite without publishing.
 ```text
 apps/
   admin-portal/       Admin application with an app-specific dashboard layout
-  public-portal/      Solid-derived public website and route composition
+  public-portal/      Public marketing website and route composition
   user-portal/        User application with an app-specific dashboard layout
 packages/
   dashboard-ui/       Shared TailAdmin-derived dashboard primitives
@@ -183,25 +183,26 @@ packages/
   api-react/          Reusable TanStack Query options, keys, and hooks
   forms/              Reusable React Hook Form and Zod composition
   eslint-config/      Shared Next.js ESLint flat configuration
-  public-ui/          Typed Solid-derived public-site sections
+  public-ui/          Typed marketing sections on the shared design system
   ui-core/            Shared TailAdmin-derived UI primitives
   typescript-config/  Shared strict TypeScript configuration
 ```
 
 All applications use the `@/*` alias for their local `src/*` directory. `packages/api-client` contains handwritten wire contracts, reusable domain clients, transport, and normalized errors. `packages/api-react` adds reusable TanStack Query policy without moving URLs or HTTP behaviour into React. `packages/forms` composes React Hook Form, Zod, accessible fields, pending submission handling, and explicit backend field-error mapping while leaving schemas and workflows in applications. The checked-in OpenAPI JSON is a reference for maintaining supported operations; CI tests implemented application behavior rather than requiring coverage of the complete backend contract.
 
-## Solid Public Portal
+## Public Portal
 
-The public portal directly adopts the supplied Solid Next.js template assets,
-layout styling, and section patterns. Original MIT notices are retained in
-`apps/public-portal/LICENSE.solid` and `packages/public-ui/LICENSE.solid`.
-Marketing-only dependencies remain scoped to `@template/public-ui` and the
-public application, keeping authenticated dashboard bundles independent.
+The public portal follows the Project Template design system's marketing
+references, built from `@template/public-ui` sections and the shared
+`@template/ui-core` tokens and primitives. MIT notices from the original Solid
+template remain in `apps/public-portal/LICENSE.solid` and
+`packages/public-ui/LICENSE.solid`. Marketing presentation stays in
+`@template/public-ui`, keeping authenticated dashboard bundles independent.
 
 Typed configuration in `apps/public-portal/src/config/site.ts` supplies the
 placeholder content used across home, features, pricing, about, contact, blog,
 privacy, and terms pages. The portal also provides canonical metadata, a
-sitemap, robots metadata, and a responsive Solid-styled 404 page.
+sitemap, robots metadata, and a responsive 404 page.
 
 ## Shared Dashboard UI
 

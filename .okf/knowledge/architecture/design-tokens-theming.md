@@ -44,8 +44,8 @@ status: stable
   the reference `--color-border-strong`.
 - Rebrand by replacing `--palette-blue-*` (and optionally the neutral
   palettes) plus each app's `public/images` logo/favicon files and branding env.
-  `NEXT_PUBLIC_BRAND_PRIMARY_COLOUR` does not feed the semantic tokens (only
-  legacy Solid `primary`); its future is open decision OD-17.
+  `NEXT_PUBLIC_BRAND_PRIMARY_COLOUR` is injected but read by nothing (the
+  Solid `primary` went with FE-UI-005); its future is open decision OD-17.
 - Fonts: each root layout loads Outfit (`--font-outfit-loaded`) and JetBrains
   Mono (`--font-jetbrains-mono-loaded`, `preload: false`) with
   `next/font/google`; `theme.css` maps them to `--font-sans` / `--font-mono`.
@@ -55,9 +55,10 @@ status: stable
   Use `ThemeSwitch` / `ThemeSelect`; dashboard `ThemeToggle` wraps
   `ThemeSwitch`. Do not add another theme provider or read the theme during
   render without a hydration guard.
-- Temporary layers: `@template/dashboard-ui/tailadmin-theme.css` (legacy
-  `brand-*` → palette, slate `gray-*`, `shadow-theme-*`, `no-scrollbar`) and the
-  Solid tokens in the public `globals.css` (with Solid radii pinned). Do not
-  add new consumers; component tickets migrate them and FE-UI-032 deletes them.
+- Temporary layer: `@template/dashboard-ui/tailadmin-theme.css` (legacy
+  `brand-*` → palette, slate `gray-*`, `shadow-theme-*`, `no-scrollbar`). Do
+  not add new consumers; component tickets migrate them and FE-UI-032 deletes
+  it. The public `globals.css` has no token layer of its own (Solid tokens
+  removed in Trello FE-UI-005).
 - `/foundations` in the public portal is a development-only specimen (404 in
   production); it must render real tokens, never redefine them.

@@ -22,9 +22,9 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | Screens with an existing route or in-app state                | 25    |
 | Screens with a proposed route only                            | 28    |
 | Screens whose design assumes unsupported backend capabilities | 44    |
-| Status: Implemented                                           | 16    |
+| Status: Implemented                                           | 24    |
 | Status: Missing                                               | 28    |
-| Status: Partial                                               | 13    |
+| Status: Partial                                               | 5     |
 | Status: Reference-only                                        | 1     |
 | Classification A                                              | 15    |
 | Classification B                                              | 8     |
@@ -47,13 +47,13 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 | Screen ID                           | Screen                           | Kind           | App           | Existing route     | Proposed route | Status      | Class | Backend      | Priority | Ticket    |
 | ----------------------------------- | -------------------------------- | -------------- | ------------- | ------------------ | -------------- | ----------- | ----- | ------------ | -------- | --------- |
-| [`MKT-ABOUT`](#mkt-about)           | About                            | page           | public-portal | `/about`           | —              | Partial     | C     | Not required | P3       | FE-UI-010 |
-| [`MKT-BLOG`](#mkt-blog)             | Blog index                       | page           | public-portal | `/blog`            | —              | Partial     | C     | Not required | P3       | FE-UI-010 |
+| [`MKT-ABOUT`](#mkt-about)           | About                            | page           | public-portal | `/about`           | —              | Implemented | C     | Not required | P3       | FE-UI-010 |
+| [`MKT-BLOG`](#mkt-blog)             | Blog index                       | page           | public-portal | `/blog`            | —              | Implemented | C     | Not required | P3       | FE-UI-010 |
 | [`MKT-CONTACT`](#mkt-contact)       | Contact                          | page           | public-portal | `/contact`         | —              | Partial     | D     | Missing      | P3       | FE-UI-010 |
-| [`MKT-FEATURES`](#mkt-features)     | Features                         | page           | public-portal | `/features`        | —              | Partial     | C     | Not required | P2       | FE-UI-010 |
-| [`MKT-HOME`](#mkt-home)             | Home                             | page           | public-portal | `/`                | —              | Partial     | B     | Partial      | P2       | FE-UI-010 |
-| [`MKT-LEGAL`](#mkt-legal)           | Legal (privacy policy and terms) | page           | public-portal | `/privacy, /terms` | —              | Partial     | C     | Not required | P3       | FE-UI-010 |
-| [`MKT-NAV-MOBILE`](#mkt-nav-mobile) | Marketing mobile menu            | layout-pattern | public-portal | —                  | —              | Partial     | B     | Not required | P1       | FE-UI-009 |
+| [`MKT-FEATURES`](#mkt-features)     | Features                         | page           | public-portal | `/features`        | —              | Implemented | C     | Not required | P2       | FE-UI-010 |
+| [`MKT-HOME`](#mkt-home)             | Home                             | page           | public-portal | `/`                | —              | Implemented | B     | Partial      | P2       | FE-UI-010 |
+| [`MKT-LEGAL`](#mkt-legal)           | Legal (privacy policy and terms) | page           | public-portal | `/privacy, /terms` | —              | Implemented | C     | Not required | P3       | FE-UI-010 |
+| [`MKT-NAV-MOBILE`](#mkt-nav-mobile) | Marketing mobile menu            | layout-pattern | public-portal | —                  | —              | Implemented | B     | Not required | P1       | FE-UI-009 |
 | [`MKT-PRICING`](#mkt-pricing)       | Pricing                          | page           | public-portal | `/pricing`         | —              | Implemented | A     | Existing     | P1       | FE-UI-011 |
 
 ### Authentication (11)
@@ -143,10 +143,9 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **About** — page; target `public-portal`; auth: public.
 
 - **Artboards:** `PublicAbout` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Partial (C); **backend:** Not required; **priority:** P3; **ticket:** FE-UI-010.
-- **Implementation:** `apps/public-portal/src/app/about/page.tsx`
-- **Works today:** Static PageIntro, image + copy, testimonials, CTA.
-- **Gap:** Reference is hero + three cards (Mission, Values, Team) with bracketed placeholder copy.
+- **Status:** Implemented (C); **backend:** Not required; **priority:** P3; **ticket:** FE-UI-010.
+- **Implementation:** `apps/public-portal/src/app/about/page.tsx`, `apps/public-portal/src/config/site.tsx`, `packages/public-ui/src/components/feature-grid.tsx`
+- **Works today:** Trello FE-UI-005: hero and Mission / Values / Team cards per the reference, with configurable placeholder copy.
 - **Depends on:** FE-UI-009
 - **Discrepancies:** [DR-030](./discrepancy-register.md#dr-030)
 
@@ -155,11 +154,11 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Blog index** — page; target `public-portal`; auth: public.
 
 - **Artboards:** `PublicBlog` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Partial (C); **backend:** Not required; **priority:** P3; **ticket:** FE-UI-010.
-- **Implementation:** `apps/public-portal/src/app/blog/page.tsx`, `apps/public-portal/src/config/site.ts`
-- **Works today:** Three hardcoded BlogCards linking to /blog#anchor; no post pages.
+- **Status:** Implemented (C); **backend:** Not required; **priority:** P3; **ticket:** FE-UI-010.
+- **Implementation:** `apps/public-portal/src/app/blog/page.tsx`, `apps/public-portal/src/config/site.tsx`, `packages/public-ui/src/components/blog-card.tsx`
+- **Works today:** Trello FE-UI-005: card grid with brand banner, category chip and excerpt; cards keep #id anchors and do not link.
 - **Unsupported / missing backend:** Blog post content source (CMS/MDX) and post detail route
-- **Gap:** Reference is a 6-card grid with category chips and dates; no post-detail artboard exists.
+- **Gap:** Reference shows six posts with dates; the site keeps its three placeholder posts without invented dates. Post detail needs a content source (DR-032).
 - **Depends on:** FE-UI-009
 - **Note:** Post detail route (/blog/[slug]) is reference-less; requires a content-source decision (DR-032).
 - **Discrepancies:** [DR-032](./discrepancy-register.md#dr-032)
@@ -170,11 +169,10 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `PublicContact` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Partial (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-010.
-- **Implementation:** `apps/public-portal/src/app/contact/page.tsx`, `packages/public-ui/src/components/contact-section.tsx`
-- **Works today:** Contact form whose submit handler only calls preventDefault.
+- **Implementation:** `apps/public-portal/src/app/contact/page.tsx`, `apps/public-portal/src/components/contact-form.tsx`, `apps/public-portal/src/lib/contact-mailto.ts`, `packages/public-ui/src/components/contact-layout.tsx`
+- **Works today:** Trello FE-UI-005: reference layout (name, email, topic, message; email and office cards). Submitting opens a mailto: draft to the support email and states that nothing is sent from the site.
 - **Unsupported / missing backend:** Contact/lead submission endpoint
-- **Gap:** Reference adds Topic select and 'Send message' with implied delivery.
-- **Gap:** No backend endpoint; the form must not show a success outcome until one exists (render email/mailto fallback).
+- **Gap:** No backend endpoint; the button reads 'Continue in your email app' instead of 'Send message' and no reply-time promise is shown (DR-033).
 - **Depends on:** FE-UI-007 forms
 - **Discrepancies:** [DR-033](./discrepancy-register.md#dr-033)
 
@@ -183,10 +181,10 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Features** — page; target `public-portal`; auth: public.
 
 - **Artboards:** `PublicFeatures` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Partial (C); **backend:** Not required; **priority:** P2; **ticket:** FE-UI-010.
-- **Implementation:** `apps/public-portal/src/app/features/page.tsx`, `apps/public-portal/src/config/site.ts`
-- **Works today:** Static PageIntro + Features grid + CTA from site config.
-- **Gap:** Reference is a numbered (01-06) alternating feature list; copy mentions Wallet, Verification and Administration capabilities that are not implemented.
+- **Status:** Implemented (C); **backend:** Not required; **priority:** P2; **ticket:** FE-UI-010.
+- **Implementation:** `apps/public-portal/src/app/features/page.tsx`, `apps/public-portal/src/config/site.tsx`, `packages/public-ui/src/components/numbered-feature-list.tsx`
+- **Works today:** Trello FE-UI-005: numbered (01-06) capability list with soft icon panels per the reference.
+- **Gap:** Copy lists only implemented capabilities (accounts, strong sign-in, security, subscriptions, portals, branding) instead of the reference wallet/verification/administration claims (DR-031).
 - **Depends on:** FE-UI-009
 - **Note:** Marketing copy describing unimplemented capabilities (wallet, KYC, admin operations) needs product sign-off before launch (DR-031).
 - **Discrepancies:** [DR-031](./discrepancy-register.md#dr-031)
@@ -196,14 +194,12 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Home** — page; target `public-portal`; auth: public.
 
 - **Artboards:** `PublicHome` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Partial (B); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-010.
-- **Implementation:** `apps/public-portal/src/app/page.tsx`, `apps/public-portal/src/config/site.ts`, `packages/public-ui/src/components/*`
-- **Works today:** Server-rendered page; pricing section reads backend plans (loadSubscriptionPlans, revalidate 60 s).
-- **Works today:** Hero, logo cloud, features, CTA, FAQ, testimonials, contact and blog cards are static config content.
+- **Status:** Implemented (B); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-010.
+- **Implementation:** `apps/public-portal/src/app/page.tsx`, `apps/public-portal/src/config/site.tsx`, `packages/public-ui/src/components/hero.tsx`, `packages/public-ui/src/components/product-shot.tsx`, `packages/public-ui/src/components/feature-grid.tsx`, `packages/public-ui/src/components/cta-banner.tsx`
+- **Works today:** Trello FE-UI-005: hero, decorative product shot (no figures), six feature cards and CTA per the reference; static (no plan request).
+- **Gap:** Reference 'New: passkey sign-in' chip omitted (announcement copy is a product decision).
+- **Gap:** Reference product shot shows sample balances; the implementation is abstract and aria-hidden so it cannot read as data.
 - **Operations:** listSubscriptionPlans GET /api/v1/subscription-plans (only if a pricing teaser is kept)
-- **Gap:** Reference composition is hero + product shot + 6 feature cards + CTA; current page adds logo cloud, FAQ, testimonials, pricing, contact and blog sections with no reference.
-- **Gap:** Reference 'product shot' is an illustrative dashboard mock with sample balances; must stay decorative, not data.
-- **Gap:** Solid-derived sections, framer-motion reveals and hero images do not match the reference.
 - **Depends on:** FE-UI-003 tokens; FE-UI-009 marketing shell
 - **Note:** Removing sections without reference (testimonials, logo cloud, home pricing/contact/blog) is a product decision (DR-030).
 - **Discrepancies:** [DR-030](./discrepancy-register.md#dr-030)
@@ -213,10 +209,10 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Legal (privacy policy and terms)** — page; target `public-portal`; auth: public.
 
 - **Artboards:** `PublicLegal` — 4 reference files (desktop/mobile; dark/light; interactive: document:privacy, document:terms (segmented switch; only privacy drawn)).
-- **Status:** Partial (C); **backend:** Not required; **priority:** P3; **ticket:** FE-UI-010.
-- **Implementation:** `apps/public-portal/src/app/privacy/page.tsx`, `apps/public-portal/src/app/terms/page.tsx`, `apps/public-portal/src/components/legal-page.tsx`
-- **Works today:** Two routes rendering placeholder legal text.
-- **Gap:** Reference is one document layout with 'On this page' TOC and a Privacy/Terms segmented switch.
+- **Status:** Implemented (C); **backend:** Not required; **priority:** P3; **ticket:** FE-UI-010.
+- **Implementation:** `apps/public-portal/src/app/privacy/page.tsx`, `apps/public-portal/src/app/terms/page.tsx`, `apps/public-portal/src/components/legal-page.tsx`, `packages/public-ui/src/components/legal-document.tsx`
+- **Works today:** Trello FE-UI-005: 'On this page' contents, Privacy/Terms switch as links with aria-current, numbered sections; both routes kept.
+- **Gap:** Legal text remains configurable placeholder copy.
 - **Depends on:** FE-UI-009
 - **Note:** Keep both routes (linkable, indexable); render the segmented switch as two links (aria-current), not client state.
 - **Discrepancies:** [DR-034](./discrepancy-register.md#dr-034)
@@ -226,11 +222,9 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Marketing mobile menu** — layout-pattern; target `public-portal`; auth: public.
 
 - **Artboards:** `PublicMobileMenu` — 2 reference files (mobile; dark/light).
-- **Status:** Partial (B); **backend:** Not required; **priority:** P1; **ticket:** FE-UI-009.
-- **Implementation:** `packages/public-ui/src/components/header.tsx`, `apps/public-portal/src/app/layout.tsx`
-- **Works today:** Solid header with a mobile toggle and theme switch (next-themes).
-- **Gap:** Reference: compact top bar (logo, Get started, menu button) opening a full-screen sheet with nav, both CTAs and a Dark mode switch.
-- **Gap:** Header source contains mis-encoded glyphs (mojibake) for the theme/menu icons.
+- **Status:** Implemented (B); **backend:** Not required; **priority:** P1; **ticket:** FE-UI-009.
+- **Implementation:** `packages/public-ui/src/components/marketing-header.tsx`, `apps/public-portal/src/components/site-header.tsx`, `apps/public-portal/src/app/layout.tsx`
+- **Works today:** Trello FE-UI-005: compact bar (brand, Get started, menu) below lg opening a full-screen ui-core Drawer with navigation, both CTAs and a Dark mode switch; focus trap/return, Escape, closes on link choice and at lg.
 - **Depends on:** FE-UI-005 Dialog/Sheet
 - **Note:** Mobile-only artboards (no desktop variant by design).
 - **Discrepancies:** [DR-021](./discrepancy-register.md#dr-021)
@@ -241,12 +235,13 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `PublicPricing` — 4 reference files (desktop/mobile; dark/light; interactive: interval:monthly, interval:yearly (editable .dc.html artboard only)).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-011.
-- **Implementation:** `apps/public-portal/src/app/pricing/page.tsx`, `apps/public-portal/src/components/subscription-pricing.tsx`, `apps/public-portal/src/lib/subscription-plans.ts`, `apps/public-portal/src/lib/subscription-pricing.ts`
-- **Works today:** Plans from GET /api/v1/subscription-plans in Server Components; empty and unavailable states; CTA links to User Portal /billing/checkout?planId=&billingInterval=.
+- **Implementation:** `apps/public-portal/src/app/pricing/page.tsx`, `apps/public-portal/src/components/subscription-pricing.tsx`, `apps/public-portal/src/lib/subscription-plans.ts`, `apps/public-portal/src/lib/subscription-pricing.ts`, `packages/public-ui/src/components/plan-card.tsx`, `packages/public-ui/src/components/pricing-intervals.tsx`
+- **Works today:** Plans from GET /api/v1/subscription-plans in a streamed Server Component (PlanGridSkeleton while loading); empty and unavailable states; CTA links to User Portal /billing/checkout?planId=&billingInterval=.
+- **Works today:** Trello FE-UI-005: plan cards and a Monthly/Yearly switch when plans offer several intervals; questions grid.
 - **Operations:** listSubscriptionPlans GET /api/v1/subscription-plans
 - **Unsupported / missing backend:** Plan tier label / recommendation flag ('Most popular')
-- **Gap:** Reference has Monthly/Yearly segmented toggle (interactive artboard); public page shows the default interval only.
 - **Gap:** Reference 'Most popular' badge and featured border are not backed by plan data (OKF forbids local tier labels).
+- **Gap:** Reference 'save 17%' interval label omitted (no computed savings).
 - **Gap:** FAQ copy is static and must not contradict backend policy.
 - **Depends on:** FE-UI-005 SegmentedControl; PlanCard (ui-core)
 - **Note:** Interval toggle is client state on a server-rendered list; keep plans loading in Server Components.

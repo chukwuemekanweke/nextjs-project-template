@@ -1,23 +1,34 @@
-﻿"use client";
+﻿import { cn } from "@template/ui-core";
 
+/** Centred section heading (reference `.sec-head`): eyebrow, `h2`, lead. */
 export function SectionHeading({
-  eyebrow,
-  title,
+  className,
   description,
-}: {
-  eyebrow?: string;
-  title: string;
+  eyebrow,
+  id,
+  title,
+}: Readonly<{
+  className?: string;
   description?: string;
-}) {
+  eyebrow?: string;
+  /** Id of the `h2`, for `aria-labelledby` on the enclosing section. */
+  id?: string;
+  title: string;
+}>) {
   return (
-    <div className="mx-auto mb-12.5 max-w-3xl text-center">
-      {eyebrow && (
-        <span className="text-primary font-medium uppercase">{eyebrow}</span>
+    <div
+      className={cn(
+        "mb-7 flex flex-col items-center gap-3 text-center md:mb-12",
+        className,
       )}
-      <h2 className="xl:text-sectiontitle2 mt-2 text-3xl font-bold text-black dark:text-white">
+    >
+      {eyebrow ? <span className="eyebrow">{eyebrow}</span> : null}
+      <h2 className="text-section text-fg" id={id}>
         {title}
       </h2>
-      {description && <p className="mt-4">{description}</p>}
+      {description ? (
+        <p className="text-lead text-fg-muted max-w-160">{description}</p>
+      ) : null}
     </div>
   );
 }

@@ -9,7 +9,6 @@ Developer guide to the shared visual foundations delivered by the Trello card FE
 | Palette and semantic tokens, base styles | `packages/ui-core/src/styles/theme.css`                               | `@template/ui-core/theme.css`                                                                                     |
 | Theme provider and controls              | `packages/ui-core/src/theme/*`                                        | `@template/ui-core` (`ThemeProvider`, `ThemeSwitch`, `ThemeSelect`, `THEME_STORAGE_KEY`, `themeProviderSettings`) |
 | TailAdmin compatibility utilities        | `packages/dashboard-ui/src/tailadmin-theme.css`                       | `@template/dashboard-ui/tailadmin-theme.css` (temporary)                                                          |
-| Solid marketing tokens                   | `apps/public-portal/src/app/globals.css`                              | — (app-local, temporary)                                                                                          |
 | Font loading                             | each app's `src/app/layout.tsx`                                       | —                                                                                                                 |
 | Provider composition                     | each app's `src/components/app-providers.tsx`                         | —                                                                                                                 |
 | Brand assets                             | each app's `public/images/{logo,favicon}`, referenced by branding env | —                                                                                                                 |
@@ -95,7 +94,7 @@ Rules:
 3. Run `pnpm --filter @template/ui-core test`. The contrast tests show whether the new brand still supports white text (`on-brand`), links (`brand-ink`) and focus.
 4. Replace the logo and favicon files in each app's `public/images/` (the three apps carry identical copies because each deploys its own `public/` directory) or point `NEXT_PUBLIC_LOGO_LIGHT`, `NEXT_PUBLIC_LOGO_DARK` and `NEXT_PUBLIC_FAVICON` at new files. Set `NEXT_PUBLIC_PRODUCT_NAME` and the portal names.
 
-`NEXT_PUBLIC_BRAND_PRIMARY_COLOUR` / `NEXT_PUBLIC_BRAND_ACCENT_COLOUR` are still validated and injected as `--brand-primary` / `--brand-accent`, but the semantic tokens deliberately ignore them; only the legacy Solid `primary` utility in the public portal reads `--brand-primary`. A single runtime colour cannot provide verified hover, pressed, soft, ink and focus steps. Whether to derive a palette from it or remove it is open decision OD-17 ([DR-005](./discrepancy-register.md#dr-005)).
+`NEXT_PUBLIC_BRAND_PRIMARY_COLOUR` / `NEXT_PUBLIC_BRAND_ACCENT_COLOUR` are still validated and injected as `--brand-primary` / `--brand-accent`, but the semantic tokens deliberately ignore them and, since the Solid marketing styles were removed (Trello FE-UI-005), nothing reads them. A single runtime colour cannot provide verified hover, pressed, soft, ink and focus steps. Whether to derive a palette from it or remove it is open decision OD-17 ([DR-005](./discrepancy-register.md#dr-005)).
 
 ## 5. Fonts
 
@@ -146,26 +145,22 @@ export function AppProviders({ children }) {
 
 ## 7. Legacy compatibility (temporary)
 
-| Kept                                                            | Where                              | Why                                                                             | Removed by                   |
-| --------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------- | ---------------------------- |
-| `brand-25…950` (→ `--palette-blue-*`, theme-independent)        | `dashboard-ui/tailadmin-theme.css` | ~200 uses paired with explicit `dark:` classes                                  | component tickets, FE-UI-032 |
-| slate `gray-25…950`, `gray-dark`                                | same                               | ~470 uses; values unchanged so dark mode of un-migrated screens stays as before | same                         |
-| `shadow-theme-xs/sm/lg`                                         | same                               | billing cards, menus, inputs, pagination                                        | same                         |
-| `no-scrollbar`, `<body>` stacking context                       | same                               | sidebar and tabs                                                                | same                         |
-| Solid colours, type, containers, shadows, animations, utilities | `public-portal/globals.css`        | un-migrated `public-ui` sections                                                | FE-UI-009/010                |
-| Solid radii (`sm` 4, `md` 6, `lg` 8 px) pinned                  | same                               | keeps marketing shapes while the dashboards use the reference radius scale      | FE-UI-009/010                |
-| `bg-white dark:bg-black` on the public `<body>`                 | `public-portal/layout.tsx`         | Solid sections assume white/navy page backgrounds                               | FE-UI-009                    |
+| Kept                                                     | Where                              | Why                                                                             | Removed by                   |
+| -------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------- | ---------------------------- |
+| `brand-25…950` (→ `--palette-blue-*`, theme-independent) | `dashboard-ui/tailadmin-theme.css` | ~200 uses paired with explicit `dark:` classes                                  | component tickets, FE-UI-032 |
+| slate `gray-25…950`, `gray-dark`                         | same                               | ~470 uses; values unchanged so dark mode of un-migrated screens stays as before | same                         |
+| `shadow-theme-xs/sm/lg`                                  | same                               | billing cards, menus, inputs, pagination                                        | same                         |
+| `no-scrollbar`, `<body>` stacking context                | same                               | sidebar and tabs                                                                | same                         |
 
-Removed because nothing used them: `font-outfit`, `text-theme-*`, `z-index-1/50/999/9999` (dashboards), `custom-scrollbar`, breakpoints `2xsm`/`xsm`/`3xl`, `PublicUiProvider`. `LICENSE.tailadmin` and `LICENSE.solid` are unchanged.
+Removed because nothing used them: `font-outfit`, `text-theme-*`, `z-index-1/50/999/9999` (dashboards), `custom-scrollbar`, breakpoints `2xsm`/`xsm`/`3xl`, `PublicUiProvider`. `LICENSE.tailadmin` and `LICENSE.solid` are unchanged. Trello FE-UI-005 removed the Solid marketing tokens and pinned radii from the public `globals.css`, the public `<body>` colour overrides and the Solid-only images.
 
 Visible changes to un-migrated screens: Outfit replaces Inter in the public portal; `rounded-sm/md/lg/xl/2xl` in dashboards are 8/10/12/14/18 px (previously 4/6/8/12/16); the dashboard `<body>` uses the semantic background (neutral `#0F0F11` in dark, visible on auth pages that do not set their own); default borders use `--color-border`; `font-mono` now renders JetBrains Mono (the old `--font-*: initial` reset left it undefined).
 
 ## 8. Assets
 
 - Brand logos (light and dark variants) and favicons belong to each app's `public/images/` and are referenced only through the branding environment (`@template/config` `brandingFromEnvironment`). Metadata icons come from `branding.favicon`.
-- Shared packages never hard-code product branding: `DashboardBrand` takes a name, the public `Header`/`Footer` take logo paths and alt text.
+- Shared packages never hard-code product branding: `DashboardBrand` takes a name, the public `MarketingHeader`/`MarketingFooter` take a brand node, which the Public Portal renders from its configured logos (`SiteBrand`).
 - Assets are not shared across apps by path: each portal deploys separately and serves only its own `public/`. Moving them into a package would require a build-time copy step for three small SVGs, so the copies stay (rebrand checklist in §4).
-- Known exception: Solid-derived `public-ui` sections reference decorative images under the public portal's `/images/{shape,hero,icon}` paths. They are removed with those sections (FE-UI-009/010).
 
 ## 9. Accessibility decisions
 
@@ -184,6 +179,5 @@ Visible changes to un-migrated screens: Outfit replaces Inter in the public port
 ## 11. Remaining work
 
 - Migrate components from `brand-*`/`gray-*`/`dark:` pairs to semantic utilities (FE-UI-004 onwards), add the lint rule against raw palette classes (FE-UI-004), and delete the compatibility layer (FE-UI-032).
-- Replace the Solid marketing styles and their pinned radii (FE-UI-009/010); fixes [DR-078](./discrepancy-register.md#dr-078) and the remaining [DR-021](./discrepancy-register.md#dr-021) glyphs.
 - Dashboard shell dimensions: the shell (Trello FE-UI-004) uses `w-sidebar` (260px), `w-sidebar-collapsed` (72px rail), `min-h-topbar`/`min-h-topbar-mobile`, `w-nav-drawer`, `min-h-tabbar-item` and `max-w-content`; the drawer slides in with `animate-drawer-in-left` (skipped under reduced motion).
 - Decisions: OD-05 (workbench and browser test jobs), OD-08 (control-border sign-off), OD-17 (runtime brand colour), DR-076 (dark hover value).

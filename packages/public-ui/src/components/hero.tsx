@@ -1,99 +1,59 @@
-﻿"use client";
-
-import Image from "next/image";
-import Link from "next/link";
+﻿import { cn } from "@template/ui-core";
+import type { ReactNode } from "react";
 import type { Action } from "../types";
+import { ActionLink } from "./action-link";
+import { MarketingContainer } from "./layout";
 
+/**
+ * Centred page hero (reference `.hero`): eyebrow, the page's `h1`, a lead
+ * paragraph and optional actions. `size="page"` is the shorter inner-page
+ * variant (48px title, less bottom padding); `children` render below, for
+ * example a billing-interval switch.
+ */
 export function Hero({
-  eyebrow,
-  title,
-  highlighted,
+  actions,
+  children,
   description,
-  primaryAction,
-  secondaryAction,
-}: {
-  eyebrow: string;
+  eyebrow,
+  size = "home",
+  title,
+}: Readonly<{
+  actions?: readonly Action[];
+  children?: ReactNode;
+  description?: string;
+  eyebrow?: string;
+  size?: "home" | "page";
   title: string;
-  highlighted: string;
-  description: string;
-  primaryAction: Action;
-  secondaryAction?: Action;
-}) {
+}>) {
   return (
-    <section className="overflow-hidden pt-35 pb-20 md:pt-40 xl:pt-46 xl:pb-25">
-      <div className="max-w-c-1390 mx-auto px-4 md:px-8 2xl:px-0">
-        <div className="flex lg:items-center lg:gap-8 xl:gap-32.5">
-          <div className="md:w-1/2">
-            <h4 className="mb-4.5 text-lg font-medium text-black dark:text-white">
-              {eyebrow}
-            </h4>
-            <h1 className="xl:text-hero mb-5 text-3xl font-bold text-black dark:text-white">
-              {title}{" "}
-              <span className="before:bg-titlebg dark:before:bg-titlebgdark relative inline-block before:absolute before:bottom-2.5 before:left-0 before:-z-1 before:h-3 before:w-full">
-                {highlighted}
-              </span>
-            </h1>
-            <p>{description}</p>
-            <div className="mt-10 flex flex-wrap gap-5">
-              <Link
-                className="hover:bg-blackho dark:bg-btndark rounded-full bg-black px-7.5 py-2.5 text-white"
-                href={primaryAction.href}
-              >
-                {primaryAction.label}
-              </Link>
-              {secondaryAction && (
-                <Link
-                  className="border-stroke dark:border-strokedark rounded-full border px-7.5 py-2.5 text-black dark:text-white"
-                  href={secondaryAction.href}
-                >
-                  {secondaryAction.label}
-                </Link>
-              )}
-            </div>
-          </div>
-          <div className="animate_right hidden md:w-1/2 lg:block">
-            <div className="relative 2xl:-mr-7.5">
-              <Image
-                src="/images/shape/shape-01.png"
-                alt=""
-                width={46}
-                height={246}
-                className="absolute -top-0 -left-11.5"
-              />
-              <Image
-                src="/images/shape/shape-02.svg"
-                alt=""
-                width={37}
-                height={37}
-                className="absolute right-0 bottom-0 z-10"
-              />
-              <Image
-                src="/images/shape/shape-03.svg"
-                alt=""
-                width={23}
-                height={22}
-                className="absolute -right-6.5 bottom-0 z-1"
-              />
-              <div className="relative aspect-700/444 w-full">
-                <Image
-                  className="shadow-solid-l dark:hidden"
-                  src="/images/hero/hero-light.svg"
-                  alt="Product preview"
-                  fill
-                  priority
-                />
-                <Image
-                  className="shadow-solid-l hidden dark:block"
-                  src="/images/hero/hero-dark.svg"
-                  alt="Product preview"
-                  fill
-                  priority
-                />
-              </div>
-            </div>
-          </div>
+    <MarketingContainer
+      className={cn(
+        "flex flex-col items-center gap-4.5 pt-12 text-center md:gap-6 md:pt-24",
+        size === "home" ? "pb-10 md:pb-18" : "pb-8 md:pb-10",
+      )}
+    >
+      {eyebrow ? <span className="eyebrow">{eyebrow}</span> : null}
+      <h1
+        className={cn(
+          "text-fg max-w-4xl text-balance",
+          size === "home"
+            ? "text-display"
+            : "text-4xl leading-tight font-semibold tracking-tight md:text-5xl",
+        )}
+      >
+        {title}
+      </h1>
+      {description ? (
+        <p className="text-lead text-fg-muted max-w-160">{description}</p>
+      ) : null}
+      {actions && actions.length > 0 ? (
+        <div className="flex flex-wrap justify-center gap-3">
+          {actions.map((action) => (
+            <ActionLink action={action} key={action.href} />
+          ))}
         </div>
-      </div>
-    </section>
+      ) : null}
+      {children}
+    </MarketingContainer>
   );
 }

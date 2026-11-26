@@ -3,8 +3,8 @@ import { fileURLToPath } from "node:url";
 
 /**
  * UI workbench (TD-15): isolated previews of the shared components in
- * `@template/ui-core` and `@template/dashboard-ui`, with theme and viewport
- * toolbars and the accessibility panel. Private developer tooling — never
+ * `@template/ui-core`, `@template/dashboard-ui` and `@template/public-ui`,
+ * with theme and viewport toolbars and the accessibility panel. Private developer tooling — never
  * deployed, and fixtures here are never imported by application code.
  * Tailwind runs through postcss.config.mjs, as in the apps.
  */

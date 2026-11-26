@@ -13,20 +13,30 @@
     "react-dom": ">=19"
   },
   "dependencies": {
-    "@template/ui-core": "workspace:*",
-    "framer-motion": "12.42.2"
+    "@template/ui-core": "workspace:*"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "catalog:",
     "@template/eslint-config": "workspace:*",
     "@template/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
     "eslint": "catalog:",
     "next": "catalog:",
+    "playwright": "catalog:",
     "react": "catalog:",
-    "typescript": "catalog:"
+    "react-dom": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "vitest-browser-react": "catalog:"
   },
   "scripts": {
     "lint": "eslint src --max-warnings 0",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:component": "vitest run --config vitest.browser.config.ts"
   }
 }

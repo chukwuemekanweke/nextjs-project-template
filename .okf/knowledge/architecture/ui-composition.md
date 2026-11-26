@@ -71,9 +71,17 @@ status: stable
 - App `globals.css` resets must stay inside `@layer base`; unlayered rules
   override Tailwind utilities (an unlayered `a { color: inherit }` broke link
   colours).
-- `@template/public-ui` exposes marketing sections and typed content inputs. The
-  Public Portal owns concrete copy, navigation, URLs, metadata, and page
-  assembly.
+- `@template/public-ui` (Trello FE-UI-005) exposes token-based marketing
+  sections composed from `ui-core`: `MarketingHeader` (full navigation from
+  `lg`) with `MarketingMobileMenu` (full-screen ui-core `Drawer`),
+  `MarketingFooter`, `MarketingContainer`/`MarketingSection`, `Hero`,
+  `SectionHeading`, `FeatureGrid`, `NumberedFeatureList`, decorative
+  `ProductShot` (no figures), `CtaBanner`, `PlanCard`/`PlanGrid`/
+  `PlanGridSkeleton`, `PricingIntervals`, `FaqGrid`, `BlogCard`/`BlogGrid`,
+  `ContactLayout`, `LegalDocument`, and typed content inputs. It never reads
+  the router: apps pass `activeHref` and a brand node. The Public Portal owns
+  concrete copy, navigation (`config/site.tsx`), URLs, metadata, page
+  assembly, `SiteHeader` (pathname) and `SiteBrand` (configured logo).
 - Fonts are loaded only in app root layouts with `next/font/google`
   (self-hosted at build): every app sets `--font-outfit-loaded` (Outfit) and
   `--font-jetbrains-mono-loaded` (JetBrains Mono), which `theme.css` maps to

@@ -1,60 +1,52 @@
-import { Pricing } from "@template/public-ui";
-import type { ReactNode } from "react";
+import { PricingIntervals } from "@template/public-ui";
+import { EmptyState, ErrorState } from "@template/ui-core";
 import {
-  toPricePlan,
+  toPricingIntervals,
   type PlanMarketingContent,
 } from "@/lib/subscription-pricing";
 import type { SubscriptionPlansResult } from "@/lib/subscription-plans";
 
-/** Backend-authoritative plan pricing rendered with the shared pricing UI. */
+/**
+ * Backend-authoritative plan pricing rendered with the shared plan cards.
+ * When plans offer several billing intervals, a switch shows each
+ * interval's prices; the cards for every interval are prepared here, on the
+ * server.
+ */
 export function SubscriptionPricing({
   heading,
   marketing,
   plans,
   userPortalUrl,
 }: Readonly<{
+  /** Section heading for assistive technology (the page hero is visual). */
   heading: string;
   marketing?: PlanMarketingContent;
   plans: SubscriptionPlansResult;
   userPortalUrl: string;
 }>) {
-  const pricePlans =
+  const intervals =
     plans.status === "loaded"
-      ? plans.plans.flatMap(
-          (plan) => toPricePlan(plan, { marketing, userPortalUrl }) ?? [],
-        )
+      ? toPricingIntervals(plans.plans, { marketing, userPortalUrl })
       : [];
 
   return (
-    <Pricing
-      heading={heading}
-      placeholder={
-        plans.status === "unavailable" ? (
-          <PlanMessage role="alert">
-            Plans could not be loaded right now. Refresh the page to try again.
-          </PlanMessage>
-        ) : (
-          <PlanMessage>
-            No subscription plans are available right now. Please check back
-            soon.
-          </PlanMessage>
-        )
-      }
-      plans={pricePlans}
-    />
-  );
-}
-
-function PlanMessage({
-  children,
-  role = "status",
-}: Readonly<{ children: ReactNode; role?: "alert" | "status" }>) {
-  return (
-    <div
-      className="border-stroke dark:border-strokedark rounded-lg border p-10 text-center"
-      role={role}
-    >
-      {children}
-    </div>
+    <section aria-label={heading}>
+      {plans.status === "unavailable" ? (
+        <ErrorState
+          className="border-border bg-surface rounded-xl border"
+          description="Refresh the page to try again."
+          title="Plans could not be loaded right now."
+        />
+      ) : intervals.length === 0 ? (
+        <div role="status">
+          <EmptyState
+            description="Please check back soon."
+            title="No subscription plans are available right now."
+          />
+        </div>
+      ) : (
+        <PricingIntervals intervals={intervals} />
+      )}
+    </section>
   );
 }
