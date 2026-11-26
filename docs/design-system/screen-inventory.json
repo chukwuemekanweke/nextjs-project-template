@@ -44,9 +44,9 @@
       "state-flow": 10
     },
     "byStatus": {
-      "Implemented": 29,
-      "Missing": 27,
-      "Partial": 2,
+      "Implemented": 30,
+      "Missing": 25,
+      "Partial": 3,
       "Reference-only": 0
     },
     "byClassification": {
@@ -347,11 +347,19 @@
         ]
       },
       "implementation": {
-        "status": "Partial",
+        "status": "Implemented",
         "classification": "C",
-        "files": ["apps/admin-portal/src/app/page.tsx"],
+        "files": [
+          "apps/admin-portal/src/app/page.tsx",
+          "apps/admin-portal/src/app/_dashboard/admin-dashboard.tsx",
+          "apps/admin-portal/src/app/_dashboard/admin-dashboard-data.ts",
+          "apps/admin-portal/src/app/_dashboard/admin-dashboard-preview.fixtures.ts",
+          "apps/admin-portal/src/components/admin-patterns/index.ts"
+        ],
         "existingFunctionality": [
-          "Static placeholder overview cards and an empty table."
+          "UI implemented (Trello FE-UI-012): Operations overview header with a UTC reporting-period select, four KPI tiles, registrations and payments chart frames, KYC queue, subscriptions needing attention and payment providers cards; responsive one-to-four-column grids.",
+          "Unsupported, shown honestly: every panel is 'Not available' with its missing API; the period select is disabled; no 'Open …' links (routes do not exist).",
+          "Preview-only: typed reference figures in admin-dashboard-preview.fixtures.ts, used by tests only; a test forbids production imports."
         ]
       },
       "backend": {
@@ -364,13 +372,15 @@
           "Provider status read"
         ]
       },
-      "uiGaps": ["Every tile and chart needs admin read APIs."],
+      "uiGaps": [
+        "Live data for every tile, chart and summary card (admin read APIs)."
+      ],
       "dependencies": ["FE-UI-008 admin shell", "admin analytics APIs"],
       "priority": "P2",
       "roadmapTicket": "FE-UI-023",
-      "discrepancies": ["DR-070"],
+      "discrepancies": ["DR-070", "DR-074", "DR-110"],
       "notes": [
-        "Keep the placeholder (restyled) until APIs exist; no mock numbers in production."
+        "No mock numbers in production; replace each productionAdminDashboard field with a live read when its API exists (admin-patterns.md)."
       ]
     },
     {
@@ -427,14 +437,18 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
+        "status": "Partial",
         "classification": "C",
         "files": [
+          "apps/admin-portal/src/components/admin-patterns/forbidden.tsx",
+          "apps/admin-portal/src/components/admin-patterns/forbidden-details.ts",
           "apps/admin-portal/src/proxy.ts",
           "apps/admin-portal/src/lib/admin-authorization.ts"
         ],
         "existingFunctionality": [
-          "Non-admin sessions are redirected to sign-in; no in-shell forbidden state."
+          "Non-admin sessions are still redirected to sign-in by the proxy (unchanged).",
+          "Reusable AdminForbidden (Trello FE-UI-012): 403 card, permission text only when supplied, Back to dashboard (/), Copy request details limited to status, path without query, correlation id and UTC time; forbiddenDetailsFromError maps a 403 ApiError.",
+          "No live consumer: the admin portal has no backend reads that can return 403 yet."
         ]
       },
       "backend": {
@@ -444,13 +458,11 @@
           "Permission names in tokens or a permissions endpoint (reference cites payments.analytics.read)"
         ]
       },
-      "uiGaps": [
-        "In-shell 403 card with required permission, Back to dashboard, Copy request details."
-      ],
+      "uiGaps": ["Wire into admin screens when their backend reads exist."],
       "dependencies": ["FE-UI-008"],
       "priority": "P2",
       "roadmapTicket": "FE-UI-023",
-      "discrepancies": ["DR-073"],
+      "discrepancies": ["DR-073", "DR-111"],
       "notes": [
         "Render when a backend call returns 403 inside an admitted admin session; never relax the proxy role check."
       ]
@@ -1513,11 +1525,15 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
+        "status": "Partial",
         "classification": "D",
-        "files": [],
+        "files": [
+          "apps/admin-portal/src/components/admin-patterns/step-up-dialog.tsx",
+          "apps/admin-portal/src/components/admin-patterns/step-up-form.ts"
+        ],
         "existingFunctionality": [
-          "No step-up exists; admin 2FA is not supported at sign-in."
+          "Presentation-only AdminStepUpDialog (Trello FE-UI-012): action summary, optional reason, authenticator code, cancel/confirm, pending/error states; callbacks only, no verification or privileged action.",
+          "No step-up endpoint or admin 2FA; no validity window is shown unless the caller supplies one."
         ]
       },
       "backend": {
@@ -1529,12 +1545,12 @@
         ]
       },
       "uiGaps": [
-        "Reusable confirm-with-authenticator dialog (action summary, reason, OTP, 5-minute validity hint)."
+        "Backend step-up contract and wiring in the privileged-action tickets."
       ],
       "dependencies": ["FE-UI-005 Dialog", "FE-UI-007 OTP", "admin 2FA"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-024",
-      "discrepancies": ["DR-041", "DR-072"],
+      "discrepancies": ["DR-041", "DR-072", "DR-112"],
       "notes": [
         "Build as a reusable app-level dialog used by lock, cancel, provider change, role change."
       ]
@@ -5271,8 +5287,15 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": ["Only profile.isVerified is displayed."]
+        "files": [
+          "apps/user-portal/src/features/verification/verification-model.ts",
+          "apps/user-portal/src/features/verification/verification-sections.tsx",
+          "apps/user-portal/src/features/verification/verification-preview.fixtures.ts"
+        ],
+        "existingFunctionality": [
+          "Only profile.isVerified is displayed.",
+          "Trello FE-UI-009: feature-local composition (header, status panel for all six states, instruction steps, history table with stacked phone rows, loading/error/unknown/empty states) rendered only by tests from typed fixtures; no route or navigation item."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -5284,14 +5307,14 @@
         ]
       },
       "uiGaps": [
-        "Six states (notstarted, inprogress, pending, verified, rejected, expired) and history table have no API."
+        "No production route, navigation item or data adapter until a KYC API exists; CAF-FE-006 wires /verification (breadcrumb Account > Verification)."
       ],
       "dependencies": ["Backend KYC API"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-022",
-      "discrepancies": ["DR-054"],
+      "discrepancies": ["DR-054", "DR-102", "DR-103"],
       "notes": [
-        "Blocked. Do not add a nav item or route until the API exists; previews only via fixtures in the workbench."
+        "Blocked for production. The composition reports start/continue/retry/refresh intents through a callback and renders them disabled without one; it never contacts a provider or collects documents. Fixtures are imported only by tests (enforced)."
       ]
     },
     {

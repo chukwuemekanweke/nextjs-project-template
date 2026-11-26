@@ -126,7 +126,12 @@ The Admin Portal implements sign-in and logout but adds an admission boundary:
 the returned access token must contain the configured admin role. A rejected
 session is best-effort logged out, cleared, and never stored. Role checks are
 repeated during protected-route validation/refresh, but the backend remains
-authoritative for every privileged operation.
+authoritative for every privileged operation. Sessions without the role are
+redirected to sign-in, never shown the in-shell 403 (`AdminForbidden`), which
+is only for backend 403s inside an admitted session. `AdminStepUpDialog` is
+presentation only (no step-up endpoint or admin MFA exists): it passes the
+code to the caller, never verifies, stores or logs it, and is not the User
+Portal MFA or recovery flow.
 
 Authentication screens (Trello FE-UI-006) compose the shared `AuthLayout`.
 Registration shows Email → Your details (profile and password in one form,

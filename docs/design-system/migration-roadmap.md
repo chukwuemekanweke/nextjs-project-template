@@ -248,6 +248,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 ### FE-UI-022 — Identity verification (backend-gated)
 
 - **Screens:** `USR-VERIFICATION`. Needs a KYC API (DR-054).
+- **Status:** composition delivered by Trello FE-UI-009 in `apps/user-portal/src/features/verification` (all six states, history, loading/error/unknown; fixture-tested only). The route, navigation item and data adapter remain gated on the KYC API (CAF-FE-006).
 
 ### FE-UI-023 — Admin overview, navigation groups and forbidden state
 
@@ -255,6 +256,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 - **Scope:** restyled overview placeholder (no mock numbers); in-shell 403 state for backend `403` responses; grouped navigation ready for later items.
 - **Prerequisites:** FE-UI-008.
 - **At risk:** admin proxy admission (unchanged).
+- **Status:** delivered by Trello FE-UI-012: `/` redesigned with KPI, chart and summary panels that are all "Not available" until admin APIs exist ([DR-110](./discrepancy-register.md#dr-110)); reusable `AdminForbidden` without a live consumer ([DR-111](./discrepancy-register.md#dr-111)); admin patterns and a presentation-only `AdminStepUpDialog` for FE-UI-024+ ([admin-patterns.md](./admin-patterns.md), [DR-112](./discrepancy-register.md#dr-112)). Navigation unchanged (Dashboard only).
 
 ### FE-UI-024 … FE-UI-031 — Admin operations and analytics (backend-gated)
 
