@@ -1,19 +1,27 @@
+import { LegalDocument, type LegalSection } from "@template/public-ui";
+import { legalDocuments } from "@/config/site";
+
+/** A legal document route with the Privacy / Terms switch. */
 export function LegalPage({
+  href,
+  sections,
   title,
   updated,
-  children,
-}: {
+}: Readonly<{
+  href: string;
+  sections: readonly LegalSection[];
   title: string;
   updated: string;
-  children: React.ReactNode;
-}) {
+}>) {
   return (
-    <main className="pt-35 pb-25 md:pt-40">
-      <article className="blog-details-docs blog-details max-w-c-1016 mx-auto px-4 md:px-8">
-        <h1>{title}</h1>
-        <p>Last updated: {updated}</p>
-        {children}
-      </article>
+    <main>
+      <LegalDocument
+        currentHref={href}
+        documents={legalDocuments}
+        sections={sections}
+        title={title}
+        updated={updated}
+      />
     </main>
   );
 }

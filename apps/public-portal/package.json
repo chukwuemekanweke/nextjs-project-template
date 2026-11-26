@@ -16,7 +16,6 @@
     "@template/config": "workspace:*",
     "@template/public-ui": "workspace:*",
     "@template/ui-core": "workspace:*",
-    "framer-motion": "12.42.2",
     "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

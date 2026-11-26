@@ -39,9 +39,9 @@
       "state-flow": 10
     },
     "byStatus": {
-      "Implemented": 16,
+      "Implemented": 24,
       "Missing": 28,
-      "Partial": 13,
+      "Partial": 5,
       "Reference-only": 1
     },
     "byClassification": {
@@ -3074,11 +3074,15 @@
         ]
       },
       "implementation": {
-        "status": "Partial",
+        "status": "Implemented",
         "classification": "C",
-        "files": ["apps/public-portal/src/app/about/page.tsx"],
+        "files": [
+          "apps/public-portal/src/app/about/page.tsx",
+          "apps/public-portal/src/config/site.tsx",
+          "packages/public-ui/src/components/feature-grid.tsx"
+        ],
         "existingFunctionality": [
-          "Static PageIntro, image + copy, testimonials, CTA."
+          "Trello FE-UI-005: hero and Mission / Values / Team cards per the reference, with configurable placeholder copy."
         ]
       },
       "backend": {
@@ -3086,9 +3090,7 @@
         "operations": [],
         "missingCapabilities": []
       },
-      "uiGaps": [
-        "Reference is hero + three cards (Mission, Values, Team) with bracketed placeholder copy."
-      ],
+      "uiGaps": [],
       "dependencies": ["FE-UI-009"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-010",
@@ -3149,14 +3151,15 @@
         ]
       },
       "implementation": {
-        "status": "Partial",
+        "status": "Implemented",
         "classification": "C",
         "files": [
           "apps/public-portal/src/app/blog/page.tsx",
-          "apps/public-portal/src/config/site.ts"
+          "apps/public-portal/src/config/site.tsx",
+          "packages/public-ui/src/components/blog-card.tsx"
         ],
         "existingFunctionality": [
-          "Three hardcoded BlogCards linking to /blog#anchor; no post pages."
+          "Trello FE-UI-005: card grid with brand banner, category chip and excerpt; cards keep #id anchors and do not link."
         ]
       },
       "backend": {
@@ -3167,7 +3170,7 @@
         ]
       },
       "uiGaps": [
-        "Reference is a 6-card grid with category chips and dates; no post-detail artboard exists."
+        "Reference shows six posts with dates; the site keeps its three placeholder posts without invented dates. Post detail needs a content source (DR-032)."
       ],
       "dependencies": ["FE-UI-009"],
       "priority": "P3",
@@ -3235,10 +3238,12 @@
         "classification": "D",
         "files": [
           "apps/public-portal/src/app/contact/page.tsx",
-          "packages/public-ui/src/components/contact-section.tsx"
+          "apps/public-portal/src/components/contact-form.tsx",
+          "apps/public-portal/src/lib/contact-mailto.ts",
+          "packages/public-ui/src/components/contact-layout.tsx"
         ],
         "existingFunctionality": [
-          "Contact form whose submit handler only calls preventDefault."
+          "Trello FE-UI-005: reference layout (name, email, topic, message; email and office cards). Submitting opens a mailto: draft to the support email and states that nothing is sent from the site."
         ]
       },
       "backend": {
@@ -3247,8 +3252,7 @@
         "missingCapabilities": ["Contact/lead submission endpoint"]
       },
       "uiGaps": [
-        "Reference adds Topic select and 'Send message' with implied delivery.",
-        "No backend endpoint; the form must not show a success outcome until one exists (render email/mailto fallback)."
+        "No backend endpoint; the button reads 'Continue in your email app' instead of 'Send message' and no reply-time promise is shown (DR-033)."
       ],
       "dependencies": ["FE-UI-007 forms"],
       "priority": "P3",
@@ -3310,14 +3314,15 @@
         ]
       },
       "implementation": {
-        "status": "Partial",
+        "status": "Implemented",
         "classification": "C",
         "files": [
           "apps/public-portal/src/app/features/page.tsx",
-          "apps/public-portal/src/config/site.ts"
+          "apps/public-portal/src/config/site.tsx",
+          "packages/public-ui/src/components/numbered-feature-list.tsx"
         ],
         "existingFunctionality": [
-          "Static PageIntro + Features grid + CTA from site config."
+          "Trello FE-UI-005: numbered (01-06) capability list with soft icon panels per the reference."
         ]
       },
       "backend": {
@@ -3326,7 +3331,7 @@
         "missingCapabilities": []
       },
       "uiGaps": [
-        "Reference is a numbered (01-06) alternating feature list; copy mentions Wallet, Verification and Administration capabilities that are not implemented."
+        "Copy lists only implemented capabilities (accounts, strong sign-in, security, subscriptions, portals, branding) instead of the reference wallet/verification/administration claims (DR-031)."
       ],
       "dependencies": ["FE-UI-009"],
       "priority": "P2",
@@ -3390,16 +3395,18 @@
         ]
       },
       "implementation": {
-        "status": "Partial",
+        "status": "Implemented",
         "classification": "B",
         "files": [
           "apps/public-portal/src/app/page.tsx",
-          "apps/public-portal/src/config/site.ts",
-          "packages/public-ui/src/components/*"
+          "apps/public-portal/src/config/site.tsx",
+          "packages/public-ui/src/components/hero.tsx",
+          "packages/public-ui/src/components/product-shot.tsx",
+          "packages/public-ui/src/components/feature-grid.tsx",
+          "packages/public-ui/src/components/cta-banner.tsx"
         ],
         "existingFunctionality": [
-          "Server-rendered page; pricing section reads backend plans (loadSubscriptionPlans, revalidate 60 s).",
-          "Hero, logo cloud, features, CTA, FAQ, testimonials, contact and blog cards are static config content."
+          "Trello FE-UI-005: hero, decorative product shot (no figures), six feature cards and CTA per the reference; static (no plan request)."
         ]
       },
       "backend": {
@@ -3410,9 +3417,8 @@
         "missingCapabilities": []
       },
       "uiGaps": [
-        "Reference composition is hero + product shot + 6 feature cards + CTA; current page adds logo cloud, FAQ, testimonials, pricing, contact and blog sections with no reference.",
-        "Reference 'product shot' is an illustrative dashboard mock with sample balances; must stay decorative, not data.",
-        "Solid-derived sections, framer-motion reveals and hero images do not match the reference."
+        "Reference 'New: passkey sign-in' chip omitted (announcement copy is a product decision).",
+        "Reference product shot shows sample balances; the implementation is abstract and aria-hidden so it cannot read as data."
       ],
       "dependencies": ["FE-UI-003 tokens", "FE-UI-009 marketing shell"],
       "priority": "P2",
@@ -3479,15 +3485,16 @@
         ]
       },
       "implementation": {
-        "status": "Partial",
+        "status": "Implemented",
         "classification": "C",
         "files": [
           "apps/public-portal/src/app/privacy/page.tsx",
           "apps/public-portal/src/app/terms/page.tsx",
-          "apps/public-portal/src/components/legal-page.tsx"
+          "apps/public-portal/src/components/legal-page.tsx",
+          "packages/public-ui/src/components/legal-document.tsx"
         ],
         "existingFunctionality": [
-          "Two routes rendering placeholder legal text."
+          "Trello FE-UI-005: 'On this page' contents, Privacy/Terms switch as links with aria-current, numbered sections; both routes kept."
         ]
       },
       "backend": {
@@ -3495,9 +3502,7 @@
         "operations": [],
         "missingCapabilities": []
       },
-      "uiGaps": [
-        "Reference is one document layout with 'On this page' TOC and a Privacy/Terms segmented switch."
-      ],
+      "uiGaps": ["Legal text remains configurable placeholder copy."],
       "dependencies": ["FE-UI-009"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-010",
@@ -3546,14 +3551,15 @@
         ]
       },
       "implementation": {
-        "status": "Partial",
+        "status": "Implemented",
         "classification": "B",
         "files": [
-          "packages/public-ui/src/components/header.tsx",
+          "packages/public-ui/src/components/marketing-header.tsx",
+          "apps/public-portal/src/components/site-header.tsx",
           "apps/public-portal/src/app/layout.tsx"
         ],
         "existingFunctionality": [
-          "Solid header with a mobile toggle and theme switch (next-themes)."
+          "Trello FE-UI-005: compact bar (brand, Get started, menu) below lg opening a full-screen ui-core Drawer with navigation, both CTAs and a Dark mode switch; focus trap/return, Escape, closes on link choice and at lg."
         ]
       },
       "backend": {
@@ -3561,10 +3567,7 @@
         "operations": [],
         "missingCapabilities": []
       },
-      "uiGaps": [
-        "Reference: compact top bar (logo, Get started, menu button) opening a full-screen sheet with nav, both CTAs and a Dark mode switch.",
-        "Header source contains mis-encoded glyphs (mojibake) for the theme/menu icons."
-      ],
+      "uiGaps": [],
       "dependencies": ["FE-UI-005 Dialog/Sheet"],
       "priority": "P1",
       "roadmapTicket": "FE-UI-009",
@@ -3634,10 +3637,13 @@
           "apps/public-portal/src/app/pricing/page.tsx",
           "apps/public-portal/src/components/subscription-pricing.tsx",
           "apps/public-portal/src/lib/subscription-plans.ts",
-          "apps/public-portal/src/lib/subscription-pricing.ts"
+          "apps/public-portal/src/lib/subscription-pricing.ts",
+          "packages/public-ui/src/components/plan-card.tsx",
+          "packages/public-ui/src/components/pricing-intervals.tsx"
         ],
         "existingFunctionality": [
-          "Plans from GET /api/v1/subscription-plans in Server Components; empty and unavailable states; CTA links to User Portal /billing/checkout?planId=&billingInterval=."
+          "Plans from GET /api/v1/subscription-plans in a streamed Server Component (PlanGridSkeleton while loading); empty and unavailable states; CTA links to User Portal /billing/checkout?planId=&billingInterval=.",
+          "Trello FE-UI-005: plan cards and a Monthly/Yearly switch when plans offer several intervals; questions grid."
         ]
       },
       "backend": {
@@ -3648,8 +3654,8 @@
         ]
       },
       "uiGaps": [
-        "Reference has Monthly/Yearly segmented toggle (interactive artboard); public page shows the default interval only.",
         "Reference 'Most popular' badge and featured border are not backed by plan data (OKF forbids local tier labels).",
+        "Reference 'save 17%' interval label omitted (no computed savings).",
         "FAQ copy is static and must not contradict backend policy."
       ],
       "dependencies": ["FE-UI-005 SegmentedControl", "PlanCard (ui-core)"],

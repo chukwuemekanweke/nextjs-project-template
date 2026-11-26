@@ -11,6 +11,7 @@
 @source "../src";
 @source "../../../packages/ui-core/src";
 @source "../../../packages/dashboard-ui/src";
+@source "../../../packages/public-ui/src";
 
 :root {
   --font-outfit-loaded: "Outfit Variable";

@@ -48,6 +48,10 @@ durable boundaries and pure behavior rather than broad browser rendering:
   dark overrides and WCAG contrast (text 4.5:1, controls/focus 3:1); theme
   controls render accessible, hydration-safe markup (`renderToStaticMarkup`
   with a mocked `next-themes`).
+- `public-ui`: static markup tests (`components.test.tsx`: active link,
+  plan card naming, decorative product shot, legal switch) and browser tests
+  for the marketing menu (focus trap/return, Escape, link choice, closing at
+  `lg`, dark mode) and the pricing interval switch.
 - `dashboard-ui`: active-route resolution (`navigation.test.ts`) and sidebar
   grouping/rail rendering via `renderToStaticMarkup`; browser tests
   (`dashboard-shell.browser.test.tsx`) cover the drawer (focus trap/return,

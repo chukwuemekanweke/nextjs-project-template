@@ -56,6 +56,10 @@ minor units on the wire; format them only with `formatMinorUnits`
   anonymous server client, data cache `revalidate: 60`, tag
   `subscription-plans`). Pages call `connection()` so builds never hit the API;
   no browser CORS is needed. Load failures render an unavailable state.
+  Only `/pricing` loads plans (streamed behind `PlanGridSkeleton`); with
+  several offered intervals a Monthly/Yearly switch shows server-prepared
+  cards per interval (`toPricingIntervals`), each linking checkout with that
+  `billingInterval`. No savings or "most popular" labels are computed.
 - One checkout attempt (selection, UUID key, purchase id) lives in
   `localStorage`, shared across tabs so a hosted checkout can return in a new
   tab. Reuse the key for identical unsettled retries; new key for any changed

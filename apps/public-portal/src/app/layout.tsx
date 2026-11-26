@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Outfit } from "next/font/google";
 import type { CSSProperties, ReactNode } from "react";
-import { Footer, Header } from "@template/public-ui";
+import { MarketingFooter } from "@template/public-ui";
 import { AppProviders } from "@/components/app-providers";
+import { SiteBrand } from "@/components/site-brand";
+import { SiteHeader } from "@/components/site-header";
 import { branding } from "@/config/env";
-import { navigation, site } from "@/config/site";
+import { footerNavigation, site } from "@/config/site";
 import "./globals.css";
 
 // Self-hosted at build time; browsers never request Google Fonts. The
@@ -39,10 +41,8 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
     >
-      {/* bg-white / dark:bg-black keep the Solid marketing backgrounds until
-          the marketing chrome migrates (FE-UI-009). */}
       <body
-        className="bg-white antialiased dark:bg-black"
+        className="flex min-h-screen flex-col antialiased"
         style={
           {
             "--brand-accent": branding.colours.accent,
@@ -51,24 +51,13 @@ export default function RootLayout({
         }
       >
         <AppProviders>
-          <Header
-            logoAlt={site.name}
-            logo={branding.logo}
-            navigation={navigation}
-            signIn={site.signIn}
-            register={site.register}
-          />
+          <SiteHeader brand={<SiteBrand />} />
           {children}
-          <Footer
-            description={site.description}
+          <MarketingFooter
+            brand={<SiteBrand />}
             copyright={branding.copyright}
-            navigation={navigation}
-            legal={[
-              { label: "Privacy", href: "/privacy" },
-              { label: "Terms", href: "/terms" },
-            ]}
-            logo={branding.logo}
-            logoAlt={branding.logo.alt}
+            description={site.description}
+            groups={footerNavigation}
           />
         </AppProviders>
       </body>

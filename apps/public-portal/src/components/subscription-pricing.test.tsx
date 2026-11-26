@@ -4,8 +4,10 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import {
   billingCadence,
+  offeredBillingIntervals,
   subscriptionCheckoutHref,
   toPricePlan,
+  toPricingIntervals,
 } from "@/lib/subscription-pricing";
 
 vi.mock("server-only", () => ({}));
@@ -23,6 +25,17 @@ import {
 import { SubscriptionPricing } from "./subscription-pricing";
 
 const USER_PORTAL = "https://app.example.com";
+const multiInterval: SubscriptionPlanResponse = {
+  code: "TEAM",
+  currencyCode: "NGN",
+  currencyId: "currency-1",
+  id: "019a0000-0000-7000-8000-000000000002",
+  name: "Team",
+  prices: [
+    { billingInterval: "Yearly", price: 9000000 },
+    { billingInterval: "Monthly", price: 900000 },
+  ],
+};
 const plan: SubscriptionPlanResponse = {
   billingInterval: "Monthly",
   code: "PRO_MONTHLY",
@@ -96,6 +109,46 @@ describe("subscription pricing helpers", () => {
     expect(mapped?.action.href).toContain("billingInterval=Monthly");
   });
 
+  it("prices a plan at a requested interval and skips plans without it", () => {
+    const yearly = toPricePlan(multiInterval, {
+      billingInterval: "Yearly",
+      userPortalUrl: USER_PORTAL,
+    });
+    expect(yearly?.price.replace(/ /g, " ")).toBe("NGN 90,000.00");
+    expect(yearly?.cadence).toBe("year");
+    expect(yearly?.action.href).toContain("billingInterval=Yearly");
+    expect(
+      toPricePlan(plan, {
+        billingInterval: "Yearly",
+        userPortalUrl: USER_PORTAL,
+      }),
+    ).toBeUndefined();
+  });
+
+  it("orders offered intervals Monthly, Yearly, then backend order", () => {
+    expect(
+      offeredBillingIntervals([
+        { ...plan, billingInterval: "Weekly" },
+        multiInterval,
+      ]),
+    ).toEqual(["Monthly", "Yearly", "Weekly"]);
+  });
+
+  it("groups plan cards by interval with only the plans that offer it", () => {
+    const intervals = toPricingIntervals([plan, multiInterval], {
+      userPortalUrl: USER_PORTAL,
+    });
+    expect(intervals.map((interval) => interval.value)).toEqual([
+      "Monthly",
+      "Yearly",
+    ]);
+    expect(intervals[0]?.plans.map((card) => card.name)).toEqual([
+      "Pro Monthly",
+      "Team",
+    ]);
+    expect(intervals[1]?.plans.map((card) => card.name)).toEqual(["Team"]);
+  });
+
   it("skips plans that offer no price", () => {
     expect(
       toPricePlan(
@@ -140,7 +193,7 @@ describe("SubscriptionPricing", () => {
 
     expect(markup).toContain("Pro Monthly");
     expect(markup).toContain("NGN 7,500.00");
-    expect(markup).toContain("/month");
+    expect(markup).toContain("/ month");
     expect(markup).toContain("Billed monthly in NGN.");
     expect(markup).toContain(
       `href="${USER_PORTAL}/billing/checkout?planId=${plan.id}&amp;billingInterval=Monthly"`,
@@ -148,10 +201,36 @@ describe("SubscriptionPricing", () => {
     expect(markup).toContain('aria-label="Subscribe: Pro Monthly"');
   });
 
+  it("hides the interval switch when only one interval is offered", () => {
+    expect(render({ plans: [plan], status: "loaded" })).not.toContain(
+      'aria-label="Billing interval"',
+    );
+  });
+
+  it("offers an interval switch showing monthly prices first", () => {
+    const markup = render({ plans: [plan, multiInterval], status: "loaded" });
+
+    expect(markup).toContain('aria-label="Billing interval"');
+    expect(markup).toContain("NGN 9,000.00");
+    expect(markup).not.toContain("NGN 90,000.00");
+    expect(markup).toContain(
+      `href="${USER_PORTAL}/billing/checkout?planId=${multiInterval.id}&amp;billingInterval=Monthly"`,
+    );
+  });
+
   it("shows an empty state when no plans are active", () => {
     expect(render({ plans: [], status: "loaded" })).toContain(
       "No subscription plans are available",
     );
+  });
+
+  it("shows an empty state when no plan offers a price", () => {
+    const markup = render({
+      plans: [{ ...plan, billingInterval: undefined, price: undefined }],
+      status: "loaded",
+    });
+    expect(markup).toContain("No subscription plans are available");
+    expect(markup).toContain('role="status"');
   });
 
   it("shows a safe error state when plans cannot be loaded", () => {

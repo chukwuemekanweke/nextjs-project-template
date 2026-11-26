@@ -49,7 +49,7 @@ Environment deployments remain application-owned—not a repository-wide runtime
 
 All applications use `output: "standalone"` and retain TypeScript build errors. The dashboard apps configure `transpilePackages: ["@template/dashboard-ui", "@template/ui-core"]`; Public Portal configures `transpilePackages: ["@template/public-ui"]`. This tells Next.js to compile the local TypeScript source it receives through workspace exports.
 
-Tailwind v4 is configured with PostCSS in each application. Every app's `globals.css` imports `@template/ui-core/theme.css`. Dashboard `globals.css` then imports the temporary `@template/dashboard-ui/tailadmin-theme.css` compatibility layer and declares `@source` paths for dashboard-ui, forms and ui-core. Public Portal `globals.css` declares `@source` for public-ui and ui-core's theme controls and keeps its Solid-derived tokens. These source declarations ensure Tailwind sees shared-package classes and the application has the tokens that those classes use.
+Tailwind v4 is configured with PostCSS in each application. Every app's `globals.css` imports `@template/ui-core/theme.css`. Dashboard `globals.css` then imports the temporary `@template/dashboard-ui/tailadmin-theme.css` compatibility layer and declares `@source` paths for dashboard-ui, forms and ui-core. Public Portal `globals.css` declares `@source` for public-ui and ui-core and has no token layer of its own. These source declarations ensure Tailwind sees shared-package classes and the application has the tokens that those classes use.
 
 ## Build and deployment boundary
 

@@ -1,27 +1,29 @@
 import type { Metadata } from "next";
-import { Cta, Features } from "@template/public-ui";
-import { PageIntro } from "@/components/page-intro";
-import { features, site } from "@/config/site";
+import {
+  Hero,
+  MarketingContainer,
+  NumberedFeatureList,
+} from "@template/public-ui";
+import { capabilities } from "@/config/site";
+
 export const metadata: Metadata = {
   title: "Features",
   description: "Explore configurable product capabilities.",
   alternates: { canonical: "/features" },
 };
+
 export default function FeaturesPage() {
   return (
     <main>
-      <PageIntro
+      <Hero
+        description="A closer look at what ships with the foundation."
         eyebrow="Features"
-        title="Built for teams that"
-        highlighted="ship"
-        description="A reusable, configurable foundation designed for real product delivery."
+        size="page"
+        title="Everything between sign-up and revenue"
       />
-      <Features heading="Capabilities that grow with you" items={features} />
-      <Cta
-        title="Put these capabilities to work"
-        description="Create your account and begin shaping the experience around your product."
-        action={site.register}
-      />
+      <MarketingContainer className="pb-12 md:pb-20">
+        <NumberedFeatureList items={capabilities} />
+      </MarketingContainer>
     </main>
   );
 }

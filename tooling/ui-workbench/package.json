@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@template/dashboard-ui": "workspace:*",
+    "@template/public-ui": "workspace:*",
     "@template/ui-core": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:"
