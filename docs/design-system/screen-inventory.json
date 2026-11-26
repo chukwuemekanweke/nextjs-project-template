@@ -530,11 +530,12 @@
         "classification": "D",
         "files": [
           "apps/admin-portal/src/features/admin-kyc/kyc-model.ts",
-          "apps/admin-portal/src/features/admin-kyc/kyc-sections.tsx",
+          "apps/admin-portal/src/features/admin-kyc/kyc-filters.tsx",
+          "apps/admin-portal/src/features/admin-kyc/kyc-list.tsx",
           "apps/admin-portal/src/features/admin-kyc/kyc-preview.fixtures.ts"
         ],
         "existingFunctionality": [
-          "Trello FE-UI-013: feature-local AdminKycScreen (four AdminKpiCard count tiles with ready/loading/unavailable/error states, search + status + provider + UTC period filters inert without a handler, verification table with status badges incl. Failed and Unknown, provider reference, UTC times, pager, empty/filtered-empty/loading/error/forbidden). No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
+          "Trello FE-UI-013: feature-local AdminKycScreen (four AdminKpiCard count tiles with ready/loading/unavailable/error states, search + status + provider + UTC period filters inert without a handler, verification table with status badges incl. Failed and Unknown, provider reference, UTC times, AdminListPager in the AdminListCard footer (recovers from a page past the results), empty/filtered-empty/loading/error/forbidden). No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
         ]
       },
       "backend": {
@@ -609,7 +610,7 @@
         "classification": "D",
         "files": [
           "apps/admin-portal/src/features/admin-kyc/kyc-model.ts",
-          "apps/admin-portal/src/features/admin-kyc/kyc-sections.tsx",
+          "apps/admin-portal/src/features/admin-kyc/kyc-detail.tsx",
           "apps/admin-portal/src/features/admin-kyc/kyc-preview.fixtures.ts"
         ],
         "existingFunctionality": [
@@ -1309,7 +1310,7 @@
         "classification": "D",
         "files": [
           "apps/admin-portal/src/features/admin-roles/roles-model.ts",
-          "apps/admin-portal/src/features/admin-roles/roles-sections.tsx",
+          "apps/admin-portal/src/features/admin-roles/role-editor.tsx",
           "apps/admin-portal/src/features/admin-roles/roles-preview.fixtures.ts"
         ],
         "existingFunctionality": [
@@ -1388,12 +1389,14 @@
         "classification": "D",
         "files": [
           "apps/admin-portal/src/features/admin-roles/roles-model.ts",
-          "apps/admin-portal/src/features/admin-roles/roles-sections.tsx",
+          "apps/admin-portal/src/features/admin-roles/roles-list.tsx",
+          "apps/admin-portal/src/features/admin-roles/permission-matrix.tsx",
           "apps/admin-portal/src/features/admin-roles/roles-preview.fixtures.ts"
         ],
         "existingFunctionality": [
           "No admin route or navigation item: admin navigation lists only Dashboard; authorization is a single configured role claim.",
-          "Trello FE-UI-013: feature-local AdminRolesScreen (roles table with System/Custom badges and counts, read-only permission matrix with text Granted/Not granted cells, disabled New role, loading/error/unavailable/forbidden). The 16 × 5 reference catalogue is a test fixture only, not an authoritative permission list, and is never evaluated. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
+          "Trello FE-UI-013: feature-local AdminRolesScreen (roles table with System/Custom badges and counts, read-only permission matrix with text Granted/Not granted cells, disabled New role, loading/error/unavailable/forbidden). The 16 × 5 reference catalogue is a test fixture only, not an authoritative permission list, and is never evaluated. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e).",
+          "The permission matrix stays a specialised accessible table (row headers per permission, colgroup headings per group), not DataTable, which has no row-header or spanning-group semantics."
         ]
       },
       "backend": {
@@ -1936,11 +1939,14 @@
         "classification": "D",
         "files": [
           "apps/admin-portal/src/features/admin-users/users-model.ts",
-          "apps/admin-portal/src/features/admin-users/users-sections.tsx",
+          "apps/admin-portal/src/features/admin-users/user-detail.tsx",
+          "apps/admin-portal/src/features/admin-users/user-summary-cards.tsx",
+          "apps/admin-portal/src/features/admin-users/user-sessions.tsx",
+          "apps/admin-portal/src/features/admin-users/user-action-confirmation.tsx",
           "apps/admin-portal/src/features/admin-users/users-preview.fixtures.ts"
         ],
         "existingFunctionality": [
-          "Trello FE-UI-013: feature-local AdminUserDetailScreen (identity header with status/email badges and actions, account key-values, role chips with remove and an assign control, KYC and subscription summaries, active sessions, security activity, per-section loading/error/unavailable/empty, not found, forbidden). Lock/unlock, sign out all and role changes open AdminStepUpDialog; revoking one session opens ConfirmDialog; confirmed requests go to an onAction handler that must resolve before the dialog closes, and the screen never shows success. Without a handler every action is disabled with an explanation. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
+          "Trello FE-UI-013: feature-local AdminUserDetailScreen (identity header with status/email badges and actions, account key-values, role chips with remove and an assign control, KYC and subscription summaries, active sessions, security activity, per-section loading/error/unavailable/empty, not found, forbidden). Lock/unlock, sign out all and role changes open AdminStepUpDialog; revoking one session opens ConfirmDialog; opening a confirmation captures the intent with its explicit target (userId plus role or session id); the confirmation closes with a notice if the displayed user, account status, role or session no longer matches, and the intent is re-checked before submitting; one request at a time; failures keep the dialog open with safe copy from describeAdminActionFailure for a retry; success closes it without showing success or changing the record. Without a handler every action is disabled with an explanation. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
         ]
       },
       "backend": {
@@ -2023,13 +2029,13 @@
         "classification": "D",
         "files": [
           "apps/admin-portal/src/features/admin-users/users-model.ts",
-          "apps/admin-portal/src/features/admin-users/users-sections.tsx",
-          "apps/admin-portal/src/features/admin-users/admin-view.tsx",
+          "apps/admin-portal/src/features/admin-users/users-filters.tsx",
+          "apps/admin-portal/src/features/admin-users/users-list.tsx",
           "apps/admin-portal/src/features/admin-users/users-preview.fixtures.ts"
         ],
         "existingFunctionality": [
           "No admin route or navigation item: admin navigation lists only Dashboard (DR-071 resolved in FE-UI-004).",
-          "Trello FE-UI-013: feature-local AdminUsersScreen (header, search + Status/KYC/Role/Plan filter menus + sort, users table with status/KYC/plan/role badges stacking on phones, pager or range text, loading/error/forbidden/empty/filtered-empty). Filters, sort and paging are controlled callbacks, inert and explained without them; role/plan options are backend-supplied; detail links only for an implemented route. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
+          "Trello FE-UI-013: feature-local AdminUsersScreen (header, search + Status/KYC/Role/Plan filter menus + sort, users table with status/KYC/plan/role badges stacking on phones, AdminListPager in the AdminListCard footer (recovers from a page past the results) or range text, loading/error/forbidden/empty/filtered-empty). Filters, sort and paging are controlled callbacks, inert and explained without them; role/plan options are backend-supplied; detail links only for an implemented route. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
         ]
       },
       "backend": {

@@ -1,6 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { AdminRoleEditScreen, AdminRolesScreen } from "./roles-sections";
+import { PermissionMatrix } from "./permission-matrix";
+import { AdminRoleEditScreen } from "./role-editor";
+import { AdminRolesScreen } from "./roles-list";
 import {
   groupGrantCount,
   isPermissionGranted,
@@ -9,7 +11,7 @@ import {
 import {
   fixtureMatrix,
   fixturePermissionGroups,
-  fixtureRoleEditModel,
+  fixtureRoleEditRecord,
   fixtureRolesModel,
 } from "./roles-preview.fixtures";
 
@@ -18,6 +20,9 @@ import {
  * permission model, role API, route or navigation item exists (DR-073); the
  * editor is a read-only visual composition (CAF-FE-008).
  */
+
+const editModel = (kind?: "system" | "custom") =>
+  ({ record: fixtureRoleEditRecord(kind), state: "ready" }) as const;
 
 describe("AdminRolesScreen", () => {
   const markup = renderToStaticMarkup(
@@ -111,7 +116,7 @@ describe("AdminRolesScreen", () => {
 
 describe("AdminRoleEditScreen (read-only preview editor)", () => {
   const markup = renderToStaticMarkup(
-    <AdminRoleEditScreen listHref="/roles" model={fixtureRoleEditModel()} />,
+    <AdminRoleEditScreen listHref="/roles" model={editModel()} />,
   );
 
   it("renders details, grouped checklists, summary, members and danger zone", () => {
@@ -144,7 +149,9 @@ describe("AdminRoleEditScreen (read-only preview editor)", () => {
     expect(markup).not.toContain("<form");
     const buttons = markup.match(/<button[^>]*>/g) ?? [];
     expect(buttons.length).toBeGreaterThan(0);
-    for (const button of buttons) expect(button).toContain('disabled=""');
+    for (const button of buttons) {
+      expect(button).toContain('disabled=""');
+    }
     for (const input of markup.match(/<(input|textarea)[^>]*>/g) ?? []) {
       expect(input).toContain('disabled=""');
     }
@@ -153,7 +160,7 @@ describe("AdminRoleEditScreen (read-only preview editor)", () => {
 
   it("explains system roles", () => {
     const system = renderToStaticMarkup(
-      <AdminRoleEditScreen model={fixtureRoleEditModel("system")} />,
+      <AdminRoleEditScreen model={editModel("system")} />,
     );
     expect(system).toContain("System role");
     expect(system).toContain("System roles can&#x27;t be deleted.");
@@ -167,7 +174,7 @@ describe("AdminRoleEditScreen (read-only preview editor)", () => {
     ).toContain("Loading role");
     expect(
       renderToStaticMarkup(<AdminRoleEditScreen model={{ state: "error" }} />),
-    ).toContain("Couldn&#x27;t load this role");
+    ).toContain("Couldn&#x27;t load role");
     expect(
       renderToStaticMarkup(
         <AdminRoleEditScreen model={{ state: "notFound" }} />,
@@ -176,12 +183,15 @@ describe("AdminRoleEditScreen (read-only preview editor)", () => {
     const unavailable = renderToStaticMarkup(
       <AdminRoleEditScreen
         model={{
-          ...fixtureRoleEditModel(),
-          groups: {
-            reason: "Needs a permission catalogue API.",
-            state: "unavailable",
+          record: {
+            ...fixtureRoleEditRecord(),
+            groups: {
+              reason: "Needs a permission catalogue API.",
+              state: "unavailable",
+            },
+            members: { state: "error" },
           },
-          members: { state: "error" },
+          state: "ready",
         }}
       />,
     );
@@ -192,6 +202,62 @@ describe("AdminRoleEditScreen (read-only preview editor)", () => {
         <AdminRoleEditScreen model={{ state: "forbidden" }} />,
       ),
     ).toContain("Error 403");
+  });
+});
+
+describe("PermissionMatrix accessibility", () => {
+  const markup = renderToStaticMarkup(
+    <PermissionMatrix matrix={fixtureMatrix} />,
+  );
+
+  it("is a labelled, keyboard-scrollable region with a caption", () => {
+    expect(markup).toMatch(
+      /<div[^>]*aria-label="Permission matrix"[^>]*role="region"[^>]*tabindex="0"/i,
+    );
+    expect(markup).toContain(
+      '<caption class="sr-only">Permissions granted to each role (read-only)</caption>',
+    );
+  });
+
+  it("uses column, group and row headers so each cell is announced", () => {
+    const roleHeaders = markup.match(/<th[^>]*scope="col"/g) ?? [];
+    expect(roleHeaders).toHaveLength(fixtureMatrix.roles.length + 1);
+    expect(markup.match(/scope="colgroup"/g)).toHaveLength(
+      fixtureMatrix.groups.length,
+    );
+    const permissionCount = fixtureMatrix.groups.reduce(
+      (sum, group) => sum + group.permissions.length,
+      0,
+    );
+    expect(markup.match(/scope="row"/g)).toHaveLength(permissionCount);
+    expect(markup.match(/<td/g)).toHaveLength(
+      permissionCount * fixtureMatrix.roles.length,
+    );
+  });
+
+  it("states every grant in text, not by icon alone", () => {
+    const cells = markup.match(/<td[^>]*>.*?<\/td>/g) ?? [];
+    for (const cell of cells) {
+      expect(cell).toMatch(/>(Granted|Not granted)<\/span>/);
+      expect(cell).toContain('aria-hidden="true"');
+    }
+  });
+
+  it("never resolves grants through inherited property names", () => {
+    expect(
+      isPermissionGranted({ grants: {} }, "constructor", "users.read"),
+    ).toBe(false);
+    expect(isPermissionGranted({ grants: {} }, "__proto__", "users.read")).toBe(
+      false,
+    );
+  });
+
+  it("reports an empty catalogue instead of an empty table", () => {
+    expect(
+      renderToStaticMarkup(
+        <PermissionMatrix matrix={{ grants: {}, groups: [], roles: [] }} />,
+      ),
+    ).toContain("No permissions reported.");
   });
 });
 

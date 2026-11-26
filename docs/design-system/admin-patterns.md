@@ -142,4 +142,9 @@ confirm. Use `AdminStepUpDialog` only where the preview assumes step-up
 - Step-up: no step-up endpoint or admin MFA exists (DR-041, DR-072). Do not
   show a validity window, permission names or success until the backend
   contract defines them; `validityHint` exists for that copy.
+- Tables: use `DataTable` (through `AdminListTable` for lists). A matrix that
+  needs row headers and group headings spanning every column (the FE-UI-013
+  permission matrix, `features/admin-roles/permission-matrix.tsx`) stays a
+  specialised accessible `<table>` with `scope` headers rather than bending
+  `DataTable`.
 - Do not move these into `packages/*` unless a second portal needs them.

@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { AdminKycDetailScreen, AdminKycScreen } from "./kyc-sections";
+import { AdminKycDetailScreen } from "./kyc-detail";
+import { AdminKycScreen } from "./kyc-list";
 import {
   ADMIN_KYC_STATUSES,
   DEFAULT_ADMIN_KYC_FILTERS,
@@ -12,7 +13,7 @@ import {
 } from "./kyc-model";
 import {
   FIXTURE_PROVIDER,
-  fixtureKycDetailModel,
+  fixtureKycDetailRecord,
   fixtureKycListModel,
   fixtureProviderOptions,
 } from "./kyc-preview.fixtures";
@@ -24,6 +25,15 @@ import {
  */
 
 const render = renderToStaticMarkup;
+const detail = (status?: Parameters<typeof fixtureKycDetailRecord>[0]) =>
+  ({ record: fixtureKycDetailRecord(status), state: "ready" }) as const;
+const loadingMetric = { state: "loading" } as const;
+const loadingCounts = {
+  inProgress: loadingMetric,
+  pending: loadingMetric,
+  rejectedOrFailed: loadingMetric,
+  verified: loadingMetric,
+};
 
 describe("KYC status display", () => {
   it("labels every status in text and never treats unknown as success", () => {
@@ -39,6 +49,10 @@ describe("KYC status display", () => {
     expect(parseAdminKycStatus("approved")).toBe("unknown");
     expect(parseAdminKycStatus(undefined)).toBe("unknown");
     expect(parseAdminKycStatus("pending")).toBe("pending");
+    for (const status of ["constructor", "__proto__", "toString", ""]) {
+      expect(kycStatusBadge(status).label, status).toBe("Unknown");
+      expect(parseAdminKycStatus(status)).toBe("unknown");
+    }
   });
 
   it("builds attempt and decision copy only from supplied values", () => {
@@ -106,7 +120,7 @@ describe("AdminKycScreen", () => {
     expect(markup).toContain("ref_fixture_1");
     expect(markup).toContain("Not available");
     expect(markup).toContain('href="/kyc/vrf-fixture-0001"');
-    expect(markup).toContain('aria-label="Verifications pagination"');
+    expect(markup).toContain('aria-label="Verifications pages"');
     expect(markup).toContain("Showing 1–7 of 7");
   });
 
@@ -128,7 +142,17 @@ describe("AdminKycScreen", () => {
   });
 
   it("separates empty from filtered-empty, and shows loading/error/forbidden", () => {
-    const empty = { ...fixtureKycListModel, items: [], totalItems: 0 };
+    const empty = {
+      ...fixtureKycListModel,
+      verifications: {
+        page: 1,
+        pageSize: 10,
+        rows: [],
+        state: "ready",
+        totalItems: 0,
+        totalPages: 0,
+      },
+    } as const;
     expect(render(<AdminKycScreen model={empty} />)).toContain(
       "No verifications yet",
     );
@@ -141,17 +165,65 @@ describe("AdminKycScreen", () => {
       ),
     ).toContain("No verifications match these filters");
 
-    const loading = render(<AdminKycScreen model={{ state: "loading" }} />);
+    const loading = render(
+      <AdminKycScreen
+        model={{ counts: loadingCounts, verifications: { state: "loading" } }}
+      />,
+    );
     expect(loading).toContain("Loading verifications");
     expect(loading).toMatch(/data-kpi="Pending review" data-state="loading"/);
 
-    const error = render(<AdminKycScreen model={{ state: "error" }} />);
-    expect(error).toContain("Couldn&#x27;t load verifications");
-    expect(error).toMatch(/data-kpi="Pending review" data-state="error"/);
-
-    expect(render(<AdminKycScreen model={{ state: "forbidden" }} />)).toContain(
-      "Error 403",
+    const error = render(
+      <AdminKycScreen
+        model={{ ...fixtureKycListModel, verifications: { state: "error" } }}
+        onReload={() => undefined}
+      />,
     );
+    expect(error).toContain("Couldn&#x27;t load this list");
+    expect(error).toContain("Try again");
+
+    const unavailable = render(
+      <AdminKycScreen
+        model={{
+          ...fixtureKycListModel,
+          verifications: { reason: "Needs a KYC API.", state: "unavailable" },
+        }}
+      />,
+    );
+    expect(unavailable).toContain("Needs a KYC API.");
+    expect(unavailable).not.toContain("No verifications yet");
+
+    expect(
+      render(
+        <AdminKycScreen
+          model={{
+            ...fixtureKycListModel,
+            verifications: { state: "forbidden" },
+          }}
+        />,
+      ),
+    ).toContain("Error 403");
+  });
+
+  it("recovers from a page past the results", () => {
+    const markup = render(
+      <AdminKycScreen
+        model={{
+          ...fixtureKycListModel,
+          verifications: {
+            page: 3,
+            pageSize: 10,
+            rows: [],
+            state: "ready",
+            totalItems: 7,
+            totalPages: 1,
+          },
+        }}
+        onPageChange={() => undefined}
+      />,
+    );
+    expect(markup).toContain("Back to first page");
+    expect(markup).toContain('aria-label="Verifications pages"');
   });
 });
 
@@ -161,7 +233,7 @@ describe("AdminKycDetailScreen", () => {
       <AdminKycDetailScreen
         getUserHref={(id) => `/users/${id}`}
         listHref="/kyc"
-        model={fixtureKycDetailModel()}
+        model={detail()}
         onRefresh={() => undefined}
       />,
     );
@@ -175,6 +247,7 @@ describe("AdminKycDetailScreen", () => {
     expect(markup).toContain('<ol aria-label="Status history"');
     expect(markup).toContain("Callback received · pending");
     expect(markup).toContain(" · signature valid");
+    expect(markup).not.toContain("doesn&#x27;t recognise");
     expect(markup.match(/<li/g)).toHaveLength(4);
     expect(markup).toContain(">#2<");
     expect(markup).toContain("15 Jan 2026");
@@ -186,9 +259,7 @@ describe("AdminKycDetailScreen", () => {
   });
 
   it("disables refresh with an explanation without a handler", () => {
-    const markup = render(
-      <AdminKycDetailScreen model={fixtureKycDetailModel()} />,
-    );
+    const markup = render(<AdminKycDetailScreen model={detail()} />);
     expect(markup).toMatch(
       /<button[^>]*aria-describedby="[^"]+"[^>]*disabled=""/,
     );
@@ -199,7 +270,7 @@ describe("AdminKycDetailScreen", () => {
   it("marks busy refresh without changing the status", () => {
     const markup = render(
       <AdminKycDetailScreen
-        model={fixtureKycDetailModel()}
+        model={detail()}
         onRefresh={() => undefined}
         refreshing
       />,
@@ -209,30 +280,35 @@ describe("AdminKycDetailScreen", () => {
   });
 
   it("warns for an unknown status and never shows it as verified", () => {
-    const markup = render(
-      <AdminKycDetailScreen model={fixtureKycDetailModel("unknown")} />,
-    );
+    const markup = render(<AdminKycDetailScreen model={detail("unknown")} />);
     expect(markup).toContain(">Unknown</span>");
     expect(markup).toContain("doesn&#x27;t recognise");
     expect(markup).not.toContain(">Verified</span>");
   });
 
   it("handles missing, empty and failed sections", () => {
-    const base = fixtureKycDetailModel();
+    const base = fixtureKycDetailRecord();
     const markup = render(
       <AdminKycDetailScreen
         model={{
-          ...base,
-          attempts: {
-            reason: "Needs a KYC attempts API.",
-            state: "unavailable",
+          record: {
+            ...base,
+            attempts: {
+              reason: "Needs a KYC attempts API.",
+              state: "unavailable",
+            },
+            history: { data: [], state: "ready" },
+            verification: {
+              id: "v",
+              status: "inProgress",
+              user: {
+                displayName: "Fixture",
+                email: "f@fixture.test",
+                id: "u",
+              },
+            },
           },
-          history: { data: [], state: "ready" },
-          verification: {
-            id: "v",
-            status: "inProgress",
-            user: { displayName: "Fixture", email: "f@fixture.test", id: "u" },
-          },
+          state: "ready",
         }}
       />,
     );
@@ -243,7 +319,10 @@ describe("AdminKycDetailScreen", () => {
     expect(
       render(
         <AdminKycDetailScreen
-          model={{ ...base, history: { state: "error" } }}
+          model={{
+            record: { ...base, history: { state: "error" } },
+            state: "ready",
+          }}
           onReload={() => undefined}
         />,
       ),
@@ -256,7 +335,7 @@ describe("AdminKycDetailScreen", () => {
     ).toContain("Loading verification");
     expect(
       render(<AdminKycDetailScreen model={{ state: "error" }} />),
-    ).toContain("Couldn&#x27;t load this verification");
+    ).toContain("Couldn&#x27;t load verification");
     expect(
       render(<AdminKycDetailScreen model={{ state: "notFound" }} />),
     ).toContain("Verification not found");

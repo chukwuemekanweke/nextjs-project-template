@@ -1,6 +1,6 @@
 import { countMetric } from "@/components/admin-patterns";
 import type {
-  AdminKycDetailModel,
+  AdminKycDetailRecord,
   AdminKycListItem,
   AdminKycListModel,
   AdminKycStatus,
@@ -56,27 +56,26 @@ export const fixtureKycItems: readonly AdminKycListItem[] = [
   item(7, "unknown", { provider: undefined, providerReference: undefined }),
 ];
 
-export const fixtureKycListModel: Extract<
-  AdminKycListModel,
-  { state: "ready" }
-> = {
+export const fixtureKycListModel: AdminKycListModel = {
   counts: {
     inProgress: countMetric(1),
     pending: countMetric(1),
     rejectedOrFailed: countMetric(0),
     verified: countMetric(null),
   },
-  items: fixtureKycItems,
-  page: 1,
-  pageSize: 10,
-  state: "ready",
-  totalItems: fixtureKycItems.length,
-  totalPages: 1,
+  verifications: {
+    page: 1,
+    pageSize: 10,
+    rows: fixtureKycItems,
+    state: "ready",
+    totalItems: fixtureKycItems.length,
+    totalPages: 1,
+  },
 };
 
-export function fixtureKycDetailModel(
+export function fixtureKycDetailRecord(
   status: AdminKycStatus = "pending",
-): Extract<AdminKycDetailModel, { state: "ready" }> {
+): AdminKycDetailRecord {
   return {
     attempts: {
       data: [
@@ -125,7 +124,6 @@ export function fixtureKycDetailModel(
       ],
       state: "ready",
     },
-    state: "ready",
     verification: {
       applicantId: "app_fixture_19",
       attemptCount: 3,

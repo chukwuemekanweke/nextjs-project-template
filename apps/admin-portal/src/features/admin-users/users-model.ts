@@ -1,10 +1,12 @@
-import type { StepUpSubmission } from "@/components/admin-patterns";
+import {
+  lookupAdminBadge,
+  type AdminBadge,
+  type AdminDetailState,
+  type AdminListState,
+  type AdminSection,
+  type StepUpSubmission,
+} from "@/components/admin-patterns";
 import type { AdminKycStatus } from "@/features/admin-kyc/kyc-model";
-import type {
-  AdminBadge,
-  AdminScreenBlocked,
-  AdminSection,
-} from "./admin-view";
 
 /*
  * Admin user management view models (ADM-USERS, ADM-USER-DETAIL).
@@ -15,20 +17,22 @@ import type {
  * Admin access today is one configured role claim (`proxy.ts`); the
  * permission names in the reference (users.read, users.manage) are future
  * targets and are never evaluated here.
+ *
+ * The KYC status vocabulary comes from `admin-kyc` (one-way): KYC owns what
+ * verification statuses mean, and the users list and detail only show them.
  */
 
 export const ADMIN_ACCOUNT_STATUSES = ["active", "locked"] as const;
 export type AdminAccountStatus =
   (typeof ADMIN_ACCOUNT_STATUSES)[number] | "unknown";
 
-const accountBadges: Record<AdminAccountStatus, AdminBadge> = {
+const accountBadges: Readonly<Record<string, AdminBadge>> = {
   active: { label: "Active", tone: "success" },
   locked: { label: "Locked", tone: "danger" },
-  unknown: { label: "Unknown", tone: "neutral" },
 };
 
-export function accountStatusBadge(status: AdminAccountStatus): AdminBadge {
-  return accountBadges[status];
+export function accountStatusBadge(status: string): AdminBadge {
+  return lookupAdminBadge(accountBadges, status);
 }
 
 /** A role reference as the backend names it (id + display name). */
@@ -57,7 +61,7 @@ export const ADMIN_USER_SORTS = [
 ] as const;
 export type AdminUserSort = (typeof ADMIN_USER_SORTS)[number];
 
-export const adminUserSortLabels: Record<AdminUserSort, string> = {
+export const adminUserSortLabels: Readonly<Record<AdminUserSort, string>> = {
   lastLogin: "Last login",
   name: "Name",
   newest: "Newest",
@@ -104,21 +108,13 @@ export function nextUserFilters<Key extends keyof AdminUserFilters>(
   key: Key,
   value: AdminUserFilters[Key],
 ): AdminUserFilters | null {
-  if (current[key] === value) return null;
+  if (current[key] === value) {
+    return null;
+  }
   return { ...current, [key]: value };
 }
 
-export type AdminUsersListModel =
-  | AdminScreenBlocked
-  | Readonly<{
-      state: "ready";
-      users: readonly AdminUserListItem[];
-      page: number;
-      pageSize: number;
-      /** Omitted when the source does not report a total. */
-      totalItems?: number;
-      totalPages: number;
-    }>;
+export type AdminUsersListModel = AdminListState<AdminUserListItem>;
 
 /* ------------------------------------------------------------------------ */
 /* Detail                                                                    */
@@ -156,34 +152,23 @@ export type AdminUserKycSummary = Readonly<{
   startedAt?: string;
 }>;
 
-export const ADMIN_SUBSCRIPTION_STATUSES = [
-  "active",
-  "cancelling",
-  "cancelled",
-  "pastDue",
-] as const;
-export type AdminUserSubscriptionStatus =
-  (typeof ADMIN_SUBSCRIPTION_STATUSES)[number] | "unknown";
-
-const subscriptionBadges: Record<AdminUserSubscriptionStatus, AdminBadge> = {
+const subscriptionBadges: Readonly<Record<string, AdminBadge>> = {
   active: { label: "Active", tone: "success" },
   cancelled: { label: "Cancelled", tone: "neutral" },
   cancelling: { label: "Cancels at period end", tone: "warning" },
   pastDue: { label: "Past due", tone: "danger" },
-  unknown: { label: "Unknown", tone: "neutral" },
 };
 
-export function subscriptionStatusBadge(
-  status: AdminUserSubscriptionStatus,
-): AdminBadge {
-  return subscriptionBadges[status];
+export function subscriptionStatusBadge(status: string): AdminBadge {
+  return lookupAdminBadge(subscriptionBadges, status);
 }
 
 export type AdminUserSubscriptionSummary = Readonly<{
   planName: string;
   /** Display interval, for example "monthly". */
   interval?: string;
-  status: AdminUserSubscriptionStatus;
+  /** Raw status; unrecognised values show "Unknown". */
+  status: string;
   renewsAt?: string;
   autoRenew?: boolean;
 }>;
@@ -205,34 +190,52 @@ export type AdminSecurityEvent = Readonly<{
   occurredAt?: string;
 }>;
 
-export type AdminUserDetailModel =
-  | AdminScreenBlocked
-  | Readonly<{ state: "notFound" }>
-  | Readonly<{
-      state: "ready";
-      user: AdminUserDetail;
-      /** Roles that may be assigned (backend-owned catalogue). */
-      assignableRoles: AdminSection<readonly AdminRoleRef[]>;
-      /** `null` data = the user has no verification. */
-      kyc: AdminSection<AdminUserKycSummary | null>;
-      /** `null` data = the user has no subscription. */
-      subscription: AdminSection<AdminUserSubscriptionSummary | null>;
-      sessions: AdminSection<readonly AdminUserSession[]>;
-      activity: AdminSection<readonly AdminSecurityEvent[]>;
-    }>;
+/** Everything the detail screen shows for one user. */
+export type AdminUserDetailRecord = Readonly<{
+  user: AdminUserDetail;
+  /** Roles that may be assigned (backend-owned catalogue). */
+  assignableRoles: AdminSection<readonly AdminRoleRef[]>;
+  /** `null` data = the user has no verification. */
+  kyc: AdminSection<AdminUserKycSummary | null>;
+  /** `null` data = the user has no subscription. */
+  subscription: AdminSection<AdminUserSubscriptionSummary | null>;
+  sessions: AdminSection<readonly AdminUserSession[]>;
+  activity: AdminSection<readonly AdminSecurityEvent[]>;
+}>;
+
+export type AdminUserDetailModel = AdminDetailState<AdminUserDetailRecord>;
 
 /* ------------------------------------------------------------------------ */
 /* Actions                                                                   */
 /* ------------------------------------------------------------------------ */
 
-/** Privileged intents the detail screen can report. */
+/**
+ * Privileged intents. Each names its target explicitly — the user and,
+ * where relevant, the role or session — captured when the confirmation
+ * opens, so a confirmed request can never apply to a different record.
+ */
 export type AdminUserIntent =
-  | Readonly<{ type: "lock" }>
-  | Readonly<{ type: "unlock" }>
-  | Readonly<{ type: "signOutAll" }>
-  | Readonly<{ type: "revokeSession"; session: AdminUserSession }>
-  | Readonly<{ type: "assignRole"; role: AdminRoleRef }>
-  | Readonly<{ type: "removeRole"; role: AdminRoleRef }>;
+  | Readonly<{ type: "lock"; userId: string }>
+  | Readonly<{ type: "unlock"; userId: string }>
+  | Readonly<{ type: "signOutAll"; userId: string }>
+  | Readonly<{
+      type: "revokeSession";
+      userId: string;
+      sessionId: string;
+      sessionLabel: string;
+    }>
+  | Readonly<{
+      type: "assignRole";
+      userId: string;
+      roleId: string;
+      roleName: string;
+    }>
+  | Readonly<{
+      type: "removeRole";
+      userId: string;
+      roleId: string;
+      roleName: string;
+    }>;
 
 export type AdminUserIntentType = AdminUserIntent["type"];
 
@@ -245,8 +248,8 @@ export type AdminUserActionRequest = Readonly<{
 
 /**
  * Performs a confirmed request. Resolve when the backend accepted it (the
- * page then re-reads the user); reject on failure. Never resolve for an
- * action that was not performed.
+ * page then re-reads the user); reject with the normalized error on
+ * failure. Never resolve for an action that was not performed.
  */
 export type AdminUserActionHandler = (
   request: AdminUserActionRequest,
@@ -255,9 +258,13 @@ export type AdminUserActionHandler = (
 /** Lock when active, unlock when locked; nothing for an unknown status. */
 export function accountActionFor(
   status: AdminAccountStatus,
-): Readonly<{ type: "lock" } | { type: "unlock" }> | null {
-  if (status === "active") return { type: "lock" };
-  if (status === "locked") return { type: "unlock" };
+): "lock" | "unlock" | null {
+  if (status === "active") {
+    return "lock";
+  }
+  if (status === "locked") {
+    return "unlock";
+  }
   return null;
 }
 
@@ -268,6 +275,46 @@ export function rolesAvailableToAssign(
 ): readonly AdminRoleRef[] {
   const heldIds = new Set(held.map((role) => role.id));
   return assignable.filter((role) => !heldIds.has(role.id));
+}
+
+/**
+ * Whether a captured intent still applies to the record on screen: the
+ * same user, an account status that permits it, and a role or session that
+ * still exists. Checked while the confirmation is open and again just
+ * before submitting. The backend remains the authority.
+ */
+export function isUserIntentStillAllowed(
+  intent: AdminUserIntent,
+  record: AdminUserDetailRecord,
+): boolean {
+  const { user } = record;
+  if (user.id !== intent.userId) {
+    return false;
+  }
+  switch (intent.type) {
+    case "lock":
+    case "unlock":
+      return accountActionFor(user.accountStatus) === intent.type;
+    case "signOutAll":
+      return true;
+    case "revokeSession":
+      return (
+        record.sessions.state === "ready" &&
+        record.sessions.data.some((session) => session.id === intent.sessionId)
+      );
+    case "assignRole": {
+      if (record.assignableRoles.state !== "ready") {
+        return false;
+      }
+      const available = rolesAvailableToAssign(
+        record.assignableRoles.data,
+        user.roles,
+      );
+      return available.some((role) => role.id === intent.roleId);
+    }
+    case "removeRole":
+      return user.roles.some((role) => role.id === intent.roleId);
+  }
 }
 
 export type AdminUserConfirmation = Readonly<{
@@ -283,9 +330,10 @@ export type AdminUserConfirmation = Readonly<{
 
 /**
  * Confirmation copy for an intent. Account, all-session and role changes
- * ask for a fresh authenticator code (reference `AdminStepUp`, DR-072);
- * revoking one session is a plain confirmation. Copy states the intended
- * effect only — success is never shown by this screen.
+ * assume a fresh authenticator check (reference `AdminStepUp`); revoking
+ * one session is a plain confirmation. Which actions really need step-up is
+ * the backend's decision (DR-072, DR-121). Copy states the intended effect
+ * only — success is never shown by this screen.
  */
 export function userActionConfirmation(
   intent: AdminUserIntent,
@@ -327,7 +375,7 @@ export function userActionConfirmation(
     case "revokeSession":
       return {
         confirmLabel: "Revoke session",
-        description: `Ends the "${intent.session.label}" session for ${name}.`,
+        description: `Ends the "${intent.sessionLabel}" session for ${name}.`,
         kind: "confirm",
         title: "Revoke this session?",
         tone: "danger",
@@ -335,40 +383,24 @@ export function userActionConfirmation(
     case "assignRole":
       return {
         confirmLabel: "Assign role",
-        description: `Gives ${name} the ${intent.role.name} role. Changes take effect on the user's next request.`,
+        description: `Gives ${name} the ${intent.roleName} role.`,
         kind: "stepUp",
         stepUpDescription: "Changing roles needs a fresh authenticator check.",
-        title: `Assign ${intent.role.name}`,
+        title: `Assign ${intent.roleName}`,
         tone: "primary",
       };
     case "removeRole":
       return {
         confirmLabel: "Remove role",
-        description: `Removes the ${intent.role.name} role from ${name}. Changes take effect on the user's next request.`,
+        description: `Removes the ${intent.roleName} role from ${name}.`,
         kind: "stepUp",
         stepUpDescription: "Changing roles needs a fresh authenticator check.",
-        title: `Remove ${intent.role.name}`,
+        title: `Remove ${intent.roleName}`,
         tone: "danger",
       };
   }
 }
 
-/** Fixed, safe failure copy; raw errors are never shown. */
-export const USER_ACTION_FAILED =
-  "The action couldn't be completed. Check the user's current state, then try again.";
-
-/**
- * Runs a confirmed request and reports whether the dialog may close.
- * "done" only when the handler resolved; anything else is "failed".
- */
-export async function runAdminUserAction(
-  handler: AdminUserActionHandler,
-  request: AdminUserActionRequest,
-): Promise<"done" | "failed"> {
-  try {
-    await handler(request);
-    return "done";
-  } catch {
-    return "failed";
-  }
-}
+/** Shown when an open confirmation no longer matches the record. */
+export const USER_ACTION_INVALIDATED =
+  "The confirmation was closed because this user's details changed. Review the current state before trying again.";

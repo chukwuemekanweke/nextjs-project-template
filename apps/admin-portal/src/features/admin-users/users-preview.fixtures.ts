@@ -1,10 +1,10 @@
+import type { AdminListPage } from "@/components/admin-patterns";
 import type {
   AdminRoleRef,
   AdminUserDetail,
-  AdminUserDetailModel,
+  AdminUserDetailRecord,
   AdminUserFilters,
   AdminUserListItem,
-  AdminUsersListModel,
 } from "./users-model";
 
 /*
@@ -88,7 +88,7 @@ export function previewUserQuery(
   filters: AdminUserFilters,
   page = 1,
   pageSize = 2,
-): Extract<AdminUsersListModel, { state: "ready" }> {
+): AdminListPage<AdminUserListItem> {
   const query = filters.query.trim().toLowerCase();
   const matching = fixtureUsers.filter(
     (user) =>
@@ -120,8 +120,8 @@ export function previewUserQuery(
     pageSize,
     state: "ready",
     totalItems: sorted.length,
+    rows: sorted.slice((page - 1) * pageSize, page * pageSize),
     totalPages,
-    users: sorted.slice((page - 1) * pageSize, page * pageSize),
   };
 }
 
@@ -145,9 +145,9 @@ export const fixtureUserDetail: AdminUserDetail = {
   tenantName: "Fixture tenant",
 };
 
-export function fixtureUserDetailModel(
+export function fixtureUserDetailRecord(
   overrides: Partial<AdminUserDetail> = {},
-): Extract<AdminUserDetailModel, { state: "ready" }> {
+): AdminUserDetailRecord {
   return {
     activity: {
       data: [
@@ -189,7 +189,6 @@ export function fixtureUserDetailModel(
       ],
       state: "ready",
     },
-    state: "ready",
     subscription: {
       data: {
         autoRenew: true,

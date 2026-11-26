@@ -1,7 +1,7 @@
 import type {
   AdminPermissionGroup,
   AdminPermissionMatrix,
-  AdminRoleEditModel,
+  AdminRoleEditRecord,
   AdminRolesModel,
 } from "./roles-model";
 
@@ -167,9 +167,9 @@ export const fixtureRolesModel: Extract<AdminRolesModel, { state: "ready" }> = {
   totalPermissions: allKeys.length,
 };
 
-export function fixtureRoleEditModel(
+export function fixtureRoleEditRecord(
   kind: "system" | "custom" = "custom",
-): Extract<AdminRoleEditModel, { state: "ready" }> {
+): AdminRoleEditRecord {
   return {
     groups: { data: fixturePermissionGroups, state: "ready" },
     members: {
@@ -196,6 +196,5 @@ export function fixtureRoleEditModel(
       updatedAt: "2026-01-20T09:00:00Z",
       updatedBy: "Fixture Admin",
     },
-    state: "ready",
   };
 }

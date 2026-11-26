@@ -1,13 +1,12 @@
-import type { BadgeTone } from "@template/ui-core";
-import type {
-  AdminMetric,
-  AdminRangePreset,
+import {
+  lookupAdminBadge,
+  type AdminBadge,
+  type AdminDetailState,
+  type AdminListState,
+  type AdminMetric,
+  type AdminRangePreset,
+  type AdminSection,
 } from "@/components/admin-patterns";
-import type {
-  AdminBadge,
-  AdminScreenBlocked,
-  AdminSection,
-} from "@/features/admin-users/admin-view";
 
 /*
  * Admin KYC monitoring view models (ADM-KYC, ADM-KYC-DETAIL).
@@ -31,30 +30,19 @@ export const ADMIN_KYC_STATUSES = [
 
 export type AdminKycStatus = (typeof ADMIN_KYC_STATUSES)[number] | "unknown";
 
-const kycLabels: Record<AdminKycStatus, string> = {
-  expired: "Expired",
-  failed: "Failed",
-  inProgress: "In progress",
-  notStarted: "Not started",
-  pending: "Pending",
-  rejected: "Rejected",
-  unknown: "Unknown",
-  verified: "Verified",
+const kycBadges: Readonly<Record<string, AdminBadge>> = {
+  expired: { label: "Expired", tone: "neutral" },
+  failed: { label: "Failed", tone: "danger" },
+  inProgress: { label: "In progress", tone: "info" },
+  notStarted: { label: "Not started", tone: "neutral" },
+  pending: { label: "Pending", tone: "warning" },
+  rejected: { label: "Rejected", tone: "danger" },
+  verified: { label: "Verified", tone: "success" },
 };
 
-const kycTones: Record<AdminKycStatus, BadgeTone> = {
-  expired: "neutral",
-  failed: "danger",
-  inProgress: "info",
-  notStarted: "neutral",
-  pending: "warning",
-  rejected: "danger",
-  unknown: "neutral",
-  verified: "success",
-};
-
-export function kycStatusBadge(status: AdminKycStatus): AdminBadge {
-  return { label: kycLabels[status], tone: kycTones[status] };
+/** Badge for a status; unrecognised or empty values show "Unknown". */
+export function kycStatusBadge(status: string): AdminBadge {
+  return lookupAdminBadge(kycBadges, status);
 }
 
 /** Maps a raw value to a known status; anything else is `"unknown"`. */
@@ -116,17 +104,11 @@ export type AdminKycCounts = Readonly<{
   rejectedOrFailed: AdminMetric;
 }>;
 
-export type AdminKycListModel =
-  | AdminScreenBlocked
-  | Readonly<{
-      state: "ready";
-      counts: AdminKycCounts;
-      items: readonly AdminKycListItem[];
-      page: number;
-      pageSize: number;
-      totalItems?: number;
-      totalPages: number;
-    }>;
+/** Count tiles and the verification list are independent reads. */
+export type AdminKycListModel = Readonly<{
+  counts: AdminKycCounts;
+  verifications: AdminListState<AdminKycListItem>;
+}>;
 
 export type AdminKycVerification = Readonly<{
   id: string;
@@ -161,25 +143,26 @@ export type AdminKycAttempt = Readonly<{
   completedAt?: string;
 }>;
 
-export type AdminKycDetailModel =
-  | AdminScreenBlocked
-  | Readonly<{ state: "notFound" }>
-  | Readonly<{
-      state: "ready";
-      verification: AdminKycVerification;
-      history: AdminSection<readonly AdminKycHistoryEvent[]>;
-      attempts: AdminSection<readonly AdminKycAttempt[]>;
-    }>;
+export type AdminKycDetailRecord = Readonly<{
+  verification: AdminKycVerification;
+  history: AdminSection<readonly AdminKycHistoryEvent[]>;
+  attempts: AdminSection<readonly AdminKycAttempt[]>;
+}>;
+
+export type AdminKycDetailModel = AdminDetailState<AdminKycDetailRecord>;
 
 /** "Attempt #3 of 3", "Attempt #3" or `undefined` when not reported. */
 export function kycAttemptLabel(
   verification: Pick<AdminKycVerification, "attemptNumber" | "attemptCount">,
 ): string | undefined {
   const { attemptCount, attemptNumber } = verification;
-  if (!attemptNumber) return undefined;
-  return attemptCount && attemptCount >= attemptNumber
-    ? `Attempt #${attemptNumber} of ${attemptCount}`
-    : `Attempt #${attemptNumber}`;
+  if (!attemptNumber) {
+    return undefined;
+  }
+  if (attemptCount && attemptCount >= attemptNumber) {
+    return `Attempt #${attemptNumber} of ${attemptCount}`;
+  }
+  return `Attempt #${attemptNumber}`;
 }
 
 /** Read-only notice; names the provider only when the source does. */

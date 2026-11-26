@@ -1,7 +1,8 @@
 import type {
-  AdminScreenBlocked,
+  AdminDetailState,
+  AdminForbiddenState,
   AdminSection,
-} from "@/features/admin-users/admin-view";
+} from "@/components/admin-patterns";
 
 /*
  * Admin roles and permissions view models (ADM-ROLES, ADM-ROLE-EDIT).
@@ -49,7 +50,9 @@ export type AdminPermissionMatrix = Readonly<{
 }>;
 
 export type AdminRolesModel =
-  | AdminScreenBlocked
+  | Readonly<{ state: "loading" }>
+  | Readonly<{ state: "error"; message?: string }>
+  | AdminForbiddenState
   | Readonly<{
       state: "ready";
       roles: readonly AdminRoleSummary[];
@@ -75,17 +78,15 @@ export type AdminRoleDetail = Readonly<{
   updatedBy?: string;
 }>;
 
-export type AdminRoleEditModel =
-  | AdminScreenBlocked
-  | Readonly<{ state: "notFound" }>
-  | Readonly<{
-      state: "ready";
-      role: AdminRoleDetail;
-      groups: AdminSection<readonly AdminPermissionGroup[]>;
-      members: AdminSection<readonly AdminRoleMember[]>;
-    }>;
+export type AdminRoleEditRecord = Readonly<{
+  role: AdminRoleDetail;
+  groups: AdminSection<readonly AdminPermissionGroup[]>;
+  members: AdminSection<readonly AdminRoleMember[]>;
+}>;
 
-export const roleKindLabels: Record<AdminRoleKind, string> = {
+export type AdminRoleEditModel = AdminDetailState<AdminRoleEditRecord>;
+
+export const roleKindLabels: Readonly<Record<AdminRoleKind, string>> = {
   custom: "Custom",
   system: "System",
 };
@@ -98,9 +99,10 @@ export function permissionCountLabel(
   if (count === undefined || !Number.isSafeInteger(count) || count < 0) {
     return undefined;
   }
-  return total !== undefined && total >= count
-    ? `${count} of ${total}`
-    : String(count);
+  if (total !== undefined && total >= count) {
+    return `${count} of ${total}`;
+  }
+  return String(count);
 }
 
 export function isPermissionGranted(
@@ -108,6 +110,9 @@ export function isPermissionGranted(
   roleId: string,
   key: string,
 ): boolean {
+  if (!Object.hasOwn(matrix.grants, roleId)) {
+    return false;
+  }
   return matrix.grants[roleId]?.includes(key) ?? false;
 }
 

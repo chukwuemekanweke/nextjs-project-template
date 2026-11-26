@@ -60,29 +60,27 @@ vi.mock("@template/ui-core", async (importOriginal) => ({
 
 import { AdminStepUpDialog } from "@/components/admin-patterns";
 import { ConfirmDialog } from "@template/ui-core";
-import {
-  AdminUserDetailScreen,
-  AdminUsersScreen,
-  UserActionConfirmation,
-} from "./users-sections";
+import { AdminUserDetailScreen } from "./user-detail";
+import { UserActionConfirmation } from "./user-action-confirmation";
+import { AdminUsersScreen } from "./users-list";
 import {
   DEFAULT_ADMIN_USER_FILTERS,
-  USER_ACTION_FAILED,
   accountActionFor,
+  accountStatusBadge,
   hasActiveUserFilters,
+  isUserIntentStillAllowed,
   nextUserFilters,
   rolesAvailableToAssign,
-  runAdminUserAction,
+  subscriptionStatusBadge,
   userActionConfirmation,
   type AdminUserIntent,
 } from "./users-model";
-import { formatAdminDateTime } from "./admin-view";
 import {
   fixturePlanOptions,
   fixtureRoleOptions,
   fixtureRoles,
   fixtureUserDetail,
-  fixtureUserDetailModel,
+  fixtureUserDetailRecord,
   fixtureUsers,
   previewUserQuery,
 } from "./users-preview.fixtures";
@@ -93,6 +91,9 @@ import {
  */
 
 const render = (node: ReactNode) => renderToStaticMarkup(node);
+const ready = (record = fixtureUserDetailRecord()) =>
+  ({ record, state: "ready" }) as const;
+const userId = fixtureUserDetail.id;
 const resolved = () => Promise.resolve();
 
 describe("AdminUsersScreen", () => {
@@ -179,7 +180,7 @@ describe("AdminUsersScreen", () => {
     const withPager = render(
       <AdminUsersScreen model={paged} onPageChange={() => undefined} />,
     );
-    expect(withPager).toContain('aria-label="Users pagination"');
+    expect(withPager).toContain('aria-label="Users pages"');
     expect(withPager).toContain("Showing 3–4 of 5");
     const withoutPager = render(<AdminUsersScreen model={paged} />);
     expect(withoutPager).toContain("Showing 3–4 of 5");
@@ -187,7 +188,7 @@ describe("AdminUsersScreen", () => {
   });
 
   it("distinguishes no users from no matches", () => {
-    const empty = { ...ready, totalItems: 0, totalPages: 1, users: [] };
+    const empty = { ...ready, rows: [], totalItems: 0, totalPages: 1 };
     expect(render(<AdminUsersScreen model={empty} />)).toContain(
       "No users yet",
     );
@@ -215,6 +216,7 @@ describe("AdminUsersScreen", () => {
       />,
     );
     expect(error).toContain('role="alert"');
+    expect(error).toContain("Couldn&#x27;t load this list");
     expect(error).toContain("Try again");
 
     const forbidden = render(
@@ -254,7 +256,7 @@ describe("user filter, sort and page interactions (synthetic fixtures)", () => {
       1,
       5,
     );
-    expect(byRole.users.map((user) => user.displayName)).toEqual([
+    expect(byRole.rows.map((user) => user.displayName)).toEqual([
       "Drew Fixture",
     ]);
     const byName = previewUserQuery(
@@ -262,15 +264,26 @@ describe("user filter, sort and page interactions (synthetic fixtures)", () => {
       1,
       5,
     );
-    expect(byName.users[0]?.displayName).toBe("Avery Fixture");
+    expect(byName.rows[0]?.displayName).toBe("Avery Fixture");
     const page3 = previewUserQuery(DEFAULT_ADMIN_USER_FILTERS, 3, 2);
     expect(page3.totalPages).toBe(3);
-    expect(page3.users).toHaveLength(1);
+    expect(page3.rows).toHaveLength(1);
+  });
+
+  it("recovers from a page past the results", () => {
+    const beyond = previewUserQuery(DEFAULT_ADMIN_USER_FILTERS, 4, 2);
+    expect(beyond.rows).toHaveLength(0);
+    const markup = render(
+      <AdminUsersScreen model={beyond} onPageChange={() => undefined} />,
+    );
+    expect(markup).toContain("No results on this page");
+    expect(markup).toContain("Back to first page");
+    expect(markup).toContain('aria-label="Users pages"');
   });
 });
 
 describe("AdminUserDetailScreen", () => {
-  const model = fixtureUserDetailModel();
+  const model = ready();
 
   it("renders the identity header, account, roles, summaries and activity", () => {
     const markup = render(
@@ -317,7 +330,7 @@ describe("AdminUserDetailScreen", () => {
   it("offers unlock for a locked account and no account action when unknown", () => {
     const locked = render(
       <AdminUserDetailScreen
-        model={fixtureUserDetailModel({ accountStatus: "locked" })}
+        model={ready(fixtureUserDetailRecord({ accountStatus: "locked" }))}
         onAction={resolved}
       />,
     );
@@ -325,7 +338,7 @@ describe("AdminUserDetailScreen", () => {
     expect(locked).not.toContain("Lock account");
     const unknown = render(
       <AdminUserDetailScreen
-        model={fixtureUserDetailModel({ accountStatus: "unknown" })}
+        model={ready(fixtureUserDetailRecord({ accountStatus: "unknown" }))}
         onAction={resolved}
       />,
     );
@@ -347,8 +360,8 @@ describe("AdminUserDetailScreen", () => {
   it("shows unavailable, empty and missing values honestly", () => {
     const markup = render(
       <AdminUserDetailScreen
-        model={{
-          ...fixtureUserDetailModel({
+        model={ready({
+          ...fixtureUserDetailRecord({
             account: {},
             emailConfirmed: undefined,
             roles: [],
@@ -364,7 +377,7 @@ describe("AdminUserDetailScreen", () => {
           kyc: { data: null, state: "ready" },
           sessions: { data: [], state: "ready" },
           subscription: { state: "loading" },
-        }}
+        })}
       />,
     );
     expect(markup).toContain("No administrative roles.");
@@ -383,7 +396,7 @@ describe("AdminUserDetailScreen", () => {
     ).toContain("Loading user");
     expect(
       render(<AdminUserDetailScreen model={{ state: "error" }} />),
-    ).toContain("Couldn&#x27;t load this user");
+    ).toContain("Couldn&#x27;t load user");
     expect(
       render(<AdminUserDetailScreen model={{ state: "notFound" }} />),
     ).toContain("User not found");
@@ -398,34 +411,53 @@ describe("AdminUserDetailScreen", () => {
 });
 
 describe("user action confirmations", () => {
-  const session = { id: "ses-1", label: "Chrome on Windows" };
   const intents: AdminUserIntent[] = [
-    { type: "lock" },
-    { type: "unlock" },
-    { type: "signOutAll" },
-    { role: fixtureRoles.finance, type: "assignRole" },
-    { role: fixtureRoles.support, type: "removeRole" },
+    { type: "lock", userId },
+    { type: "unlock", userId },
+    { type: "signOutAll", userId },
+    {
+      roleId: fixtureRoles.finance.id,
+      roleName: fixtureRoles.finance.name,
+      type: "assignRole",
+      userId,
+    },
+    {
+      roleId: fixtureRoles.support.id,
+      roleName: fixtureRoles.support.name,
+      type: "removeRole",
+      userId,
+    },
   ];
+  const revoke: AdminUserIntent = {
+    sessionId: "ses-fixture-2",
+    sessionLabel: "Safari on iPhone",
+    type: "revokeSession",
+    userId,
+  };
 
-  it("requires step-up for account, all-session and role changes", () => {
+  it("assumes step-up for account, all-session and role changes", () => {
     for (const intent of intents) {
       expect(userActionConfirmation(intent, fixtureUserDetail).kind).toBe(
         "stepUp",
       );
     }
-    expect(
-      userActionConfirmation(
-        { session, type: "revokeSession" },
-        fixtureUserDetail,
-      ).kind,
-    ).toBe("confirm");
+    expect(userActionConfirmation(revoke, fixtureUserDetail).kind).toBe(
+      "confirm",
+    );
+  });
+
+  it("states only the intended effect, never timing or success", () => {
+    for (const intent of [...intents, revoke]) {
+      const copy = userActionConfirmation(intent, fixtureUserDetail);
+      expect(copy.description).not.toMatch(/next request|successfully/i);
+    }
   });
 
   it("renders the step-up dialog with the action summary and no success copy", () => {
     const markup = render(
       <UserActionConfirmation
         error={null}
-        intent={{ type: "lock" }}
+        intent={{ type: "lock", userId }}
         onCancel={() => undefined}
         onSubmit={() => undefined}
         open
@@ -444,7 +476,12 @@ describe("user action confirmations", () => {
     const onSubmit = vi.fn();
     const element = UserActionConfirmation({
       error: null,
-      intent: { role: fixtureRoles.finance, type: "assignRole" },
+      intent: {
+        roleId: fixtureRoles.finance.id,
+        roleName: fixtureRoles.finance.name,
+        type: "assignRole",
+        userId,
+      },
       onCancel,
       onSubmit,
       open: true,
@@ -464,8 +501,8 @@ describe("user action confirmations", () => {
     const onCancel = vi.fn();
     const onSubmit = vi.fn();
     const props = {
-      error: USER_ACTION_FAILED,
-      intent: { session, type: "revokeSession" } as const,
+      error: "Try again in a moment.",
+      intent: revoke,
       onCancel,
       onSubmit,
       open: true,
@@ -482,21 +519,13 @@ describe("user action confirmations", () => {
     expect(onSubmit).toHaveBeenCalledWith();
     const markup = render(<UserActionConfirmation {...props} />);
     expect(markup).toContain("Revoke this session?");
-    expect(markup).toContain(USER_ACTION_FAILED.replaceAll("'", "&#x27;"));
-  });
-
-  it("closes only when the handler resolves", async () => {
-    const request = { intent: { type: "lock" } as const };
-    await expect(runAdminUserAction(resolved, request)).resolves.toBe("done");
-    await expect(
-      runAdminUserAction(() => Promise.reject(new Error("secret")), request),
-    ).resolves.toBe("failed");
-    expect(USER_ACTION_FAILED).not.toContain("secret");
+    expect(markup).toContain("Safari on iPhone");
+    expect(markup).toContain("Try again in a moment.");
   });
 
   it("picks the account action and assignable roles", () => {
-    expect(accountActionFor("active")).toEqual({ type: "lock" });
-    expect(accountActionFor("locked")).toEqual({ type: "unlock" });
+    expect(accountActionFor("active")).toBe("lock");
+    expect(accountActionFor("locked")).toBe("unlock");
     expect(accountActionFor("unknown")).toBeNull();
     expect(
       rolesAvailableToAssign(Object.values(fixtureRoles), [
@@ -506,19 +535,126 @@ describe("user action confirmations", () => {
   });
 });
 
-describe("admin date display", () => {
-  it("formats UTC timestamps and never invents one", () => {
-    expect(formatAdminDateTime("2026-01-20T08:12:00Z")).toBe(
-      "20 Jan 2026, 08:12 UTC",
+describe("isUserIntentStillAllowed", () => {
+  const record = fixtureUserDetailRecord();
+  const assignFinance: AdminUserIntent = {
+    roleId: fixtureRoles.finance.id,
+    roleName: fixtureRoles.finance.name,
+    type: "assignRole",
+    userId,
+  };
+
+  it("allows an intent captured for the record on screen", () => {
+    expect(isUserIntentStillAllowed({ type: "lock", userId }, record)).toBe(
+      true,
     );
-    expect(formatAdminDateTime(undefined)).toBeUndefined();
-    expect(formatAdminDateTime("not a date")).toBeUndefined();
+    expect(isUserIntentStillAllowed(assignFinance, record)).toBe(true);
+    expect(
+      isUserIntentStillAllowed(
+        {
+          sessionId: "ses-fixture-2",
+          sessionLabel: "Safari on iPhone",
+          type: "revokeSession",
+          userId,
+        },
+        record,
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects an intent for another user", () => {
+    expect(
+      isUserIntentStillAllowed(
+        { type: "signOutAll", userId: "usr-fixture-0001" },
+        record,
+      ),
+    ).toBe(false);
+  });
+
+  it("rejects an account action the status no longer permits", () => {
+    const locked = fixtureUserDetailRecord({ accountStatus: "locked" });
+    expect(isUserIntentStillAllowed({ type: "lock", userId }, locked)).toBe(
+      false,
+    );
+    expect(isUserIntentStillAllowed({ type: "unlock", userId }, locked)).toBe(
+      true,
+    );
+    const unknown = fixtureUserDetailRecord({ accountStatus: "unknown" });
+    expect(isUserIntentStillAllowed({ type: "lock", userId }, unknown)).toBe(
+      false,
+    );
+  });
+
+  it("rejects removed sessions and unavailable or held roles", () => {
+    expect(
+      isUserIntentStillAllowed(
+        {
+          sessionId: "ses-gone",
+          sessionLabel: "Gone",
+          type: "revokeSession",
+          userId,
+        },
+        record,
+      ),
+    ).toBe(false);
+    expect(
+      isUserIntentStillAllowed(assignFinance, {
+        ...record,
+        assignableRoles: { data: [fixtureRoles.support], state: "ready" },
+      }),
+    ).toBe(false);
+    expect(
+      isUserIntentStillAllowed(assignFinance, {
+        ...record,
+        assignableRoles: { state: "loading" },
+      }),
+    ).toBe(false);
+    expect(
+      isUserIntentStillAllowed(
+        {
+          roleId: fixtureRoles.finance.id,
+          roleName: fixtureRoles.finance.name,
+          type: "removeRole",
+          userId,
+        },
+        record,
+      ),
+    ).toBe(false);
+  });
+});
+
+describe("unknown statuses and invalid timestamps", () => {
+  it("shows unrecognised or inherited-name statuses as Unknown", () => {
+    for (const status of ["suspended", "", "constructor", "__proto__"]) {
+      expect(accountStatusBadge(status)).toEqual({
+        label: "Unknown",
+        tone: "neutral",
+      });
+      expect(subscriptionStatusBadge(status).label).toBe("Unknown");
+    }
+  });
+
+  it("renders zone-less or invalid timestamps as not available", () => {
+    const markup = render(
+      <AdminUserDetailScreen
+        model={ready(
+          fixtureUserDetailRecord({
+            account: {
+              createdAt: "2026-01-03T10:14:00",
+              lastActiveAt: "not a date",
+            },
+          }),
+        )}
+      />,
+    );
+    expect(markup).not.toContain("3 Jan 2026");
+    expect(markup.match(/Not available/g)?.length).toBeGreaterThan(2);
   });
 });
 
 describe("fixtures are synthetic", () => {
   it("never reuse reference sample people", () => {
-    const text = JSON.stringify([fixtureUsers, fixtureUserDetailModel()]);
+    const text = JSON.stringify([fixtureUsers, fixtureUserDetailRecord()]);
     for (const sample of [
       "Okafor",
       "Bakare",
@@ -544,7 +680,9 @@ describe("production boundary", () => {
   function productionFiles(directory: string): string[] {
     return readdirSync(directory).flatMap((entry) => {
       const path = join(directory, entry);
-      if (statSync(path).isDirectory()) return productionFiles(path);
+      if (statSync(path).isDirectory()) {
+        return productionFiles(path);
+      }
       return /\.tsx?$/.test(entry) &&
         !/\.test\.tsx?$/.test(entry) &&
         !entry.endsWith(".fixtures.ts")
