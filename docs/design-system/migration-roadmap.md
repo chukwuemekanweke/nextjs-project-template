@@ -216,6 +216,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 ### FE-UI-017 — Security
 
+- **Status:** delivered by Trello FE-UI-008: six `?tab=` sections, real-facts overview score, password/passkey/two-factor/session/activity tabs on the new primitives, three-step 2FA dialog with the saved-codes gate; all tabs use only backend data (DR-096–DR-101). Outstanding: IP masking (OD-09) and Playwright journeys (FE-UI-002).
 - **Screens:** `USR-SECURITY`, `USR-TWO-FACTOR-SETUP`.
 - **Scope:** six URL-addressable tabs; overview score from real facts; password, passkeys, two-factor, sessions, activity on new primitives; three-step 2FA dialog with saved-codes confirmation.
 - **Prerequisites:** FE-UI-008, FE-UI-005/006/007; OD-09.

@@ -24,7 +24,7 @@ code_refs:
 sources:
   - kind: file
     path: apps/user-portal/src/app/register/registration-form.tsx
-generated: { at: "2026-09-24T00:00:00Z", by: human }
+generated: { at: "2026-11-26T00:00:00Z", by: human }
 status: stable
 ---
 
@@ -49,6 +49,24 @@ verification starts normal authenticated navigation. The Security page owns
 setup, enrollment, one-time recovery-code display, regeneration, and disable.
 Sensitive setup and recovery results remain ephemeral UI state and are never
 persisted.
+
+Security page layout (Trello FE-UI-008): one route, `/security`, with six
+`?tab=` sections (`overview`, `password`, `passkeys`, `two-factor`,
+`sessions`, `activity`; absent/unknown values show the overview), parsed by
+`security-tab.ts` on the server and kept in sync client-side with
+`history.replaceState`. Inactive tabs are unmounted. The overview score uses
+only backend facts (password set, two-factor on, one and two passkeys); it is
+pending while a query loads and "unavailable" when one fails, never guessed.
+Two-factor setup is a three-step dialog (explain, scan + six-digit verify,
+recovery codes); its codes step can be left only after "I have saved my
+recovery codes" and Finish. Disable and regenerate always require an
+authenticator or recovery-code proof. Every session sign-out is confirmed.
+Interactive workflow logic lives in pure feature modules
+(`two-factor-flow.ts`, `security-actions.ts`,
+`password-change-submission.ts`) so it is tested without a DOM. Do not show
+password age/strength, passkey last-used, two-factor enrollment date or a
+"sign out other sessions" password option: the contracts lack them.
+Forgotten-password recovery is Trello FE-UI-020 (email OTP), not this page.
 
 The Security page also lists active sessions (`GET
 /api/v1/authentication/sessions`) and paginated recent security activity (`GET
@@ -86,8 +104,8 @@ consumes the backend sign-in rate limit. Once the flow is ready, the portal
 renders Google's official GIS button; it does not use the One Tap prompt as a
 button substitute.
 
-User Portal passkeys (`/api/v1/authentication/passkeys/**`) are managed in a
-Security-page card: the backend binds a friendly name at registration-options
+User Portal passkeys (`/api/v1/authentication/passkeys/**`) are managed on the
+Security page's Passkeys tab: the backend binds a friendly name at registration-options
 time, then the browser runs `navigator.credentials.create()` and posts the
 attestation. List, rename (PATCH), and remove (DELETE) are authenticated BFF
 routes under `apps/user-portal/src/app/api/security/passkeys/**`; they
