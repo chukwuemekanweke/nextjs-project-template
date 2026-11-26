@@ -273,6 +273,8 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 Each adds api-client contracts/operations and api-react hooks for the new endpoints (handwritten, per AGENTS.md), routes under the admin proxy, a navigation item, and screens composed from existing primitives.
 
+- **Status (FE-UI-024, 025, 028):** Trello FE-UI-013 (design `ad9386e`) delivered fixture-tested compositions in `apps/admin-portal/src/features/admin-users`, `admin-roles` (role editor read-only, CAF-FE-008) and `admin-kyc` ([DR-120](./discrepancy-register.md#dr-120)–[DR-124](./discrepancy-register.md#dr-124)); routes, navigation items and adapters remain gated on the admin user, permission-model and KYC APIs.
+
 ### FE-UI-032 — Legacy removal and final verification
 
 - **Scope:** delete compatibility aliases, `tailadmin-theme.css`, deprecated components (`buttonClassName`, `Modal`, `Pagination`, `StatusBadge`, `SectionHeader`, `ThemeToggle`, Solid sections), unused dependencies; licence notices per OD-06; lint rule to error level; full visual and accessibility pass across every implemented screen; update OKF and `docs/architecture/03`, `04`.

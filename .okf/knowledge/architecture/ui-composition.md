@@ -87,6 +87,9 @@ status: stable
   panel takes a typed state (`ready`/`loading`/`unavailable`/`error`/`empty`);
   the admin overview (`app/_dashboard`) renders every panel unavailable until
   admin read APIs exist, with reference figures only in a test fixture.
+  Admin users, roles and KYC compositions (Trello FE-UI-013) follow the
+  class-D pattern in `apps/admin-portal/src/features/admin-{users,roles,kyc}`
+  with no route, navigation item or production import.
 - Dashboard pages start with `DashboardHeader` on the page background, then
   cards. New work uses `Card` + `CardHeader` + `ListRow`/`KeyValueList`;
   existing pages still use `SectionHeader` + `SettingsRow`. Feature
