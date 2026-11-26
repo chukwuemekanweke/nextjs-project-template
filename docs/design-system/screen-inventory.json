@@ -5258,8 +5258,15 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": ["Only profile.isVerified is displayed."]
+        "files": [
+          "apps/user-portal/src/features/verification/verification-model.ts",
+          "apps/user-portal/src/features/verification/verification-sections.tsx",
+          "apps/user-portal/src/features/verification/verification-preview.fixtures.ts"
+        ],
+        "existingFunctionality": [
+          "Only profile.isVerified is displayed.",
+          "Trello FE-UI-009: feature-local composition (header, status panel for all six states, instruction steps, history table with stacked phone rows, loading/error/unknown/empty states) rendered only by tests from typed fixtures; no route or navigation item."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -5271,14 +5278,14 @@
         ]
       },
       "uiGaps": [
-        "Six states (notstarted, inprogress, pending, verified, rejected, expired) and history table have no API."
+        "No production route, navigation item or data adapter until a KYC API exists; CAF-FE-006 wires /verification (breadcrumb Account > Verification)."
       ],
       "dependencies": ["Backend KYC API"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-022",
-      "discrepancies": ["DR-054"],
+      "discrepancies": ["DR-054", "DR-102", "DR-103"],
       "notes": [
-        "Blocked. Do not add a nav item or route until the API exists; previews only via fixtures in the workbench."
+        "Blocked for production. The composition reports start/continue/retry/refresh intents through a callback and renders them disabled without one; it never contacts a provider or collects documents. Fixtures are imported only by tests (enforced)."
       ]
     },
     {

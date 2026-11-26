@@ -247,6 +247,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 ### FE-UI-022 — Identity verification (backend-gated)
 
 - **Screens:** `USR-VERIFICATION`. Needs a KYC API (DR-054).
+- **Status:** composition delivered by Trello FE-UI-009 in `apps/user-portal/src/features/verification` (all six states, history, loading/error/unknown; fixture-tested only). The route, navigation item and data adapter remain gated on the KYC API (CAF-FE-006).
 
 ### FE-UI-023 — Admin overview, navigation groups and forbidden state
 
