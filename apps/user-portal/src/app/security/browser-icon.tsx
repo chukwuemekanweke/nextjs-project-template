@@ -1,44 +1,30 @@
-import { GlobeIcon, MonitorIcon, SmartphoneIcon } from "@template/ui-core";
+import {
+  GlobeIcon,
+  IconTile,
+  MonitorIcon,
+  SmartphoneIcon,
+} from "@template/ui-core";
 import type { BrowserIconKind } from "./session-display";
 
 // Simplified, recognisable browser marks drawn inline so no logo dependency is
-// needed. Decorative only: the adjacent device label names the browser.
+// needed (brand colours are the logos' own, not theme colours). Decorative
+// only: the adjacent device label names the browser. Other browsers use a
+// themed `IconTile`.
 
 export function BrowserIcon({ kind }: Readonly<{ kind: BrowserIconKind }>) {
   if (kind === "chrome") return <ChromeMark />;
   if (kind === "safari") return <SafariMark />;
-  if (kind === "firefox") {
+  if (kind === "firefox" || kind === "edge") {
     return (
-      <IconTile className="bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400">
-        <GlobeIcon />
-      </IconTile>
-    );
-  }
-  if (kind === "edge") {
-    return (
-      <IconTile className="bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-400">
+      <IconTile tone="brand">
         <GlobeIcon />
       </IconTile>
     );
   }
   return (
-    <IconTile className="bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-300">
+    <IconTile tone="neutral">
       {kind === "mobile" ? <SmartphoneIcon /> : <MonitorIcon />}
     </IconTile>
-  );
-}
-
-function IconTile({
-  children,
-  className,
-}: Readonly<{ children: React.ReactNode; className: string }>) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${className}`}
-    >
-      {children}
-    </span>
   );
 }
 
@@ -46,7 +32,7 @@ function ChromeMark() {
   return (
     <svg
       aria-hidden="true"
-      className="h-9 w-9 shrink-0"
+      className="size-10 shrink-0"
       focusable="false"
       viewBox="0 0 24 24"
     >
@@ -63,7 +49,7 @@ function SafariMark() {
   return (
     <svg
       aria-hidden="true"
-      className="h-9 w-9 shrink-0"
+      className="size-10 shrink-0"
       focusable="false"
       viewBox="0 0 24 24"
     >

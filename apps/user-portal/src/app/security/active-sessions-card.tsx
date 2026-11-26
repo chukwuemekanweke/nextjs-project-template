@@ -1,6 +1,5 @@
 "use client";
 
-import { isApiError } from "@template/api-client";
 import type { ActiveSessionResponse } from "@template/api-client/authentication";
 import {
   useActiveSessions,
@@ -9,20 +8,29 @@ import {
 } from "@template/api-react/authentication";
 import {
   Alert,
+  Badge,
+  Button,
   Card,
   CardContent,
+  CardHeader,
+  CardTitle,
   ClockIcon,
+  ConfirmDialog,
+  EmptyState,
+  ErrorState,
   LaptopIcon,
+  ListRow,
   MapPinIcon,
-  Modal,
-  SectionHeader,
-  Skeleton,
-  StatusBadge,
+  SkeletonList,
   WifiIcon,
-  buttonClassName,
 } from "@template/ui-core";
 import { useCallback, useRef, useState } from "react";
 import { BrowserIcon } from "./browser-icon";
+import {
+  runSecurityAction,
+  sessionActionError,
+  sessionsLoadError,
+} from "./security-actions";
 import {
   browserIconKind,
   describeDevice,
@@ -32,12 +40,21 @@ import {
   sortSessionsCurrentFirst,
 } from "./session-display";
 
+type PendingConfirmation =
+  { kind: "others" } | { kind: "session"; session: ActiveSessionResponse };
+
+/**
+ * Sessions tab (reference `UserSecurity-sessions`). The current session is
+ * listed first, labelled, and never offered a sign-out here (Logout covers
+ * it). Every sign-out is confirmed first and reported only after the backend
+ * succeeds; the mutations invalidate the sessions query.
+ */
 export function ActiveSessionsCard() {
   const sessions = useActiveSessions();
   const revokeSession = useRevokeSession();
   const revokeOtherSessions = useRevokeOtherSessions();
+  const [confirming, setConfirming] = useState<PendingConfirmation>();
   const [pendingSessionId, setPendingSessionId] = useState<string>();
-  const [confirmingRevokeAll, setConfirmingRevokeAll] = useState(false);
   const [actionError, setActionError] = useState<string>();
   const [confirmation, setConfirmation] = useState<string>();
   const actionActive = useRef(false);
@@ -55,60 +72,61 @@ export function ActiveSessionsCard() {
   const dismissError = useCallback(() => setActionError(undefined), []);
   const dismissConfirmation = useCallback(() => setConfirmation(undefined), []);
 
-  async function revoke(sessionId: string) {
-    if (actionActive.current) return;
+  async function confirm() {
+    if (!confirming || actionActive.current) return;
     actionActive.current = true;
     setActionError(undefined);
     setConfirmation(undefined);
-    setPendingSessionId(sessionId);
+    const target = confirming;
+    if (target.kind === "session")
+      setPendingSessionId(target.session.sessionId);
     try {
-      await revokeSession.mutateAsync({ sessionId });
-      setConfirmation("The session was signed out successfully.");
-    } catch (error) {
-      setActionError(sessionActionError(error));
+      const outcome =
+        target.kind === "session"
+          ? await runSecurityAction(
+              () =>
+                revokeSession.mutateAsync({
+                  sessionId: target.session.sessionId,
+                }),
+              "The session was signed out successfully.",
+              sessionActionError,
+            )
+          : await runSecurityAction(
+              () => revokeOtherSessions.mutateAsync(),
+              "All other sessions were signed out successfully.",
+              sessionActionError,
+            );
+      setConfirming(undefined);
+      if (outcome.status === "succeeded") setConfirmation(outcome.message);
+      else setActionError(outcome.message);
     } finally {
       setPendingSessionId(undefined);
       actionActive.current = false;
     }
   }
 
-  async function revokeAllOthers() {
-    if (actionActive.current) return;
-    actionActive.current = true;
-    setActionError(undefined);
-    setConfirmation(undefined);
-    try {
-      await revokeOtherSessions.mutateAsync();
-      setConfirmingRevokeAll(false);
-      setConfirmation("All other sessions were signed out successfully.");
-    } catch (error) {
-      setActionError(sessionActionError(error));
-    } finally {
-      actionActive.current = false;
-    }
-  }
-
   return (
     <Card>
-      <CardContent>
-        <SectionHeader
-          actions={
-            otherSessionCount > 0 ? (
-              <button
-                className={buttonClassName({ variant: "destructive" })}
-                disabled={revokePending}
-                onClick={() => setConfirmingRevokeAll(true)}
-                type="button"
-              >
-                Sign out all other sessions
-              </button>
-            ) : undefined
-          }
-          description="Devices and browsers currently signed in to your account."
-          icon={<LaptopIcon className="h-6 w-6" />}
-          title="Active sessions"
-        />
-        <div className="mt-5 space-y-3">
+      <CardHeader>
+        <div className="min-w-0">
+          <CardTitle>Active sessions</CardTitle>
+          <p className="text-small text-fg-muted mt-0.5">
+            Devices and browsers currently signed in to your account.
+          </p>
+        </div>
+        {otherSessionCount > 0 ? (
+          <Button
+            disabled={revokePending}
+            onClick={() => setConfirming({ kind: "others" })}
+            size="sm"
+            variant="secondary"
+          >
+            Sign out all other sessions
+          </Button>
+        ) : null}
+      </CardHeader>
+      {actionError || confirmation ? (
+        <CardContent className="flex flex-col gap-3 pb-0 md:pb-0">
           {actionError ? (
             <Alert onDismiss={dismissError} variant="error">
               {actionError}
@@ -123,187 +141,130 @@ export function ActiveSessionsCard() {
               {confirmation}
             </Alert>
           ) : null}
-          {sessions.isPending ? (
-            <SessionListSkeleton />
-          ) : sessions.isError ? (
-            <Alert variant="error">{sessionsError(sessions.error)}</Alert>
-          ) : orderedSessions.length === 0 ? (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              No active sessions were found.
-            </p>
-          ) : (
-            <ul aria-label="Active sessions" className="space-y-3">
-              {orderedSessions.map((session) => (
-                <SessionRow
-                  key={session.sessionId}
-                  disabled={revokePending}
-                  onRevoke={() => void revoke(session.sessionId)}
-                  pending={pendingSessionId === session.sessionId}
-                  session={session}
-                />
-              ))}
-            </ul>
-          )}
-        </div>
-        <Modal
-          description="Every other browser and device will be signed out immediately. This device stays signed in."
-          onClose={() => setConfirmingRevokeAll(false)}
-          open={confirmingRevokeAll}
-          size="compact"
-          title="Sign out all other sessions?"
-        >
-          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
-            <button
-              className={buttonClassName({ variant: "secondary" })}
+        </CardContent>
+      ) : null}
+      {sessions.isPending ? (
+        <SkeletonList label="Loading active sessions" rows={2} />
+      ) : sessions.isError ? (
+        <ErrorState
+          description={sessionsLoadError(sessions.error)}
+          title="Active sessions unavailable"
+        />
+      ) : orderedSessions.length === 0 ? (
+        <CardContent>
+          <EmptyState
+            description="No active sessions were found."
+            icon={<LaptopIcon />}
+            title="No sessions"
+          />
+        </CardContent>
+      ) : (
+        <ul aria-label="Active sessions">
+          {orderedSessions.map((session) => (
+            <SessionRow
               disabled={revokePending}
-              onClick={() => setConfirmingRevokeAll(false)}
-              type="button"
-            >
-              Cancel
-            </button>
-            <button
-              className={buttonClassName({ variant: "danger" })}
-              disabled={revokePending}
-              onClick={() => void revokeAllOthers()}
-              type="button"
-            >
-              {revokeOtherSessions.isPending
-                ? "Signing out…"
-                : "Sign out all other sessions"}
-            </button>
-          </div>
-        </Modal>
-      </CardContent>
+              key={session.sessionId}
+              onRevoke={() => setConfirming({ kind: "session", session })}
+              pending={pendingSessionId === session.sessionId}
+              session={session}
+            />
+          ))}
+        </ul>
+      )}
+      <ConfirmDialog
+        confirmLabel={
+          confirming?.kind === "session"
+            ? "Sign out session"
+            : "Sign out all other sessions"
+        }
+        description={
+          confirming?.kind === "session"
+            ? "That browser or device will be signed out immediately. This device stays signed in."
+            : "Every other browser and device will be signed out immediately. This device stays signed in."
+        }
+        onCancel={() => setConfirming(undefined)}
+        onConfirm={() => void confirm()}
+        open={confirming !== undefined}
+        pending={revokePending}
+        title={
+          confirming?.kind === "session"
+            ? `Sign out ${describeDevice(confirming.session)}?`
+            : "Sign out all other sessions?"
+        }
+      />
     </Card>
   );
 }
 
-function SessionRow({
-  session,
+export function SessionRow({
+  disabled,
   onRevoke,
   pending,
-  disabled,
+  session,
 }: Readonly<{
-  session: ActiveSessionResponse;
+  disabled: boolean;
   onRevoke: () => void;
   pending: boolean;
-  disabled: boolean;
+  session: ActiveSessionResponse;
 }>) {
   const location = describeLocation(session);
   const deviceLabel = describeDevice(session);
 
   return (
-    <li
-      className={`flex flex-col gap-4 rounded-[10px] border px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-5 ${
-        session.isCurrent
-          ? "border-green-200 bg-green-50 dark:border-green-800/60 dark:bg-green-500/[0.07]"
-          : "border-gray-200 bg-white dark:border-gray-800 dark:bg-transparent"
-      }`}
+    <ListRow
+      actions={
+        session.isCurrent ? undefined : (
+          <Button
+            aria-label={`Sign out ${deviceLabel}`}
+            disabled={disabled}
+            loading={pending}
+            onClick={onRevoke}
+            size="sm"
+            variant="dangerOutline"
+          >
+            Sign out
+          </Button>
+        )
+      }
+      as="li"
+      className={session.isCurrent ? "bg-surface-2" : undefined}
+      leading={<BrowserIcon kind={browserIconKind(session)} />}
+      title={
+        <span className="flex flex-wrap items-center gap-2">
+          {deviceLabel}
+          {session.isCurrent ? <Badge tone="info">This device</Badge> : null}
+        </span>
+      }
     >
-      <div className="flex min-w-0 items-center gap-4">
-        <BrowserIcon kind={browserIconKind(session)} />
-        <div className="min-w-0 space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-[15px] font-semibold text-gray-900 dark:text-white/90">
-              {deviceLabel}
-            </p>
-            {session.isCurrent ? (
-              <StatusBadge tone="success">This device</StatusBadge>
-            ) : null}
-          </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm text-gray-600 dark:text-gray-400">
-            <span className="flex min-w-0 items-center gap-1.5">
-              <WifiIcon className="h-4 w-4 text-gray-500" />
-              <span className="sr-only">IP address: </span>
-              <a
-                className="hover:text-brand-600 dark:hover:text-brand-400 break-all underline decoration-gray-300 decoration-dotted underline-offset-2 dark:decoration-gray-600"
-                href={ipAddressLookupUrl(session.lastIpAddress)}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {session.lastIpAddress}
-                <span className="sr-only">
-                  {" "}
-                  (opens IP address lookup in a new tab)
-                </span>
-              </a>
+      <div className="text-small text-fg-muted mt-1 flex flex-wrap items-center gap-x-5 gap-y-1">
+        <span className="flex min-w-0 items-center gap-1.5">
+          <WifiIcon className="text-fg-subtle" size="xs" />
+          <span className="sr-only">IP address: </span>
+          <a
+            className="hover:text-brand-ink decoration-border-strong break-all underline decoration-dotted underline-offset-2"
+            href={ipAddressLookupUrl(session.lastIpAddress)}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {session.lastIpAddress}
+            <span className="sr-only">
+              {" "}
+              (opens IP address lookup in a new tab)
             </span>
-            {location ? (
-              <span className="flex items-center gap-1.5">
-                <MapPinIcon className="h-4 w-4 text-gray-500" />
-                <span className="sr-only">Location: </span>
-                {location}
-              </span>
-            ) : null}
-            <span className="flex items-center gap-1.5">
-              <ClockIcon className="h-4 w-4 text-gray-500" />
-              Last active {formatRelativeTime(session.lastActiveAtUtc)}
-            </span>
-          </div>
-        </div>
+          </a>
+        </span>
+        {location ? (
+          <span className="flex items-center gap-1.5">
+            <MapPinIcon className="text-fg-subtle" size="xs" />
+            <span className="sr-only">Location: </span>
+            {location}
+          </span>
+        ) : null}
+        <span className="flex items-center gap-1.5">
+          <ClockIcon className="text-fg-subtle" size="xs" />
+          Last active {formatRelativeTime(session.lastActiveAtUtc)}
+        </span>
       </div>
-      {!session.isCurrent ? (
-        <button
-          aria-label={`Sign out ${deviceLabel}`}
-          className={buttonClassName({
-            className: "w-full sm:w-auto",
-            size: "sm",
-            variant: "secondary",
-          })}
-          disabled={disabled}
-          onClick={onRevoke}
-          type="button"
-        >
-          {pending ? "Signing out…" : "Sign out"}
-        </button>
-      ) : null}
-    </li>
+    </ListRow>
   );
-}
-
-function SessionListSkeleton() {
-  return (
-    <div
-      aria-busy="true"
-      aria-label="Loading active sessions"
-      className="space-y-3"
-      role="status"
-    >
-      {[0, 1].map((index) => (
-        <div
-          className="flex flex-col gap-3 rounded-[10px] border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5 dark:border-gray-800"
-          key={index}
-        >
-          <div className="min-w-0 flex-1 space-y-2">
-            <Skeleton className="h-5 w-40" />
-            <Skeleton className="h-4 w-full max-w-xs" />
-            <Skeleton className="h-4 w-32" />
-          </div>
-          <Skeleton className="h-10 w-24" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function sessionActionError(error: unknown): string {
-  if (isApiError(error)) {
-    if (error.status === 404) {
-      return "That session was already signed out.";
-    }
-    if (error.status === 403) {
-      return "Your current session does not have permission to manage sessions. Sign out and sign in again.";
-    }
-    if (error.safeMessage) {
-      return error.safeMessage;
-    }
-  }
-  return "The session could not be signed out. Try again.";
-}
-
-function sessionsError(error: unknown): string {
-  if (isApiError(error) && error.status === 403) {
-    return "Your current session does not have permission to view active sessions. Sign out and sign in again.";
-  }
-  return "Active sessions could not be loaded. Refresh and try again.";
 }

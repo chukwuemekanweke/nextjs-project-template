@@ -1,6 +1,6 @@
 "use client";
 
-import { isApiError } from "@template/api-client";
+import type { TwoFactorStatusResponse } from "@template/api-client/authentication";
 import {
   useDisableTwoFactor,
   useRegenerateRecoveryCodes,
@@ -9,621 +9,307 @@ import {
   useVerifyTwoFactorEnrollment,
 } from "@template/api-react/authentication";
 import {
-  ConfirmationCodeField,
-  ValidatedForm,
-  useValidatedForm,
-} from "@template/forms";
-import {
   Alert,
+  Badge,
+  Button,
   Card,
-  CardContent,
-  Modal,
-  SectionHeader,
-  SettingsRow,
-  Skeleton,
+  CardHeader,
+  CardTitle,
+  ErrorState,
+  IconTile,
+  KeyIcon,
+  ListRow,
+  ShieldIcon,
+  SkeletonList,
   SmartphoneIcon,
-  StatusBadge,
-  buttonClassName,
 } from "@template/ui-core";
-import { QRCodeSVG } from "qrcode.react";
-import { useState } from "react";
-import { z } from "zod";
+import { useCallback, useReducer, useState } from "react";
+import {
+  CLOSED_SETUP_DIALOG,
+  canFinishSetup,
+  isSetupDismissible,
+  setupDialogReducer,
+  submitTwoFactorProof,
+  twoFactorManagementError,
+  twoFactorStatusError,
+  verifyEnrollment,
+  type EnrollmentValues,
+  type ProofAction,
+  type ProofValues,
+} from "./two-factor-flow";
+import { TwoFactorProofDialog } from "./two-factor-proof-dialog";
+import { TwoFactorSetupDialog } from "./two-factor-setup-dialog";
 
-const enrollmentSchema = z.object({
-  code: z.string().regex(/^\d{6}$/, "Enter the six-digit code."),
-});
-
-const proofSchema = z.discriminatedUnion("verificationMethod", [
-  z.object({
-    code: z.string().regex(/^\d{6}$/, "Enter the six-digit code."),
-    verificationMethod: z.literal("authenticator"),
-  }),
-  z.object({
-    code: z
-      .string()
-      .regex(/^[A-Z0-9]{10}$/, "Enter the complete recovery code."),
-    verificationMethod: z.literal("recovery_code"),
-  }),
-]);
-
-type EnrollmentValues = z.infer<typeof enrollmentSchema>;
-type ProofValues = z.infer<typeof proofSchema>;
-type SensitiveRecoveryResult = {
-  codes: string[];
-  source: "enrollment" | "regeneration";
-};
-
+/**
+ * Two-factor tab (reference `UserSecurity-twofa` + `UserTwoFactorSetup`).
+ * Status, setup, verification, regeneration and disable use the existing
+ * hooks; MFA is shown as on or off only after the backend confirms. The
+ * setup secret and recovery codes stay in component state and are cleared
+ * when the dialog finishes or is dismissed. The contract has no enrollment
+ * date or total code count, so neither is shown.
+ */
 export function TwoFactorSecurityCard() {
   const status = useTwoFactorStatus();
   const setup = useSetupTwoFactor();
   const verify = useVerifyTwoFactorEnrollment();
   const regenerate = useRegenerateRecoveryCodes();
   const disable = useDisableTwoFactor();
-  const [action, setAction] = useState<"disable" | "regenerate">();
-  const [setupModalOpen, setSetupModalOpen] = useState(false);
-  const [recoveryResult, setRecoveryResult] =
-    useState<SensitiveRecoveryResult>();
-  const [error, setError] = useState<string>();
-
-  async function beginSetup() {
-    setup.reset();
-    verify.reset();
-    setRecoveryResult(undefined);
-    setError(undefined);
-    setSetupModalOpen(true);
-    try {
-      await setup.mutateAsync();
-    } catch (caughtError) {
-      setError(managementError(caughtError));
-    }
-  }
+  const [dialog, dispatch] = useReducer(
+    setupDialogReducer,
+    CLOSED_SETUP_DIALOG,
+  );
+  const [setupError, setSetupError] = useState<string>();
+  const [proofAction, setProofAction] = useState<ProofAction>();
+  const [proofKey, setProofKey] = useState(0);
+  const [notice, setNotice] = useState<string>();
+  const dismissNotice = useCallback(() => setNotice(undefined), []);
 
   function clearSensitiveState() {
     setup.reset();
     verify.reset();
     regenerate.reset();
-    setRecoveryResult(undefined);
-    setError(undefined);
+    setSetupError(undefined);
   }
 
-  function closeSetupModal() {
+  function openSetup() {
     clearSensitiveState();
-    setSetupModalOpen(false);
+    setNotice(undefined);
+    dispatch({ type: "open" });
+  }
+
+  async function startSetup() {
+    if (setup.isPending) return;
+    setup.reset();
+    setSetupError(undefined);
+    dispatch({ type: "start" });
+    try {
+      await setup.mutateAsync();
+    } catch (error) {
+      setSetupError(twoFactorManagementError(error));
+    }
+  }
+
+  function backToIntro() {
+    clearSensitiveState();
+    dispatch({ type: "back" });
+  }
+
+  async function verifyCode(values: EnrollmentValues) {
+    const outcome = await verifyEnrollment(values, verify.mutateAsync);
+    if (outcome.status === "failed") return outcome.message;
+    // Drop the setup secret as soon as enrollment is verified.
+    setup.reset();
+    verify.reset();
+    dispatch({ codes: outcome.codes, source: "enrollment", type: "codes" });
+    return undefined;
+  }
+
+  function finishSetup() {
+    if (!canFinishSetup(dialog)) return;
+    clearSensitiveState();
+    setNotice(
+      dialog.step === "codes" && dialog.source === "regeneration"
+        ? "Your new recovery codes are ready to use."
+        : "Two-factor authentication is on.",
+    );
+    dispatch({ type: "finish" });
+  }
+
+  function dismissSetup() {
+    if (!isSetupDismissible(dialog) || verify.isPending) return;
+    clearSensitiveState();
+    dispatch({ type: "dismiss" });
+  }
+
+  function openProof(action: ProofAction) {
+    setNotice(undefined);
+    setProofKey((key) => key + 1);
+    setProofAction(action);
+  }
+
+  async function submitProof(action: ProofAction, values: ProofValues) {
+    const outcome = await submitTwoFactorProof(action, values, {
+      disable: disable.mutateAsync,
+      regenerate: regenerate.mutateAsync,
+    });
+    if (outcome.status === "failed") return outcome.message;
+    setProofAction(undefined);
+    if (outcome.status === "disabled") {
+      clearSensitiveState();
+      disable.reset();
+      setNotice("Two-factor authentication was turned off.");
+    } else {
+      regenerate.reset();
+      dispatch({ codes: outcome.codes, source: "regeneration", type: "codes" });
+    }
+    return undefined;
   }
 
   return (
     <Card>
-      <CardContent>
-        <SectionHeader
-          description="Require a code from your authenticator app when starting a new session."
-          icon={<SmartphoneIcon className="h-6 w-6" />}
-          title="Authenticator two-factor authentication"
-        />
-        <div className="mt-5 space-y-4">
-          {status.isPending ? (
-            <TwoFactorStatusSkeleton />
-          ) : status.isError ? (
-            <Alert variant="error">{twoFactorStatusError(status.error)}</Alert>
-          ) : status.data?.enabled ? (
-            <EnabledPanel
-              onDisable={() => setAction("disable")}
-              onRegenerate={() => setAction("regenerate")}
-              recoveryCodesRemaining={status.data.recoveryCodesRemaining}
-            />
-          ) : (
-            <DisabledPanel
-              onEnable={() => void beginSetup()}
-              pending={setup.isPending}
-            />
-          )}
+      <CardHeader>
+        <div className="min-w-0">
+          <CardTitle>Two-factor authentication</CardTitle>
+          <p className="text-small text-fg-muted mt-0.5">
+            Require a code from your authenticator app when starting a new
+            session.
+          </p>
         </div>
-        <SetupModal
-          error={error}
-          onClose={closeSetupModal}
-          onRetry={() => void beginSetup()}
-          onSaved={closeSetupModal}
-          onVerified={(codes) => {
-            setup.reset();
-            verify.reset();
-            setRecoveryResult({ codes, source: "enrollment" });
-          }}
-          open={setupModalOpen}
-          recoveryResult={recoveryResult}
-          setup={setup}
-          verify={verify}
+      </CardHeader>
+      {notice ? (
+        <div className="px-4 pt-4 md:px-6">
+          <Alert
+            autoDismissAfter={5_000}
+            onDismiss={dismissNotice}
+            variant="success"
+          >
+            {notice}
+          </Alert>
+        </div>
+      ) : null}
+      {status.isPending ? (
+        <SkeletonList label="Loading two-factor settings" rows={2} />
+      ) : status.isError ? (
+        <ErrorState
+          description={twoFactorStatusError(status.error)}
+          title="Two-factor settings unavailable"
         />
-        <ProofModal
-          action={action}
-          disable={disable}
-          onClose={() => setAction(undefined)}
-          onDisabled={() => {
-            setAction(undefined);
-            clearSensitiveState();
-          }}
-          onRegenerated={(codes) => {
-            setAction(undefined);
-            regenerate.reset();
-            setRecoveryResult({ codes, source: "regeneration" });
-            setSetupModalOpen(true);
-          }}
-          regenerate={regenerate}
+      ) : (
+        <TwoFactorStatusRows
+          onDisable={() => openProof("disable")}
+          onEnable={openSetup}
+          onRegenerate={() => openProof("regenerate")}
+          status={status.data}
         />
-      </CardContent>
+      )}
+      <TwoFactorSetupDialog
+        onBack={backToIntro}
+        onDismiss={dismissSetup}
+        onFinish={finishSetup}
+        onSavedChange={(saved) => dispatch({ saved, type: "confirm-saved" })}
+        onStart={() => void startSetup()}
+        onVerify={verifyCode}
+        setup={{
+          data: setup.data,
+          error: setupError,
+          pending: setup.isPending,
+        }}
+        state={dialog}
+        verifying={verify.isPending}
+      />
+      <TwoFactorProofDialog
+        action={proofAction}
+        key={proofKey}
+        onClose={() => {
+          if (disable.isPending || regenerate.isPending) return;
+          setProofAction(undefined);
+        }}
+        onSubmit={submitProof}
+        pending={disable.isPending || regenerate.isPending}
+      />
     </Card>
   );
 }
 
-function TwoFactorStatusSkeleton() {
-  return (
-    <div
-      aria-busy="true"
-      aria-label="Loading two-factor settings"
-      className="flex flex-col gap-4 rounded-[10px] border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5 dark:border-gray-800"
-      role="status"
-    >
-      <div className="min-w-0 flex-1 space-y-2">
-        <Skeleton className="h-5 w-24" />
-        <Skeleton className="h-4 w-full max-w-sm" />
-      </div>
-      <Skeleton className="h-10 w-20" />
-    </div>
-  );
-}
-
-function DisabledPanel({
-  onEnable,
-  pending,
-}: Readonly<{ onEnable: () => void; pending: boolean }>) {
-  return (
-    <SettingsRow
-      actions={
-        <button
-          className={buttonClassName()}
-          disabled={pending}
-          onClick={onEnable}
-          type="button"
-        >
-          Enable
-        </button>
-      }
-      description="Add an authenticator app for stronger account protection."
-      title={
-        <StatusBadge tone="danger">
-          <span className="sr-only">Two-factor authentication is </span>
-          Disabled
-        </StatusBadge>
-      }
-    />
-  );
-}
-
-function SetupModal({
-  error,
-  onClose,
-  onRetry,
-  onSaved,
-  onVerified,
-  open,
-  recoveryResult,
-  setup,
-  verify,
-}: Readonly<{
-  error: string | undefined;
-  onClose: () => void;
-  onRetry: () => void;
-  onSaved: () => void;
-  onVerified: (codes: string[]) => void;
-  open: boolean;
-  recoveryResult: SensitiveRecoveryResult | undefined;
-  setup: ReturnType<typeof useSetupTwoFactor>;
-  verify: ReturnType<typeof useVerifyTwoFactorEnrollment>;
-}>) {
-  const showingRecoveryCodes = Boolean(recoveryResult);
-
-  return (
-    <Modal
-      description={
-        showingRecoveryCodes
-          ? "Store these somewhere safe before closing this window."
-          : "Scan the QR code, then verify a code from your authenticator app."
-      }
-      onClose={onClose}
-      open={open}
-      title={
-        showingRecoveryCodes
-          ? "Save your recovery codes"
-          : "Set up an authenticator app"
-      }
-    >
-      {setup.isPending ? (
-        <div aria-busy="true" className="space-y-5" role="status">
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="mx-auto h-48 w-48" />
-          <Skeleton className="h-16 w-full" />
-          <Skeleton className="h-11 w-full" />
-        </div>
-      ) : error ? (
-        <div className="space-y-4">
-          <Alert variant="error">{error}</Alert>
-          <button className={buttonClassName()} onClick={onRetry} type="button">
-            Try again
-          </button>
-        </div>
-      ) : recoveryResult ? (
-        <RecoveryCodesPanel
-          codes={recoveryResult.codes}
-          onSaved={onSaved}
-          source={recoveryResult.source}
-        />
-      ) : setup.data ? (
-        <EnrollmentPanel
-          authenticatorUri={setup.data.authenticatorUri}
-          onCancel={onClose}
-          onVerified={onVerified}
-          sharedKey={setup.data.sharedKey}
-          verify={verify}
-        />
-      ) : null}
-    </Modal>
-  );
-}
-
-function EnabledPanel({
+/** Enabled or disabled rows from the backend status (exported for tests). */
+export function TwoFactorStatusRows({
   onDisable,
+  onEnable,
   onRegenerate,
-  recoveryCodesRemaining,
+  status,
 }: Readonly<{
   onDisable: () => void;
+  onEnable: () => void;
   onRegenerate: () => void;
-  recoveryCodesRemaining: number;
+  status: TwoFactorStatusResponse;
 }>) {
-  return (
-    <SettingsRow
-      actions={
-        <>
-          <button
-            className={buttonClassName({ variant: "secondary" })}
-            onClick={onRegenerate}
-            type="button"
-          >
-            Regenerate recovery codes
-          </button>
-          <button
-            className={buttonClassName({ variant: "destructive" })}
-            onClick={onDisable}
-            type="button"
-          >
-            Disable
-          </button>
-        </>
-      }
-      description={`Your authenticator app is required when you start a new session. Recovery codes remaining: ${recoveryCodesRemaining}`}
-      title={
-        <StatusBadge tone="success">
-          <span className="sr-only">Two-factor authentication is </span>
-          Enabled
-        </StatusBadge>
-      }
-    />
-  );
-}
-
-function EnrollmentPanel({
-  authenticatorUri,
-  onCancel,
-  onVerified,
-  sharedKey,
-  verify,
-}: Readonly<{
-  authenticatorUri: string;
-  onCancel: () => void;
-  onVerified: (codes: string[]) => void;
-  sharedKey: string;
-  verify: ReturnType<typeof useVerifyTwoFactorEnrollment>;
-}>) {
-  const [error, setError] = useState<string>();
-  const form = useValidatedForm(enrollmentSchema, {
-    defaultValues: { code: "" },
-  });
-
-  async function submit(values: EnrollmentValues) {
-    setError(undefined);
-    try {
-      const result = await verify.mutateAsync(values);
-      form.reset();
-      onVerified(result.recoveryCodes);
-    } catch (caughtError) {
-      setError(
-        managementError(caughtError, "The authenticator code is incorrect."),
-      );
-    }
-  }
-
-  function submitCompletedCode() {
-    void form.handleSubmit(submit)();
-  }
-
-  return (
-    <div className="space-y-5">
-      <Alert variant="info">
-        Scan this code in your authenticator app, or enter the manual key. The
-        setup secret is shown only in this view.
-      </Alert>
-      <div className="flex justify-center rounded-xl bg-white p-4">
-        <QRCodeSVG
-          aria-label="Authenticator setup QR code"
-          size={192}
-          value={authenticatorUri}
-        />
-      </div>
-      <div>
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Manual setup key
-        </p>
-        <code className="mt-2 block rounded-lg bg-gray-100 p-3 text-sm break-all text-gray-800 dark:bg-gray-800 dark:text-gray-100">
-          {sharedKey}
-        </code>
-      </div>
-      <ValidatedForm className="space-y-4" form={form} onSubmit={submit}>
-        {error ? <Alert variant="error">{error}</Alert> : null}
-        <ConfirmationCodeField<EnrollmentValues>
-          autoFocus
-          disabled={verify.isPending}
-          label="Authenticator code"
-          length={6}
-          name="code"
-          onComplete={submitCompletedCode}
-          required
-        />
-        <div className="flex flex-col items-center gap-3 text-center">
-          {verify.isPending ? (
-            <div
-              aria-live="polite"
-              className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400"
-              role="status"
-            >
-              <span
-                aria-hidden="true"
-                className="border-brand-500 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
-              />
-              Verifying…
-            </div>
-          ) : null}
-          <button
-            className={buttonClassName({ variant: "secondary" })}
-            disabled={verify.isPending}
-            onClick={onCancel}
-            type="button"
-          >
-            Cancel
-          </button>
-        </div>
-      </ValidatedForm>
-    </div>
-  );
-}
-
-function RecoveryCodesPanel({
-  codes,
-  onSaved,
-  source,
-}: Readonly<{
-  codes: string[];
-  onSaved: () => void;
-  source: SensitiveRecoveryResult["source"];
-}>) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <div className="space-y-5">
-      <Alert variant="warning">
-        Save these recovery codes now. They will not be shown again, and each
-        code can be used only once.
-      </Alert>
-      {source === "regeneration" ? (
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Your previous recovery codes are no longer valid.
-        </p>
-      ) : null}
-      <div className="space-y-2">
-        <div className="flex justify-end">
-          <button
-            aria-label="Download recovery codes as a text file"
-            className="text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-950/30 flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 transition dark:border-gray-700"
-            onClick={() => downloadRecoveryCodes(codes)}
-            title="Download recovery codes"
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-              />
-            </svg>
-          </button>
-        </div>
-        <ul className="grid grid-cols-1 gap-2 rounded-xl bg-gray-100 p-4 font-mono text-sm text-gray-800 sm:grid-cols-2 dark:bg-gray-800 dark:text-gray-100">
-          {codes.map((code) => (
-            <li key={code}>{code}</li>
-          ))}
-        </ul>
-      </div>
-      <div className="flex flex-wrap gap-3">
-        <button
-          className={buttonClassName({ variant: "accent" })}
-          onClick={() => {
-            void navigator.clipboard.writeText(codes.join("\n")).then(() => {
-              setCopied(true);
-            });
-          }}
-          type="button"
-        >
-          {copied ? "Copied" : "Copy all"}
-        </button>
-        <button className={buttonClassName()} onClick={onSaved} type="button">
-          I have saved my recovery codes
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function downloadRecoveryCodes(codes: string[]): void {
-  const contents = [
-    "Two-factor authentication recovery codes",
-    "Each code can be used only once.",
-    "",
-    ...codes,
-    "",
-  ].join("\n");
-  const file = new Blob([contents], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(file);
-  const link = document.createElement("a");
-  link.download = "two-factor-recovery-codes.txt";
-  link.href = url;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
-
-function ProofModal({
-  action,
-  disable,
-  onClose,
-  onDisabled,
-  onRegenerated,
-  regenerate,
-}: Readonly<{
-  action: "disable" | "regenerate" | undefined;
-  disable: ReturnType<typeof useDisableTwoFactor>;
-  onClose: () => void;
-  onDisabled: () => void;
-  onRegenerated: (codes: string[]) => void;
-  regenerate: ReturnType<typeof useRegenerateRecoveryCodes>;
-}>) {
-  const [error, setError] = useState<string>();
-  const form = useValidatedForm<ProofValues>(proofSchema, {
-    defaultValues: { code: "", verificationMethod: "authenticator" },
-  });
-  const method = form.watch("verificationMethod");
-
-  async function submit(values: ProofValues) {
-    if (!action) return;
-    setError(undefined);
-    try {
-      if (action === "regenerate") {
-        const result = await regenerate.mutateAsync(values);
-        form.reset();
-        onRegenerated(result.recoveryCodes);
-        return;
-      }
-      await disable.mutateAsync(values);
-      form.reset();
-      onDisabled();
-    } catch (caughtError) {
-      setError(
-        managementError(caughtError, "The verification code is incorrect."),
-      );
-    }
-  }
-
-  function submitCompletedCode() {
-    void form.handleSubmit(submit)();
-  }
-
-  return (
-    <Modal
-      description={
-        action === "regenerate"
-          ? "This invalidates every recovery code you saved previously."
-          : "This removes authenticator protection from your account."
-      }
-      onClose={() => {
-        form.reset();
-        setError(undefined);
-        onClose();
-      }}
-      open={Boolean(action)}
-      size="compact"
-      title={
-        action === "regenerate"
-          ? "Regenerate recovery codes?"
-          : "Disable two-factor authentication?"
-      }
-    >
-      <ValidatedForm className="space-y-4" form={form} onSubmit={submit}>
-        {error ? <Alert variant="error">{error}</Alert> : null}
-        <input {...form.register("verificationMethod")} type="hidden" />
-        <ConfirmationCodeField<ProofValues>
-          characterSet={method === "authenticator" ? "numeric" : "alphanumeric"}
-          disabled={disable.isPending || regenerate.isPending}
-          groupAfter={method === "recovery_code" ? 5 : undefined}
-          label={
-            method === "authenticator" ? "Authenticator code" : "Recovery code"
+  if (!status.enabled) {
+    return (
+      <ul aria-label="Two-factor authentication">
+        <ListRow
+          actions={<Button onClick={onEnable}>Enable</Button>}
+          as="li"
+          description="Add an authenticator app for stronger account protection. You will be asked for a code when you start a new session."
+          leading={
+            <IconTile tone="neutral">
+              <SmartphoneIcon />
+            </IconTile>
           }
-          length={method === "authenticator" ? 6 : 10}
-          name="code"
-          onComplete={submitCompletedCode}
-          required
+          title={
+            <span className="flex flex-wrap items-center gap-2">
+              Authenticator app
+              <Badge tone="neutral">
+                <span className="sr-only">Two-factor authentication is </span>
+                Disabled
+              </Badge>
+            </span>
+          }
         />
-        <div className="flex flex-col items-center gap-3 text-center">
-          {disable.isPending || regenerate.isPending ? (
-            <div
-              aria-live="polite"
-              className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400"
-              role="status"
-            >
-              <span
-                aria-hidden="true"
-                className="border-brand-500 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
-              />
-              Verifying…
-            </div>
-          ) : null}
-          <button
-            className="text-brand-600 hover:text-brand-700 dark:text-brand-400 text-sm font-medium disabled:opacity-60"
-            disabled={disable.isPending || regenerate.isPending}
-            onClick={() => {
-              form.setValue(
-                "verificationMethod",
-                method === "authenticator" ? "recovery_code" : "authenticator",
-              );
-              form.setValue("code", "");
-              form.clearErrors();
-            }}
-            type="button"
-          >
-            {method === "authenticator"
-              ? "Use a recovery code"
-              : "Use an authenticator code"}
-          </button>
-        </div>
-      </ValidatedForm>
-    </Modal>
+      </ul>
+    );
+  }
+
+  const remaining = status.recoveryCodesRemaining;
+
+  return (
+    <ul aria-label="Two-factor authentication">
+      <ListRow
+        as="li"
+        description="You will be asked for a code from your authenticator app when you start a new session."
+        leading={
+          <IconTile tone="success">
+            <SmartphoneIcon />
+          </IconTile>
+        }
+        title={
+          <span className="flex flex-wrap items-center gap-2">
+            Authenticator app
+            <Badge tone="success">
+              <span className="sr-only">Two-factor authentication is </span>
+              Enabled
+            </Badge>
+          </span>
+        }
+      />
+      <ListRow
+        actions={
+          <Button onClick={onRegenerate} size="sm" variant="secondary">
+            Regenerate codes
+          </Button>
+        }
+        as="li"
+        description={
+          remaining === 0 ? (
+            <span className="text-warning">
+              No recovery codes left. Regenerate codes so you can still sign in
+              if you lose your authenticator.
+            </span>
+          ) : (
+            `${remaining} unused recovery ${remaining === 1 ? "code" : "codes"}. Each code works once.`
+          )
+        }
+        leading={
+          <IconTile tone="neutral">
+            <KeyIcon />
+          </IconTile>
+        }
+        title="Recovery codes"
+      />
+      <ListRow
+        actions={
+          <Button onClick={onDisable} size="sm" variant="dangerOutline">
+            Disable
+          </Button>
+        }
+        as="li"
+        description="Your account will then be protected only by your password and passkeys."
+        leading={
+          <IconTile tone="neutral">
+            <ShieldIcon />
+          </IconTile>
+        }
+        title="Turn off two-factor"
+      />
+    </ul>
   );
-}
-
-function managementError(error: unknown, unauthorizedMessage?: string): string {
-  if (isApiError(error)) {
-    if (error.status === 401 && unauthorizedMessage) return unauthorizedMessage;
-    if (error.status === 423) return "This account is temporarily locked.";
-    if (error.status === 429) return "Too many attempts. Try again later.";
-    if (error.safeMessage) return error.safeMessage;
-  }
-  return "Two-factor settings could not be updated. Try again.";
-}
-
-function twoFactorStatusError(error: unknown): string {
-  if (isApiError(error) && error.status === 403) {
-    return "Your current session does not have permission to manage two-factor authentication. Sign out and sign in again. If the problem continues, contact support.";
-  }
-  return "Two-factor settings could not be loaded. Refresh and try again.";
 }

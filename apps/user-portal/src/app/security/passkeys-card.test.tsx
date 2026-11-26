@@ -112,7 +112,7 @@ describe("PasskeysCard", () => {
     const markup = render();
     expect(markup).toContain("This browser cannot create passkeys");
     expect(markup).toMatch(
-      /<button[^>]*disabled=""[^>]*>Add passkey<\/button>/,
+      /<button[^>]*disabled=""[^>]*>(?:<svg.*?<\/svg>)?Add passkey<\/button>/,
     );
     expect(markup).toMatch(
       /<button[^>]*aria-label="Remove Work laptop"(?![^>]*disabled="")/,
@@ -121,5 +121,39 @@ describe("PasskeysCard", () => {
 
   it("ignores invalid dates instead of rendering Invalid Date", () => {
     expect(formatPasskeyDate("not-a-date")).toBe("");
+  });
+});
+
+describe("PasskeysCard list states", () => {
+  it("renders each registered passkey once with its own actions", () => {
+    usePasskeys.mockReturnValue({
+      data: [
+        buildPasskey(),
+        buildPasskey({ id: "Ag", name: "Phone" }),
+        buildPasskey({ id: "Aw", name: "YubiKey", transports: ["usb"] }),
+      ],
+      isPending: false,
+    });
+    const markup = render();
+    expect(markup.match(/<li/g)).toHaveLength(3);
+    expect(markup).toContain('aria-label="Remove Phone"');
+    expect(markup).not.toContain("No passkeys yet");
+  });
+
+  it("keeps the removal confirmation closed until requested", () => {
+    usePasskeys.mockReturnValue({ data: [buildPasskey()], isPending: false });
+    const markup = render();
+    expect(markup).not.toContain('role="dialog"');
+    expect(idleMutation.mutateAsync).not.toHaveBeenCalled();
+  });
+
+  it("keeps registration disabled until browser support is known", () => {
+    useWebAuthnSupport.mockReturnValue(undefined);
+    usePasskeys.mockReturnValue({ data: [], isPending: false });
+    const markup = render();
+    expect(markup).toMatch(
+      /<button[^>]*disabled=""[^>]*>Add your first passkey<\/button>/,
+    );
+    expect(markup).not.toContain("This browser cannot create passkeys");
   });
 });
