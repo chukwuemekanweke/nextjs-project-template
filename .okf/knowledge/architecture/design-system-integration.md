@@ -47,9 +47,16 @@ lives in `docs/design-system/`; load it only for UI redesign work.
   unless a separate ticket changes them.
 - One responsive route per logical screen: no mobile or dark-mode routes;
   business states are not routes. Screens whose backend does not exist get no
-  route or navigation item; they may be previewed only in the UI workbench.
-- Fixtures live in `__fixtures__/` beside the view they serve, are typed with
-  `api-client` contracts, and may be imported only by stories and tests.
+  route or navigation item. They are built as feature-local preview
+  compositions in `apps/<portal>/src/features/<feature>` (actions are intents
+  through callbacks and render disabled without one), previewed by the app's
+  own tests, not by recreating portal screens in the UI workbench (which holds
+  shared-component stories only).
+- Preview fixtures are colocated `*-preview.fixtures.ts` files beside the
+  feature (shared-component story fixtures stay in the workbench), typed with
+  `api-client` contracts or feature models, and imported only by tests and
+  stories; feature tests fail if production code imports them or adds the
+  route early.
 - Target direction (adopted ticket by ticket, see
   `docs/design-system/migration-roadmap.md`): semantic tokens and
   `next-themes` (landed, `design-tokens-theming`); Radix-based primitives,
