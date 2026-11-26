@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { DashboardHeader } from "@template/dashboard-ui";
+import { connection } from "next/server";
 import { ActiveSessionsCard } from "./active-sessions-card";
 import { PasskeysCard } from "./passkeys-card";
 import { PasswordChangeCard } from "./password-change-card";
 import { SecurityActivityCard } from "./security-activity-card";
 import { SecurityOverview } from "./security-overview-card";
-import { parseSecurityTab } from "./security-tab";
 import { SecurityTabs } from "./security-tabs";
 import { TwoFactorSecurityCard } from "./two-factor-security-card";
 
@@ -13,12 +13,11 @@ export const metadata: Metadata = { title: "Security" };
 
 /**
  * One responsive route for all six Security sections; `?tab=` selects the
- * section (unknown values fall back to the overview).
+ * section (unknown values fall back to the overview). Rendered per request
+ * so `SecurityTabs` reads the requested tab from the URL on the server too.
  */
-export default async function SecurityPage({
-  searchParams,
-}: Readonly<{ searchParams: Promise<{ tab?: string | string[] }> }>) {
-  const initialTab = parseSecurityTab((await searchParams).tab);
+export default async function SecurityPage() {
+  await connection();
 
   return (
     <section className="space-y-6">
@@ -27,7 +26,6 @@ export default async function SecurityPage({
         title="Security"
       />
       <SecurityTabs
-        initialTab={initialTab}
         panels={{
           activity: <SecurityActivityCard />,
           overview: <SecurityOverview />,

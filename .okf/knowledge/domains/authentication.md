@@ -52,9 +52,9 @@ persisted.
 
 Security page layout (Trello FE-UI-008): one route, `/security`, with six
 `?tab=` sections (`overview`, `password`, `passkeys`, `two-factor`,
-`sessions`, `activity`; absent/unknown values show the overview), parsed by
-`security-tab.ts` on the server and kept in sync client-side with
-`history.replaceState`. Inactive tabs are unmounted. The overview score uses
+`sessions`, `activity`; absent/unknown values show the overview). The URL is
+the source of truth: `SecurityTabs` derives the tab from `useSearchParams()`
+via `security-tab.ts` and switches with `history.replaceState`. Inactive tabs are unmounted. The overview score uses
 only backend facts (password set, two-factor on, one and two passkeys); it is
 pending while a query loads and "unavailable" when one fails, never guessed.
 Two-factor setup is a three-step dialog (explain, scan + six-digit verify,

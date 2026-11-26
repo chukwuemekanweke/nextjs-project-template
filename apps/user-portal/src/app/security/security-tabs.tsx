@@ -1,16 +1,17 @@
 "use client";
 
 import { Tabs } from "@template/ui-core";
+import { useSearchParams } from "next/navigation";
 import {
   createContext,
   useCallback,
   useContext,
-  useState,
   type MouseEvent,
   type ReactNode,
 } from "react";
 import {
   SECURITY_TABS,
+  parseSecurityTab,
   securityTabHref,
   type SecurityTab,
 } from "./security-tab";
@@ -22,30 +23,20 @@ const SecurityTabContext = createContext<SecurityTabNavigation | undefined>(
 );
 
 /**
- * Six URL-addressable Security sections. The server page resolves the
- * initial tab from `?tab=`; switching tabs replaces the query in place
- * (no history entry, no server round trip) so the URL stays shareable.
- * Inactive panels are unmounted, so each tab fetches only its own data.
+ * Six URL-addressable Security sections. The URL is the only source of
+ * truth: the active tab is derived from `?tab=` on every render, so links,
+ * soft navigations, refresh and back/forward always agree with what is
+ * shown. Switching tabs replaces the query in place (no history entry, no
+ * server round trip); the App Router keeps `useSearchParams` in sync with
+ * `history.replaceState`. Inactive panels are unmounted, so each tab
+ * fetches only its own data.
  */
 export function SecurityTabs({
-  initialTab,
   panels,
-}: Readonly<{
-  initialTab: SecurityTab;
-  panels: Readonly<Record<SecurityTab, ReactNode>>;
-}>) {
-  const [tab, setTab] = useState(initialTab);
-  const [syncedInitialTab, setSyncedInitialTab] = useState(initialTab);
-
-  // A soft navigation to `/security?tab=…` (for example from the dashboard)
-  // re-renders the page with a new initial tab while this component persists.
-  if (syncedInitialTab !== initialTab) {
-    setSyncedInitialTab(initialTab);
-    setTab(initialTab);
-  }
+}: Readonly<{ panels: Readonly<Record<SecurityTab, ReactNode>> }>) {
+  const tab = parseSecurityTab(useSearchParams().get("tab"));
 
   const selectTab = useCallback((next: SecurityTab) => {
-    setTab(next);
     window.history.replaceState(null, "", securityTabHref(next));
   }, []);
 
