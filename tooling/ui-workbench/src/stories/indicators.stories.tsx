@@ -10,6 +10,7 @@ import {
   Progress,
   ShieldCheckIcon,
   Spinner,
+  Steps,
   TriangleAlertIcon,
   UsersIcon,
   WalletIcon,
@@ -88,6 +89,32 @@ export const AllIndicators: Story = {
           <Divider label="or" />
         </div>
       </Specimen>
+    </Gallery>
+  ),
+};
+
+const stepItems = [
+  { id: "one", label: "First step" },
+  { id: "two", label: "Second step" },
+  { id: "three", label: "Third step" },
+];
+
+/**
+ * Progress steps (`.steps`). Below `md` only the current label is visible;
+ * the others stay available to assistive technology.
+ */
+export const StepsProgress: Story = {
+  render: () => (
+    <Gallery>
+      {stepItems.map((step) => (
+        <Specimen key={step.id} title={`Current: ${step.label}`}>
+          <Steps
+            className="w-full max-w-md"
+            current={step.id}
+            steps={stepItems}
+          />
+        </Specimen>
+      ))}
     </Gallery>
   ),
 };

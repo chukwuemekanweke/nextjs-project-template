@@ -27,7 +27,8 @@ status: stable
 The UI is being redesigned design-first against the Project Template design
 system, pinned at commit `d23eb85` of
 `chukwuemekanweke/Project-Template-Design-System`; the dashboard shell
-(FE-UI-004) follows revision `a7e2a63`, recorded as a scoped revision in the
+(FE-UI-004) follows revision `a7e2a63` and the authentication screens
+(Trello FE-UI-006) follow `ad9386e`, each recorded as a scoped revision in the
 manifest (full manifest regeneration outstanding, DR-083; invoices/receipts
 are FE-UI-018, email templates are tracked separately) (canonical files: the
 numbered `0-foundations` … `4-admin-portal` directories). Detailed planning
@@ -60,7 +61,10 @@ lives in `docs/design-system/`; load it only for UI redesign work.
   delivered roadmap FE-UI-008's dashboard chrome — workbench,
   browser-mode and primitive visual tests — while CI wiring, journeys and axe
   automation remain outstanding; Trello FE-UI-005 delivered roadmap
-  FE-UI-009/010/011, the marketing site and pricing). Treat the current card as authoritative and record the
+  FE-UI-009/010/011, the marketing site and pricing; Trello FE-UI-006
+  delivered roadmap FE-UI-012 and FE-UI-014 plus the `AuthLayout` and `Steps`
+  parts of FE-UI-008/006; Trello FE-UI-020 owns roadmap FE-UI-013, password
+  reset by email OTP). Treat the current card as authoritative and record the
   mapping rather than renumbering the roadmap. Existing package ownership rules
   (`ui-composition`, `package-dependency-rules`) remain in force; describe the
   current implementation there as each ticket lands.

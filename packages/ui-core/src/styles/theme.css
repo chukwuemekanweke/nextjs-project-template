@@ -166,6 +166,8 @@
   /* Overlays and fixed-colour details the reference hard-codes. */
   --color-scrim: rgb(15 23 42 / 0.45);
   --color-auth-panel: var(--palette-blue-500);
+  /* Panel edge: invisible on the brand colour, a border in dark. */
+  --color-auth-panel-border: var(--palette-blue-500);
   --color-switch-thumb: var(--palette-white);
   --color-switch-track: var(--palette-slate-450);
 }
@@ -297,6 +299,7 @@
 
     --color-scrim: rgb(0 0 0 / 0.6);
     --color-auth-panel: var(--palette-zinc-900);
+    --color-auth-panel-border: var(--palette-zinc-800);
     --color-switch-thumb: var(--palette-white);
     --color-switch-track: var(--palette-zinc-500);
 

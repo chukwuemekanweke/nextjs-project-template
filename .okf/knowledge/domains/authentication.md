@@ -15,6 +15,9 @@ code_refs:
     apps/user-portal/src/app/security/**,
     apps/user-portal/src/lib/registration.ts,
     apps/admin-portal/src/app/sign-in/**,
+    apps/user-portal/src/lib/auth-feedback.ts,
+    apps/user-portal/src/components/user-auth-layout.tsx,
+    apps/admin-portal/src/lib/sign-in-feedback.ts,
     packages/api-client/src/authentication/**,
     packages/api-react/src/authentication/**,
   ]
@@ -105,6 +108,19 @@ the returned access token must contain the configured admin role. A rejected
 session is best-effort logged out, cleared, and never stored. Role checks are
 repeated during protected-route validation/refresh, but the backend remains
 authoritative for every privileged operation.
+
+Authentication screens (Trello FE-UI-006) compose the shared `AuthLayout`.
+Registration shows Email → Your details (profile and password in one form,
+existing schemas combined, DR-014) → Confirm email. A 403 sign-in redirect adds
+the presentation-only `reason=email_not_confirmed`, which swaps registration
+progress for an "Email not confirmed" warning. Titled alerts come from
+app-local mappings (`src/lib/auth-feedback.ts`, admin
+`src/lib/sign-in-feedback.ts`) keyed on HTTP status or stable error codes;
+passkey cancellation stays silent. Never show attempt counts, lockout
+durations, "no account for this email", "keep me signed in", Google identity
+or email (the backend returns none), a terms checkbox, or admin passkey/MFA
+affordances. `SignInForm` renders "Forgot password?" only when given
+`forgotPasswordHref`; the reset route ships with Trello FE-UI-020.
 
 Keep workflow schemas, copy, navigation, cooldown UI, conflict redirects, and
 admission presentation in the owning app. Reusable backend operations and query

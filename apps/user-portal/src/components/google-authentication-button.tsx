@@ -1,5 +1,6 @@
 "use client";
 
+import { buttonVariants, cn, Spinner } from "@template/ui-core";
 import Script from "next/script";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -167,7 +168,7 @@ export function GoogleAuthenticationButton({
   }, [authenticateCredential, clientId, onError, scriptReady, state]);
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-2">
       <Script
         onError={() => {
           setScriptFailed(true);
@@ -187,14 +188,20 @@ export function GoogleAuthenticationButton({
       {state === "idle" || state === "preparing" ? (
         <button
           aria-busy={state === "preparing"}
-          className="flex min-h-10 w-full items-center justify-center gap-3 rounded-sm border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:hover:bg-gray-800"
+          className={cn(
+            buttonVariants({ fullWidth: true, variant: "secondary" }),
+          )}
           disabled={
             disabled || !scriptReady || scriptFailed || state === "preparing"
           }
           onClick={() => void prepare()}
           type="button"
         >
-          <GoogleMark />
+          {state === "preparing" ? (
+            <Spinner decorative size="sm" />
+          ) : (
+            <GoogleMark />
+          )}
           {state === "preparing"
             ? "Preparing Google sign-in…"
             : scriptFailed

@@ -1,7 +1,7 @@
 "use client";
 
 import { FormField, PasswordInput } from "@template/ui-core";
-import { useId, type InputHTMLAttributes } from "react";
+import { useId, type InputHTMLAttributes, type ReactNode } from "react";
 import {
   get,
   useFormContext,
@@ -15,6 +15,8 @@ type PasswordFieldProps<TValues extends FieldValues> = Omit<
 > & {
   hint?: string;
   label: string;
+  /** Action on the label row, for example a "Forgot password?" link. */
+  labelAction?: ReactNode;
   name: FieldPath<TValues>;
 };
 
@@ -22,6 +24,7 @@ export function PasswordField<TValues extends FieldValues>({
   hint,
   id: suppliedId,
   label,
+  labelAction,
   name,
   required,
   ...props
@@ -42,6 +45,7 @@ export function PasswordField<TValues extends FieldValues>({
       hint={hint}
       inputId={id}
       label={label}
+      labelAction={labelAction}
       required={required}
     >
       <PasswordInput

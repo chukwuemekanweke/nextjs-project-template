@@ -6,6 +6,7 @@ import {
   useSignUp,
 } from "@template/api-react/authentication";
 import { useCountries } from "@template/api-react/reference-data";
+import { AuthHeading } from "@template/dashboard-ui";
 import {
   applyBackendValidation,
   PasswordField,
@@ -15,12 +16,17 @@ import {
   ValidatedForm,
   useValidatedForm,
 } from "@template/forms";
+import { Alert, ArrowLeftIcon, Divider } from "@template/ui-core";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import type { z } from "zod";
+import { AuthFeedbackAlert } from "@/components/auth-feedback-alert";
 import { GoogleAuthenticationButton } from "@/components/google-authentication-button";
 import { GoogleLinkForm } from "@/components/google-link-form";
+import { RegistrationSteps } from "@/components/registration-steps";
+import { authLinkClassName } from "@/components/auth-link";
+import { googleFeedback, type AuthFeedback } from "@/lib/auth-feedback";
 import type {
   GoogleAuthenticationError,
   GoogleAuthenticationOutcome,
@@ -38,11 +44,17 @@ import {
   createSignInHref,
 } from "@/lib/sign-in";
 
+/** "Your details" groups the profile and password schemas (DR-014). */
+const detailsSchema = profileSchema.and(passwordSchema);
+
 type EmailValues = z.infer<typeof emailSchema>;
-type PasswordValues = z.infer<typeof passwordSchema>;
+type DetailsValues = z.infer<typeof detailsSchema>;
 type ProfileValues = z.infer<typeof profileSchema>;
-type RegistrationStep = "email" | "profile" | "password";
+type RegistrationStep = "email" | "details";
 type GoogleStep = "entry" | "link" | "profile";
+
+const PASSWORD_POLICY_HINT =
+  "At least 8 characters with upper- and lowercase letters, a number and a symbol.";
 
 export function RegistrationForm({
   destination,
@@ -64,21 +76,32 @@ export function RegistrationForm({
     googleContinuation ? "profile" : "entry",
   );
   const [email, setEmail] = useState("");
-  const [profileValues, setProfileValues] = useState<ProfileValues>();
   const [error, setError] = useState<string>();
+  const [googleError, setGoogleError] = useState<AuthFeedback>();
   const emailForm = useValidatedForm(emailSchema, {
     defaultValues: { email: "" },
     mode: "onSubmit",
   });
-  const profileForm = useValidatedForm(profileSchema, {
+  const detailsForm = useValidatedForm<DetailsValues>(detailsSchema, {
+    defaultValues: {
+      confirmPassword: "",
+      countryId: "",
+      firstName: "",
+      lastName: "",
+      password: "",
+    },
+  });
+  const googleProfileForm = useValidatedForm(profileSchema, {
     defaultValues: { countryId: "", firstName: "", lastName: "" },
   });
-  const passwordForm = useValidatedForm(passwordSchema, {
-    defaultValues: { confirmPassword: "", password: "" },
-  });
+  const countryOptions = (countries.data ?? []).map((country) => ({
+    label: country.name,
+    secondaryLabel: country.shortCode,
+    value: country.countryId,
+  }));
 
   useEffect(() => {
-    if ((step === "profile" || googleStep === "profile") && countriesFailed) {
+    if ((step === "details" || googleStep === "profile") && countriesFailed) {
       void refetchCountries();
     }
   }, [countriesFailed, googleStep, refetchCountries, step]);
@@ -90,7 +113,7 @@ export function RegistrationForm({
 
   const handleGoogleError = useCallback(
     (failure: GoogleAuthenticationError) => {
-      setError(failure.message);
+      setGoogleError(googleFeedback(failure));
     },
     [],
   );
@@ -98,6 +121,7 @@ export function RegistrationForm({
   const handleGoogleOutcome = useCallback(
     (outcome: GoogleAuthenticationOutcome) => {
       setError(undefined);
+      setGoogleError(undefined);
       if (outcome.status === "authenticated") {
         completeAuthentication();
       } else if (outcome.status === "link_required") {
@@ -109,8 +133,16 @@ export function RegistrationForm({
     [completeAuthentication],
   );
 
+  function restartGoogle() {
+    setError(undefined);
+    setGoogleError(undefined);
+    setGoogleStep("entry");
+    setStep("email");
+  }
+
   async function submitEmail(values: EmailValues) {
     setError(undefined);
+    setGoogleError(undefined);
     const normalizedEmail = normalizeRegistrationEmail(values.email);
 
     try {
@@ -122,7 +154,7 @@ export function RegistrationForm({
         return;
       }
       setEmail(normalizedEmail);
-      setStep("profile");
+      setStep("details");
     } catch (caughtError) {
       const generalErrors = applyBackendValidation(
         caughtError,
@@ -133,26 +165,17 @@ export function RegistrationForm({
     }
   }
 
-  function submitProfile(values: ProfileValues) {
-    setError(undefined);
-    setProfileValues(values);
-    setStep("password");
-  }
-
-  async function submitPassword(values: PasswordValues) {
-    if (!profileValues) {
-      setStep("profile");
-      return;
-    }
+  async function submitDetails(values: DetailsValues) {
     setError(undefined);
 
     try {
       const response = await signUp.mutateAsync({
-        ...profileValues,
-        ...values,
+        confirmPassword: values.confirmPassword,
+        countryId: values.countryId,
         email,
-        firstName: profileValues.firstName.trim(),
-        lastName: profileValues.lastName.trim(),
+        firstName: values.firstName.trim(),
+        lastName: values.lastName.trim(),
+        password: values.password,
       });
       router.replace(
         createEmailConfirmationDestination({
@@ -168,8 +191,8 @@ export function RegistrationForm({
       }
       const generalErrors = applyBackendValidation(
         caughtError,
-        passwordForm.setError,
-        ["confirmPassword", "password"],
+        detailsForm.setError,
+        ["confirmPassword", "countryId", "firstName", "lastName", "password"],
       );
       setError(generalErrors[0]);
     }
@@ -198,7 +221,7 @@ export function RegistrationForm({
             normalizedField === "firstname" ||
             normalizedField === "lastname"
           ) {
-            profileForm.setError(
+            googleProfileForm.setError(
               normalizedField === "countryid"
                 ? "countryId"
                 : normalizedField === "firstname"
@@ -224,11 +247,7 @@ export function RegistrationForm({
   if (googleStep === "link") {
     return (
       <GoogleLinkForm
-        onRestart={() => {
-          setError(undefined);
-          setGoogleStep("entry");
-          setStep("email");
-        }}
+        onRestart={restartGoogle}
         onSuccess={completeAuthentication}
       />
     );
@@ -236,274 +255,184 @@ export function RegistrationForm({
 
   if (googleStep === "profile") {
     return (
-      <div className="space-y-6">
-        {error ? <FormError message={error} /> : null}
+      <>
+        <AuthHeading
+          description="Google has verified your identity. We just need a few details. No password needed: you'll sign in with Google."
+          title="Finish creating your account"
+        />
         <ValidatedForm
-          className="space-y-5"
-          form={profileForm}
+          className="flex flex-col gap-4"
+          form={googleProfileForm}
           onSubmit={submitGoogleProfile}
         >
-          <StepHeading
-            description="Google has verified your identity. Add the profile details required by this application."
-            title="Complete your profile"
-          />
-          <div className="grid gap-5 sm:grid-cols-2">
-            <TextField<ProfileValues>
-              autoComplete="given-name"
-              autoFocus
-              label="First name"
-              maxLength={100}
-              name="firstName"
-              required
-            />
-            <TextField<ProfileValues>
-              autoComplete="family-name"
-              label="Last name"
-              maxLength={100}
-              name="lastName"
-              required
-            />
-          </div>
+          {error ? <Alert variant="error">{error}</Alert> : null}
+          <NameFields />
           <SearchableSelectField<ProfileValues>
             disabled={countries.isError}
             label="Country"
             loading={countries.isPending}
             name="countryId"
-            options={(countries.data ?? []).map((country) => ({
-              label: country.name,
-              secondaryLabel: country.shortCode,
-              value: country.countryId,
-            }))}
+            options={countryOptions}
             placeholder="Search for a country"
             required
           />
-          <PrimarySubmit pending={profileForm.formState.isSubmitting}>
-            Create account
-          </PrimarySubmit>
+          <SubmitButton fullWidth>
+            {googleProfileForm.formState.isSubmitting
+              ? "Creating account…"
+              : "Create account"}
+          </SubmitButton>
         </ValidatedForm>
-      </div>
+        <button
+          className={`${authLinkClassName} text-small self-start`}
+          onClick={restartGoogle}
+          type="button"
+        >
+          Use a different account
+        </button>
+      </>
     );
   }
 
-  return (
-    <div className="space-y-6">
-      <StepIndicator current={step} />
-      {error ? <FormError message={error} /> : null}
-      {step === "email" ? (
-        <div className="space-y-5">
-          <GoogleAuthenticationButton
-            clientId={googleClientId}
-            onError={handleGoogleError}
-            onOutcome={handleGoogleOutcome}
-          />
-          <AuthDivider />
-          <ValidatedForm
-            className="space-y-5"
-            form={emailForm}
-            onSubmit={submitEmail}
-          >
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Start with your email
-              </h2>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                We’ll check whether you already have an account.
-              </p>
-            </div>
-            <TextField<EmailValues>
-              autoComplete="email"
-              autoFocus
-              inputMode="email"
-              label="Email address"
-              name="email"
-              placeholder="you@example.com"
-              required
-            />
-            <PrimarySubmit pending={checkEmail.isPending}>
-              Continue
-            </PrimarySubmit>
-          </ValidatedForm>
-        </div>
-      ) : null}
-      {step === "profile" ? (
+  if (step === "details") {
+    return (
+      <>
+        <RegistrationSteps current="details" />
+        <AuthHeading
+          description={
+            <>
+              Signing up as <b className="text-fg font-semibold">{email}</b>
+              {" · "}
+              <button
+                className={authLinkClassName}
+                onClick={() => {
+                  setError(undefined);
+                  setStep("email");
+                }}
+                type="button"
+              >
+                Change
+              </button>
+            </>
+          }
+          title="Tell us about you"
+        />
         <ValidatedForm
-          className="space-y-5"
-          form={profileForm}
-          onSubmit={submitProfile}
+          className="flex flex-col gap-4"
+          form={detailsForm}
+          onSubmit={submitDetails}
         >
-          <StepHeading
-            description="Tell us who you are and where you’re based."
-            title="Complete your profile"
-          />
-          <div className="grid gap-5 sm:grid-cols-2">
-            <TextField<ProfileValues>
-              autoComplete="given-name"
-              autoFocus
-              label="First name"
-              maxLength={100}
-              name="firstName"
-              required
-            />
-            <TextField<ProfileValues>
-              autoComplete="family-name"
-              label="Last name"
-              maxLength={100}
-              name="lastName"
-              required
-            />
-          </div>
-          <SearchableSelectField<ProfileValues>
+          {error ? <Alert variant="error">{error}</Alert> : null}
+          <NameFields />
+          <SearchableSelectField<DetailsValues>
             disabled={countries.isError}
             label="Country"
             loading={countries.isPending}
             name="countryId"
-            options={(countries.data ?? []).map((country) => ({
-              label: country.name,
-              secondaryLabel: country.shortCode,
-              value: country.countryId,
-            }))}
+            options={countryOptions}
             placeholder="Search for a country"
             required
           />
-          <StepActions onBack={() => setStep("email")} />
-        </ValidatedForm>
-      ) : null}
-      {step === "password" ? (
-        <ValidatedForm
-          className="space-y-5"
-          form={passwordForm}
-          onSubmit={submitPassword}
-        >
-          <StepHeading
-            description={`Create a secure password for ${email}.`}
-            title="Secure your account"
-          />
-          <PasswordField<PasswordValues>
+          <PasswordField<DetailsValues>
             autoComplete="new-password"
-            autoFocus
+            hint={PASSWORD_POLICY_HINT}
             label="Password"
             name="password"
             required
           />
-          <PasswordField<PasswordValues>
+          <PasswordField<DetailsValues>
             autoComplete="new-password"
             label="Confirm password"
             name="confirmPassword"
             required
           />
-          <StepActions
-            onBack={() => setStep("profile")}
-            pending={signUp.isPending}
-            submitLabel="Create account"
-          />
+          <SubmitButton fullWidth pending={signUp.isPending}>
+            {signUp.isPending ? "Creating account…" : "Create account"}
+          </SubmitButton>
         </ValidatedForm>
-      ) : null}
-      <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+        <button
+          className={`${authLinkClassName} text-small inline-flex items-center gap-1.5 self-start`}
+          onClick={() => {
+            setError(undefined);
+            setStep("email");
+          }}
+          type="button"
+        >
+          <ArrowLeftIcon size="xs" />
+          Back
+        </button>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <RegistrationSteps current="email" />
+      <AuthHeading
+        description="Start with your email. If you already have an account, we will take you to sign in."
+        title="Create your account"
+      />
+      <AuthFeedbackAlert feedback={googleError} />
+      <GoogleAuthenticationButton
+        clientId={googleClientId}
+        disabled={checkEmail.isPending}
+        onError={handleGoogleError}
+        onOutcome={handleGoogleOutcome}
+      />
+      <Divider label="or" />
+      <ValidatedForm
+        className="flex flex-col gap-4"
+        form={emailForm}
+        onSubmit={submitEmail}
+      >
+        {error ? <Alert variant="error">{error}</Alert> : null}
+        <TextField<EmailValues>
+          autoComplete="email"
+          autoFocus
+          inputMode="email"
+          label="Email address"
+          name="email"
+          placeholder="you@example.com"
+          required
+        />
+        <SubmitButton fullWidth pending={checkEmail.isPending}>
+          {checkEmail.isPending ? "Checking…" : "Continue"}
+        </SubmitButton>
+      </ValidatedForm>
+      <p className="text-small text-fg-muted text-center">
         Already have an account?{" "}
         <Link
-          className="text-brand-600 hover:text-brand-700 dark:text-brand-400 font-medium"
+          className={authLinkClassName}
           href={createSignInHref({ email, returnTo: destination })}
         >
           Sign in
         </Link>
       </p>
-    </div>
+    </>
   );
 }
 
-function AuthDivider() {
+/**
+ * First and last name, side by side from `sm`. Both the email and the Google
+ * registration forms contain the profile fields, so they share these names.
+ */
+function NameFields() {
   return (
-    <div className="flex items-center gap-3" role="separator">
-      <span className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
-      <span className="text-xs font-medium tracking-wide text-gray-400 uppercase">
-        or use email
-      </span>
-      <span className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
-    </div>
-  );
-}
-
-function StepIndicator({ current }: Readonly<{ current: RegistrationStep }>) {
-  const stepNumber: Record<RegistrationStep, number> = {
-    email: 1,
-    password: 3,
-    profile: 2,
-  };
-  const currentStep = stepNumber[current];
-
-  return (
-    <div className="flex justify-end">
-      <span
-        aria-label={`Step ${currentStep} of 3`}
-        className="bg-brand-50 text-brand-700 dark:bg-brand-950/50 dark:text-brand-300 inline-flex min-w-14 items-center justify-center rounded-full px-3 py-1.5 text-xs font-semibold tabular-nums"
-        role="status"
-      >
-        {currentStep} / 3
-      </span>
-    </div>
-  );
-}
-
-function StepHeading({
-  description,
-  title,
-}: Readonly<{ description: string; title: string }>) {
-  return (
-    <div>
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-        {title}
-      </h2>
-      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        {description}
-      </p>
-    </div>
-  );
-}
-
-function PrimarySubmit({
-  children,
-  pending = false,
-}: Readonly<{ children: string; pending?: boolean }>) {
-  return (
-    <SubmitButton
-      className="bg-brand-500 hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
-      pending={pending}
-    >
-      {pending ? "Please wait…" : children}
-    </SubmitButton>
-  );
-}
-
-function StepActions({
-  onBack,
-  pending = false,
-  submitLabel = "Continue",
-}: Readonly<{
-  onBack: () => void;
-  pending?: boolean;
-  submitLabel?: string;
-}>) {
-  return (
-    <div className="flex gap-3">
-      <button
-        className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-        onClick={onBack}
-        type="button"
-      >
-        Back
-      </button>
-      <PrimarySubmit pending={pending}>{submitLabel}</PrimarySubmit>
-    </div>
-  );
-}
-
-function FormError({ message }: Readonly<{ message: string }>) {
-  return (
-    <div
-      className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300"
-      role="alert"
-    >
-      {message}
+    <div className="grid gap-4 sm:grid-cols-2">
+      <TextField<ProfileValues>
+        autoComplete="given-name"
+        autoFocus
+        label="First name"
+        maxLength={100}
+        name="firstName"
+        required
+      />
+      <TextField<ProfileValues>
+        autoComplete="family-name"
+        label="Last name"
+        maxLength={100}
+        name="lastName"
+        required
+      />
     </div>
   );
 }

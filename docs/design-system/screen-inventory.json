@@ -39,10 +39,10 @@
       "state-flow": 10
     },
     "byStatus": {
-      "Implemented": 24,
+      "Implemented": 26,
       "Missing": 28,
-      "Partial": 5,
-      "Reference-only": 1
+      "Partial": 4,
+      "Reference-only": 0
     },
     "byClassification": {
       "A": 15,
@@ -1419,15 +1419,17 @@
         ]
       },
       "implementation": {
-        "status": "Partial",
+        "status": "Implemented",
         "classification": "B",
         "files": [
           "apps/admin-portal/src/app/sign-in/page.tsx",
           "apps/admin-portal/src/app/sign-in/sign-in-form.tsx",
+          "apps/admin-portal/src/lib/sign-in-feedback.ts",
+          "packages/dashboard-ui/src/components/auth-layout.tsx",
           "apps/admin-portal/src/lib/admin-authorization.ts"
         ],
         "existingFunctionality": [
-          "Password sign-in with admin-role admission; 401/403/423/429 mapping; 2FA outcome rejected with 409."
+          "Trello FE-UI-006 (design ad9386e): AuthLayout with 'Operations console' panel and 'Admin portal' chip; password flow unchanged; passkey button and authenticator notice omitted (DR-017, DR-041)."
         ]
       },
       "backend": {
@@ -2039,7 +2041,7 @@
           "apps/user-portal/src/lib/email-confirmation-session.ts"
         ],
         "existingFunctionality": [
-          "Code entry, BFF confirmation that creates the session, resend with backend retryAtUtc cooldown, redirect to /passkey-setup."
+          "Trello FE-UI-006 (design ad9386e): step 3 with mail icon, six OTP boxes, backend cooldown row, 'Wrong address? Start again'; reason=email_not_confirmed shows the 'Email not confirmed' warning instead of progress."
         ]
       },
       "backend": {
@@ -2175,7 +2177,8 @@
       "roadmapTicket": "FE-UI-013",
       "discrepancies": ["DR-015"],
       "notes": [
-        "Add the path to PUBLIC_PATHS explicitly; do not loosen the proxy matcher."
+        "Add the path to PUBLIC_PATHS explicitly; do not loosen the proxy matcher.",
+        "Trello FE-UI-020 owns this screen: design ad9386e uses email entry, then OTP and a new password (not a reset link)."
       ]
     },
     {
@@ -2239,7 +2242,7 @@
           "apps/user-portal/src/app/api/auth/google/link/route.ts"
         ],
         "existingFunctionality": [
-          "Password confirmation that links Google to an existing account inside the sign-in/register flow."
+          "Trello FE-UI-006 (design ad9386e): in-page state of the Google flow; password only (link_required carries no email, DR-086)."
         ]
       },
       "backend": {
@@ -2253,7 +2256,7 @@
       "dependencies": ["FE-UI-008"],
       "priority": "P1",
       "roadmapTicket": "FE-UI-012",
-      "discrepancies": [],
+      "discrepancies": ["DR-086"],
       "notes": []
     },
     {
@@ -2317,7 +2320,7 @@
           "apps/user-portal/src/app/api/auth/registrations/google/route.ts"
         ],
         "existingFunctionality": [
-          "Profile-only Google registration (names, country, terms) then /passkey-setup."
+          "Trello FE-UI-006 (design ad9386e): names and country only; 'Signed in with Google' identity block and terms checkbox omitted (DR-086)."
         ]
       },
       "backend": {
@@ -2331,7 +2334,7 @@
       "dependencies": ["FE-UI-008", "FE-UI-007"],
       "priority": "P1",
       "roadmapTicket": "FE-UI-012",
-      "discrepancies": [],
+      "discrepancies": ["DR-086"],
       "notes": []
     },
     {
@@ -2388,15 +2391,18 @@
         ]
       },
       "implementation": {
-        "status": "Reference-only",
+        "status": "Implemented",
         "classification": "B",
         "files": [
+          "apps/user-portal/src/lib/auth-feedback.ts",
+          "apps/user-portal/src/components/auth-feedback-alert.tsx",
+          "apps/admin-portal/src/lib/sign-in-feedback.ts",
           "apps/user-portal/src/lib/sign-in.ts",
           "apps/user-portal/src/lib/two-factor.ts",
           "apps/user-portal/src/lib/passkey-sign-in.ts"
         ],
         "existingFunctionality": [
-          "Error mapping exists for invalid credentials, lockout, unconfirmed email, rate limit, Google failure, passkey cancel/unsupported, invalid/expired codes."
+          "Trello FE-UI-006 (design ad9386e): titled Alerts mapped from HTTP status / stable error codes; no attempt counts, lockout durations or 'No account for this email' (DR-016); password-updated belongs to the reset flow (FE-UI-020)."
         ]
       },
       "backend": {
@@ -2480,7 +2486,7 @@
           "apps/user-portal/src/lib/passkey-setup.ts"
         ],
         "existingFunctionality": [
-          "Optional enrolment after confirmation/Google registration; unsupported-browser, already-enrolled and cancelled states; skip."
+          "Trello FE-UI-006 (design ad9386e): split layout, benefit list, passkey name field kept (backend binds a name), Create passkey / Skip for now."
         ]
       },
       "backend": {
@@ -2596,10 +2602,13 @@
         "files": [
           "apps/user-portal/src/app/register/page.tsx",
           "apps/user-portal/src/app/register/registration-form.tsx",
+          "apps/user-portal/src/components/registration-steps.tsx",
+          "packages/dashboard-ui/src/components/auth-layout.tsx",
+          "apps/user-portal/src/components/user-auth-layout.tsx",
           "apps/user-portal/src/lib/registration.ts"
         ],
         "existingFunctionality": [
-          "Single-route 3-step flow: email existence check -> profile (first/last name, searchable country) -> password; Google entry; existing email redirects to sign-in."
+          "Trello FE-UI-006 (design ad9386e): Steps Email → Your details → Confirm email; details = profile + password schemas combined (DR-014 adopted); searchable country select kept; policy hint instead of a strength meter."
         ]
       },
       "backend": {
@@ -2773,7 +2782,9 @@
       "priority": "P1",
       "roadmapTicket": "FE-UI-013",
       "discrepancies": ["DR-015"],
-      "notes": []
+      "notes": [
+        "Trello FE-UI-020 owns this screen: design ad9386e uses email entry, then OTP and a new password (not a reset link)."
+      ]
     },
     {
       "id": "AUTH-SIGN-IN",
@@ -2836,10 +2847,12 @@
           "apps/user-portal/src/app/sign-in/sign-in-form.tsx",
           "apps/user-portal/src/app/sign-in/passkey-sign-in-button.tsx",
           "apps/user-portal/src/components/google-authentication-button.tsx",
+          "packages/dashboard-ui/src/components/auth-layout.tsx",
+          "apps/user-portal/src/components/user-auth-layout.tsx",
           "apps/user-portal/src/lib/sign-in.ts"
         ],
         "existingFunctionality": [
-          "Password sign-in via BFF POST /api/auth/session; Google (GIS) and passkey sign-in; 2FA continuation; unconfirmed-email redirect; ?confirmed, ?email, ?returnTo handling; 401/403/423/429 error mapping."
+          "Trello FE-UI-006 (design ad9386e): AuthLayout split layout; official GIS button kept (DR-013); passkey sign-in; titled alerts from auth-feedback; 'Keep me signed in' omitted (DR-012). 'Forgot password?' renders only with forgotPasswordHref (FE-UI-020)."
         ]
       },
       "backend": {
@@ -2929,7 +2942,7 @@
           "apps/user-portal/src/lib/two-factor.ts"
         ],
         "existingFunctionality": [
-          "Authenticator or recovery-code verification through BFF; challenge expiry timer and restart; auto-submit."
+          "Trello FE-UI-006 (design ad9386e): authenticator/recovery code switch in the reference help panel, explicit 'Verify and sign in', expiry state on Alert in the same layout (DR-040 resolved)."
         ]
       },
       "backend": {

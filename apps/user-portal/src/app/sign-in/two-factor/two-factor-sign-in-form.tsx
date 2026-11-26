@@ -1,14 +1,25 @@
 "use client";
 
+import { AuthHeading } from "@template/dashboard-ui";
 import {
   ConfirmationCodeField,
+  SubmitButton,
   ValidatedForm,
   useValidatedForm,
 } from "@template/forms";
-import { Alert } from "@template/ui-core";
+import {
+  Alert,
+  ArrowLeftIcon,
+  Button,
+  IconTile,
+  ShieldCheckIcon,
+} from "@template/ui-core";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { AuthFeedbackAlert } from "@/components/auth-feedback-alert";
+import { authLinkClassName } from "@/components/auth-link";
+import { twoFactorFeedback, type AuthFeedback } from "@/lib/auth-feedback";
 import { twoFactorErrorFromResponse } from "@/lib/two-factor";
 
 const verificationSchema = z.discriminatedUnion("verificationMethod", [
@@ -30,7 +41,7 @@ export function TwoFactorSignInForm({
   destination,
 }: Readonly<{ destination: string }>) {
   const router = useRouter();
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<AuthFeedback>();
   const [expired, setExpired] = useState(false);
   const form = useValidatedForm<VerificationValues>(verificationSchema, {
     defaultValues: { code: "", verificationMethod: "authenticator" },
@@ -84,14 +95,26 @@ export function TwoFactorSignInForm({
       });
       if (!response.ok) {
         const failure = await twoFactorErrorFromResponse(response);
-        setError(failure.message);
+        setError(
+          twoFactorFeedback({
+            message: failure.message,
+            method: values.verificationMethod,
+            status: response.status,
+          }),
+        );
         setExpired(failure.restartRequired);
         return;
       }
       router.replace(destination);
       router.refresh();
     } catch {
-      setError("Verification is temporarily unavailable. Try again.");
+      setError(
+        twoFactorFeedback({
+          message: "Verification is temporarily unavailable. Try again.",
+          method: values.verificationMethod,
+          status: 0,
+        }),
+      );
     }
   }
 
@@ -99,80 +122,105 @@ export function TwoFactorSignInForm({
     void form.handleSubmit(submit)();
   }
 
+  function switchMethod() {
+    form.setValue(
+      "verificationMethod",
+      method === "authenticator" ? "recovery_code" : "authenticator",
+    );
+    form.setValue("code", "");
+    form.clearErrors();
+    setError(undefined);
+  }
+
+  const heading = (
+    <AuthHeading
+      description={
+        expired
+          ? "Restart sign-in to request a new verification."
+          : method === "authenticator"
+            ? "Enter the 6-digit code from your authenticator app to finish signing in."
+            : "Enter one of the recovery codes you saved when you turned on two-factor."
+      }
+      icon={
+        <IconTile className="size-14 rounded-[14px]" size="lg">
+          <ShieldCheckIcon />
+        </IconTile>
+      }
+      title="Two-factor verification"
+    />
+  );
+
   if (expired) {
     return (
-      <div className="space-y-5">
-        <Alert variant="warning">
-          This verification request expired or is no longer valid. Restart
-          sign-in to continue.
+      <>
+        {heading}
+        <Alert title="Verification expired" variant="warning">
+          {error?.message ??
+            "This verification request expired or is no longer valid. Restart sign-in to continue."}
         </Alert>
-        <button
-          className="bg-brand-500 hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white"
-          onClick={() => void restart()}
-          type="button"
-        >
+        <Button fullWidth onClick={() => void restart()}>
           Restart sign-in
-        </button>
-      </div>
+        </Button>
+      </>
     );
   }
 
   return (
-    <ValidatedForm className="space-y-5" form={form} onSubmit={submit}>
-      {error ? <Alert variant="error">{error}</Alert> : null}
-      <input {...form.register("verificationMethod")} type="hidden" />
-      <ConfirmationCodeField<VerificationValues>
-        autoFocus
-        characterSet={method === "authenticator" ? "numeric" : "alphanumeric"}
-        disabled={form.formState.isSubmitting}
-        groupAfter={method === "recovery_code" ? 5 : undefined}
-        label={
-          method === "authenticator" ? "Authenticator code" : "Recovery code"
-        }
-        length={method === "authenticator" ? 6 : 10}
-        name="code"
-        onComplete={submitCompletedCode}
-        required
-      />
-      {form.formState.isSubmitting ? (
-        <div
-          aria-live="polite"
-          className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400"
-          role="status"
-        >
-          <span
-            aria-hidden="true"
-            className="border-brand-500 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
-          />
-          Verifying…
-        </div>
-      ) : null}
-      <div className="flex flex-col gap-3 text-center text-sm">
+    <>
+      {heading}
+      <ValidatedForm
+        className="flex flex-col gap-4"
+        form={form}
+        onSubmit={submit}
+      >
+        <AuthFeedbackAlert feedback={error} />
+        <input {...form.register("verificationMethod")} type="hidden" />
+        <ConfirmationCodeField<VerificationValues>
+          autoFocus
+          characterSet={method === "authenticator" ? "numeric" : "alphanumeric"}
+          disabled={form.formState.isSubmitting}
+          groupAfter={method === "recovery_code" ? 5 : undefined}
+          label={
+            method === "authenticator" ? "Authenticator code" : "Recovery code"
+          }
+          length={method === "authenticator" ? 6 : 10}
+          name="code"
+          onComplete={submitCompletedCode}
+          required
+        />
+        <SubmitButton fullWidth>
+          {form.formState.isSubmitting ? "Verifying…" : "Verify and sign in"}
+        </SubmitButton>
+      </ValidatedForm>
+      <div className="border-border bg-surface-2 text-small flex flex-col items-start gap-2 rounded-lg border p-4">
+        <p className="text-fg font-semibold">
+          {method === "authenticator"
+            ? "Lost access to your authenticator?"
+            : "Have your authenticator app?"}
+        </p>
+        <p className="text-fg-muted">
+          {method === "authenticator"
+            ? "Use one of the recovery codes you saved when you turned on two-factor."
+            : "Enter the current 6-digit code from the app instead."}
+        </p>
         <button
-          className="text-brand-600 hover:text-brand-700 dark:text-brand-400 font-medium"
-          onClick={() => {
-            form.setValue(
-              "verificationMethod",
-              method === "authenticator" ? "recovery_code" : "authenticator",
-            );
-            form.setValue("code", "");
-            form.clearErrors();
-            setError(undefined);
-          }}
+          className={authLinkClassName}
+          onClick={switchMethod}
           type="button"
         >
           {method === "authenticator"
-            ? "Use a recovery code"
-            : "Use an authenticator code"}
-        </button>
-        <button
-          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-          onClick={() => void restart()}
-          type="button"
-        >
-          Cancel
+            ? "Use a recovery code instead"
+            : "Use an authenticator code instead"}
         </button>
       </div>
-    </ValidatedForm>
+      <button
+        className={`${authLinkClassName} text-small inline-flex items-center gap-1.5 self-start`}
+        onClick={() => void restart()}
+        type="button"
+      >
+        <ArrowLeftIcon size="xs" />
+        Back to sign in
+      </button>
+    </>
   );
 }

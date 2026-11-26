@@ -1,3 +1,4 @@
+export * from "./components/auth-layout";
 export * from "./components/breadcrumbs";
 export * from "./components/dashboard-brand";
 export * from "./components/dashboard-header";

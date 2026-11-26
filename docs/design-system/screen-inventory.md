@@ -22,10 +22,10 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | Screens with an existing route or in-app state                | 25    |
 | Screens with a proposed route only                            | 28    |
 | Screens whose design assumes unsupported backend capabilities | 44    |
-| Status: Implemented                                           | 24    |
+| Status: Implemented                                           | 26    |
 | Status: Missing                                               | 28    |
-| Status: Partial                                               | 5     |
-| Status: Reference-only                                        | 1     |
+| Status: Partial                                               | 4     |
+| Status: Reference-only                                        | 0     |
 | Classification A                                              | 15    |
 | Classification B                                              | 8     |
 | Classification C                                              | 10    |
@@ -58,19 +58,19 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 ### Authentication (11)
 
-| Screen ID                                       | Screen                                            | Kind       | App          | Existing route                   | Proposed route     | Status         | Class | Backend  | Priority | Ticket    |
-| ----------------------------------------------- | ------------------------------------------------- | ---------- | ------------ | -------------------------------- | ------------------ | -------------- | ----- | -------- | -------- | --------- |
-| [`ADM-SIGN-IN`](#adm-sign-in)                   | Admin sign in                                     | page       | admin-portal | `/sign-in`                       | —                  | Partial        | B     | Partial  | P1       | FE-UI-014 |
-| [`AUTH-CONFIRM-EMAIL`](#auth-confirm-email)     | Confirm email                                     | page       | user-portal  | `/confirm-email`                 | —                  | Implemented    | A     | Existing | P1       | FE-UI-012 |
-| [`AUTH-FORGOT-PASSWORD`](#auth-forgot-password) | Forgot password (request and link sent)           | state-flow | user-portal  | —                                | `/forgot-password` | Missing        | C     | Existing | P1       | FE-UI-013 |
-| [`AUTH-GOOGLE-LINK`](#auth-google-link)         | Link Google account                               | state-flow | user-portal  | `/sign-in (link_required state)` | —                  | Implemented    | A     | Existing | P1       | FE-UI-012 |
-| [`AUTH-GOOGLE-REGISTER`](#auth-google-register) | Complete Google sign-up                           | state-flow | user-portal  | `/register?google=continue`      | —                  | Implemented    | A     | Existing | P1       | FE-UI-012 |
-| [`AUTH-MESSAGES`](#auth-messages)               | Sign-in messages and errors catalogue             | reference  | user-portal  | —                                | —                  | Reference-only | B     | Partial  | P1       | FE-UI-012 |
-| [`AUTH-PASSKEY-SETUP`](#auth-passkey-setup)     | Passkey setup prompt                              | page       | user-portal  | `/passkey-setup`                 | —                  | Implemented    | A     | Existing | P1       | FE-UI-012 |
-| [`AUTH-REGISTER`](#auth-register)               | Register (email and details steps)                | state-flow | user-portal  | `/register`                      | —                  | Implemented    | A     | Existing | P1       | FE-UI-012 |
-| [`AUTH-RESET-PASSWORD`](#auth-reset-password)   | Reset password (new password, done, link expired) | state-flow | user-portal  | —                                | `/reset-password`  | Missing        | C     | Existing | P1       | FE-UI-013 |
-| [`AUTH-SIGN-IN`](#auth-sign-in)                 | Sign in                                           | page       | user-portal  | `/sign-in`                       | —                  | Implemented    | A     | Existing | P1       | FE-UI-012 |
-| [`AUTH-TWO-FACTOR`](#auth-two-factor)           | Two-factor challenge                              | page       | user-portal  | `/sign-in/two-factor`            | —                  | Implemented    | A     | Existing | P1       | FE-UI-012 |
+| Screen ID                                       | Screen                                            | Kind       | App          | Existing route                   | Proposed route     | Status      | Class | Backend  | Priority | Ticket    |
+| ----------------------------------------------- | ------------------------------------------------- | ---------- | ------------ | -------------------------------- | ------------------ | ----------- | ----- | -------- | -------- | --------- |
+| [`ADM-SIGN-IN`](#adm-sign-in)                   | Admin sign in                                     | page       | admin-portal | `/sign-in`                       | —                  | Implemented | B     | Partial  | P1       | FE-UI-014 |
+| [`AUTH-CONFIRM-EMAIL`](#auth-confirm-email)     | Confirm email                                     | page       | user-portal  | `/confirm-email`                 | —                  | Implemented | A     | Existing | P1       | FE-UI-012 |
+| [`AUTH-FORGOT-PASSWORD`](#auth-forgot-password) | Forgot password (request and link sent)           | state-flow | user-portal  | —                                | `/forgot-password` | Missing     | C     | Existing | P1       | FE-UI-013 |
+| [`AUTH-GOOGLE-LINK`](#auth-google-link)         | Link Google account                               | state-flow | user-portal  | `/sign-in (link_required state)` | —                  | Implemented | A     | Existing | P1       | FE-UI-012 |
+| [`AUTH-GOOGLE-REGISTER`](#auth-google-register) | Complete Google sign-up                           | state-flow | user-portal  | `/register?google=continue`      | —                  | Implemented | A     | Existing | P1       | FE-UI-012 |
+| [`AUTH-MESSAGES`](#auth-messages)               | Sign-in messages and errors catalogue             | reference  | user-portal  | —                                | —                  | Implemented | B     | Partial  | P1       | FE-UI-012 |
+| [`AUTH-PASSKEY-SETUP`](#auth-passkey-setup)     | Passkey setup prompt                              | page       | user-portal  | `/passkey-setup`                 | —                  | Implemented | A     | Existing | P1       | FE-UI-012 |
+| [`AUTH-REGISTER`](#auth-register)               | Register (email and details steps)                | state-flow | user-portal  | `/register`                      | —                  | Implemented | A     | Existing | P1       | FE-UI-012 |
+| [`AUTH-RESET-PASSWORD`](#auth-reset-password)   | Reset password (new password, done, link expired) | state-flow | user-portal  | —                                | `/reset-password`  | Missing     | C     | Existing | P1       | FE-UI-013 |
+| [`AUTH-SIGN-IN`](#auth-sign-in)                 | Sign in                                           | page       | user-portal  | `/sign-in`                       | —                  | Implemented | A     | Existing | P1       | FE-UI-012 |
+| [`AUTH-TWO-FACTOR`](#auth-two-factor)           | Two-factor challenge                              | page       | user-portal  | `/sign-in/two-factor`            | —                  | Implemented | A     | Existing | P1       | FE-UI-012 |
 
 ### User portal (14)
 
@@ -253,9 +253,9 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Admin sign in** — page; target `admin-portal`; auth: public.
 
 - **Artboards:** `AdminSignIn` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Partial (B); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-014.
-- **Implementation:** `apps/admin-portal/src/app/sign-in/page.tsx`, `apps/admin-portal/src/app/sign-in/sign-in-form.tsx`, `apps/admin-portal/src/lib/admin-authorization.ts`
-- **Works today:** Password sign-in with admin-role admission; 401/403/423/429 mapping; 2FA outcome rejected with 409.
+- **Status:** Implemented (B); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-014.
+- **Implementation:** `apps/admin-portal/src/app/sign-in/page.tsx`, `apps/admin-portal/src/app/sign-in/sign-in-form.tsx`, `apps/admin-portal/src/lib/sign-in-feedback.ts`, `packages/dashboard-ui/src/components/auth-layout.tsx`, `apps/admin-portal/src/lib/admin-authorization.ts`
+- **Works today:** Trello FE-UI-006 (design ad9386e): AuthLayout with 'Operations console' panel and 'Admin portal' chip; password flow unchanged; passkey button and authenticator notice omitted (DR-017, DR-041).
 - **Operations:** `signIn`; `refreshSession`; `logout`
 - **Unsupported / missing backend:** Admin two-factor completion in the admin BFF; Admin passkey BFF routes; Role claim in backend tokens (docs say currently absent)
 - **Gap:** Reference offers 'Use a passkey' and implies admins have an authenticator; neither is wired in the Admin Portal.
@@ -271,7 +271,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Artboards:** `AuthConfirmEmail` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
 - **Implementation:** `apps/user-portal/src/app/confirm-email/page.tsx`, `apps/user-portal/src/app/confirm-email/confirm-email-form.tsx`, `apps/user-portal/src/lib/email-confirmation-session.ts`
-- **Works today:** Code entry, BFF confirmation that creates the session, resend with backend retryAtUtc cooldown, redirect to /passkey-setup.
+- **Works today:** Trello FE-UI-006 (design ad9386e): step 3 with mail icon, six OTP boxes, backend cooldown row, 'Wrong address? Start again'; reason=email_not_confirmed shows the 'Email not confirmed' warning instead of progress.
 - **Operations:** `confirmEmail`; `requestEmailConfirmationCode`
 - **Gap:** Reference: 6 OTP boxes, 'Resend code in 0:42' countdown row, 'Wrong address? Start again'.
 - **Depends on:** FE-UI-007 OTP field
@@ -291,6 +291,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Depends on:** FE-UI-008 AuthLayout; proxy PUBLIC_PATHS addition; backend reset-email link target configuration
 - **Note:** Add the path to PUBLIC_PATHS explicitly; do not loosen the proxy matcher.
 - **Discrepancies:** [DR-015](./discrepancy-register.md#dr-015)
+- **Note:** Trello FE-UI-020 owns this screen: design ad9386e uses email entry, then OTP and a new password (not a reset link).
 
 ### AUTH-GOOGLE-LINK
 
@@ -299,7 +300,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Artboards:** `AuthGoogleLink` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
 - **Implementation:** `apps/user-portal/src/components/google-link-form.tsx`, `apps/user-portal/src/app/api/auth/google/link/route.ts`
-- **Works today:** Password confirmation that links Google to an existing account inside the sign-in/register flow.
+- **Works today:** Trello FE-UI-006 (design ad9386e): in-page state of the Google flow; password only (link_required carries no email, DR-086).
 - **Operations:** `linkGoogleAccount`
 - **Gap:** Reference treats it as a standalone screen; implementation is a state of the Google flow (keep, no new route).
 - **Depends on:** FE-UI-008
@@ -311,7 +312,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Artboards:** `AuthGoogleRegister` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
 - **Implementation:** `apps/user-portal/src/app/register/registration-form.tsx`, `apps/user-portal/src/app/api/auth/registrations/google/route.ts`
-- **Works today:** Profile-only Google registration (names, country, terms) then /passkey-setup.
+- **Works today:** Trello FE-UI-006 (design ad9386e): names and country only; 'Signed in with Google' identity block and terms checkbox omitted (DR-086).
 - **Operations:** `signUpWithGoogle`; `getCountries`
 - **Gap:** Reference shows a 'Signed in with Google' identity block and a terms checkbox.
 - **Depends on:** FE-UI-008; FE-UI-007
@@ -321,9 +322,9 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Sign-in messages and errors catalogue** — reference; target `user-portal`; auth: n/a.
 
 - **Artboards:** `AuthStates` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Reference-only (B); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-012.
-- **Implementation:** `apps/user-portal/src/lib/sign-in.ts`, `apps/user-portal/src/lib/two-factor.ts`, `apps/user-portal/src/lib/passkey-sign-in.ts`
-- **Works today:** Error mapping exists for invalid credentials, lockout, unconfirmed email, rate limit, Google failure, passkey cancel/unsupported, invalid/expired codes.
+- **Status:** Implemented (B); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-012.
+- **Implementation:** `apps/user-portal/src/lib/auth-feedback.ts`, `apps/user-portal/src/components/auth-feedback-alert.tsx`, `apps/admin-portal/src/lib/sign-in-feedback.ts`, `apps/user-portal/src/lib/sign-in.ts`, `apps/user-portal/src/lib/two-factor.ts`, `apps/user-portal/src/lib/passkey-sign-in.ts`
+- **Works today:** Trello FE-UI-006 (design ad9386e): titled Alerts mapped from HTTP status / stable error codes; no attempt counts, lockout durations or 'No account for this email' (DR-016); password-updated belongs to the reset flow (FE-UI-020).
 - **Unsupported / missing backend:** Remaining-attempts count ('3 attempts left'); Lockout duration ('15 minutes') unless returned by backend
 - **Gap:** Catalogue of 11 Alert variants shown above the form; copy and tone must map to existing mappings, not invent numbers.
 - **Depends on:** FE-UI-004 Alert
@@ -337,7 +338,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Artboards:** `AuthPasskeySetup` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
 - **Implementation:** `apps/user-portal/src/app/passkey-setup/page.tsx`, `apps/user-portal/src/app/passkey-setup/passkey-setup-prompt.tsx`, `apps/user-portal/src/lib/passkey-setup.ts`
-- **Works today:** Optional enrolment after confirmation/Google registration; unsupported-browser, already-enrolled and cancelled states; skip.
+- **Works today:** Trello FE-UI-006 (design ad9386e): split layout, benefit list, passkey name field kept (backend binds a name), Create passkey / Skip for now.
 - **Operations:** `listPasskeys`; `createPasskeyRegistrationOptions`; `completePasskeyRegistration`
 - **Gap:** Reference uses the split auth layout with a benefit list; current page has a passkey name input which the reference omits (keep: backend binds a name).
 - **Depends on:** FE-UI-008 AuthLayout
@@ -348,8 +349,8 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthRegisterEmail`, `AuthRegisterDetails` — 8 reference files (desktop/mobile; dark/light; states: step:details, step:email).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
-- **Implementation:** `apps/user-portal/src/app/register/page.tsx`, `apps/user-portal/src/app/register/registration-form.tsx`, `apps/user-portal/src/lib/registration.ts`
-- **Works today:** Single-route 3-step flow: email existence check -> profile (first/last name, searchable country) -> password; Google entry; existing email redirects to sign-in.
+- **Implementation:** `apps/user-portal/src/app/register/page.tsx`, `apps/user-portal/src/app/register/registration-form.tsx`, `apps/user-portal/src/components/registration-steps.tsx`, `packages/dashboard-ui/src/components/auth-layout.tsx`, `apps/user-portal/src/components/user-auth-layout.tsx`, `apps/user-portal/src/lib/registration.ts`
+- **Works today:** Trello FE-UI-006 (design ad9386e): Steps Email → Your details → Confirm email; details = profile + password schemas combined (DR-014 adopted); searchable country select kept; policy hint instead of a strength meter.
 - **Operations:** `checkEmailExistence`; `getCountries`; `signUp`; `startGoogleAuthenticationFlow`
 - **Gap:** Reference has 2 register steps (Email; Your details = names + country + password + confirm) plus 'Confirm email' as step 3 on another route; implementation has 3 register steps.
 - **Gap:** Reference shows a password-strength meter; strength rules must mirror backend policy, not invent one.
@@ -372,6 +373,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Gap:** Reference copy claims other sessions are signed out; only state this if the backend guarantees it.
 - **Depends on:** AUTH-FORGOT-PASSWORD; proxy PUBLIC_PATHS addition
 - **Discrepancies:** [DR-015](./discrepancy-register.md#dr-015)
+- **Note:** Trello FE-UI-020 owns this screen: design ad9386e uses email entry, then OTP and a new password (not a reset link).
 
 ### AUTH-SIGN-IN
 
@@ -379,8 +381,8 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthSignIn` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
-- **Implementation:** `apps/user-portal/src/app/sign-in/page.tsx`, `apps/user-portal/src/app/sign-in/sign-in-form.tsx`, `apps/user-portal/src/app/sign-in/passkey-sign-in-button.tsx`, `apps/user-portal/src/components/google-authentication-button.tsx`, `apps/user-portal/src/lib/sign-in.ts`
-- **Works today:** Password sign-in via BFF POST /api/auth/session; Google (GIS) and passkey sign-in; 2FA continuation; unconfirmed-email redirect; ?confirmed, ?email, ?returnTo handling; 401/403/423/429 error mapping.
+- **Implementation:** `apps/user-portal/src/app/sign-in/page.tsx`, `apps/user-portal/src/app/sign-in/sign-in-form.tsx`, `apps/user-portal/src/app/sign-in/passkey-sign-in-button.tsx`, `apps/user-portal/src/components/google-authentication-button.tsx`, `packages/dashboard-ui/src/components/auth-layout.tsx`, `apps/user-portal/src/components/user-auth-layout.tsx`, `apps/user-portal/src/lib/sign-in.ts`
+- **Works today:** Trello FE-UI-006 (design ad9386e): AuthLayout split layout; official GIS button kept (DR-013); passkey sign-in; titled alerts from auth-feedback; 'Keep me signed in' omitted (DR-012). 'Forgot password?' renders only with forgotPasswordHref (FE-UI-020).
 - **Operations:** `signIn`; `signInWithGoogle`; `startGoogleAuthenticationFlow`; `createPasskeyAuthenticationOptions`; `completePasskeyAuthentication`; `requestEmailConfirmationCode`
 - **Unsupported / missing backend:** 'Keep me signed in' (no remember-me parameter; cookie lifetime is fixed by token expiry)
 - **Gap:** Split auth layout (form + brand panel) replaces the centered card.
@@ -396,7 +398,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Artboards:** `AuthTwoFactor` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
 - **Implementation:** `apps/user-portal/src/app/sign-in/two-factor/page.tsx`, `apps/user-portal/src/app/sign-in/two-factor/two-factor-sign-in-form.tsx`, `apps/user-portal/src/lib/two-factor.ts`
-- **Works today:** Authenticator or recovery-code verification through BFF; challenge expiry timer and restart; auto-submit.
+- **Works today:** Trello FE-UI-006 (design ad9386e): authenticator/recovery code switch in the reference help panel, explicit 'Verify and sign in', expiry state on Alert in the same layout (DR-040 resolved).
 - **Operations:** `completeTwoFactorChallenge`
 - **Gap:** Reference shows recovery-code option as an inline help panel; expiry state is not designed (keep existing).
 - **Depends on:** FE-UI-007 OTP field

@@ -6,12 +6,14 @@ import {
   ValidatedForm,
   useValidatedForm,
 } from "@template/forms";
+import { AuthHeading } from "@template/dashboard-ui";
+import { ArrowLeftIcon, IconTile, KeyIcon } from "@template/ui-core";
 import { useState } from "react";
 import { z } from "zod";
-import {
-  type GoogleAuthenticationError,
-  googleErrorFromResponse,
-} from "@/lib/google-authentication";
+import { googleFeedback, type AuthFeedback } from "@/lib/auth-feedback";
+import { googleErrorFromResponse } from "@/lib/google-authentication";
+import { AuthFeedbackAlert } from "./auth-feedback-alert";
+import { authLinkClassName } from "./auth-link";
 
 const linkSchema = z.object({
   password: z.string().min(1, "Enter your existing password."),
@@ -23,7 +25,7 @@ export function GoogleLinkForm({
   onRestart,
   onSuccess,
 }: Readonly<{ onRestart: () => void; onSuccess: () => void }>) {
-  const [error, setError] = useState<GoogleAuthenticationError>();
+  const [error, setError] = useState<AuthFeedback>();
   const form = useValidatedForm(linkSchema, {
     defaultValues: { password: "" },
   });
@@ -38,59 +40,57 @@ export function GoogleLinkForm({
         method: "POST",
       });
       if (!response.ok) {
-        setError(await googleErrorFromResponse(response));
+        setError(googleFeedback(await googleErrorFromResponse(response)));
         return;
       }
       onSuccess();
     } catch {
-      setError({
-        message: "Account linking is temporarily unavailable. Try again later.",
-        restartRequired: false,
-      });
+      setError(
+        googleFeedback({
+          message:
+            "Account linking is temporarily unavailable. Try again later.",
+          restartRequired: false,
+        }),
+      );
     }
   }
 
   return (
-    <ValidatedForm className="space-y-5" form={form} onSubmit={submit}>
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Connect your Google account
-        </h2>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          An account already exists for this Google email. Enter your existing
-          password to connect Google.
-        </p>
-      </div>
-      {error ? (
-        <div
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300"
-          role="alert"
-        >
-          {error.message}
-        </div>
-      ) : null}
-      <PasswordField<LinkValues>
-        autoComplete="current-password"
-        autoFocus
-        label="Existing password"
-        name="password"
-        required
+    <>
+      <AuthHeading
+        description="An account already exists for this Google email. Enter its password once to link Google sign-in to it."
+        icon={
+          <IconTile className="size-14 rounded-[14px]" size="lg">
+            <KeyIcon />
+          </IconTile>
+        }
+        title="Link your Google account"
       />
-      <SubmitButton
-        className="bg-brand-500 hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
-        pending={form.formState.isSubmitting}
+      <ValidatedForm
+        className="flex flex-col gap-4"
+        form={form}
+        onSubmit={submit}
       >
-        {form.formState.isSubmitting ? "Connecting…" : "Connect and sign in"}
-      </SubmitButton>
-      {error?.restartRequired ? (
-        <button
-          className="text-brand-600 hover:text-brand-700 dark:text-brand-400 w-full text-sm font-medium"
-          onClick={onRestart}
-          type="button"
-        >
-          Restart Continue with Google
-        </button>
-      ) : null}
-    </ValidatedForm>
+        <AuthFeedbackAlert feedback={error} />
+        <PasswordField<LinkValues>
+          autoComplete="current-password"
+          autoFocus
+          label="Password"
+          name="password"
+          required
+        />
+        <SubmitButton fullWidth>
+          {form.formState.isSubmitting ? "Linking…" : "Link and sign in"}
+        </SubmitButton>
+      </ValidatedForm>
+      <button
+        className={`${authLinkClassName} text-small inline-flex items-center gap-1.5 self-start`}
+        onClick={onRestart}
+        type="button"
+      >
+        <ArrowLeftIcon size="xs" />
+        Use a different account
+      </button>
+    </>
   );
 }

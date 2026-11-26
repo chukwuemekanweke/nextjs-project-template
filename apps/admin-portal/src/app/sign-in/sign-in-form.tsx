@@ -7,10 +7,12 @@ import {
   ValidatedForm,
   useValidatedForm,
 } from "@template/forms";
+import { AuthHeading } from "@template/dashboard-ui";
+import { Alert, Chip } from "@template/ui-core";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
-import { safeSignInError } from "@/lib/sign-in";
+import { signInFeedback, type SignInFeedback } from "@/lib/sign-in-feedback";
 
 const signInSchema = z.object({
   email: z.email("Enter a valid email address."),
@@ -21,7 +23,7 @@ type SignInValues = z.infer<typeof signInSchema>;
 
 export function SignInForm({ destination }: Readonly<{ destination: string }>) {
   const router = useRouter();
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<SignInFeedback>();
   const form = useValidatedForm(signInSchema, {
     defaultValues: { email: "", password: "" },
   });
@@ -36,48 +38,53 @@ export function SignInForm({ destination }: Readonly<{ destination: string }>) {
         method: "POST",
       });
       if (!response.ok) {
-        setError(safeSignInError(response.status));
+        setError(signInFeedback(response.status));
         return;
       }
 
       router.replace(destination);
       router.refresh();
     } catch {
-      setError(safeSignInError(0));
+      setError(signInFeedback(0));
     }
   }
 
   return (
-    <ValidatedForm className="space-y-5" form={form} onSubmit={submit}>
-      {error ? (
-        <div
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300"
-          role="alert"
-        >
-          {error}
-        </div>
-      ) : null}
-      <TextField<SignInValues>
-        autoComplete="email"
-        autoFocus
-        inputMode="email"
-        label="Work email address"
-        name="email"
-        placeholder="you@example.com"
-        required
+    <>
+      <AuthHeading
+        description="Restricted to staff accounts with an assigned administrator role."
+        eyebrow={<Chip>Admin portal</Chip>}
+        title="Administrator sign in"
       />
-      <PasswordField<SignInValues>
-        autoComplete="current-password"
-        label="Password"
-        name="password"
-        required
-      />
-      <SubmitButton
-        className="bg-brand-500 hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
-        pending={form.formState.isSubmitting}
+      <ValidatedForm
+        className="flex flex-col gap-4"
+        form={form}
+        onSubmit={submit}
       >
-        {form.formState.isSubmitting ? "Verifying access…" : "Sign in securely"}
-      </SubmitButton>
-    </ValidatedForm>
+        {error ? (
+          <Alert title={error.title} variant={error.variant}>
+            {error.message}
+          </Alert>
+        ) : null}
+        <TextField<SignInValues>
+          autoComplete="email"
+          autoFocus
+          inputMode="email"
+          label="Work email"
+          name="email"
+          placeholder="you@example.com"
+          required
+        />
+        <PasswordField<SignInValues>
+          autoComplete="current-password"
+          label="Password"
+          name="password"
+          required
+        />
+        <SubmitButton fullWidth>
+          {form.formState.isSubmitting ? "Verifying access…" : "Continue"}
+        </SubmitButton>
+      </ValidatedForm>
+    </>
   );
 }

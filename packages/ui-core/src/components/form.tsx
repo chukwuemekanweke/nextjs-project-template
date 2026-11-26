@@ -87,6 +87,7 @@ export function FormField({
   inputId,
   descriptionId,
   required = false,
+  labelAction,
   children,
   className,
 }: Readonly<{
@@ -96,20 +97,36 @@ export function FormField({
   inputId?: string;
   descriptionId?: string;
   required?: boolean;
+  /**
+   * Small action on the label row, outside the label (reference
+   * `.field .between`, for example "Forgot password?").
+   */
+  labelAction?: ReactNode;
   children: ReactNode;
   className?: string;
 }>) {
+  const formLabel = (
+    <FormLabel htmlFor={inputId}>
+      {label}
+      {required ? (
+        <span aria-hidden="true" className="text-danger">
+          {" "}
+          *
+        </span>
+      ) : null}
+    </FormLabel>
+  );
+
   return (
     <div className={cn("grid content-start gap-1.5", className)}>
-      <FormLabel htmlFor={inputId}>
-        {label}
-        {required ? (
-          <span aria-hidden="true" className="text-danger">
-            {" "}
-            *
-          </span>
-        ) : null}
-      </FormLabel>
+      {labelAction ? (
+        <div className="flex items-center justify-between gap-3">
+          {formLabel}
+          <div className="text-small shrink-0">{labelAction}</div>
+        </div>
+      ) : (
+        formLabel
+      )}
       {children}
       {error ? (
         <FieldError id={descriptionId}>{error}</FieldError>

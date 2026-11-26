@@ -52,8 +52,9 @@ durable boundaries and pure behavior rather than broad browser rendering:
   plan card naming, decorative product shot, legal switch) and browser tests
   for the marketing menu (focus trap/return, Escape, link choice, closing at
   `lg`, dark mode) and the pricing interval switch.
-- `dashboard-ui`: active-route resolution (`navigation.test.ts`) and sidebar
-  grouping/rail rendering via `renderToStaticMarkup`; browser tests
+- `dashboard-ui`: active-route resolution (`navigation.test.ts`), sidebar
+  grouping/rail rendering and `AuthLayout` structure via
+  `renderToStaticMarkup`; browser tests
   (`dashboard-shell.browser.test.tsx`) cover the drawer (focus trap/return,
   Escape, scrim, nav selection, scroll lock, closing at `lg`), rail tooltips
   and names, account-menu keyboard use, theme switching and breakpoints.
@@ -62,7 +63,9 @@ durable boundaries and pure behavior rather than broad browser rendering:
   assert dialog content through a stand-in and dialog semantics are covered
   in `ui-core`), BFF Route Handlers, session/cookie adapters, sign-in/logout, authorization,
   registration/profile/password helpers, navigation, environment, and portal
-  configuration.
+  configuration. Auth forms are rendered statically per state (headings,
+  supported methods, omitted design-only controls, links keeping `returnTo`);
+  status-to-alert mapping is tested as pure functions.
 
 Conventions: shared components get component tests and representative
 workbench stories; shared layouts get component tests and selective stories;

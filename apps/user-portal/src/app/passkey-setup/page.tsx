@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Card, CardContent } from "@template/ui-core";
-import { branding } from "@/config/env";
+import { AuthHeading } from "@template/dashboard-ui";
+import { FingerprintIcon, IconTile } from "@template/ui-core";
+import { UserAuthLayout } from "@/components/user-auth-layout";
 import { safeSignInDestination } from "@/lib/sign-in";
 import { PasskeySetupPrompt } from "./passkey-setup-prompt";
 
@@ -20,26 +21,17 @@ export default async function PasskeySetupPage({
   );
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-gray-950">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
-          <p className="text-brand-600 dark:text-brand-400 text-sm font-medium">
-            {branding.productName}
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">
-            Sign in faster with a passkey
-          </h1>
-          <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-            Your account is ready. Add a passkey to sign in next time with your
-            device&apos;s screen lock, such as your fingerprint, face, or PIN.
-          </p>
-        </div>
-        <Card>
-          <CardContent>
-            <PasskeySetupPrompt destination={destination} />
-          </CardContent>
-        </Card>
-      </div>
-    </main>
+    <UserAuthLayout>
+      <AuthHeading
+        description="Your account is ready. Use your fingerprint, face or device PIN instead of a password next time. Passkeys can't be phished and stay on your device."
+        icon={
+          <IconTile className="size-14 rounded-[14px]" size="lg">
+            <FingerprintIcon />
+          </IconTile>
+        }
+        title="Sign in faster with a passkey"
+      />
+      <PasskeySetupPrompt destination={destination} />
+    </UserAuthLayout>
   );
 }

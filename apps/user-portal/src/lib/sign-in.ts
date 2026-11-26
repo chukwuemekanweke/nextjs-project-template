@@ -1,11 +1,16 @@
 export const DEFAULT_SIGN_IN_DESTINATION = "/dashboard";
 
+/** Why confirmation is shown outside registration (presentation only). */
+export const EMAIL_NOT_CONFIRMED_REASON = "email_not_confirmed";
+
 export function createEmailConfirmationDestination({
   email,
+  reason,
   retryAtUtc,
   returnTo,
 }: Readonly<{
   email: string;
+  reason?: typeof EMAIL_NOT_CONFIRMED_REASON;
   retryAtUtc?: string;
   returnTo: string;
 }>): string {
@@ -15,6 +20,9 @@ export function createEmailConfirmationDestination({
   });
   if (retryAtUtc && Number.isFinite(Date.parse(retryAtUtc))) {
     parameters.set("retryAtUtc", retryAtUtc);
+  }
+  if (reason === EMAIL_NOT_CONFIRMED_REASON) {
+    parameters.set("reason", reason);
   }
   return `/confirm-email?${parameters.toString()}`;
 }
