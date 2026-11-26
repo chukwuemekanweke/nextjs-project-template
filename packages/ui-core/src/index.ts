@@ -9,6 +9,7 @@ export * from "./components/icon-button";
 export * from "./components/icons";
 export * from "./components/indicators";
 export * from "./components/spinner";
+export * from "./components/steps";
 
 // Surfaces and settings compositions
 export * from "./components/card";

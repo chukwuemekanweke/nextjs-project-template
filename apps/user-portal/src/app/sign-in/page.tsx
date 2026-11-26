@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Card, CardContent } from "@template/ui-core";
-import { branding, env } from "@/config/env";
+import { UserAuthLayout } from "@/components/user-auth-layout";
+import { env } from "@/config/env";
 import { safeEmailParameter, safeSignInDestination } from "@/lib/sign-in";
 import { SignInForm } from "./sign-in-form";
 
@@ -33,37 +33,13 @@ export default async function SignInPage({
       : suppliedConfirmed) === "true";
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-gray-950">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
-          <p className="text-brand-600 dark:text-brand-400 text-sm font-medium">
-            {branding.productName}
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">
-            Sign in to {branding.portals.user}
-          </h1>
-          <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-            Use the credentials associated with your account.
-          </p>
-        </div>
-        <Card>
-          <CardContent>
-            {confirmed ? (
-              <div
-                className="mb-5 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 dark:border-green-900/50 dark:bg-green-950/40 dark:text-green-300"
-                role="status"
-              >
-                Your email is confirmed. Enter your password to sign in.
-              </div>
-            ) : null}
-            <SignInForm
-              destination={destination}
-              googleClientId={env.googleClientId}
-              initialEmail={initialEmail}
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </main>
+    <UserAuthLayout>
+      <SignInForm
+        destination={destination}
+        emailConfirmed={confirmed}
+        googleClientId={env.googleClientId}
+        initialEmail={initialEmail}
+      />
+    </UserAuthLayout>
   );
 }

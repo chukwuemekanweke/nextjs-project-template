@@ -130,7 +130,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 ### FE-UI-008 — Dashboard chrome and auth layout
 
-- **Status:** dashboard chrome delivered by Trello FE-UI-004 (design revision `a7e2a63`, [DR-083](./discrepancy-register.md#dr-083)): `DashboardShell`, grouped `DashboardSidebar` (rail kept, OD-07 decided "keep"), `DashboardTopbar`, `MobileNavDrawer`, `MobileTabBar`, `AccountSummary`/`ProfileMenu`, `ui-core` `Drawer`/`DropdownMenu`/`Tooltip`; both app shells migrated; DR-027 and DR-071 fixed. Outstanding: `AuthLayout`, `FilterBar`, `PageHeader` back link, dashboard `not-found.tsx`; phone/tablet shell baselines (FE-UI-016, [DR-085](./discrepancy-register.md#dr-085)).
+- **Status:** dashboard chrome delivered by Trello FE-UI-004 (design revision `a7e2a63`, [DR-083](./discrepancy-register.md#dr-083)): `DashboardShell`, grouped `DashboardSidebar` (rail kept, OD-07 decided "keep"), `DashboardTopbar`, `MobileNavDrawer`, `MobileTabBar`, `AccountSummary`/`ProfileMenu`, `ui-core` `Drawer`/`DropdownMenu`/`Tooltip`; both app shells migrated; DR-027 and DR-071 fixed. `AuthLayout` followed in Trello FE-UI-006. Outstanding: `FilterBar`, `PageHeader` back link, dashboard `not-found.tsx`; phone/tablet shell baselines (FE-UI-016, [DR-085](./discrepancy-register.md#dr-085)).
 - **Screens:** `USR-NAV-MOBILE`, `ADM-NAV-MOBILE` (and the shell of every dashboard screen).
 - **Scope:** `AppShell`, grouped `Sidebar`, `MobileTopBar`, `MobileTabBar`, `MobileNavDrawer`, `UserIdentity`, `PageHeader`, `FilterBar`, `AuthLayout`, `BrandMark`; migrate `user-layout-shell.tsx` and `admin-layout-shell.tsx`; identity from profile/session; fix DR-027; hide admin items without routes (DR-071); add grouped admin navigation model; remove the collapsible rail (OD-07); add dashboard `not-found.tsx`.
 - **Affects:** `dashboard-ui`, `apps/user-portal/src/components`, `apps/admin-portal/src/components`, both `config/navigation.ts`.
@@ -167,6 +167,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 ### FE-UI-012 — User authentication screens
 
+- **Status:** delivered by Trello FE-UI-006 (design revision `ad9386e`) together with `AuthLayout` (FE-UI-008) and `Steps`: DR-012/013/014/016/040 resolved, design-only data omitted (DR-086). Logic files under `src/lib/*` and BFF routes unchanged except the presentation-only `reason` on `createEmailConfirmationDestination` and the new `auth-feedback.ts` mapping. "Forgot password?" waits for Trello FE-UI-020.
 - **Screens:** `AUTH-SIGN-IN`, `AUTH-REGISTER`, `AUTH-CONFIRM-EMAIL`, `AUTH-TWO-FACTOR`, `AUTH-PASSKEY-SETUP`, `AUTH-GOOGLE-LINK`, `AUTH-GOOGLE-REGISTER`, `AUTH-MESSAGES`.
 - **Scope:** recompose on `AuthLayout`, `forms`, `Alert`, `Steps`; keep the GIS button (DR-013); omit "Keep me signed in" (OD-16); add the "Forgot password?" link only together with FE-UI-013.
 - **Prerequisites:** FE-UI-008, FE-UI-007; decision on DR-014.
@@ -176,6 +177,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 ### FE-UI-013 — Forgot and reset password
 
+- **Status:** tracked as Trello FE-UI-020. Design `ad9386e` replaces the reset link with email entry, then OTP and a new password; revisit the route and DR-015 assumptions below. Set `forgotPasswordHref` on `SignInForm` to show the sign-in entry point.
 - **Screens:** `AUTH-FORGOT-PASSWORD`, `AUTH-RESET-PASSWORD`.
 - **Scope:** `/forgot-password` and `/reset-password` pages; `PUBLIC_PATHS` additions; api-react hooks for the existing mutation options; "Forgot password?" link on sign-in.
 - **Prerequisites:** FE-UI-012; DR-015 (reset-link format, error codes).
@@ -185,6 +187,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 ### FE-UI-014 — Admin sign-in
 
+- **Status:** delivered by Trello FE-UI-006: `AuthLayout` with the "Operations console" panel and "Admin portal" chip; passkey and authenticator notice omitted (DR-017, DR-041).
 - **Screens:** `ADM-SIGN-IN`.
 - **Scope:** `AuthLayout` with the admin panel; password flow unchanged; omit passkey until FE-UI-019.
 - **Prerequisites:** FE-UI-008, FE-UI-007.

@@ -5,7 +5,15 @@ import {
   useCreatePasskeyRegistrationOptions,
   usePasskeys,
 } from "@template/api-react/authentication";
-import { Alert, Skeleton } from "@template/ui-core";
+import {
+  Alert,
+  Button,
+  CheckIcon,
+  FingerprintIcon,
+  FormField,
+  Input,
+  Skeleton,
+} from "@template/ui-core";
 import { useRouter } from "next/navigation";
 import {
   useCallback,
@@ -25,10 +33,11 @@ import { useWebAuthnSupport } from "@/lib/use-webauthn-support";
 
 type SetupState = "idle" | "registering" | "registered";
 
-const primaryButton =
-  "bg-brand-500 hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60";
-const secondaryButton =
-  "w-full rounded-lg border border-gray-300 px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800";
+const passkeyBenefits = [
+  "Works with Face ID, Touch ID, Windows Hello and Android",
+  "You can add more devices later in Security settings",
+  "Your current sign-in method keeps working",
+] as const;
 
 /**
  * Optional passkey enrolment offered once after registration. Skipping, an
@@ -66,15 +75,15 @@ export function PasskeySetupPrompt({
 
   if (!supported) {
     return (
-      <div className="space-y-5">
-        <Alert variant="info">
+      <>
+        <Alert title="Passkeys aren't supported here" variant="warning">
           This browser cannot create passkeys. You can add one later from your
           Security settings on a supported device.
         </Alert>
-        <button className={primaryButton} onClick={continueToApp} type="button">
+        <Button fullWidth onClick={continueToApp}>
           Continue
-        </button>
-      </div>
+        </Button>
+      </>
     );
   }
 
@@ -109,7 +118,7 @@ function PasskeySetupForm({
   const createOptions = useCreatePasskeyRegistrationOptions();
   const completeRegistration = useCompletePasskeyRegistration();
   const inputId = useId();
-  const fieldErrorId = useId();
+  const descriptionId = useId();
   // Mounted only after WebAuthn support is known, so navigator is available.
   const [name, setName] = useState(() =>
     suggestPasskeyName(globalThis.navigator?.userAgent ?? ""),
@@ -154,28 +163,40 @@ function PasskeySetupForm({
 
   return (
     <form
-      className="space-y-5"
+      className="flex flex-col gap-5"
       noValidate
       onSubmit={(event) => void submit(event)}
     >
-      {error ? <Alert variant="error">{error}</Alert> : null}
-      {notice ? (
-        <p className="text-sm text-gray-600 dark:text-gray-400" role="status">
-          {notice}
-        </p>
+      <ul className="text-body text-fg-muted flex flex-col gap-3">
+        {passkeyBenefits.map((benefit) => (
+          <li className="flex items-start gap-2.5" key={benefit}>
+            <CheckIcon className="text-brand-ink mt-0.5" size="sm" />
+            {benefit}
+          </li>
+        ))}
+      </ul>
+      {error ? (
+        <Alert title="Passkey not created" variant="error">
+          {error}
+        </Alert>
       ) : null}
-      <div className="space-y-1.5">
-        <label
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-          htmlFor={inputId}
-        >
-          Passkey name
-        </label>
-        <input
-          aria-describedby={fieldError ? fieldErrorId : undefined}
+      {notice ? (
+        <Alert title="Passkey cancelled" variant="info">
+          {notice}
+        </Alert>
+      ) : null}
+      <FormField
+        descriptionId={descriptionId}
+        error={fieldError}
+        hint="Helps you recognise this passkey later."
+        inputId={inputId}
+        label="Passkey name"
+        required
+      >
+        <Input
+          aria-describedby={descriptionId}
           aria-invalid={fieldError ? true : undefined}
           autoComplete="off"
-          className="focus:border-brand-300 focus:ring-brand-500/10 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-none disabled:opacity-60 dark:border-gray-700 dark:text-white/90"
           disabled={registering}
           id={inputId}
           maxLength={PASSKEY_NAME_MAX_LENGTH}
@@ -183,40 +204,25 @@ function PasskeySetupForm({
           required
           value={name}
         />
-        {fieldError ? (
-          <p
-            className="text-sm text-red-600 dark:text-red-400"
-            id={fieldErrorId}
-          >
-            {fieldError}
-          </p>
-        ) : (
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Helps you recognise this passkey later.
-          </p>
-        )}
-      </div>
-      <div className="space-y-3">
-        <button
-          aria-busy={registering || undefined}
-          className={primaryButton}
-          disabled={registering}
+      </FormField>
+      <div className="flex flex-col gap-3">
+        <Button
+          fullWidth
+          leadingIcon={<FingerprintIcon />}
+          loading={registering}
           type="submit"
         >
           {registering ? "Waiting for your authenticator…" : "Create passkey"}
-        </button>
-        <button
-          className={secondaryButton}
+        </Button>
+        <Button
           disabled={registering}
+          fullWidth
           onClick={onSkip}
-          type="button"
+          variant="ghost"
         >
           Skip for now
-        </button>
+        </Button>
       </div>
-      <p className="text-center text-xs text-gray-500 dark:text-gray-400">
-        You can add or manage passkeys any time in Security settings.
-      </p>
     </form>
   );
 }
@@ -226,7 +232,7 @@ function PasskeySetupSkeleton() {
     <div
       aria-busy="true"
       aria-label="Preparing passkey setup"
-      className="space-y-4"
+      className="flex flex-col gap-4"
       role="status"
     >
       <Skeleton className="h-16 w-full" />

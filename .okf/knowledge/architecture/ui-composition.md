@@ -29,7 +29,9 @@ status: stable
 - `@template/ui-core` exposes the design-system component foundation (see
   `ui-components` and `docs/design-system/shared-components.md`): `cn`,
   curated Lucide icons, actions, indicators, surfaces, native-first form
-  controls, Radix `Dialog`/`ConfirmDialog`/`Tabs`/`Switch`/
+  controls (`FormField` takes an optional `labelAction`, for example a
+  "Forgot password?" link), `Steps` (phones show only the current label),
+  Radix `Dialog`/`ConfirmDialog`/`Tabs`/`Switch`/
   `SegmentedControl`, `DataTable`, `Pager`, `Alert`, skeletons and
   empty/error states; deprecated compatibility APIs (`buttonClassName`,
   `Modal`, `Pagination`, `StatusBadge`, `IconContainer`, `StatCard`,
@@ -48,7 +50,12 @@ status: stable
   specific matching href). It owns no routes, session, permissions or API
   calls: apps supply navigation data and icons, breadcrumb trails, identity,
   account actions (each spreads the props a menu item passes), sign-out and
-  feature availability. `@template/dashboard-ui/charts` holds chart
+  feature availability. `AuthLayout` (Trello FE-UI-006) is the split
+  authentication frame: brand + `ThemeSwitch` header, content at the
+  `auth-form` width, footer, and a brand panel (`AuthPanel`, `auth-panel`
+  tokens) from `lg`; `AuthHeading` renders each screen's single `h1`. Apps
+  supply brand, copy and panel; the User Portal wraps it once as
+  `UserAuthLayout`, the Admin Portal composes it in its sign-in page. `@template/dashboard-ui/charts` holds chart
   foundations (`ChartFrame`, `ChartLegend`, series colour helpers); Recharts
   is deferred (TD-10).
 - App navigation (`apps/*/src/config/navigation.ts`) lists only implemented

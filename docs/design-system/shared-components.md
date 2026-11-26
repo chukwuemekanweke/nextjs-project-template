@@ -10,6 +10,7 @@ Screen tickets should compose these components; they should not re-implement but
 | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@template/ui-core`             | `cn`/`joinIds`, Lucide icon set, actions, indicators, surfaces, form controls, overlays, tabs, `DataTable`, `Pager`, alerts and async states. No React Hook Form, Zod or API code. |
 | `@template/forms`               | Connected fields (`TextField`, `PasswordField`, `ConfirmationCodeField`, `SearchableSelectField`, `SubmitButton`) rendered with `ui-core` controls.                                |
+| `@template/dashboard-ui`        | Dashboard frame and navigation, plus the split authentication frame `AuthLayout`/`AuthPanel`/`AuthHeading` (Trello FE-UI-006). Apps pass brand, copy and panel content.            |
 | `@template/dashboard-ui/charts` | Chart foundations: `ChartFrame`, `ChartLegend`, `chartSeriesColor`, `chartColors`. Subpath export so user/public bundles stay chart-free.                                          |
 | `apps/*`                        | Domain → tone mapping (payment, subscription, session status), copy, data fetching, pagination state, retry and every workflow.                                                    |
 | `tooling/ui-workbench`          | Storybook previews, typed preview fixtures, visual-regression baselines. Private; never deployed or imported by apps.                                                              |
@@ -44,6 +45,7 @@ Screen tickets should compose these components; they should not re-implement but
 | `Progress`          | tones `brand`, `success`, `warning`, `danger`                                  | `role="progressbar"`, required `label`, optional `valueText`.                                       |
 | `Spinner`           | `sm`/`md`/`lg`; standalone or `decorative`                                     | Standalone is a polite `role="status"` with a label.                                                |
 | `Divider`           | horizontal, vertical, labelled ("or")                                          | Reference `.divider`, `.or`.                                                                        |
+| `Steps`             | complete (check), current (`aria-current="step"`), upcoming (number)           | Reference `.steps`. Below `md` only the current label shows; the others stay `sr-only`.             |
 | Icons (`icons.tsx`) | 60+ curated Lucide icons; `size` presets `xs` 16, `sm` 18, `md` 20, `lg` 22    | Always `aria-hidden`; 1.8 stroke; `data-icon` names the icon. Legacy names kept (now Lucide-drawn). |
 
 ### Surfaces
@@ -52,17 +54,17 @@ Screen tickets should compose these components; they should not re-implement but
 
 ### Form controls (`ui-core`)
 
-| Component                                           | States                                                                                                                                         |
-| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Input`, `Select`, `Textarea`                       | default, hover, focus (brand border + ring), filled, placeholder, read-only (`[readonly]`), disabled, invalid (`aria-invalid`)                 |
-| `SearchInput`                                       | as `Input`, `type="search"` with a decorative icon; needs `aria-label` or a label                                                              |
-| `PasswordInput`                                     | show/hide `aria-pressed` toggle (labels configurable)                                                                                          |
-| `OtpInput`                                          | controlled boxes; typing advances, Backspace steps back, arrows move, paste/autofill fills; `one-time-code` on box 1; optional group separator |
-| `Checkbox`, `Radio`                                 | native; optional `label` and `description` (linked via `aria-describedby`); disabled                                                           |
-| `RadioGroup`, `RadioCard`                           | `fieldset`/`legend`; error linked to the group; card highlights when checked and shows keyboard focus                                          |
-| `Switch`                                            | Radix `role="switch"`; 44px hit area; disabled; hidden input with `name`                                                                       |
-| `SegmentedControl`                                  | Radix ToggleGroup (single); always one value; controlled or uncontrolled; scrolls on narrow screens                                            |
-| `FormField`, `FormLabel`, `FieldHint`, `FieldError` | label association, required marker (`aria-hidden` `*`, native `required` carries semantics), hint or error (`role="alert"`, icon + text)       |
+| Component                                           | States                                                                                                                                                                                                      |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Input`, `Select`, `Textarea`                       | default, hover, focus (brand border + ring), filled, placeholder, read-only (`[readonly]`), disabled, invalid (`aria-invalid`)                                                                              |
+| `SearchInput`                                       | as `Input`, `type="search"` with a decorative icon; needs `aria-label` or a label                                                                                                                           |
+| `PasswordInput`                                     | show/hide `aria-pressed` toggle (labels configurable)                                                                                                                                                       |
+| `OtpInput`                                          | controlled boxes; typing advances, Backspace steps back, arrows move, paste/autofill fills; `one-time-code` on box 1; optional group separator                                                              |
+| `Checkbox`, `Radio`                                 | native; optional `label` and `description` (linked via `aria-describedby`); disabled                                                                                                                        |
+| `RadioGroup`, `RadioCard`                           | `fieldset`/`legend`; error linked to the group; card highlights when checked and shows keyboard focus                                                                                                       |
+| `Switch`                                            | Radix `role="switch"`; 44px hit area; disabled; hidden input with `name`                                                                                                                                    |
+| `SegmentedControl`                                  | Radix ToggleGroup (single); always one value; controlled or uncontrolled; scrolls on narrow screens                                                                                                         |
+| `FormField`, `FormLabel`, `FieldHint`, `FieldError` | label association, required marker (`aria-hidden` `*`, native `required` carries semantics), hint or error (`role="alert"`, icon + text); optional `labelAction` on the label row (also on `PasswordField`) |
 
 Controls are 44px tall. Form-control borders use `--color-control-border` (≥ 3:1, DR-029); buttons keep the reference `border-strong` because their text identifies them.
 

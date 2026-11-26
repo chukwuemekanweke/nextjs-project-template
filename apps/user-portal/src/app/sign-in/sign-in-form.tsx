@@ -8,12 +8,22 @@ import {
   ValidatedForm,
   useValidatedForm,
 } from "@template/forms";
+import { AuthHeading } from "@template/dashboard-ui";
+import { Alert, Divider } from "@template/ui-core";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { z } from "zod";
+import { AuthFeedbackAlert } from "@/components/auth-feedback-alert";
 import { GoogleAuthenticationButton } from "@/components/google-authentication-button";
 import { GoogleLinkForm } from "@/components/google-link-form";
+import { authLinkClassName } from "@/components/auth-link";
+import {
+  googleFeedback,
+  passkeyFeedback,
+  signInFeedback,
+  type AuthFeedback,
+} from "@/lib/auth-feedback";
 import type {
   GoogleAuthenticationError,
   GoogleAuthenticationOutcome,
@@ -23,7 +33,7 @@ import {
   createEmailConfirmationDestination,
   createRegistrationHref,
   createTwoFactorDestination,
-  safeSignInError,
+  EMAIL_NOT_CONFIRMED_REASON,
 } from "@/lib/sign-in";
 import { PasskeySignInButton } from "./passkey-sign-in-button";
 
@@ -36,16 +46,25 @@ type SignInValues = z.infer<typeof signInSchema>;
 
 export function SignInForm({
   destination,
+  emailConfirmed = false,
+  forgotPasswordHref,
   googleClientId,
   initialEmail,
 }: Readonly<{
   destination: string;
+  /** Shows the "email confirmed" notice (validated `confirmed=true`). */
+  emailConfirmed?: boolean;
+  /**
+   * Password-recovery entry point on the password label row. Rendered only
+   * when supplied: the recovery route ships with FE-UI-020.
+   */
+  forgotPasswordHref?: string;
   googleClientId: string;
   initialEmail: string;
 }>) {
   const router = useRouter();
   const requestConfirmationCode = useRequestEmailConfirmationCode();
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<AuthFeedback>();
   const [googlePending, setGooglePending] = useState(false);
   const [passkeyPending, setPasskeyPending] = useState(false);
   const [googleStep, setGoogleStep] = useState<"entry" | "link">("entry");
@@ -61,7 +80,7 @@ export function SignInForm({
 
   const handleGoogleError = useCallback(
     (failure: GoogleAuthenticationError) => {
-      setError(failure.message);
+      setError(googleFeedback(failure));
     },
     [],
   );
@@ -102,7 +121,10 @@ export function SignInForm({
         router.replace(createTwoFactorDestination(destination));
         return;
       }
-      setError(result.status === "error" ? result.message : undefined);
+      // WebAuthn cancellation is a normal outcome and stays silent.
+      setError(
+        result.status === "error" ? passkeyFeedback(result.message) : undefined,
+      );
     },
     [completeAuthentication, destination, router],
   );
@@ -137,13 +159,14 @@ export function SignInForm({
           router.replace(
             createEmailConfirmationDestination({
               email,
+              reason: EMAIL_NOT_CONFIRMED_REASON,
               retryAtUtc,
               returnTo: destination,
             }),
           );
           return;
         }
-        setError(safeSignInError(response.status));
+        setError(signInFeedback(response.status));
         return;
       }
 
@@ -156,7 +179,7 @@ export function SignInForm({
       }
       completeAuthentication();
     } catch {
-      setError(safeSignInError(0));
+      setError(signInFeedback(0));
     }
   }
 
@@ -173,29 +196,37 @@ export function SignInForm({
   }
 
   return (
-    <div className="space-y-5">
-      {error ? (
-        <div
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300"
-          role="alert"
-        >
-          {error}
-        </div>
+    <>
+      <AuthHeading
+        description="Sign in to your account to continue."
+        title="Welcome back"
+      />
+      {emailConfirmed && !error ? (
+        <Alert title="Email confirmed" variant="success">
+          Enter your password to sign in.
+        </Alert>
       ) : null}
-      <PasskeySignInButton
-        disabled={form.formState.isSubmitting || googlePending}
-        onOutcome={handlePasskeyOutcome}
-        onPendingChange={handlePasskeyPendingChange}
-      />
-      <GoogleAuthenticationButton
-        clientId={googleClientId}
-        disabled={form.formState.isSubmitting || passkeyPending}
-        onError={handleGoogleError}
-        onOutcome={handleGoogleOutcome}
-        onPendingChange={setGooglePending}
-      />
-      <AuthDivider />
-      <ValidatedForm className="space-y-5" form={form} onSubmit={submit}>
+      <AuthFeedbackAlert feedback={error} />
+      <div className="flex flex-col gap-3">
+        <GoogleAuthenticationButton
+          clientId={googleClientId}
+          disabled={form.formState.isSubmitting || passkeyPending}
+          onError={handleGoogleError}
+          onOutcome={handleGoogleOutcome}
+          onPendingChange={setGooglePending}
+        />
+        <PasskeySignInButton
+          disabled={form.formState.isSubmitting || googlePending}
+          onOutcome={handlePasskeyOutcome}
+          onPendingChange={handlePasskeyPendingChange}
+        />
+      </div>
+      <Divider label="or with email" />
+      <ValidatedForm
+        className="flex flex-col gap-4"
+        form={form}
+        onSubmit={submit}
+      >
         <TextField<SignInValues>
           autoComplete="email"
           autoFocus={!initialEmail}
@@ -211,12 +242,19 @@ export function SignInForm({
           autoFocus={Boolean(initialEmail)}
           disabled={alternativePending}
           label="Password"
+          labelAction={
+            forgotPasswordHref ? (
+              <Link className={authLinkClassName} href={forgotPasswordHref}>
+                Forgot password?
+              </Link>
+            ) : undefined
+          }
           name="password"
           required
         />
         <SubmitButton
-          className="bg-brand-500 hover:bg-brand-600 w-full rounded-lg px-4 py-3 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60"
           disabled={alternativePending}
+          fullWidth
           pending={form.formState.isSubmitting}
         >
           {googlePending
@@ -228,27 +266,15 @@ export function SignInForm({
                 : "Sign in"}
         </SubmitButton>
       </ValidatedForm>
-      <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-        Need an account?{" "}
+      <p className="text-small text-fg-muted text-center">
+        New here?{" "}
         <Link
-          className="text-brand-600 hover:text-brand-700 dark:text-brand-400 font-medium"
+          className={authLinkClassName}
           href={createRegistrationHref(destination)}
         >
-          Register
+          Create an account
         </Link>
       </p>
-    </div>
-  );
-}
-
-function AuthDivider() {
-  return (
-    <div className="flex items-center gap-3" role="separator">
-      <span className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
-      <span className="text-xs font-medium tracking-wide text-gray-400 uppercase">
-        or use email
-      </span>
-      <span className="h-px flex-1 bg-gray-200 dark:bg-gray-800" />
-    </div>
+    </>
   );
 }

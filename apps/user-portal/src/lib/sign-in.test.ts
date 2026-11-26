@@ -32,6 +32,18 @@ describe("createEmailConfirmationDestination", () => {
       }),
     ).toBe("/confirm-email?email=user%40example.com&returnTo=%2Fdashboard");
   });
+
+  it("marks confirmation requested from sign-in without other data", () => {
+    expect(
+      createEmailConfirmationDestination({
+        email: "user@example.com",
+        reason: "email_not_confirmed",
+        returnTo: "/dashboard",
+      }),
+    ).toBe(
+      "/confirm-email?email=user%40example.com&returnTo=%2Fdashboard&reason=email_not_confirmed",
+    );
+  });
 });
 
 describe("safeEmailParameter", () => {

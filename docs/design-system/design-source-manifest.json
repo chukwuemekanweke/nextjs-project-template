@@ -39,6 +39,30 @@
         "4-admin-portal/AdminMobileMenuMobile.html",
         "4-admin-portal/AdminMobileMenuMobileDark.html"
       ]
+    },
+    {
+      "ticket": "FE-UI-006 (Trello)",
+      "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+      "commitDate": "2026-11-25T21:19:56+01:00",
+      "treeSha": "1000fc95c79c4cda8f3c6361d73f3b5d485cd0c2",
+      "scope": "Authentication screens (2-authentication) only. Per-file inventory, hashes and counts still describe commit (DR-083).",
+      "filesInRevision": 994,
+      "changesSincePinnedCommit": {
+        "2-authentication": "20 modified: AuthStates* (updated message catalogue) and the forgot/reset artboards (AuthForgotPassword*, AuthForgotSent*, AuthResetPassword*, AuthResetExpired*: email entry, then OTP and new password; FE-UI-020). Every other auth artboard is unchanged.",
+        "project-template-design-html": "22 modified (bundled copies of the same artboards)"
+      },
+      "referencesUsed": [
+        "2-authentication/AdminSignIn.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthSignIn.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthRegisterEmail.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthRegisterDetails.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthConfirmEmail.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthGoogleLink.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthGoogleRegister.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthPasskeySetup.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthTwoFactor.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthStates.html (+Dark, Mobile, MobileDark)"
+      ]
     }
   ],
   "discoveredOn": "2026-11-25",

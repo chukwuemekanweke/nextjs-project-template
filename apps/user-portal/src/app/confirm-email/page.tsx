@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { Card, CardContent } from "@template/ui-core";
-import { branding } from "@/config/env";
+import { UserAuthLayout } from "@/components/user-auth-layout";
 import { safeRetryAtUtc } from "@/lib/registration";
-import { safeEmailParameter, safeSignInDestination } from "@/lib/sign-in";
+import {
+  EMAIL_NOT_CONFIRMED_REASON,
+  safeEmailParameter,
+  safeSignInDestination,
+} from "@/lib/sign-in";
 import { ConfirmEmailForm } from "./confirm-email-form";
 
 export const metadata: Metadata = { title: "Confirm email" };
@@ -12,6 +15,7 @@ export default async function ConfirmEmailPage({
 }: Readonly<{
   searchParams: Promise<{
     email?: string | string[];
+    reason?: string | string[];
     returnTo?: string | string[];
     retryAtUtc?: string | string[];
   }>;
@@ -34,31 +38,20 @@ export default async function ConfirmEmailPage({
       : suppliedDestination,
   );
 
+  const suppliedReason = parameters.reason;
+  const emailNotConfirmed =
+    (Array.isArray(suppliedReason) ? suppliedReason[0] : suppliedReason) ===
+    EMAIL_NOT_CONFIRMED_REASON;
+
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-gray-950">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
-          <p className="text-brand-600 dark:text-brand-400 text-sm font-medium">
-            {branding.productName}
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">
-            Confirm your email
-          </h1>
-          <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-            Enter the 6-character code sent to {email || "your email address"}.
-          </p>
-        </div>
-        <Card>
-          <CardContent>
-            <ConfirmEmailForm
-              initialEmail={email}
-              initialNowUtc={new Date().toISOString()}
-              initialRetryAtUtc={retryAtUtc}
-              signInDestination={destination}
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </main>
+    <UserAuthLayout>
+      <ConfirmEmailForm
+        emailNotConfirmed={emailNotConfirmed}
+        initialEmail={email}
+        initialNowUtc={new Date().toISOString()}
+        initialRetryAtUtc={retryAtUtc}
+        signInDestination={destination}
+      />
+    </UserAuthLayout>
   );
 }
