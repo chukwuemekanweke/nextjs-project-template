@@ -4875,15 +4875,22 @@
         "classification": "A",
         "files": [
           "apps/user-portal/src/app/security/page.tsx",
+          "apps/user-portal/src/app/security/security-tab.ts",
           "apps/user-portal/src/app/security/security-tabs.tsx",
+          "apps/user-portal/src/app/security/security-overview.ts",
           "apps/user-portal/src/app/security/security-overview-card.tsx",
+          "apps/user-portal/src/app/security/password-change-card.tsx",
           "apps/user-portal/src/app/security/passkeys-card.tsx",
           "apps/user-portal/src/app/security/two-factor-security-card.tsx",
           "apps/user-portal/src/app/security/active-sessions-card.tsx",
-          "apps/user-portal/src/app/security/security-activity-card.tsx"
+          "apps/user-portal/src/app/security/security-activity-card.tsx",
+          "apps/user-portal/src/app/security/activity-presentation.tsx"
         ],
         "existingFunctionality": [
-          "Two local tabs (General: overview, password change, passkeys, 2FA; Devices: sessions, activity); revoke one/others; activity infinite list."
+          "Trello FE-UI-008 (roadmap FE-UI-017): six URL-addressable tabs (?tab=overview|password|passkeys|two-factor|sessions|activity; absent/unknown -> overview) on design-system primitives, light/dark, phone to desktop.",
+          "UI implemented, existing integration preserved: password change (backend validation mapping), passkey register/rename/remove (WebAuthn ceremony), 2FA status/setup/verify/regenerate/disable with proof, sessions revoke one/others (each confirmed), cursor-paginated activity (Load more).",
+          "Overview: protection score out of three backend facts (2FA on, one passkey, backup passkey; the password is never scored; unavailable when a query fails, pending while loading), three newest activity events from the shared activity query, passkey and 2FA statuses plus a 'Change password' link (no password status).",
+          "Preview-only: none. Unsupported (omitted): passkey last-used, password last-changed/strength, password-change 'sign out other sessions', 2FA enrollment date and total code count."
         ]
       },
       "backend": {
@@ -4908,18 +4915,26 @@
         "missingCapabilities": [
           "Passkey last-used date",
           "Password last-changed date / strength status",
-          "'Sign out of all other sessions' option on password change"
+          "'Sign out of all other sessions' option on password change",
+          "Two-factor enrollment date and total recovery-code count"
         ]
       },
       "uiGaps": [
-        "Reference has six tabs; implementation has two. Tabs should become URL-addressable (?tab=) so dashboard links can deep-link.",
-        "Reference masks IPs (102.89.x.x); current activity shows the backend IP as a lookup link (OKF).",
-        "Security score '3 of 4' must be derived only from real facts (2FA on, passkey count)."
+        "Reference masks IPs (102.89.x.x); sessions and activity keep the backend IP as a lookup link until OD-09 is decided (DR-052).",
+        "Activity table adds an IP address column and keeps cursor 'Load more' instead of a numbered pager (DR-100)."
       ],
       "dependencies": ["FE-UI-005 Tabs/Dialog", "FE-UI-006 DataTable"],
       "priority": "P1",
       "roadmapTicket": "FE-UI-017",
-      "discrepancies": ["DR-052", "DR-053"],
+      "discrepancies": [
+        "DR-052",
+        "DR-053",
+        "DR-096",
+        "DR-097",
+        "DR-099",
+        "DR-100",
+        "DR-101"
+      ],
       "notes": []
     },
     {
@@ -4983,10 +4998,15 @@
         "status": "Implemented",
         "classification": "A",
         "files": [
-          "apps/user-portal/src/app/security/two-factor-security-card.tsx"
+          "apps/user-portal/src/app/security/two-factor-security-card.tsx",
+          "apps/user-portal/src/app/security/two-factor-setup-dialog.tsx",
+          "apps/user-portal/src/app/security/two-factor-proof-dialog.tsx",
+          "apps/user-portal/src/app/security/recovery-codes-panel.tsx",
+          "apps/user-portal/src/app/security/two-factor-flow.ts"
         ],
         "existingFunctionality": [
-          "Setup modal with QR (qrcode.react), manual key, code verification, one-time recovery codes with copy/download."
+          "Trello FE-UI-008: three-step Dialog on /security (1 explain, 2 QR + grouped manual key with copy + six-digit code, 3 recovery codes with download/copy and an 'I have saved my recovery codes' gate before Finish); focus trap/Escape/return from ui-core Dialog.",
+          "Existing integration preserved: setupTwoFactor, verifyTwoFactorEnrollment, regenerateRecoveryCodes; disable and regenerate still require an authenticator (6-digit) or recovery-code (10-char) proof. Codes are shown as returned and cleared on Finish; the codes step cannot be dismissed."
         ]
       },
       "backend": {
@@ -4999,13 +5019,12 @@
         "missingCapabilities": []
       },
       "uiGaps": [
-        "Reference: 3-step dialog ('Step 2 of 3'), recovery codes card with 'I have saved my recovery codes' confirmation before Finish.",
-        "Modal must gain focus trap/Esc/return focus (current Modal lacks them)."
+        "Step 1 is not drawn in the reference; implemented as a short explanation (DR-098)."
       ],
       "dependencies": ["FE-UI-005 Dialog"],
       "priority": "P1",
       "roadmapTicket": "FE-UI-017",
-      "discrepancies": ["DR-060"],
+      "discrepancies": ["DR-060", "DR-098"],
       "notes": [
         "Recovery codes remain ephemeral UI state; never persisted or put in fixtures that resemble real codes in production bundles."
       ]

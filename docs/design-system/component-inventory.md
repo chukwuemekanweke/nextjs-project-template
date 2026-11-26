@@ -176,8 +176,8 @@ Status vocabulary: **Implemented** (new, exported, tested) · **Extended** (exis
 | Billing overview, current-subscription card, plan grid layout rules            | user        | `Card`, `Badge`, `Progress`, `PlanCard`, `KeyValueList` |
 | Checkout view, provider radio cards, order summary, bank-transfer instructions | user        | `RadioCard`, `Switch`, `Card`, `KeyValueList`, `Alert`  |
 | Payment result template                                                        | user        | `IconTile`, `KeyValueList`, `Button`                    |
-| Security tabs, overview score, passkey rows, session rows, activity table      | user        | `Tabs`, `ListRow`, `DataTable`, `Badge`                 |
-| Two-factor setup and recovery codes                                            | user        | `Dialog`, `Steps`, `OtpField`, `CopyButton`             |
+| Security tabs, overview score, passkey rows, session rows, activity table      | user        | `Tabs`, `ListRow`, `Progress`, `DataTable`, `Badge`     |
+| Two-factor setup and recovery codes                                            | user        | `Dialog`, `ConfirmationCodeField`, `Checkbox`           |
 | Auth flows and messages                                                        | user, admin | `AuthLayout`, `forms`, `Alert`                          |
 | Dashboard overview tiles and checklists                                        | user        | `StatGrid`, `ListRow`                                   |
 | Step-up dialog                                                                 | admin       | `Dialog`, `OtpField`, `TextField`                       |

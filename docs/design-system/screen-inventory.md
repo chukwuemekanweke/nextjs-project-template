@@ -545,31 +545,31 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Security (overview, password, passkeys, two-factor, sessions, activity)** — state-flow; target `user-portal`; auth: authenticated.
 
 - **Artboards:** `UserSecurity` — 24 reference files (desktop/mobile; dark/light; states: activity, overview, passkeys, password, sessions, two-factor).
-- **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-017.
-- **Implementation:** `apps/user-portal/src/app/security/page.tsx`, `apps/user-portal/src/app/security/security-tabs.tsx`, `apps/user-portal/src/app/security/security-overview-card.tsx`, `apps/user-portal/src/app/security/passkeys-card.tsx`, `apps/user-portal/src/app/security/two-factor-security-card.tsx`, `apps/user-portal/src/app/security/active-sessions-card.tsx`, `apps/user-portal/src/app/security/security-activity-card.tsx`
-- **Works today:** Two local tabs (General: overview, password change, passkeys, 2FA; Devices: sessions, activity); revoke one/others; activity infinite list.
+- **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-017 (delivered by Trello FE-UI-008).
+- **Implementation:** `apps/user-portal/src/app/security/page.tsx`, `apps/user-portal/src/app/security/security-tab.ts`, `apps/user-portal/src/app/security/security-tabs.tsx`, `apps/user-portal/src/app/security/security-overview.ts`, `apps/user-portal/src/app/security/security-overview-card.tsx`, `apps/user-portal/src/app/security/password-change-card.tsx`, `apps/user-portal/src/app/security/passkeys-card.tsx`, `apps/user-portal/src/app/security/two-factor-security-card.tsx`, `apps/user-portal/src/app/security/active-sessions-card.tsx`, `apps/user-portal/src/app/security/security-activity-card.tsx`, `apps/user-portal/src/app/security/activity-presentation.tsx`
+- **UI implemented:** six URL-addressable tabs (`?tab=overview|password|passkeys|two-factor|sessions|activity`; absent/unknown → overview) on design-system primitives, light/dark, phone to desktop.
+- **Existing integration preserved:** password change (backend validation mapping); passkey register/rename/remove (WebAuthn ceremony); 2FA status/setup/verify/regenerate/disable with proof; sessions revoke one/others (each now confirmed); cursor-paginated activity ("Load more").
+- **Overview:** protection score out of three backend facts (2FA on, one passkey, backup passkey; the password is never scored); pending while loading, "unavailable" if a query fails; three newest events from the shared activity query; passkey and 2FA statuses plus a "Change password" link (no password status).
+- **Preview-only:** none.
 - **Operations:** `changePassword`; `getTwoFactorStatus`; `setupTwoFactor`; `verifyTwoFactorEnrollment`; `regenerateRecoveryCodes`; `disableTwoFactor`; `listActiveSessions`; `revokeSession`; `revokeOtherSessions`; `getSecurityActivity`; `listPasskeys`; `createPasskeyRegistrationOptions`; `completePasskeyRegistration`; `renamePasskey`; `removePasskey`
-- **Unsupported / missing backend:** Passkey last-used date; Password last-changed date / strength status; 'Sign out of all other sessions' option on password change
-- **Gap:** Reference has six tabs; implementation has two. Tabs should become URL-addressable (?tab=) so dashboard links can deep-link.
-- **Gap:** Reference masks IPs (102.89.x.x); current activity shows the backend IP as a lookup link (OKF).
-- **Gap:** Security score '3 of 4' must be derived only from real facts (2FA on, passkey count).
-- **Depends on:** FE-UI-005 Tabs/Dialog; FE-UI-006 DataTable
-- **Discrepancies:** [DR-052](./discrepancy-register.md#dr-052), [DR-053](./discrepancy-register.md#dr-053)
+- **Unsupported / missing backend (omitted):** Passkey last-used date; Password last-changed date / strength status; 'Sign out of all other sessions' option on password change; Two-factor enrollment date and total recovery-code count
+- **Gap:** Reference masks IPs (102.89.x.x); sessions and activity keep the backend IP as a lookup link until OD-09 is decided (DR-052).
+- **Gap:** Activity table adds an IP address column and keeps cursor "Load more" instead of a numbered pager (DR-100).
+- **Discrepancies:** [DR-052](./discrepancy-register.md#dr-052), [DR-053](./discrepancy-register.md#dr-053), [DR-096](./discrepancy-register.md#dr-096), [DR-097](./discrepancy-register.md#dr-097), [DR-099](./discrepancy-register.md#dr-099), [DR-100](./discrepancy-register.md#dr-100), [DR-101](./discrepancy-register.md#dr-101)
 
 ### USR-TWO-FACTOR-SETUP
 
 **Two-factor setup dialog and recovery codes** — overlay, child of `USR-SECURITY`; target `user-portal`; auth: authenticated.
 
 - **Artboards:** `UserTwoFactorSetup` — 4 reference files (desktop/mobile; dark/light; interactive: step:2-of-3 (scan + verify), step:3-of-3 (recovery codes)).
-- **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-017.
-- **Implementation:** `apps/user-portal/src/app/security/two-factor-security-card.tsx`
-- **Works today:** Setup modal with QR (qrcode.react), manual key, code verification, one-time recovery codes with copy/download.
-- **Operations:** `setupTwoFactor`; `verifyTwoFactorEnrollment`; `regenerateRecoveryCodes`
-- **Gap:** Reference: 3-step dialog ('Step 2 of 3'), recovery codes card with 'I have saved my recovery codes' confirmation before Finish.
-- **Gap:** Modal must gain focus trap/Esc/return focus (current Modal lacks them).
+- **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-017 (delivered by Trello FE-UI-008).
+- **Implementation:** `apps/user-portal/src/app/security/two-factor-security-card.tsx`, `apps/user-portal/src/app/security/two-factor-setup-dialog.tsx`, `apps/user-portal/src/app/security/two-factor-proof-dialog.tsx`, `apps/user-portal/src/app/security/recovery-codes-panel.tsx`, `apps/user-portal/src/app/security/two-factor-flow.ts`
+- **UI implemented:** three-step `Dialog` on `/security` (1 explain, 2 QR + grouped manual key with copy + six-digit code, 3 recovery codes with download/copy and an "I have saved my recovery codes" gate before Finish); focus trap, Escape and focus return from ui-core `Dialog`.
+- **Existing integration preserved:** `setupTwoFactor`; `verifyTwoFactorEnrollment`; `regenerateRecoveryCodes`; disable and regenerate still require an authenticator (6-digit) or recovery-code (10-character) proof.
+- **Gap:** Step 1 is not drawn in the reference; implemented as a short explanation (DR-098).
 - **Depends on:** FE-UI-005 Dialog
-- **Note:** Recovery codes remain ephemeral UI state; never persisted or put in fixtures that resemble real codes in production bundles.
-- **Discrepancies:** [DR-060](./discrepancy-register.md#dr-060)
+- **Note:** Recovery codes remain ephemeral UI state, shown exactly as returned and cleared on Finish; the codes step cannot be dismissed. Never persisted or put in fixtures that resemble real codes in production bundles.
+- **Discrepancies:** [DR-060](./discrepancy-register.md#dr-060), [DR-098](./discrepancy-register.md#dr-098)
 
 ### USR-VERIFICATION
 

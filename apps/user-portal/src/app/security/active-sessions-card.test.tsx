@@ -13,7 +13,7 @@ vi.mock("@template/api-react/authentication", () => ({
   useRevokeSession: () => useRevokeSession(),
 }));
 
-import { ActiveSessionsCard } from "./active-sessions-card";
+import { ActiveSessionsCard, SessionRow } from "./active-sessions-card";
 
 const idleMutation = {
   isPending: false,
@@ -119,10 +119,10 @@ describe("ActiveSessionsCard", () => {
     const rows = markup.split("<li").slice(1);
 
     expect(rows).toHaveLength(2);
-    expect(rows[0]).toContain("border-green-200 bg-green-50");
+    expect(rows[0]).toContain("bg-surface-2");
     expect(rows[0]).toContain("This device");
     expect(rows[0]).not.toContain("Sign out");
-    expect(rows[1]).not.toContain("bg-green-50");
+    expect(rows[1]).not.toContain("bg-surface-2");
     expect(rows[1]).toContain('aria-label="Sign out Chrome on Windows"');
   });
 
@@ -198,8 +198,60 @@ describe("ActiveSessionsCard", () => {
     expect(markup).toContain(
       'href="https://whatismyipaddress.com/ip/143.105.174.121"',
     );
-    expect(markup).toContain("text-brand-600");
+    expect(markup).toContain("hover:text-brand-ink");
     expect(markup).toContain('target="_blank"');
     expect(markup).toContain('rel="noopener noreferrer"');
+  });
+});
+
+describe("SessionRow", () => {
+  it("shows a busy sign-out while that session is being revoked", () => {
+    const markup = renderToStaticMarkup(
+      createElement(SessionRow, {
+        disabled: true,
+        onRevoke: () => undefined,
+        pending: true,
+        session: buildSession(),
+      }),
+    );
+
+    expect(markup).toMatch(
+      /<button[^>]*aria-busy="true"[^>]*aria-label="Sign out Chrome on Windows"|<button[^>]*aria-label="Sign out Chrome on Windows"[^>]*aria-busy="true"/,
+    );
+  });
+
+  it("never offers a sign-out for the current session", () => {
+    const markup = renderToStaticMarkup(
+      createElement(SessionRow, {
+        disabled: false,
+        onRevoke: () => undefined,
+        pending: false,
+        session: buildSession({ isCurrent: true }),
+      }),
+    );
+
+    expect(markup).toContain("This device");
+    expect(markup).not.toContain("<button");
+  });
+});
+
+describe("ActiveSessionsCard confirmations", () => {
+  it("keeps sign-out actions behind a closed confirmation dialog", () => {
+    useActiveSessions.mockReturnValue({
+      isPending: false,
+      data: [
+        buildSession({ sessionId: "current", isCurrent: true }),
+        buildSession({ sessionId: "other" }),
+      ],
+    });
+    useRevokeSession.mockReturnValue(idleMutation);
+    useRevokeOtherSessions.mockReturnValue(idleMutation);
+
+    const markup = render();
+
+    // Nothing is revoked on render; the dialog opens only on request.
+    expect(idleMutation.mutateAsync).not.toHaveBeenCalled();
+    expect(markup).not.toContain('role="dialog"');
+    expect(markup).not.toContain("Sign out all other sessions?");
   });
 });

@@ -205,3 +205,100 @@ describe("SecurityActivityCard", () => {
     expect(markup).toContain("Try loading more again");
   });
 });
+
+describe("SecurityActivityCard table", () => {
+  it("renders an accessible table that stacks on phones, with a failed indicator", () => {
+    useSecurityActivity.mockReturnValue({
+      isPending: false,
+      data: {
+        pages: [
+          {
+            activities: [
+              buildActivity({
+                activityType: "FailedSignIn",
+                failureReason: "invalid_credentials",
+              }),
+            ],
+            nextCursor: null,
+          },
+        ],
+      },
+      hasNextPage: false,
+    });
+
+    const markup = render();
+
+    expect(markup).toContain('role="table"');
+    expect(markup).toContain(
+      '<caption class="sr-only">Security activity</caption>',
+    );
+    for (const header of [
+      "Event",
+      "Device",
+      "Location",
+      "IP address",
+      "When",
+    ]) {
+      expect(markup).toContain(`data-label="${header}"`);
+    }
+    expect(markup).toContain(">Failed</span>");
+    expect(markup).toContain("Incorrect password");
+  });
+
+  it("humanizes unknown event types instead of dropping them", () => {
+    useSecurityActivity.mockReturnValue({
+      isPending: false,
+      data: {
+        pages: [
+          {
+            activities: [
+              buildActivity({
+                activityType:
+                  "EmailAddressChanged" as SecurityActivityResponse["activityType"],
+              }),
+            ],
+            nextCursor: null,
+          },
+        ],
+      },
+      hasNextPage: false,
+    });
+
+    expect(render()).toContain("Email Address Changed");
+  });
+
+  it("appends further pages from every loaded page", () => {
+    useSecurityActivity.mockReturnValue({
+      isPending: false,
+      data: {
+        pages: [
+          { activities: [buildActivity({ id: "a" })], nextCursor: "c2" },
+          {
+            activities: [
+              buildActivity({ activityType: "PasswordChanged", id: "b" }),
+            ],
+            nextCursor: null,
+          },
+        ],
+      },
+      hasNextPage: false,
+    });
+
+    const markup = render();
+
+    expect(markup).toContain("Successful sign in");
+    expect(markup).toContain("Password changed");
+    expect(markup).not.toContain("Load more");
+  });
+
+  it("shows a busy load-more button while the next page loads", () => {
+    useSecurityActivity.mockReturnValue({
+      isPending: false,
+      data: { pages: [{ activities: [buildActivity()], nextCursor: "c2" }] },
+      hasNextPage: true,
+      isFetchingNextPage: true,
+    });
+
+    expect(render()).toMatch(/<button[^>]*aria-busy="true"[^>]*>.*Load more/);
+  });
+});
