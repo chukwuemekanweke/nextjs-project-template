@@ -300,6 +300,29 @@ describe("CheckoutView", () => {
     expect(markup).not.toContain("Pay NGN 7,500.00");
   });
 
+  it("discloses the hosted redirect for the selected provider without invented charges", () => {
+    hooks.useRememberedCheckoutAttempt.mockReturnValue({
+      autoRenew: true,
+      billingAccountOwnerType: "Stakeholder",
+      createdAtUtc: "2026-11-23T12:00:00Z",
+      idempotencyKey: "4d3c3a2e-6f9b-4f43-9a55-0c5b3f6f1a10",
+      paymentProviderId: "provider-link",
+      planId: PLAN_ID,
+    });
+    const markup = render().replace(/&#x27;/g, "'");
+    expect(markup).toContain(
+      "You'll be redirected to Bachs to complete payment securely.",
+    );
+    expect(markup).toContain("Hosted checkout · supports auto-renew");
+    expect(markup).toMatch(inputWith(AUTO_RENEW, 'role="switch"'));
+    expect(markup).toMatch(/href="\/billing\/checkout"[^>]*>Change</);
+    expect(markup).not.toMatch(/VAT|Next charge|USSD/);
+  });
+
+  it("says nothing about the next step until a provider is chosen", () => {
+    expect(render()).not.toContain("data-next-step");
+  });
+
   it("states who processes the payment without overclaiming", () => {
     expect(render()).toContain(
       "Secure payment. Your payment is processed by our billing service.",

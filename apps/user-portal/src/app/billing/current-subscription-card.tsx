@@ -7,43 +7,45 @@ import type {
 import { useCancelSubscriptionAtPeriodEnd } from "@template/api-react/subscriptions";
 import {
   Alert,
+  Button,
   Card,
   CardContent,
+  CardHeader,
+  CardTitle,
+  Chip,
+  CreditCardIcon,
+  IconTile,
   Modal,
-  formatMinorUnits,
+  Progress,
+  RefreshIcon,
+  buttonVariants,
 } from "@template/ui-core";
 import Link from "next/link";
-import { useCallback, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { billingRoutes } from "@/config/billing";
 import {
-  billingCadence,
+  billingIntervalName,
   canScheduleCancellation,
   describeCancellationError,
   describeCancellationResult,
   describeSubscription,
   formatBillingDate,
 } from "@/lib/billing-display";
-import type { CheckoutAttempt } from "@/lib/checkout-attempt";
 import {
-  StatusBadge,
-  primaryButtonClass,
-  secondaryButtonClass,
-} from "./billing-ui";
-import { CalendarIcon, ClockIcon, RenewIcon } from "./checkout/checkout-icons";
+  billingPeriodProgress,
+  formatBillingPeriod,
+  subscriptionSummary,
+} from "@/lib/billing-presentation";
+import type { CheckoutAttempt } from "@/lib/checkout-attempt";
+import { StatusBadge } from "./billing-ui";
 
-const eyebrowClass =
-  "text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400";
-
-type Fact = Readonly<{ icon: ReactNode; label: string; value: string }>;
+type Fact = Readonly<{ label: string; value: string }>;
 
 /** Backend dates only; nothing is derived from the billing interval. */
 export function subscriptionFacts(
   subscription: GetCurrentSubscriptionQueryResponse,
 ): Fact[] {
-  const iconClass = "h-6 w-6";
   const renewing = subscription.autoRenew && !subscription.cancelAtPeriodEnd;
-  const periodStart = formatBillingDate(subscription.currentPeriodStartUtc);
-  const periodEnd = formatBillingDate(subscription.currentPeriodEndUtc);
   const nextBilling = renewing
     ? formatBillingDate(subscription.nextBillingAtUtc)
     : undefined;
@@ -55,49 +57,19 @@ export function subscriptionFacts(
     : undefined;
 
   return [
-    ...(periodStart
-      ? [
-          {
-            icon: <CalendarIcon className={iconClass} />,
-            label: "Current period started",
-            value: periodStart,
-          },
-        ]
-      : []),
-    ...(periodEnd
-      ? [
-          {
-            icon: <CalendarIcon className={iconClass} />,
-            label: "Current period ends",
-            value: periodEnd,
-          },
-        ]
-      : []),
     ...(nextBilling
-      ? [
-          {
-            icon: <CalendarIcon className={iconClass} />,
-            label: "Next billing date",
-            value: nextBilling,
-          },
-        ]
+      ? [{ label: "Next billing date", value: nextBilling }]
       : []),
-    {
-      icon: <RenewIcon className={iconClass} />,
-      label: "Auto-renewal",
-      value: renewing ? "Enabled" : "Off",
-    },
+    { label: "Auto-renewal", value: renewing ? "Enabled" : "Off" },
     ...(subscription.cancelAtPeriodEnd
       ? [
           {
-            icon: <ClockIcon className={iconClass} />,
             label: "Cancellation effective",
             value: cancellationEffective ?? "—",
           },
           ...(cancellationRequested
             ? [
                 {
-                  icon: <ClockIcon className={iconClass} />,
                   label: "Cancellation requested",
                   value: cancellationRequested,
                 },
@@ -110,50 +82,100 @@ export function subscriptionFacts(
 
 function FactList({ facts }: Readonly<{ facts: ReadonlyArray<Fact> }>) {
   return (
-    <dl className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+    <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
       {facts.map((fact) => (
-        <div className="flex min-w-0 items-center gap-4" key={fact.label}>
-          <span className="shrink-0 text-gray-500 dark:text-gray-400">
-            {fact.icon}
-          </span>
-          <div className="min-w-0">
-            <dt className="text-sm text-gray-500 dark:text-gray-400">
-              {fact.label}
-            </dt>
-            <dd className="text-base font-semibold break-words text-gray-900 dark:text-white">
-              {fact.value}
-            </dd>
-          </div>
+        <div className="min-w-0" key={fact.label}>
+          <dt className="text-small text-fg-subtle">{fact.label}</dt>
+          <dd className="text-fg font-medium break-words">{fact.value}</dd>
         </div>
       ))}
     </dl>
   );
 }
 
-function PlanPrice({
+/**
+ * Current-period line with a decorative progress bar (reference
+ * `.progress`). The bar needs the clock, so it renders after hydration (or
+ * from `now` in tests); the period text is always present.
+ */
+function CurrentPeriod({
+  now,
+  subscription,
+}: Readonly<{
+  now?: number | undefined;
+  subscription: GetCurrentSubscriptionQueryResponse;
+}>) {
+  const [clock, setClock] = useState(now);
+  useEffect(() => {
+    if (now !== undefined) return;
+    // Read the clock after hydration so server and client markup match.
+    const timer = window.setTimeout(() => setClock(Date.now()), 0);
+    return () => window.clearTimeout(timer);
+  }, [now]);
+  const period = formatBillingPeriod(
+    subscription.currentPeriodStartUtc,
+    subscription.currentPeriodEndUtc,
+  );
+  if (!period) return null;
+  const progress =
+    clock === undefined
+      ? undefined
+      : billingPeriodProgress(
+          subscription.currentPeriodStartUtc,
+          subscription.currentPeriodEndUtc,
+          clock,
+        );
+
+  return (
+    <div className="mt-4 max-w-md space-y-2">
+      <div className="text-small flex flex-wrap items-center justify-between gap-x-4">
+        <span className="text-fg-muted">Current period</span>
+        <span className="text-fg font-medium">{period}</span>
+      </div>
+      {progress ? (
+        <Progress
+          label="Current billing period"
+          value={progress.percent}
+          valueText={progress.valueText}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function PlanHeading({
   subscription,
 }: Readonly<{ subscription: GetCurrentSubscriptionQueryResponse }>) {
+  const presentation = describeSubscription(subscription);
   return (
-    <p className="mt-3 flex flex-wrap items-baseline gap-x-1.5">
-      <span className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
-        {formatMinorUnits(subscription.planPrice, subscription.currencyCode)}
-      </span>
-      <span className="text-lg text-gray-500 dark:text-gray-400">
-        / {billingCadence(subscription.billingInterval)}
-      </span>
-    </p>
+    <div className="flex flex-wrap items-center gap-2.5">
+      <h2
+        className="text-h2 text-fg break-words"
+        id="current-subscription-heading"
+      >
+        {subscription.planName}
+      </h2>
+      <StatusBadge tone={presentation.tone}>{presentation.label}</StatusBadge>
+      {subscription.billingInterval ? (
+        <Chip>{billingIntervalName(subscription.billingInterval)}</Chip>
+      ) : null}
+    </div>
   );
 }
 
 /**
  * The customer's current entitlement (Active, PastDue, cancellation
- * scheduled, Scheduled) with period-end cancellation, the only plan action the
- * backend supports. Upgrades and downgrades are intentionally not offered.
+ * scheduled, Scheduled, or unknown) with period-end cancellation, the only
+ * plan action the backend supports. Upgrades, downgrades, "Keep subscription"
+ * (resume) and "Pay now" are intentionally not offered (DR-055).
  */
 export function CurrentSubscriptionCard({
+  now,
   ownerType,
   subscription,
 }: Readonly<{
+  /** Clock for the period bar; tests pass a fixed value. */
+  now?: number;
   ownerType: BillingAccountOwnerType;
   subscription: GetCurrentSubscriptionQueryResponse;
 }>) {
@@ -169,29 +191,26 @@ export function CurrentSubscriptionCard({
   return (
     <Card
       aria-labelledby="current-subscription-heading"
-      className="shadow-theme-sm"
       data-subscription-status={subscription.status}
       role="region"
     >
-      <CardContent className="space-y-6 sm:p-8">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <div className="min-w-0">
-            <p className={eyebrowClass}>Current subscription</p>
-            <div className="mt-2 flex flex-wrap items-center gap-3">
-              <h2
-                className="text-2xl font-semibold break-words text-gray-900 dark:text-white"
-                id="current-subscription-heading"
-              >
-                {subscription.planName}
-              </h2>
-              <StatusBadge tone={presentation.tone}>
-                {presentation.label}
-              </StatusBadge>
+      <CardHeader>
+        <CardTitle as="h3">Current subscription</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex min-w-0 gap-4">
+            <IconTile className="max-sm:hidden" size="lg">
+              <CreditCardIcon />
+            </IconTile>
+            <div className="min-w-0 flex-1">
+              <PlanHeading subscription={subscription} />
+              <p className="text-fg-muted mt-1.5">
+                {subscriptionSummary(subscription)}
+              </p>
+              <p className="sr-only">{presentation.description}</p>
+              <CurrentPeriod now={now} subscription={subscription} />
             </div>
-            <PlanPrice subscription={subscription} />
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              {presentation.description}
-            </p>
           </div>
           {offerCancellation ? (
             <CancelAtPeriodEnd
@@ -208,24 +227,24 @@ export function CurrentSubscriptionCard({
           </Alert>
         ) : null}
         {subscription.lifecycleStatus === "PastDue" ? (
-          <Alert variant="warning">
+          <Alert title="Renewal payment not settled." variant="error">
             Your renewal payment has not been settled. Check your billing
             history for the latest payment attempt.
           </Alert>
         ) : null}
         {subscription.cancelAtPeriodEnd && !scheduledResult ? (
-          <Alert variant="info">
+          <Alert variant="warning">
             {cancellationDate
               ? `Your subscription will not renew. You keep access until ${cancellationDate}.`
               : "Your subscription will not renew. You keep access until the end of your current period."}
           </Alert>
         ) : null}
 
-        <div className="border-t border-gray-200 pt-6 dark:border-gray-800">
+        <div className="border-border border-t pt-5">
           <FactList facts={subscriptionFacts(subscription)} />
         </div>
 
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-small text-fg-subtle">
           Plan changes are not available yet. To switch plans, cancel at period
           end and choose a new plan once your current period has ended.
         </p>
@@ -269,14 +288,13 @@ function CancelAtPeriodEnd({
 
   return (
     <div className="flex shrink-0 flex-col gap-3 lg:items-end">
-      <button
-        className={`${secondaryButtonClass} min-h-12 rounded-xl px-6 text-base`}
+      <Button
         disabled={cancel.isPending}
         onClick={() => setConfirming(true)}
-        type="button"
+        variant="dangerOutline"
       >
         Cancel at period end
-      </button>
+      </Button>
       {error && !confirming ? (
         <Alert onDismiss={dismissError} variant="error">
           {error}
@@ -298,22 +316,20 @@ function CancelAtPeriodEnd({
         <div className="space-y-4">
           {error ? <Alert variant="error">{error}</Alert> : null}
           <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
-            <button
-              className={secondaryButtonClass}
+            <Button
               disabled={cancel.isPending}
               onClick={() => setConfirming(false)}
-              type="button"
+              variant="secondary"
             >
               Keep subscription
-            </button>
-            <button
-              className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500/40 focus:ring-offset-2 focus:outline-none disabled:opacity-60"
-              disabled={cancel.isPending}
+            </Button>
+            <Button
+              loading={cancel.isPending}
               onClick={() => void confirm()}
-              type="button"
+              variant="danger"
             >
               {cancel.isPending ? "Cancelling…" : "Cancel at period end"}
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>
@@ -324,7 +340,8 @@ function CancelAtPeriodEnd({
 /**
  * A purchase awaiting payment confirmation. New purchases are not offered: the
  * backend reserves the entitlement and would reject a conflicting checkout.
- * The status link uses this browser's remembered attempt only as navigation.
+ * The status link uses this browser's remembered attempt only as navigation;
+ * "Resume payment" from the reference is not offered (no backend operation).
  */
 export function PendingSubscriptionCard({
   attempt,
@@ -339,7 +356,6 @@ export function PendingSubscriptionCard({
   subscription: GetCurrentSubscriptionQueryResponse;
   supportEmail?: string | undefined;
 }>) {
-  const presentation = describeSubscription(subscription);
   const purchaseId =
     attempt?.purchaseId &&
     attempt.planId === subscription.planId &&
@@ -350,54 +366,51 @@ export function PendingSubscriptionCard({
   return (
     <Card
       aria-labelledby="current-subscription-heading"
-      className="shadow-theme-sm"
       data-subscription-status={subscription.status}
       role="region"
     >
-      <CardContent className="space-y-6 sm:p-8">
-        <div className="min-w-0">
-          <p className={eyebrowClass}>Subscription purchase</p>
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            <h2
-              className="text-2xl font-semibold break-words text-gray-900 dark:text-white"
-              id="current-subscription-heading"
-            >
-              {subscription.planName}
-            </h2>
-            <StatusBadge tone={presentation.tone}>
-              {presentation.label}
-            </StatusBadge>
+      <CardHeader>
+        <CardTitle as="h3">Subscription purchase</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex min-w-0 gap-4">
+            <IconTile className="max-sm:hidden" size="lg" tone="warning">
+              <CreditCardIcon />
+            </IconTile>
+            <div className="min-w-0 flex-1">
+              <PlanHeading subscription={subscription} />
+              <p className="text-fg-muted mt-1.5">
+                We are waiting for your payment provider to confirm this
+                purchase. Your subscription activates automatically once payment
+                is confirmed, so there is no need to start another checkout.
+              </p>
+            </div>
           </div>
-          <PlanPrice subscription={subscription} />
-        </div>
-        <Alert variant="info">
-          We are waiting for your payment provider to confirm this purchase.
-          Your subscription activates automatically once payment is confirmed,
-          so there is no need to start another checkout.
-        </Alert>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          {purchaseId ? (
-            <Link
-              className={`${primaryButtonClass} min-h-12 rounded-xl px-6 text-base`}
-              href={billingRoutes.purchase(purchaseId)}
+          <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
+            <Button
+              leadingIcon={<RefreshIcon />}
+              loading={refreshing}
+              onClick={onRefresh}
+              variant="secondary"
             >
-              View payment status
-            </Link>
-          ) : null}
-          <button
-            className={`${secondaryButtonClass} min-h-12 rounded-xl px-6 text-base`}
-            disabled={refreshing}
-            onClick={onRefresh}
-            type="button"
-          >
-            {refreshing ? "Checking…" : "Check again"}
-          </button>
+              {refreshing ? "Checking…" : "Check again"}
+            </Button>
+            {purchaseId ? (
+              <Link
+                className={buttonVariants({ variant: "primary" })}
+                href={billingRoutes.purchase(purchaseId)}
+              >
+                View payment status
+              </Link>
+            ) : null}
+          </div>
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-small text-fg-subtle">
           If this stays pending after you have paid,{" "}
           {supportEmail ? (
             <a
-              className="text-brand-500 hover:text-brand-600 dark:text-brand-400 font-medium"
+              className="text-brand-ink font-medium hover:underline"
               href={`mailto:${supportEmail}`}
             >
               contact support

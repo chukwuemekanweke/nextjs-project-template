@@ -20,8 +20,15 @@ type CurrentSubscriptionResult = Readonly<{
 export type BillingView =
   | Readonly<{ kind: "loading" }>
   | Readonly<{ error: unknown; kind: "error" }>
-  /** No current pending/active subscription: offer plans. */
-  | Readonly<{ kind: "discovery" }>
+  /**
+   * No current pending/active subscription: offer plans. `ended` is the
+   * subscription the backend returned with an ended lifecycle, if any (the
+   * current endpoint usually returns `404` instead).
+   */
+  | Readonly<{
+      ended?: GetCurrentSubscriptionQueryResponse;
+      kind: "discovery";
+    }>
   /** A purchase is awaiting payment confirmation; no new purchase is offered. */
   | Readonly<{
       kind: "pending";
@@ -56,7 +63,7 @@ export function resolveBillingView(
   const subscription = current.data;
   if (!subscription) return { kind: "discovery" };
   if (ENDED_LIFECYCLE_STATUSES.has(subscription.lifecycleStatus)) {
-    return { kind: "discovery" };
+    return { ended: subscription, kind: "discovery" };
   }
   if (subscription.lifecycleStatus === "Pending") {
     return { kind: "pending", subscription };

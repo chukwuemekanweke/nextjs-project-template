@@ -28,7 +28,7 @@ sources:
     path: docs/architecture/11-subscriptions-and-billing.md
   - kind: file
     path: packages/api-client/src/subscriptions/contracts.ts
-generated: { at: "2026-11-23T00:00:00Z", by: human }
+generated: { at: "2026-11-26T00:00:00Z", by: human }
 status: stable
 ---
 
@@ -88,7 +88,9 @@ minor units on the wire; format them only with `formatMinorUnits`
   layout rule: the current-subscription result picks the view (loading and
   errors are never "no subscription"; only `404`/`null` or an ended lifecycle
   shows plans; `Pending` shows recovery with no checkout links; Active,
-  PastDue, cancelling, Scheduled, and unknown show the subscription card).
+  PastDue, cancelling, Scheduled, and unknown show the subscription card;
+  an ended subscription the endpoint does return is kept as
+  `discovery.ended` for the banner, never as an entitlement).
   Plan count picks the layout (1 centered, 2 columns, 3+ expanded grid).
   History is always inline for a subscription, hidden when empty, inline with
   0-2 plans, and replaced by a `/billing/history` link with 3+ plans. Keep new
@@ -105,7 +107,15 @@ minor units on the wire; format them only with `formatMinorUnits`
   Monthly/Yearly toggle when several intervals exist; the checkout plan picker
   reuses `SubscriptionPlanGrid`.
 - Billing history keeps all seven columns (date, plan, period, amount, status,
-  provider, reference) and scrolls inside its container on narrow screens.
+  provider, reference); below `md` rows stack with every field (OD-02). No
+  status filter, CSV export, or invoice/receipt/detail row action: the contract
+  has no filter, export, `purchaseId` or invoice/receipt ids on rows.
+- Redesigned billing views (Trello FE-UI-010) word backend facts through pure
+  helpers in `lib/billing-presentation.ts` (summary line, period bar, provider
+  description, next-step disclosure, purchase timeline from recorded
+  timestamps only). States the live endpoint does not return (past due,
+  cancelling, expired, unknown) are covered by typed fixtures in
+  `app/billing/__fixtures__/`, imported only by tests (a test enforces it).
 - Public pricing CTAs link to User Portal `/billing/checkout?planId=&billingInterval=`; the
   proxy and validated `returnTo` carry the plan through sign-in/registration.
 

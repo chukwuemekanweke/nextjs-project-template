@@ -3,8 +3,10 @@
 import { billingIntervalName } from "@/lib/billing-display";
 
 /**
- * Segmented choice between backend-offered billing intervals. Native radios
- * keep keyboard and screen-reader behavior; it renders nothing for one option.
+ * Segmented choice between backend-offered billing intervals (reference
+ * `.seg`). Native radios keep keyboard and screen-reader behavior and take
+ * part in forms; it renders nothing for one option. No savings label is
+ * computed.
  */
 export function BillingIntervalToggle({
   disabled = false,
@@ -23,11 +25,11 @@ export function BillingIntervalToggle({
 }>) {
   if (intervals.length < 2) return null;
   return (
-    <fieldset className="inline-flex rounded-xl border border-gray-200 bg-white p-1 dark:border-gray-800 dark:bg-white/[0.03]">
+    <fieldset className="border-border bg-surface-3 inline-flex max-w-full gap-1 self-start overflow-x-auto rounded-lg border p-1">
       <legend className="sr-only">{label}</legend>
       {intervals.map((interval) => (
         <label
-          className="has-checked:bg-brand-500 has-focus-visible:ring-brand-500/40 has-checked:shadow-theme-xs relative cursor-pointer rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 transition has-checked:text-white has-focus-visible:ring-3 has-disabled:cursor-not-allowed dark:text-gray-300"
+          className="min-h-control-sm text-body text-fg-muted hover:text-fg has-checked:bg-surface-selected has-checked:text-fg has-focus-visible:outline-focus relative inline-flex shrink-0 cursor-pointer items-center rounded-sm px-4 font-medium whitespace-nowrap transition-colors has-checked:shadow-sm has-focus-visible:outline-2 has-focus-visible:outline-offset-1 has-disabled:cursor-not-allowed has-disabled:opacity-50"
           key={interval}
         >
           <input

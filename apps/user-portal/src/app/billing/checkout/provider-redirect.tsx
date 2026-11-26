@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { largePrimaryButtonClass } from "../billing-ui";
-import { ExternalLinkIcon, LockIcon, SpinnerIcon } from "./checkout-icons";
+import {
+  ExternalLinkIcon,
+  LockIcon,
+  Spinner,
+  buttonVariants,
+} from "@template/ui-core";
 
 /** How long automatic navigation gets before the manual link is offered. */
 export const PROVIDER_REDIRECT_FALLBACK_DELAY_MS = 4_000;
@@ -34,31 +38,29 @@ export function ProviderRedirect({
   }, [fallbackDelayMs]);
 
   return (
-    <div className="py-4 text-center sm:py-8">
+    <div className="py-4 text-center md:py-6">
       <div aria-busy="true" aria-live="polite" role="status">
-        <div className="bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400 mx-auto flex h-20 w-20 items-center justify-center rounded-full sm:h-24 sm:w-24">
-          <SpinnerIcon className="h-10 w-10 sm:h-12 sm:w-12" />
-        </div>
-        <h2 className="mt-6 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl dark:text-white">
-          Taking you to {providerName}
-        </h2>
-        <p className="mx-auto mt-3 max-w-md text-base leading-7 text-gray-500 sm:text-lg dark:text-gray-400">
+        <span className="bg-brand-soft text-brand-ink mx-auto inline-grid size-16 place-items-center rounded-full">
+          <Spinner decorative size="lg" />
+        </span>
+        <h2 className="text-h2 text-fg mt-5">Taking you to {providerName}</h2>
+        <p className="text-fg-muted mx-auto mt-2 max-w-md">
           We&apos;re redirecting you to our secure payment provider to complete
           your subscription.
         </p>
-        <p className="mt-5 flex items-center justify-center gap-2 text-sm text-gray-700 sm:text-base dark:text-gray-300">
-          <LockIcon className="h-5 w-5 shrink-0 text-gray-500" />
+        <p className="text-small text-fg-muted mt-4 flex items-center justify-center gap-2">
+          <LockIcon className="shrink-0" size="xs" />
           <span>You&apos;ll return here after checkout.</span>
         </p>
       </div>
       {showFallback ? (
-        <div className="mt-8 border-t border-gray-200 pt-6 dark:border-gray-800">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="border-border mt-6 border-t pt-5">
+          <p className="text-small text-fg-muted">
             If the redirect doesn&apos;t happen automatically, you can continue
             manually.
           </p>
           <a
-            className={`${largePrimaryButtonClass} mt-5 sm:w-auto sm:min-w-72`}
+            className={`${buttonVariants({ variant: "primary" })} mt-4`}
             href={href}
           >
             Continue to {providerName}
