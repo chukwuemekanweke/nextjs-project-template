@@ -573,11 +573,13 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Artboards:** `UserVerification` — 24 reference files (desktop/mobile; dark/light; states: expired, inprogress, notstarted, pending, rejected, verified).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-022.
 - **Works today:** Only profile.isVerified is displayed.
+- **Composition (Trello FE-UI-009):** `apps/user-portal/src/features/verification/` — `verification-model.ts` (six-state union, history, loading/error/unknown, action availability, date formatting), `verification-sections.tsx` (header, status panel, instruction steps, history table with stacked phone rows, action slot), `verification-preview.fixtures.ts` (deterministic fixtures, tests only). All six states, loading, error, unknown and empty history are rendered by `verification-screen.test.tsx`; no route, navigation item or production import.
+- **Actions:** start / continue / retry / refresh are intents reported through `onAction`; without a handler they render disabled with "Identity verification is not available yet." Pending offers only Refresh status; verified has none; rejected without retry shows the configured support email.
 - **Unsupported / missing backend:** KYC session creation (hosted provider link); Verification status and attempt history; Retry rules
-- **Gap:** Six states (notstarted, inprogress, pending, verified, rejected, expired) and history table have no API.
+- **Gap:** No production route, navigation item or data adapter until a KYC API exists. CAF-FE-006 adds `/verification` (breadcrumb Account > Verification, sidebar after Profile) and maps the API into the view model.
 - **Depends on:** Backend KYC API
-- **Note:** Blocked. Do not add a nav item or route until the API exists; previews only via fixtures in the workbench.
-- **Discrepancies:** [DR-054](./discrepancy-register.md#dr-054)
+- **Note:** Blocked for production. Previews are typed fixtures rendered by app tests, never the workbench (no duplicate pages).
+- **Discrepancies:** [DR-054](./discrepancy-register.md#dr-054), [DR-102](./discrepancy-register.md#dr-102), [DR-103](./discrepancy-register.md#dr-103)
 
 ### USR-WALLET
 

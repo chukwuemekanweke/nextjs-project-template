@@ -18,6 +18,7 @@ code_refs:
     packages/dashboard-ui/src/charts/**,
     apps/*/src/app/**,
     apps/*/src/components/**,
+    apps/*/src/features/**,
   ]
 sources:
   - kind: file
@@ -68,7 +69,13 @@ status: stable
   honest unavailable state or is omitted; typed preview fixtures live beside
   the feature (for example `app/dashboard/dashboard-preview.fixtures.ts`), are
   imported only by tests, and are never a fallback for a failed request or
-  behind a production toggle. The User Portal dashboard composes existing
+  behind a production toggle. A class-D screen without a backend (identity
+  verification, Trello FE-UI-009) is built as a feature-local composition in
+  `apps/user-portal/src/features/verification` with no route, navigation item
+  or production import; actions are intents passed through an `onAction`
+  callback and render disabled without one. Its app tests are the preview
+  harness (not the workbench) and fail if production code imports the
+  fixtures or adds the route early. The User Portal dashboard composes existing
   api-react hooks (plan, two-factor, passkeys, sessions, billing history) and
   adds no API operations; `/preferences` uses `ThemeSelect` and marks language
   and notification settings as preview-only (DR-087–DR-090).
