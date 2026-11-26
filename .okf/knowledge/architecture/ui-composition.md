@@ -79,6 +79,14 @@ status: stable
   api-react hooks (plan, two-factor, passkeys, sessions, billing history) and
   adds no API operations; `/preferences` uses `ThemeSelect` and marks language
   and notification settings as preview-only (DR-087–DR-090).
+- Admin feature patterns (Trello FE-UI-012) live in
+  `apps/admin-portal/src/components/admin-patterns` (`AdminKpiCard`,
+  `AdminChartSection` on `ChartFrame`, `AdminSummaryCard`, `AdminRangeFilter`,
+  `AdminListCard`/`AdminDetailHeader`, `AdminForbidden`,
+  `AdminStepUpDialog`); usage in `docs/design-system/admin-patterns.md`. Each
+  panel takes a typed state (`ready`/`loading`/`unavailable`/`error`/`empty`);
+  the admin overview (`app/_dashboard`) renders every panel unavailable until
+  admin read APIs exist, with reference figures only in a test fixture.
 - Dashboard pages start with `DashboardHeader` on the page background, then
   cards. New work uses `Card` + `CardHeader` + `ListRow`/`KeyValueList`;
   existing pages still use `SectionHeader` + `SettingsRow`. Feature

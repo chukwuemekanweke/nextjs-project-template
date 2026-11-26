@@ -22,9 +22,9 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | Screens with an existing route or in-app state                | 26    |
 | Screens with a proposed route only                            | 27    |
 | Screens whose design assumes unsupported backend capabilities | 44    |
-| Status: Implemented                                           | 28    |
-| Status: Missing                                               | 27    |
-| Status: Partial                                               | 3     |
+| Status: Implemented                                           | 29    |
+| Status: Missing                                               | 25    |
+| Status: Partial                                               | 4     |
 | Status: Reference-only                                        | 0     |
 | Classification A                                              | 15    |
 | Classification B                                              | 8     |
@@ -98,8 +98,8 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | [`ADM-ACTIVE-USERS`](#adm-active-users)                     | Active-user analytics                        | page           | admin-portal | —              | `/analytics/active-users`                                | Missing     | D     | Missing      | P3       | FE-UI-031 |
 | [`ADM-ALLOCATE`](#adm-allocate)                             | Allocate subscription                        | page           | admin-portal | —              | `/subscriptions/allocate`                                | Missing     | D     | Missing      | P3       | FE-UI-026 |
 | [`ADM-AUDIT`](#adm-audit)                                   | Audit history                                | page           | admin-portal | —              | `/audit`                                                 | Missing     | D     | Missing      | P3       | FE-UI-030 |
-| [`ADM-DASHBOARD`](#adm-dashboard)                           | Operations overview                          | page           | admin-portal | `/`            | —                                                        | Partial     | C     | Missing      | P2       | FE-UI-023 |
-| [`ADM-FORBIDDEN`](#adm-forbidden)                           | 403 forbidden state                          | state-flow     | admin-portal | —              | `(in-place state on any admin route)`                    | Missing     | C     | Partial      | P2       | FE-UI-023 |
+| [`ADM-DASHBOARD`](#adm-dashboard)                           | Operations overview                          | page           | admin-portal | `/`            | —                                                        | Implemented | C     | Missing      | P2       | FE-UI-023 |
+| [`ADM-FORBIDDEN`](#adm-forbidden)                           | 403 forbidden state                          | state-flow     | admin-portal | —              | `(in-place state on any admin route)`                    | Partial     | C     | Partial      | P2       | FE-UI-023 |
 | [`ADM-KYC`](#adm-kyc)                                       | KYC monitoring                               | page           | admin-portal | —              | `/kyc`                                                   | Missing     | D     | Missing      | P3       | FE-UI-028 |
 | [`ADM-KYC-DETAIL`](#adm-kyc-detail)                         | KYC detail                                   | page           | admin-portal | —              | `/kyc/[verificationId]`                                  | Missing     | D     | Missing      | P3       | FE-UI-028 |
 | [`ADM-NAV-MOBILE`](#adm-nav-mobile)                         | Admin mobile navigation (top bar and drawer) | layout-pattern | admin-portal | —              | —                                                        | Implemented | B     | Not required | P1       | FE-UI-008 |
@@ -112,7 +112,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | [`ADM-REGISTRATIONS`](#adm-registrations)                   | Registration analytics                       | page           | admin-portal | —              | `/analytics/registrations`                               | Missing     | D     | Missing      | P3       | FE-UI-031 |
 | [`ADM-ROLE-EDIT`](#adm-role-edit)                           | Role editor                                  | page           | admin-portal | —              | `/roles/[roleId] and /roles/new`                         | Missing     | D     | Missing      | P3       | FE-UI-025 |
 | [`ADM-ROLES`](#adm-roles)                                   | Roles and permissions                        | page           | admin-portal | —              | `/roles`                                                 | Missing     | D     | Missing      | P3       | FE-UI-025 |
-| [`ADM-STEP-UP`](#adm-step-up)                               | Step-up MFA confirmation dialog              | overlay        | admin-portal | —              | `(dialog on sensitive admin actions)`                    | Missing     | D     | Missing      | P3       | FE-UI-024 |
+| [`ADM-STEP-UP`](#adm-step-up)                               | Step-up MFA confirmation dialog              | overlay        | admin-portal | —              | `(dialog on sensitive admin actions)`                    | Partial     | D     | Missing      | P3       | FE-UI-024 |
 | [`ADM-SUBSCRIPTION-ANALYTICS`](#adm-subscription-analytics) | Subscription analytics                       | page           | admin-portal | —              | `/analytics/subscriptions`                               | Missing     | D     | Missing      | P3       | FE-UI-031 |
 | [`ADM-SUBSCRIPTION-DETAIL`](#adm-subscription-detail)       | Subscription detail                          | page           | admin-portal | —              | `/subscriptions/[subscriptionId]`                        | Missing     | D     | Missing      | P3       | FE-UI-026 |
 | [`ADM-SUBSCRIPTIONS`](#adm-subscriptions)                   | Subscriptions                                | page           | admin-portal | —              | `/subscriptions`                                         | Missing     | D     | Missing      | P3       | FE-UI-026 |
@@ -649,28 +649,28 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Operations overview** — page; target `admin-portal`; auth: admin.
 
 - **Artboards:** `AdminDashboard` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Partial (C); **backend:** Missing; **priority:** P2; **ticket:** FE-UI-023.
-- **Implementation:** `apps/admin-portal/src/app/page.tsx`
-- **Works today:** Static placeholder overview cards and an empty table.
+- **Status:** Implemented (C); **backend:** Missing; **priority:** P2; **ticket:** FE-UI-023.
+- **Implementation:** `apps/admin-portal/src/app/page.tsx`, `apps/admin-portal/src/app/_dashboard/admin-dashboard.tsx`, `apps/admin-portal/src/app/_dashboard/admin-dashboard-data.ts`, `apps/admin-portal/src/app/_dashboard/admin-dashboard-preview.fixtures.ts`, `apps/admin-portal/src/components/admin-patterns/index.ts`
+- **Works today:** UI implemented (Trello FE-UI-012): Operations overview header with a UTC reporting-period select, four KPI tiles, registrations and payments chart frames, KYC queue, subscriptions needing attention and payment providers cards; responsive one-to-four-column grids. Unsupported, shown honestly: every panel is 'Not available' with its missing API; the period select is disabled; no 'Open …' links (routes do not exist). Preview-only: typed reference figures in admin-dashboard-preview.fixtures.ts, used by tests only; a test forbids production imports.
 - **Unsupported / missing backend:** Admin analytics summaries (users, DAU, payment volume, MRR); KYC queue counts; Subscription attention counts; Provider status read
-- **Gap:** Every tile and chart needs admin read APIs.
+- **Gap:** Live data for every tile, chart and summary card (admin read APIs).
 - **Depends on:** FE-UI-008 admin shell; admin analytics APIs
-- **Note:** Keep the placeholder (restyled) until APIs exist; no mock numbers in production.
-- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070)
+- **Note:** No mock numbers in production; replace each productionAdminDashboard field with a live read when its API exists (admin-patterns.md).
+- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070), [DR-074](./discrepancy-register.md#dr-074), [DR-110](./discrepancy-register.md#dr-110)
 
 ### ADM-FORBIDDEN
 
 **403 forbidden state** — state-flow; target `admin-portal`; auth: admin.
 
 - **Artboards:** `AdminForbidden` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Missing (C); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-023.
-- **Implementation:** `apps/admin-portal/src/proxy.ts`, `apps/admin-portal/src/lib/admin-authorization.ts`
-- **Works today:** Non-admin sessions are redirected to sign-in; no in-shell forbidden state.
+- **Status:** Partial (C); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-023.
+- **Implementation:** `apps/admin-portal/src/components/admin-patterns/forbidden.tsx`, `apps/admin-portal/src/components/admin-patterns/forbidden-details.ts`, `apps/admin-portal/src/proxy.ts`, `apps/admin-portal/src/lib/admin-authorization.ts`
+- **Works today:** Non-admin sessions are still redirected to sign-in by the proxy (unchanged). Reusable AdminForbidden (Trello FE-UI-012): 403 card, permission text only when supplied, Back to dashboard (/), Copy request details limited to status, path without query, correlation id and UTC time; forbiddenDetailsFromError maps a 403 ApiError. No live consumer: the admin portal has no backend reads that can return 403 yet.
 - **Unsupported / missing backend:** Permission names in tokens or a permissions endpoint (reference cites payments.analytics.read)
-- **Gap:** In-shell 403 card with required permission, Back to dashboard, Copy request details.
+- **Gap:** Wire into admin screens when their backend reads exist.
 - **Depends on:** FE-UI-008
 - **Note:** Render when a backend call returns 403 inside an admitted admin session; never relax the proxy role check.
-- **Discrepancies:** [DR-073](./discrepancy-register.md#dr-073)
+- **Discrepancies:** [DR-073](./discrepancy-register.md#dr-073), [DR-111](./discrepancy-register.md#dr-111)
 
 ### ADM-KYC
 
@@ -824,13 +824,14 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Step-up MFA confirmation dialog** — overlay, child of `ADM-USER-DETAIL`; target `admin-portal`; auth: admin + fresh MFA.
 
 - **Artboards:** `AdminStepUp` — 4 reference files (desktop/mobile; dark/light).
-- **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-024.
-- **Works today:** No step-up exists; admin 2FA is not supported at sign-in.
+- **Status:** Partial (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-024.
+- **Implementation:** `apps/admin-portal/src/components/admin-patterns/step-up-dialog.tsx`, `apps/admin-portal/src/components/admin-patterns/step-up-form.ts`
+- **Works today:** Presentation-only AdminStepUpDialog (Trello FE-UI-012): action summary, optional reason, authenticator code, cancel/confirm, pending/error states; callbacks only, no verification or privileged action. No step-up endpoint or admin 2FA; no validity window is shown unless the caller supplies one.
 - **Unsupported / missing backend:** Step-up challenge/verification endpoint; Reason capture for audit
-- **Gap:** Reusable confirm-with-authenticator dialog (action summary, reason, OTP, 5-minute validity hint).
+- **Gap:** Backend step-up contract and wiring in the privileged-action tickets.
 - **Depends on:** FE-UI-005 Dialog; FE-UI-007 OTP; admin 2FA
 - **Note:** Build as a reusable app-level dialog used by lock, cancel, provider change, role change.
-- **Discrepancies:** [DR-041](./discrepancy-register.md#dr-041), [DR-072](./discrepancy-register.md#dr-072)
+- **Discrepancies:** [DR-041](./discrepancy-register.md#dr-041), [DR-072](./discrepancy-register.md#dr-072), [DR-112](./discrepancy-register.md#dr-112)
 
 ### ADM-SUBSCRIPTION-ANALYTICS
 

@@ -61,33 +61,33 @@ Security (Trello FE-UI-008, roadmap FE-UI-017): `/security` is the only security
 
 ### `apps/admin-portal`
 
-| Route (existing → proposed)                                  | Type          | Auth                                                         | Screen                       | Status  | Class | Backend      |
-| ------------------------------------------------------------ | ------------- | ------------------------------------------------------------ | ---------------------------- | ------- | ----- | ------------ |
-| `/`                                                          | page          | admin                                                        | `ADM-DASHBOARD`              | Partial | C     | Missing      |
-| `/sign-in`                                                   | page          | public                                                       | `ADM-SIGN-IN`                | Partial | B     | Partial      |
-| — → `(dialog on sensitive admin actions)`                    | dialog        | admin + fresh MFA                                            | `ADM-STEP-UP`                | Missing | D     | Missing      |
-| — → `(in-place state on any admin route)`                    | in-page-state | admin                                                        | `ADM-FORBIDDEN`              | Missing | C     | Partial      |
-| — → `/analytics/active-users`                                | page          | admin (users.analytics.read)                                 | `ADM-ACTIVE-USERS`           | Missing | D     | Missing      |
-| — → `/analytics/payments`                                    | page          | admin (payments.analytics.read)                              | `ADM-PAYMENT-ANALYTICS`      | Missing | D     | Missing      |
-| — → `/analytics/registrations`                               | page          | admin (users.analytics.read)                                 | `ADM-REGISTRATIONS`          | Missing | D     | Missing      |
-| — → `/analytics/subscriptions`                               | page          | admin (subscriptions.analytics.read)                         | `ADM-SUBSCRIPTION-ANALYTICS` | Missing | D     | Missing      |
-| — → `/audit`                                                 | page          | admin                                                        | `ADM-AUDIT`                  | Missing | D     | Missing      |
-| — → `/kyc`                                                   | page          | admin (kyc.read)                                             | `ADM-KYC`                    | Missing | D     | Missing      |
-| — → `/kyc/[verificationId]`                                  | page          | admin (kyc.read)                                             | `ADM-KYC-DETAIL`             | Missing | D     | Missing      |
-| — → `/payments`                                              | page          | admin (payments.read)                                        | `ADM-PAYMENTS`               | Missing | D     | Missing      |
-| — → `/payments/[paymentId]`                                  | page          | admin (payments.read)                                        | `ADM-PAYMENT-DETAIL`         | Missing | D     | Missing      |
-| — → `/plans (edit drawer; optional ?edit={planId})`          | page          | admin (subscriptions.plans.manage)                           | `ADM-PLANS`                  | Missing | D     | Partial      |
-| — → `/providers`                                             | page          | admin (payments.manage, providers.manage)                    | `ADM-PROVIDERS`              | Missing | D     | Partial      |
-| — → `/reference-data?tab={countries\|languages\|currencies}` | page          | admin                                                        | `ADM-REFERENCE-DATA`         | Missing | D     | Partial      |
-| — → `/roles`                                                 | page          | admin (roles.read)                                           | `ADM-ROLES`                  | Missing | D     | Missing      |
-| — → `/roles/[roleId] and /roles/new`                         | page          | admin (roles.manage)                                         | `ADM-ROLE-EDIT`              | Missing | D     | Missing      |
-| — → `/subscriptions`                                         | page          | admin (subscriptions.read)                                   | `ADM-SUBSCRIPTIONS`          | Missing | D     | Missing      |
-| — → `/subscriptions/[subscriptionId]`                        | page          | admin (subscriptions.read; subscriptions.manage for actions) | `ADM-SUBSCRIPTION-DETAIL`    | Missing | D     | Missing      |
-| — → `/subscriptions/allocate`                                | page          | admin (subscriptions.allocate)                               | `ADM-ALLOCATE`               | Missing | D     | Missing      |
-| — → `/system-health`                                         | page          | admin                                                        | `ADM-SYSTEM-HEALTH`          | Missing | D     | Missing      |
-| — → `/users`                                                 | page          | admin (users.read)                                           | `ADM-USERS`                  | Missing | D     | Missing      |
-| — → `/users/[userId]`                                        | page          | admin (users.read; users.manage for actions)                 | `ADM-USER-DETAIL`            | Missing | D     | Missing      |
-| —                                                            | layout        | admin                                                        | `ADM-NAV-MOBILE`             | Partial | B     | Not required |
+| Route (existing → proposed)                                  | Type          | Auth                                                         | Screen                       | Status      | Class | Backend      |
+| ------------------------------------------------------------ | ------------- | ------------------------------------------------------------ | ---------------------------- | ----------- | ----- | ------------ |
+| `/`                                                          | page          | admin                                                        | `ADM-DASHBOARD`              | Implemented | C     | Missing      |
+| `/sign-in`                                                   | page          | public                                                       | `ADM-SIGN-IN`                | Partial     | B     | Partial      |
+| — → `(dialog on sensitive admin actions)`                    | dialog        | admin + fresh MFA                                            | `ADM-STEP-UP`                | Partial     | D     | Missing      |
+| — → `(in-place state on any admin route)`                    | in-page-state | admin                                                        | `ADM-FORBIDDEN`              | Partial     | C     | Partial      |
+| — → `/analytics/active-users`                                | page          | admin (users.analytics.read)                                 | `ADM-ACTIVE-USERS`           | Missing     | D     | Missing      |
+| — → `/analytics/payments`                                    | page          | admin (payments.analytics.read)                              | `ADM-PAYMENT-ANALYTICS`      | Missing     | D     | Missing      |
+| — → `/analytics/registrations`                               | page          | admin (users.analytics.read)                                 | `ADM-REGISTRATIONS`          | Missing     | D     | Missing      |
+| — → `/analytics/subscriptions`                               | page          | admin (subscriptions.analytics.read)                         | `ADM-SUBSCRIPTION-ANALYTICS` | Missing     | D     | Missing      |
+| — → `/audit`                                                 | page          | admin                                                        | `ADM-AUDIT`                  | Missing     | D     | Missing      |
+| — → `/kyc`                                                   | page          | admin (kyc.read)                                             | `ADM-KYC`                    | Missing     | D     | Missing      |
+| — → `/kyc/[verificationId]`                                  | page          | admin (kyc.read)                                             | `ADM-KYC-DETAIL`             | Missing     | D     | Missing      |
+| — → `/payments`                                              | page          | admin (payments.read)                                        | `ADM-PAYMENTS`               | Missing     | D     | Missing      |
+| — → `/payments/[paymentId]`                                  | page          | admin (payments.read)                                        | `ADM-PAYMENT-DETAIL`         | Missing     | D     | Missing      |
+| — → `/plans (edit drawer; optional ?edit={planId})`          | page          | admin (subscriptions.plans.manage)                           | `ADM-PLANS`                  | Missing     | D     | Partial      |
+| — → `/providers`                                             | page          | admin (payments.manage, providers.manage)                    | `ADM-PROVIDERS`              | Missing     | D     | Partial      |
+| — → `/reference-data?tab={countries\|languages\|currencies}` | page          | admin                                                        | `ADM-REFERENCE-DATA`         | Missing     | D     | Partial      |
+| — → `/roles`                                                 | page          | admin (roles.read)                                           | `ADM-ROLES`                  | Missing     | D     | Missing      |
+| — → `/roles/[roleId] and /roles/new`                         | page          | admin (roles.manage)                                         | `ADM-ROLE-EDIT`              | Missing     | D     | Missing      |
+| — → `/subscriptions`                                         | page          | admin (subscriptions.read)                                   | `ADM-SUBSCRIPTIONS`          | Missing     | D     | Missing      |
+| — → `/subscriptions/[subscriptionId]`                        | page          | admin (subscriptions.read; subscriptions.manage for actions) | `ADM-SUBSCRIPTION-DETAIL`    | Missing     | D     | Missing      |
+| — → `/subscriptions/allocate`                                | page          | admin (subscriptions.allocate)                               | `ADM-ALLOCATE`               | Missing     | D     | Missing      |
+| — → `/system-health`                                         | page          | admin                                                        | `ADM-SYSTEM-HEALTH`          | Missing     | D     | Missing      |
+| — → `/users`                                                 | page          | admin (users.read)                                           | `ADM-USERS`                  | Missing     | D     | Missing      |
+| — → `/users/[userId]`                                        | page          | admin (users.read; users.manage for actions)                 | `ADM-USER-DETAIL`            | Missing     | D     | Missing      |
+| —                                                            | layout        | admin                                                        | `ADM-NAV-MOBILE`             | Partial     | B     | Not required |
 
 ## Proposed route additions
 
@@ -109,7 +109,7 @@ Security (Trello FE-UI-008, roadmap FE-UI-017): `/security` is the only security
 | `/reference-data`                                                                                        | admin | `ADM-REFERENCE-DATA`                                                                           | Partly: countries only                                                                   | Tabs via `?tab=`.                                                                              |
 | `/audit`, `/system-health`                                                                               | admin | `ADM-AUDIT`, `ADM-SYSTEM-HEALTH`                                                               | No                                                                                       | The reference itself labels both "Proposed".                                                   |
 
-The admin forbidden state (`ADM-FORBIDDEN`) is **not** a route: it renders inside the shell on the requested URL when an admitted administrator receives `403` from the backend.
+The admin forbidden state (`ADM-FORBIDDEN`) is **not** a route: it renders inside the shell on the requested URL when an admitted administrator receives `403` from the backend. Trello FE-UI-012 added the reusable `AdminForbidden` and the presentation-only `AdminStepUpDialog` (no route, no live consumer yet; see [admin-patterns.md](./admin-patterns.md)); `/` is the redesigned overview with every panel unavailable until admin APIs exist (DR-110).
 
 ## Existing routes and surfaces without a reference design
 
