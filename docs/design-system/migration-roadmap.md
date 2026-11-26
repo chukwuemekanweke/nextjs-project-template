@@ -274,6 +274,8 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 Each adds api-client contracts/operations and api-react hooks for the new endpoints (handwritten, per AGENTS.md), routes under the admin proxy, a navigation item, and screens composed from existing primitives.
 
+- **Status (FE-UI-026, FE-UI-027):** compositions delivered by Trello FE-UI-014 in `apps/admin-portal/src/features/admin-payments`, `admin-plans` and `admin-subscriptions` (all list/detail/editor/allocation states, fixture-tested only, [DR-130](./discrepancy-register.md#dr-130)–[DR-133](./discrepancy-register.md#dr-133)). Contracts, hooks, routes and navigation remain gated on the admin billing APIs.
+
 ### FE-UI-032 — Legacy removal and final verification
 
 - **Scope:** delete compatibility aliases, `tailadmin-theme.css`, deprecated components (`buttonClassName`, `Modal`, `Pagination`, `StatusBadge`, `SectionHeader`, `ThemeToggle`, Solid sections), unused dependencies; licence notices per OD-06; lint rule to error level; full visual and accessibility pass across every implemented screen; update OKF and `docs/architecture/03`, `04`.
