@@ -244,6 +244,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 ### FE-UI-021 — Wallet (backend-gated)
 
 - **Screens:** `USR-WALLET`, `USR-WALLET-TOP-UP`. Needs a balance read model, list fields and per-intent return URLs (DR-059).
+- **Status:** composition delivered by Trello FE-UI-011 in `apps/user-portal/src/features/wallet` (summary tiles, transactions, top-up dialog; loading/error/unavailable/empty; fixture-tested only, [DR-113](./discrepancy-register.md#dr-113)–[DR-115](./discrepancy-register.md#dr-115)). The route, navigation item and data adapter remain gated on the wallet read model (BE-DS-005).
 
 ### FE-UI-022 — Identity verification (backend-gated)
 
