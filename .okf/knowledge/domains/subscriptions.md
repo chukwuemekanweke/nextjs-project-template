@@ -121,4 +121,7 @@ minor units on the wire; format them only with `formatMinorUnits`
 
 Unsupported by the backend customer API: upgrades, downgrades, proration,
 refunds, invoices/receipts, resume, and immediate cancellation. Do not add them
-without backend endpoints.
+without backend endpoints. Admin billing screens (Trello FE-UI-014) are fixture-tested
+compositions in `apps/admin-portal/src/features/admin-{payments,plans,subscriptions}`
+with local presentation types; customer reads (including the active-only plan
+list) are never admin inventories, and routes wait for admin billing APIs.

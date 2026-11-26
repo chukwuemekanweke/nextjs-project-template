@@ -626,10 +626,11 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminAllocate` — 4 reference files (desktop/mobile; dark/light; interactive: owner:user, owner:tenant, overlap-warning).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-026.
+- **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-subscriptions/allocate-screen.tsx` + `allocation-model.ts` — User/Tenant control, tenant, user lookup (user only), active plan, UTC start date, contract durations, auto-renew, required reason; summary without a computed period end; overlap warning as reported state; confirmation reports an intent. No submission without a handler.
 - **Unsupported / missing backend:** Complimentary allocation endpoint; Tenant list; User lookup
 - **Gap:** Form with owner type segmented control, plan, start, duration, auto-renew, required reason; summary + overlap warning.
 - **Depends on:** ADM-SUBSCRIPTIONS
-- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070)
+- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070), [DR-133](./discrepancy-register.md#dr-133)
 
 ### ADM-AUDIT
 
@@ -725,10 +726,11 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminPaymentDetail` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-027.
+- **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-payments/payment-detail.tsx` — key-value card, fulfillment outcome alert (from reported fulfillment only, never inferred from payment status), status timeline, webhooks/reconciliation table; missing history/logs say so. Read-only: no refund, retry, copy-link or invoice actions (FE-UI-018).
 - **Unsupported / missing backend:** Payment detail, fulfillment outcome, status history, webhook/reconciliation log
 - **Gap:** kv card, outcome alert, timeline, events table.
 - **Depends on:** ADM-PAYMENTS
-- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070)
+- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070), [DR-130](./discrepancy-register.md#dr-130), [DR-131](./discrepancy-register.md#dr-131)
 
 ### ADM-PAYMENTS
 
@@ -736,10 +738,11 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminPayments` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-027.
+- **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-payments/` — `payments-model.ts` (row/detail types, status, intent and fulfillment presentation, URL filter helpers), `payments-list.tsx` (Export CSV intent, search + five filters, eight-column table, pager), `payments-preview.fixtures.ts` (tests only); shared states in `admin-billing-shared/`. Rendered only by `payments-screens.test.tsx`; no route, navigation item or production import. Filters, export and row links are inert without caller handlers/routes.
 - **Unsupported / missing backend:** Admin payment transaction search/list
 - **Gap:** Search, 5 filters, 8-column table, CSV export.
 - **Depends on:** FE-UI-006
-- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070)
+- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070), [DR-130](./discrepancy-register.md#dr-130)
 
 ### ADM-PLANS
 
@@ -749,10 +752,11 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Status:** Missing (D); **backend:** Partial; **priority:** P3; **ticket:** FE-UI-026.
 - **Works today:** Public plan list exists (listSubscriptionPlans); no admin CRUD.
 - **Operations:** listSubscriptionPlans (active plans only)
+- **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-plans/` — `plans-model.ts` (plan type, draft, validation, immutable code, create/update intents), `plans-screen.tsx` (table + right `Drawer` editor), `plans-preview.fixtures.ts` (tests only). `listSubscriptionPlans` is not used as an admin inventory. Save is disabled without a handler; the drawer never shows success.
 - **Unsupported / missing backend:** Admin plan list incl. inactive; Create/update/activate plan; Subscriber counts
 - **Gap:** Table + right drawer editor (name, immutable code, description, monthly/yearly price, features list, active switch).
 - **Depends on:** FE-UI-005 Drawer
-- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070)
+- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070), [DR-130](./discrepancy-register.md#dr-130), [DR-132](./discrepancy-register.md#dr-132)
 
 ### ADM-PROVIDERS
 
@@ -850,10 +854,11 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminSubscriptionDetail` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-026.
+- **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-subscriptions/subscription-detail.tsx` — state-dependent actions (retry only when fulfillment is blocked), each with its own confirmation reporting an intent and never claiming completion; four stat tiles ('Not available' when unreported), details, timeline, renewals table. Actions disabled without a handler; step-up deferred (DR-112).
 - **Unsupported / missing backend:** Admin subscription read; Retry fulfillment; Admin cancel at period end / cancel now
 - **Gap:** Actions, stat tiles, kv, timeline, renewals table.
 - **Depends on:** ADM-SUBSCRIPTIONS; ADM-STEP-UP
-- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070)
+- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070), [DR-130](./discrepancy-register.md#dr-130), [DR-131](./discrepancy-register.md#dr-131)
 
 ### ADM-SUBSCRIPTIONS
 
@@ -861,10 +866,11 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminSubscriptions` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-026.
+- **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-subscriptions/subscriptions-list.tsx` + `subscriptions-model.ts` — search + four filters, owner-type chips, eight-column table, pager; owner and tenant only as returned. Preview-only (`subscriptions-screens.test.tsx`); Allocate/View links only when routes are supplied.
 - **Unsupported / missing backend:** Admin subscription list across owners/tenants
 - **Gap:** Search, 4 filters, owner type chips, table.
 - **Depends on:** FE-UI-006
-- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070)
+- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070), [DR-130](./discrepancy-register.md#dr-130)
 
 ### ADM-SYSTEM-HEALTH
 

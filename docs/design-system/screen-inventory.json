@@ -199,8 +199,17 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": [
+          "apps/admin-portal/src/features/admin-subscriptions/allocation-model.ts",
+          "apps/admin-portal/src/features/admin-subscriptions/allocate-screen.tsx",
+          "apps/admin-portal/src/features/admin-subscriptions/subscriptions-preview.fixtures.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-model.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-sections.tsx"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-014 (design ad9386e): User/Tenant segmented control, tenant select, user lookup (user allocations only), active-plan select, UTC start date, duration from the contract, auto-renew switch, required audited reason, summary and overlap warning; conditional validation; Review opens a confirmation that reports an allocation intent.",
+          "Preview-only: no submission without a handler; the period end and eligibility are left to the backend and the overlap warning is a reported state, not an eligibility decision."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -217,7 +226,7 @@
       "dependencies": ["ADM-SUBSCRIPTIONS"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-026",
-      "discrepancies": ["DR-070"],
+      "discrepancies": ["DR-070", "DR-133"],
       "notes": []
     },
     {
@@ -816,8 +825,17 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": [
+          "apps/admin-portal/src/features/admin-payments/payment-detail.tsx",
+          "apps/admin-portal/src/features/admin-payments/payments-model.ts",
+          "apps/admin-portal/src/features/admin-payments/payments-preview.fixtures.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-model.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-sections.tsx"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-014 (design ad9386e): header with status badge, transaction key-value card, fulfillment outcome alert, status history timeline and webhooks/reconciliation table; loading/error/not found/unavailable/forbidden states.",
+          "Fulfillment is shown only from a reported fulfillment value (unknown when absent), never inferred from payment status; missing history or event logs say so. Read-only: no refund, retry, copy-link or invoice actions."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -830,7 +848,7 @@
       "dependencies": ["ADM-PAYMENTS"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-027",
-      "discrepancies": ["DR-070"],
+      "discrepancies": ["DR-070", "DR-130", "DR-131"],
       "notes": []
     },
     {
@@ -889,8 +907,17 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": [
+          "apps/admin-portal/src/features/admin-payments/payments-model.ts",
+          "apps/admin-portal/src/features/admin-payments/payments-list.tsx",
+          "apps/admin-portal/src/features/admin-payments/payments-preview.fixtures.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-model.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-sections.tsx"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-014 (design ad9386e): feature-local composition in features/admin-payments: header with Export CSV intent, search plus five filters (UTC created range, provider, currency, intent, status) with URL parse/serialise helpers, eight-column table with stacked phone rows, pager; loading/error/empty/filtered-empty/unavailable/forbidden states.",
+          "Preview-only: rendered by payments-screens.test.tsx from typed fixtures; no route, navigation item or production import. Filters, export and row links are inert without caller handlers/routes."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -901,7 +928,7 @@
       "dependencies": ["FE-UI-006"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-027",
-      "discrepancies": ["DR-070"],
+      "discrepancies": ["DR-070", "DR-130"],
       "notes": []
     },
     {
@@ -960,9 +987,16 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
+        "files": [
+          "apps/admin-portal/src/features/admin-plans/plans-model.ts",
+          "apps/admin-portal/src/features/admin-plans/plans-screen.tsx",
+          "apps/admin-portal/src/features/admin-plans/plans-preview.fixtures.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-model.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-sections.tsx"
+        ],
         "existingFunctionality": [
-          "Public plan list exists (listSubscriptionPlans); no admin CRUD."
+          "Public plan list exists (listSubscriptionPlans); no admin CRUD. It is not used as an admin inventory (active plans only, no status or subscriber counts).",
+          "Trello FE-UI-014 (design ad9386e): plans table (plan/code, per-interval prices, currency, status, subscribers with 'Not available' for unreported counts) and right drawer editor (name, immutable code, description, currency, monthly/yearly price, features list, active switch) with pure validation; Save reports a create/update intent and is disabled without a handler. Preview-only (tests and fixtures)."
         ]
       },
       "backend": {
@@ -980,7 +1014,7 @@
       "dependencies": ["FE-UI-005 Drawer"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-026",
-      "discrepancies": ["DR-070"],
+      "discrepancies": ["DR-070", "DR-130", "DR-132"],
       "notes": []
     },
     {
@@ -1682,8 +1716,17 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": [
+          "apps/admin-portal/src/features/admin-subscriptions/subscription-detail.tsx",
+          "apps/admin-portal/src/features/admin-subscriptions/subscriptions-model.ts",
+          "apps/admin-portal/src/features/admin-subscriptions/subscriptions-preview.fixtures.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-model.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-sections.tsx"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-014 (design ad9386e): header with lifecycle badge and state-dependent actions (retry fulfillment only when blocked; cancel at period end; cancel now), four stat tiles with 'Not available' for unreported figures, details key-value card, status timeline, renewals and payments table.",
+          "Each action opens its own confirmation and reports an intent; nothing claims a cancellation or retry happened; actions are disabled with a reason without a handler. No step-up until a contract exists (DR-112); no invoice links (FE-UI-018)."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -1698,7 +1741,7 @@
       "dependencies": ["ADM-SUBSCRIPTIONS", "ADM-STEP-UP"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-026",
-      "discrepancies": ["DR-070"],
+      "discrepancies": ["DR-070", "DR-130", "DR-131"],
       "notes": []
     },
     {
@@ -1757,8 +1800,17 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": [
+          "apps/admin-portal/src/features/admin-subscriptions/subscriptions-model.ts",
+          "apps/admin-portal/src/features/admin-subscriptions/subscriptions-list.tsx",
+          "apps/admin-portal/src/features/admin-subscriptions/subscriptions-preview.fixtures.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-model.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-sections.tsx"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-014 (design ad9386e): search plus four filters (status, plan, owner type, renewal) with URL helpers, owner-type chips, eight-column table with stacked phone rows, pager; owner and tenant shown only as returned (never inferred); loading/error/empty/filtered-empty/unavailable/forbidden states.",
+          "Preview-only: no route, navigation item or production import; Allocate and View links render only when the caller supplies routes."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -1769,7 +1821,7 @@
       "dependencies": ["FE-UI-006"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-026",
-      "discrepancies": ["DR-070"],
+      "discrepancies": ["DR-070", "DR-130"],
       "notes": []
     },
     {
