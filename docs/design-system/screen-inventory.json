@@ -17,6 +17,11 @@
         "ticket": "Trello FE-UI-010",
         "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
         "scope": "USR-BILLING, USR-BILLING-HISTORY, USR-CHECKOUT, USR-CHECKOUT-RESULT, USR-PURCHASE-DETAIL (reference blobs in the records still describe 'commit', DR-083)"
+      },
+      {
+        "ticket": "Trello FE-UI-011",
+        "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+        "scope": "USR-WALLET, USR-WALLET-TOP-UP (reference blobs in the records still describe 'commit', DR-083)"
       }
     ]
   },
@@ -5374,11 +5379,15 @@
         "status": "Missing",
         "classification": "D",
         "files": [
+          "apps/user-portal/src/features/wallet/wallet-model.ts",
+          "apps/user-portal/src/features/wallet/wallet-screen.tsx",
+          "apps/user-portal/src/features/wallet/wallet-preview.fixtures.ts",
           "packages/api-client/src/payments/operations.ts",
           "packages/api-react/src/payments"
         ],
         "existingFunctionality": [
-          "api-client/api-react wallet transaction operations exist; no UI."
+          "api-client/api-react wallet transaction operations exist.",
+          "Trello FE-UI-011 (design ad9386e): feature-local composition (header with Top up, three summary tiles, status/date filters, transactions table with stacked phone rows and Load more, loading/error/unavailable/empty states) rendered only by tests from typed fixtures; no route, navigation item or API call."
         ]
       },
       "backend": {
@@ -5393,13 +5402,17 @@
         ]
       },
       "uiGaps": [
-        "List rows expose title/category/type/amount/timestamp only; reference columns Provider, Reference, Status are unsupported."
+        "List rows expose title/category/type/amount/timestamp only; reference columns Provider, Reference, Status are unsupported.",
+        "No production route, navigation item or data adapter until the wallet read model exists (BE-DS-005); Receipt column waits for FE-UI-018."
       ],
       "dependencies": ["Backend wallet read model", "FE-UI-006"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-021",
-      "discrepancies": ["DR-059"],
-      "notes": ["Frontend must never compute balances from transaction pages."]
+      "discrepancies": ["DR-059", "DR-113", "DR-115"],
+      "notes": [
+        "Frontend must never compute balances from transaction pages.",
+        "Blocked for production. Summary figures render 'Not available' (never zero); Provider/Reference/Status columns appear only when rows carry them; top-up, filter, load-more and reload are intents through onAction and render disabled without one. Fixtures are imported only by tests (enforced)."
+      ]
     },
     {
       "id": "USR-WALLET-TOP-UP",
@@ -5458,9 +5471,13 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
+        "files": [
+          "apps/user-portal/src/features/wallet/wallet-top-up-dialog.tsx",
+          "apps/user-portal/src/features/wallet/wallet-model.ts"
+        ],
         "existingFunctionality": [
-          "initiatePayment and getWalletTopUpTransaction operations exist; no UI."
+          "initiatePayment and getWalletTopUpTransaction operations exist.",
+          "Trello FE-UI-011 (design ad9386e): ui-core Dialog with amount (minor-unit parsing and limits), preset buttons, provider select and redirect notice; submit validates and reports a topUp intent only. Rendered only by tests."
         ]
       },
       "backend": {
@@ -5480,8 +5497,10 @@
       "dependencies": ["USR-WALLET", "backend return-URL fix"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-021",
-      "discrepancies": ["DR-059"],
-      "notes": []
+      "discrepancies": ["DR-059", "DR-113", "DR-114"],
+      "notes": [
+        "No payment initiation, redirect or success/result screen: return handling is not designed and Bachs return URLs are shared with subscriptions (DR-059)."
+      ]
     }
   ]
 }

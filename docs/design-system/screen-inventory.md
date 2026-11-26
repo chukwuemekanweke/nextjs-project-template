@@ -587,14 +587,16 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserWallet` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Partial; **priority:** P3; **ticket:** FE-UI-021.
-- **Implementation:** `packages/api-client/src/payments/operations.ts`, `packages/api-react/src/payments`
-- **Works today:** api-client/api-react wallet transaction operations exist; no UI.
+- **Implementation:** `apps/user-portal/src/features/wallet/wallet-model.ts`, `apps/user-portal/src/features/wallet/wallet-screen.tsx`, `apps/user-portal/src/features/wallet/wallet-preview.fixtures.ts`, `packages/api-client/src/payments/operations.ts`, `packages/api-react/src/payments`
+- **Works today:** api-client/api-react wallet transaction operations exist.
+- **Composition (Trello FE-UI-011, design `ad9386e`):** `apps/user-portal/src/features/wallet/` — `wallet-model.ts` (summary figures, transaction list typed on `WalletTransactionResponse` plus preview-only status/provider/reference, filters, top-up config, intents, amount parsing), `wallet-screen.tsx` (header with Top up, summary tiles, filters, transactions table with stacked phone rows and Load more), `wallet-top-up-dialog.tsx`, `wallet-preview.fixtures.ts` (tests only). Rendered by `wallet-screen.test.tsx`; no route, navigation item, API call or production import.
+- **Actions:** top up, status filter, date range, load more and reload are intents reported through `onAction`; without a handler (or without source support) they render disabled with an explanation. Summary figures without a source read "Not available", never zero.
 - **Operations:** getWalletTransactions GET /api/v1/payments/wallet-transactions
 - **Unsupported / missing backend:** Wallet balance / pending / funded-this-month aggregates; Transaction status, provider and reference fields on list rows; Status/date-range filters
 - **Gap:** List rows expose title/category/type/amount/timestamp only; reference columns Provider, Reference, Status are unsupported.
 - **Depends on:** Backend wallet read model; FE-UI-006
-- **Note:** Frontend must never compute balances from transaction pages.
-- **Discrepancies:** [DR-059](./discrepancy-register.md#dr-059)
+- **Note:** Frontend must never compute balances from transaction pages. Blocked for production until the wallet read model exists (BE-DS-005); Receipt column waits for FE-UI-018.
+- **Discrepancies:** [DR-059](./discrepancy-register.md#dr-059), [DR-113](./discrepancy-register.md#dr-113), [DR-115](./discrepancy-register.md#dr-115)
 
 ### USR-WALLET-TOP-UP
 
@@ -602,12 +604,13 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserWalletTopUp` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Partial; **priority:** P3; **ticket:** FE-UI-021.
-- **Works today:** initiatePayment and getWalletTopUpTransaction operations exist; no UI.
+- **Works today:** initiatePayment and getWalletTopUpTransaction operations exist.
+- **Composition (Trello FE-UI-011):** `wallet-top-up-dialog.tsx` on ui-core `Dialog` — amount (minor-unit parsing, optional limits), preset buttons (`aria-pressed`), provider select and redirect notice; submit validates and reports a `topUp` intent only (no charge, redirect or result screen). Not dismissible while pending.
 - **Operations:** initiatePayment POST /api/v1/payments/initiate; `getWalletTopUpTransaction`
 - **Unsupported / missing backend:** Provider list for top-ups (eligible providers); Per-intent Bachs return URLs (shared with subscriptions today)
 - **Gap:** Amount + preset chips + provider select + redirect notice; return/result handling not designed.
 - **Depends on:** USR-WALLET; backend return-URL fix
-- **Discrepancies:** [DR-059](./discrepancy-register.md#dr-059)
+- **Discrepancies:** [DR-059](./discrepancy-register.md#dr-059), [DR-113](./discrepancy-register.md#dr-113), [DR-114](./discrepancy-register.md#dr-114)
 
 ### ADM-ACTIVE-USERS
 
