@@ -17,8 +17,23 @@ status: stable
 
 `packages/forms` owns domain-neutral client form infrastructure: React Hook Form
 configured with Zod, validated form context, accessible typed fields,
-password/confirmation/search controls, pending submit behavior, and normalized
-backend validation mapping.
+password/confirmation/search controls, pending submit behavior, normalized
+backend validation mapping, and strict money input (`money-input.ts`).
+
+`parseMoneyInput` turns typed major units into exact `bigint` minor units:
+plain or three-digit comma-grouped ASCII decimals only (`1,2`, `1 2 3`,
+signs and symbols are rejected, never joined), no rounding (excess decimals
+are an error), precision from `Intl` restricted to supported ISO 4217 codes
+(no two-digit guess) or an authoritative `minorUnitDigits`, and a
+representation limit (default `Number.MAX_SAFE_INTEGER`). It returns reasons,
+not copy; zero is valid and minimum/maximum/zero rules stay in apps.
+`minorUnitsToMoneyInput` gives exact editable text; display formatting stays
+`formatMinorUnits` in `ui-core`.
+
+Substantial business forms (for example wallet top-up, plan editing,
+subscription allocation) use `useValidatedForm` + `ValidatedForm` with an
+app-local Zod schema and the shared fields/`SubmitButton`; small filters,
+searches and confirmations may stay plain controlled inputs.
 
 `applyBackendValidation` accepts explicit form field names and
 application-supplied aliases. It maps normalized backend field names to field

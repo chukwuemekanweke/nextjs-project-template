@@ -1,0 +1,172 @@
+import {
+  lookupAdminBadge,
+  type AdminBadge,
+  type AdminDetailState,
+  type AdminListState,
+  type AdminMetric,
+  type AdminRangePreset,
+  type AdminSection,
+} from "@/components/admin-patterns";
+
+/*
+ * Admin KYC monitoring view models (ADM-KYC, ADM-KYC-DETAIL).
+ *
+ * There is no KYC API (DR-054): nothing in production builds these models.
+ * Verification decisions belong to the provider; the admin view is
+ * read-only apart from asking for the latest status, which is an intent
+ * the future adapter performs. Statuses the source does not recognise map
+ * to `"unknown"`.
+ */
+
+export const ADMIN_KYC_STATUSES = [
+  "notStarted",
+  "inProgress",
+  "pending",
+  "verified",
+  "rejected",
+  "failed",
+  "expired",
+] as const;
+
+export type AdminKycStatus = (typeof ADMIN_KYC_STATUSES)[number] | "unknown";
+
+const kycBadges: Readonly<Record<string, AdminBadge>> = {
+  expired: { label: "Expired", tone: "neutral" },
+  failed: { label: "Failed", tone: "danger" },
+  inProgress: { label: "In progress", tone: "info" },
+  notStarted: { label: "Not started", tone: "neutral" },
+  pending: { label: "Pending", tone: "warning" },
+  rejected: { label: "Rejected", tone: "danger" },
+  verified: { label: "Verified", tone: "success" },
+};
+
+/** Badge for a status; unrecognised or empty values show "Unknown". */
+export function kycStatusBadge(status: string): AdminBadge {
+  return lookupAdminBadge(kycBadges, status);
+}
+
+/** Maps a raw value to a known status; anything else is `"unknown"`. */
+export function parseAdminKycStatus(value: unknown): AdminKycStatus {
+  return (ADMIN_KYC_STATUSES as readonly unknown[]).includes(value)
+    ? (value as AdminKycStatus)
+    : "unknown";
+}
+
+export type AdminKycUser = Readonly<{
+  id: string;
+  displayName: string;
+  email: string;
+  country?: string;
+}>;
+
+/** One row of the reference KYC monitoring table. */
+export type AdminKycListItem = Readonly<{
+  /** Verification id. */
+  id: string;
+  user: AdminKycUser;
+  status: AdminKycStatus;
+  provider?: string;
+  /** Provider's verification reference, shown in monospace. */
+  providerReference?: string;
+  startedAt?: string;
+  submittedAt?: string;
+  completedAt?: string;
+}>;
+
+export type AdminKycFilters = Readonly<{
+  query: string;
+  status: AdminKycStatus | "any";
+  /** Provider value from `providerOptions`, or "any". */
+  provider: string;
+  range: AdminRangePreset;
+}>;
+
+export const DEFAULT_ADMIN_KYC_FILTERS: AdminKycFilters = {
+  provider: "any",
+  query: "",
+  range: "30d",
+  status: "any",
+};
+
+export function hasActiveKycFilters(filters: AdminKycFilters): boolean {
+  return (
+    filters.query.trim() !== "" ||
+    filters.status !== "any" ||
+    filters.provider !== "any"
+  );
+}
+
+/** The four reference stat tiles; each is its own metric state. */
+export type AdminKycCounts = Readonly<{
+  pending: AdminMetric;
+  inProgress: AdminMetric;
+  verified: AdminMetric;
+  rejectedOrFailed: AdminMetric;
+}>;
+
+/** Count tiles and the verification list are independent reads. */
+export type AdminKycListModel = Readonly<{
+  counts: AdminKycCounts;
+  verifications: AdminListState<AdminKycListItem>;
+}>;
+
+export type AdminKycVerification = Readonly<{
+  id: string;
+  user: AdminKycUser;
+  status: AdminKycStatus;
+  /** Provider's own status text, shown verbatim when supplied. */
+  providerStatus?: string;
+  provider?: string;
+  providerReference?: string;
+  applicantId?: string;
+  attemptNumber?: number;
+  attemptCount?: number;
+  startedAt?: string;
+  submittedAt?: string;
+  completedAt?: string;
+}>;
+
+/** One entry of the reference "Status history" timeline (newest first). */
+export type AdminKycHistoryEvent = Readonly<{
+  id: string;
+  label: string;
+  occurredAt?: string;
+  /** Extra source detail, for example "signature valid". */
+  detail?: string;
+}>;
+
+export type AdminKycAttempt = Readonly<{
+  id: string;
+  attemptNumber: number;
+  status: AdminKycStatus;
+  startedAt?: string;
+  completedAt?: string;
+}>;
+
+export type AdminKycDetailRecord = Readonly<{
+  verification: AdminKycVerification;
+  history: AdminSection<readonly AdminKycHistoryEvent[]>;
+  attempts: AdminSection<readonly AdminKycAttempt[]>;
+}>;
+
+export type AdminKycDetailModel = AdminDetailState<AdminKycDetailRecord>;
+
+/** "Attempt #3 of 3", "Attempt #3" or `undefined` when not reported. */
+export function kycAttemptLabel(
+  verification: Pick<AdminKycVerification, "attemptNumber" | "attemptCount">,
+): string | undefined {
+  const { attemptCount, attemptNumber } = verification;
+  if (!attemptNumber) {
+    return undefined;
+  }
+  if (attemptCount && attemptCount >= attemptNumber) {
+    return `Attempt #${attemptNumber} of ${attemptCount}`;
+  }
+  return `Attempt #${attemptNumber}`;
+}
+
+/** Read-only notice; names the provider only when the source does. */
+export function kycDecisionNotice(provider: string | undefined): string {
+  const decidedBy = provider?.trim() || "the verification provider";
+  return `Approval and rejection are decided by ${decidedBy}. This page is read-only apart from refreshing the latest status.`;
+}

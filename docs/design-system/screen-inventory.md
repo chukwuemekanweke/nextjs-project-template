@@ -682,10 +682,11 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminKyc` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-028.
+- **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-kyc/` — `AdminKycScreen`: four `AdminKpiCard` count tiles (unavailable is never 0), search/status/provider/UTC period filters inert without a handler, verification table with status badges (incl. Failed and Unknown), pager, empty/filtered-empty/loading/error/forbidden. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
 - **Unsupported / missing backend:** KYC verification list and counts
-- **Gap:** Stat tiles, search, filters, table.
+- **Gap:** Route `/kyc`, navigation item and adapter.
 - **Depends on:** Backend KYC API
-- **Discrepancies:** [DR-054](./discrepancy-register.md#dr-054)
+- **Discrepancies:** [DR-054](./discrepancy-register.md#dr-054), [DR-124](./discrepancy-register.md#dr-124)
 
 ### ADM-KYC-DETAIL
 
@@ -693,10 +694,11 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminKycDetail` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-028.
+- **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-kyc/` — read-only `AdminKycDetailScreen`: verification key-values, user card, status timeline, previous attempts, provider-decision notice, unknown-status warning. Refresh status is the only intent (`onRefresh`), disabled with an explanation without it; no approve, reject or override. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
 - **Unsupported / missing backend:** Verification detail, status history, refresh-from-provider
-- **Gap:** Read-only kv + timeline + attempts; decisions belong to the provider.
+- **Gap:** Route `/kyc/[verificationId]` and adapter.
 - **Depends on:** ADM-KYC
-- **Discrepancies:** [DR-054](./discrepancy-register.md#dr-054)
+- **Discrepancies:** [DR-054](./discrepancy-register.md#dr-054), [DR-124](./discrepancy-register.md#dr-124)
 
 ### ADM-NAV-MOBILE
 
@@ -808,10 +810,11 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminRoleEdit` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-025.
+- **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-roles/` — read-only visual `AdminRoleEditScreen`: details, grouped permission checklists with counts, summary, members, danger zone; every control disabled and explained; no form, intents or persistence. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
 - **Unsupported / missing backend:** Role CRUD, permission assignment, membership
-- **Gap:** Grouped permission checklists with select-all, summary, members, danger zone.
+- **Gap:** CAF-FE-008 prohibits a production role editor; "Start from" and the removal-impact warning are omitted.
 - **Depends on:** ADM-ROLES
-- **Discrepancies:** [DR-073](./discrepancy-register.md#dr-073)
+- **Discrepancies:** [DR-073](./discrepancy-register.md#dr-073), [DR-123](./discrepancy-register.md#dr-123)
 
 ### ADM-ROLES
 
@@ -819,12 +822,12 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminRoles` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-025.
-- **Implementation:** `apps/admin-portal/src/config/navigation.ts`
-- **Works today:** Navigation item exists and 404s; authorization is a single configured role claim.
+- **Works today:** No route or navigation item (navigation lists only Dashboard); authorization is a single configured role claim.
+- **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-roles/` — `AdminRolesScreen`: roles table (System/Custom, counts; a missing count is not zero), read-only permission matrix with text Granted/Not granted cells, disabled New role. The 16 × 5 reference catalogue is a test fixture, not an authoritative permission list, and is never evaluated. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
 - **Unsupported / missing backend:** Role/permission model and APIs (reference itself says 'Needs new role-management APIs')
-- **Gap:** Roles table + read-only permission matrix (16 permissions, 5 roles).
+- **Gap:** Route `/roles`, navigation item and adapter once a permission model exists.
 - **Depends on:** permission model
-- **Discrepancies:** [DR-073](./discrepancy-register.md#dr-073)
+- **Discrepancies:** [DR-073](./discrepancy-register.md#dr-073), [DR-122](./discrepancy-register.md#dr-122)
 
 ### ADM-STEP-UP
 
@@ -894,10 +897,12 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminUserDetail` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-024.
+- **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-users/` — `AdminUserDetailScreen`: identity header with status/email badges and actions, account key-values, role chips with remove and an assign control, KYC and subscription summaries, sessions, security activity; per-section loading/error/unavailable/empty, not found, forbidden. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
+- **Actions:** lock/unlock, sign out all and role changes open `AdminStepUpDialog`; revoking one session opens `ConfirmDialog`. Each confirmation captures its explicit target (user id plus role or session id), closes with a notice if the displayed user, status, role or session no longer matches, and is re-checked before submitting; one request at a time; a failure keeps the dialog open with safe copy (`describeAdminActionFailure`) for a retry; success closes it and the screen never shows success. Without a handler every action is disabled with an explanation.
 - **Unsupported / missing backend:** Admin user read model; Lock/unlock; Revoke user sessions; Assign/remove roles; User security activity (admin scope)
-- **Gap:** Identity header with actions, account kv, roles chips + assign, KYC/subscription summaries, sessions, activity table.
+- **Gap:** Route `/users/[userId]`, adapter and real mutations with a backend step-up contract.
 - **Depends on:** ADM-USERS; ADM-STEP-UP
-- **Discrepancies:** [DR-072](./discrepancy-register.md#dr-072)
+- **Discrepancies:** [DR-072](./discrepancy-register.md#dr-072), [DR-121](./discrepancy-register.md#dr-121)
 
 ### ADM-USERS
 
@@ -905,10 +910,10 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminUsers` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-024.
-- **Implementation:** `apps/admin-portal/src/config/navigation.ts`
-- **Works today:** Navigation item exists and 404s.
+- **Works today:** No route or navigation item; admin navigation lists only Dashboard.
+- **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-users/` — `users-model.ts` (list item, filters, sort, `AdminListState` model, explicit-target intents), `users-filters.tsx` (`AdminUserFilterBar`), `users-list.tsx` (`AdminUsersScreen` on `AdminListCard` + `AdminListTable` + `AdminListPager`), `users-preview.fixtures.ts` (synthetic fixtures, tests only). Shared date, missing-value, list-state and badge helpers come from `components/admin-patterns`. Search, Status/KYC/Role/Plan menus and sort are controlled callbacks, inert and explained without them; role/plan options come from the backend; status/KYC/plan/role badges; pager only with a page handler; detail links only for an implemented route. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
 - **Unsupported / missing backend:** Admin user search/list API
-- **Gap:** Search + 5 filter menus + sort; table with status/KYC/plan/role badges; pager.
+- **Gap:** Route `/users`, navigation item, adapter and URL-driven filter/sort/page state.
 - **Depends on:** FE-UI-006; admin users API
-- **Note:** Remove or hide the dead nav link until the route ships (DR-071).
-- **Discrepancies:** [DR-071](./discrepancy-register.md#dr-071)
+- **Note:** Filter, sort and paging are exercised only on synthetic fixtures in tests; nothing is server-backed.
+- **Discrepancies:** [DR-071](./discrepancy-register.md#dr-071), [DR-120](./discrepancy-register.md#dr-120)

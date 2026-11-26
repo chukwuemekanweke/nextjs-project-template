@@ -22,6 +22,11 @@
         "ticket": "Trello FE-UI-011",
         "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
         "scope": "USR-WALLET, USR-WALLET-TOP-UP (reference blobs in the records still describe 'commit', DR-083)"
+      },
+      {
+        "ticket": "Trello FE-UI-013",
+        "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+        "scope": "ADM-USERS, ADM-USER-DETAIL, ADM-ROLES, ADM-ROLE-EDIT, ADM-KYC, ADM-KYC-DETAIL (feature compositions only; reference blobs in the records still describe 'commit', DR-083)"
       }
     ]
   },
@@ -537,19 +542,28 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": [
+          "apps/admin-portal/src/features/admin-kyc/kyc-model.ts",
+          "apps/admin-portal/src/features/admin-kyc/kyc-filters.tsx",
+          "apps/admin-portal/src/features/admin-kyc/kyc-list.tsx",
+          "apps/admin-portal/src/features/admin-kyc/kyc-preview.fixtures.ts"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-013: feature-local AdminKycScreen (four AdminKpiCard count tiles with ready/loading/unavailable/error states, search + status + provider + UTC period filters inert without a handler, verification table with status badges incl. Failed and Unknown, provider reference, UTC times, AdminListPager in the AdminListCard footer (recovers from a page past the results), empty/filtered-empty/loading/error/forbidden). No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
+        ]
       },
       "backend": {
         "support": "Missing",
         "operations": [],
         "missingCapabilities": ["KYC verification list and counts"]
       },
-      "uiGaps": ["Stat tiles, search, filters, table."],
+      "uiGaps": [
+        "Route /kyc, navigation item and adapter once an admin KYC API exists."
+      ],
       "dependencies": ["Backend KYC API"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-028",
-      "discrepancies": ["DR-054"],
+      "discrepancies": ["DR-054", "DR-124"],
       "notes": []
     },
     {
@@ -608,8 +622,14 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": [
+          "apps/admin-portal/src/features/admin-kyc/kyc-model.ts",
+          "apps/admin-portal/src/features/admin-kyc/kyc-detail.tsx",
+          "apps/admin-portal/src/features/admin-kyc/kyc-preview.fixtures.ts"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-013: feature-local read-only AdminKycDetailScreen (verification key-values, user card, status timeline, previous attempts, provider-decision notice, unknown-status warning). Refresh status is the only intent (onRefresh), disabled with an explanation without it; no approve, reject or override. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -619,12 +639,12 @@
         ]
       },
       "uiGaps": [
-        "Read-only kv + timeline + attempts; decisions belong to the provider."
+        "Route /kyc/[verificationId] and adapter (verification detail, history, refresh-from-provider) once the KYC API exists."
       ],
       "dependencies": ["ADM-KYC"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-028",
-      "discrepancies": ["DR-054"],
+      "discrepancies": ["DR-054", "DR-124"],
       "notes": []
     },
     {
@@ -1327,8 +1347,14 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": [
+          "apps/admin-portal/src/features/admin-roles/roles-model.ts",
+          "apps/admin-portal/src/features/admin-roles/role-editor.tsx",
+          "apps/admin-portal/src/features/admin-roles/roles-preview.fixtures.ts"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-013: read-only visual AdminRoleEditScreen (details, grouped permission checklists with counts, summary, members, danger zone) with every control disabled and explained; no form, intents or persistence. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -1336,12 +1362,12 @@
         "missingCapabilities": ["Role CRUD, permission assignment, membership"]
       },
       "uiGaps": [
-        "Grouped permission checklists with select-all, summary, members, danger zone."
+        "CAF-FE-008 prohibits a production role editor; role CRUD, permission assignment, membership, \"Start from\" and the removal-impact warning need a role-management API and a product decision."
       ],
       "dependencies": ["ADM-ROLES"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-025",
-      "discrepancies": ["DR-073"],
+      "discrepancies": ["DR-073", "DR-123"],
       "notes": []
     },
     {
@@ -1400,9 +1426,16 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": ["apps/admin-portal/src/config/navigation.ts"],
+        "files": [
+          "apps/admin-portal/src/features/admin-roles/roles-model.ts",
+          "apps/admin-portal/src/features/admin-roles/roles-list.tsx",
+          "apps/admin-portal/src/features/admin-roles/permission-matrix.tsx",
+          "apps/admin-portal/src/features/admin-roles/roles-preview.fixtures.ts"
+        ],
         "existingFunctionality": [
-          "Navigation item exists and 404s; authorization is a single configured role claim."
+          "No admin route or navigation item: admin navigation lists only Dashboard; authorization is a single configured role claim.",
+          "Trello FE-UI-013: feature-local AdminRolesScreen (roles table with System/Custom badges and counts, read-only permission matrix with text Granted/Not granted cells, disabled New role, loading/error/unavailable/forbidden). The 16 × 5 reference catalogue is a test fixture only, not an authoritative permission list, and is never evaluated. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e).",
+          "The permission matrix stays a specialised accessible table (row headers per permission, colgroup headings per group), not DataTable, which has no row-header or spanning-group semantics."
         ]
       },
       "backend": {
@@ -1413,13 +1446,15 @@
         ]
       },
       "uiGaps": [
-        "Roles table + read-only permission matrix (16 permissions, 5 roles)."
+        "Route /roles, navigation item and adapter once a permission model and role read API exist."
       ],
       "dependencies": ["permission model"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-025",
-      "discrepancies": ["DR-073"],
-      "notes": []
+      "discrepancies": ["DR-073", "DR-122"],
+      "notes": [
+        "Permission names (users.read, roles.manage, …) are future targets; nothing grants or checks them."
+      ]
     },
     {
       "id": "ADM-SIGN-IN",
@@ -1959,8 +1994,17 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": [
+          "apps/admin-portal/src/features/admin-users/users-model.ts",
+          "apps/admin-portal/src/features/admin-users/user-detail.tsx",
+          "apps/admin-portal/src/features/admin-users/user-summary-cards.tsx",
+          "apps/admin-portal/src/features/admin-users/user-sessions.tsx",
+          "apps/admin-portal/src/features/admin-users/user-action-confirmation.tsx",
+          "apps/admin-portal/src/features/admin-users/users-preview.fixtures.ts"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-013: feature-local AdminUserDetailScreen (identity header with status/email badges and actions, account key-values, role chips with remove and an assign control, KYC and subscription summaries, active sessions, security activity, per-section loading/error/unavailable/empty, not found, forbidden). Lock/unlock, sign out all and role changes open AdminStepUpDialog; revoking one session opens ConfirmDialog; opening a confirmation captures the intent with its explicit target (userId plus role or session id); the confirmation closes with a notice if the displayed user, account status, role or session no longer matches, and the intent is re-checked before submitting; one request at a time; failures keep the dialog open with safe copy from describeAdminActionFailure for a retry; success closes it without showing success or changing the record. Without a handler every action is disabled with an explanation. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -1974,13 +2018,15 @@
         ]
       },
       "uiGaps": [
-        "Identity header with actions, account kv, roles chips + assign, KYC/subscription summaries, sessions, activity table."
+        "Route /users/[userId], adapter and real lock/unlock, session revocation and role assignment mutations with a backend step-up contract."
       ],
       "dependencies": ["ADM-USERS", "ADM-STEP-UP"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-024",
-      "discrepancies": ["DR-072"],
-      "notes": []
+      "discrepancies": ["DR-072", "DR-121"],
+      "notes": [
+        "Which actions require step-up, and whether a reason is recorded, is a backend contract decision (DR-072, DR-112)."
+      ]
     },
     {
       "id": "ADM-USERS",
@@ -2038,8 +2084,16 @@
       "implementation": {
         "status": "Missing",
         "classification": "D",
-        "files": ["apps/admin-portal/src/config/navigation.ts"],
-        "existingFunctionality": ["Navigation item exists and 404s."]
+        "files": [
+          "apps/admin-portal/src/features/admin-users/users-model.ts",
+          "apps/admin-portal/src/features/admin-users/users-filters.tsx",
+          "apps/admin-portal/src/features/admin-users/users-list.tsx",
+          "apps/admin-portal/src/features/admin-users/users-preview.fixtures.ts"
+        ],
+        "existingFunctionality": [
+          "No admin route or navigation item: admin navigation lists only Dashboard (DR-071 resolved in FE-UI-004).",
+          "Trello FE-UI-013: feature-local AdminUsersScreen (header, search + Status/KYC/Role/Plan filter menus + sort, users table with status/KYC/plan/role badges stacking on phones, AdminListPager in the AdminListCard footer (recovers from a page past the results) or range text, loading/error/forbidden/empty/filtered-empty). Filters, sort and paging are controlled callbacks, inert and explained without them; role/plan options are backend-supplied; detail links only for an implemented route. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (Trello FE-UI-013, design ad9386e)."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -2047,14 +2101,14 @@
         "missingCapabilities": ["Admin user search/list API"]
       },
       "uiGaps": [
-        "Search + 5 filter menus + sort; table with status/KYC/plan/role badges; pager."
+        "Route /users, navigation item, data adapter and URL-driven filter/sort/page state once an admin user list API exists."
       ],
       "dependencies": ["FE-UI-006", "admin users API"],
       "priority": "P3",
       "roadmapTicket": "FE-UI-024",
-      "discrepancies": ["DR-071"],
+      "discrepancies": ["DR-071", "DR-120"],
       "notes": [
-        "Remove or hide the dead nav link until the route ships (DR-071)."
+        "Filter, sort and paging behaviour is exercised only on synthetic fixtures in tests; nothing is server-backed."
       ]
     },
     {

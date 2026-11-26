@@ -86,10 +86,21 @@ status: stable
   `apps/admin-portal/src/components/admin-patterns` (`AdminKpiCard`,
   `AdminChartSection` on `ChartFrame`, `AdminSummaryCard`, `AdminRangeFilter`,
   `AdminListCard`/`AdminDetailHeader`, `AdminForbidden`,
-  `AdminStepUpDialog`); usage in `docs/design-system/admin-patterns.md`. Each
+  `AdminStepUpDialog`) plus the shared admin presentation used by FE-UI-013/
+  014: list/detail/section/option read states, `AdminListTable` +
+  `AdminListPager` (the `AdminListCard` footer, with recovery from a page past
+  the results), `AdminDetailFallback`, `AdminSectionBody`, UTC
+  `formatAdminDateTime`/`formatAdminDate` (zone-less timestamps rejected,
+  calendar dates not converted), `AdminNotAvailable`, `AdminUnavailableHint`,
+  own-key `lookupAdminBadge` and `describeAdminActionFailure`; usage in
+  `docs/design-system/admin-patterns.md`. Features keep their status maps,
+  models and workflows and do not import each other. Each
   panel takes a typed state (`ready`/`loading`/`unavailable`/`error`/`empty`);
   the admin overview (`app/_dashboard`) renders every panel unavailable until
   admin read APIs exist, with reference figures only in a test fixture.
+  Admin users, roles and KYC compositions (Trello FE-UI-013) follow the
+  class-D pattern in `apps/admin-portal/src/features/admin-{users,roles,kyc}`
+  with no route, navigation item or production import.
 - Dashboard pages start with `DashboardHeader` on the page background, then
   cards. New work uses `Card` + `CardHeader` + `ListRow`/`KeyValueList`;
   existing pages still use `SectionHeader` + `SettingsRow`. Feature

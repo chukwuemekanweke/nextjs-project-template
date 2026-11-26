@@ -274,6 +274,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 Each adds api-client contracts/operations and api-react hooks for the new endpoints (handwritten, per AGENTS.md), routes under the admin proxy, a navigation item, and screens composed from existing primitives.
 
+- **Status (FE-UI-024, 025, 028):** Trello FE-UI-013 (design `ad9386e`) delivered fixture-tested compositions in `apps/admin-portal/src/features/admin-users`, `admin-roles` (role editor read-only, CAF-FE-008) and `admin-kyc` ([DR-120](./discrepancy-register.md#dr-120)–[DR-124](./discrepancy-register.md#dr-124)); routes, navigation items and adapters remain gated on the admin user, permission-model and KYC APIs.
 - **Status (FE-UI-026, FE-UI-027):** compositions delivered by Trello FE-UI-014 in `apps/admin-portal/src/features/admin-payments`, `admin-plans` and `admin-subscriptions` (all list/detail/editor/allocation states, fixture-tested only, [DR-130](./discrepancy-register.md#dr-130)–[DR-133](./discrepancy-register.md#dr-133)). Contracts, hooks, routes and navigation remain gated on the admin billing APIs.
 
 ### FE-UI-032 — Legacy removal and final verification
