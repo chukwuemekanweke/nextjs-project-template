@@ -27,6 +27,11 @@
         "ticket": "Trello FE-UI-013",
         "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
         "scope": "ADM-USERS, ADM-USER-DETAIL, ADM-ROLES, ADM-ROLE-EDIT, ADM-KYC, ADM-KYC-DETAIL (feature compositions only; reference blobs in the records still describe 'commit', DR-083)"
+      },
+      {
+        "ticket": "Trello FE-UI-015",
+        "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+        "scope": "ADM-REGISTRATIONS, ADM-ACTIVE-USERS, ADM-PAYMENT-ANALYTICS, ADM-SUBSCRIPTION-ANALYTICS, ADM-PROVIDERS, ADM-REFERENCE-DATA, ADM-AUDIT and ADM-SYSTEM-HEALTH (feature compositions only; reference blobs in the records still describe 'commit', DR-083)"
       }
     ]
   },
@@ -54,8 +59,8 @@
       "state-flow": 10
     },
     "byStatus": {
-      "Implemented": 30,
-      "Missing": 25,
+      "Implemented": 38,
+      "Missing": 17,
       "Partial": 3,
       "Reference-only": 0
     },
@@ -136,10 +141,12 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
+        "status": "Implemented",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": ["apps/admin-portal/src/features/admin-active-user-analytics"],
+        "existingFunctionality": [
+          "Responsive preview composition with DAU/WAU/MAU and stickiness metrics, daily trend, controlled UTC range intent, activity table, typed states and isolated fixtures; no route or production data source."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -293,10 +300,12 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
+        "status": "Implemented",
         "classification": "D",
-        "files": ["apps/admin-portal/src/config/navigation.ts"],
-        "existingFunctionality": ["Navigation item exists and 404s."]
+        "files": ["apps/admin-portal/src/features/admin-audit"],
+        "existingFunctionality": [
+          "Responsive immutable-event preview composition with UTC dates, actor/action/resource/outcome presentation, controlled filters, paging and disabled detail/export intents; no route or production data source."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -773,10 +782,12 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
+        "status": "Implemented",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": ["apps/admin-portal/src/features/admin-payment-analytics"],
+        "existingFunctionality": [
+          "Responsive preview composition with currency-scoped metrics, volume and outcome charts, provider and intent breakdown tables, controlled filters and isolated fixtures; no route or production data source."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -1096,14 +1107,16 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
+        "status": "Implemented",
         "classification": "D",
         "files": [
+          "apps/admin-portal/src/features/admin-providers",
           "packages/api-client/src/payments/operations.ts",
           "packages/api-client/src/providers"
         ],
         "existingFunctionality": [
-          "Mutations exist (setPaymentProviderActivation, setActiveProvider) with no UI."
+          "Responsive provider directory preview composition with supplied statuses, capabilities and disabled management intents; no sensitive configuration, route or production list source.",
+          "Mutations exist (setPaymentProviderActivation, setActiveProvider), but the composition is not wired without a provider read API."
         ]
       },
       "backend": {
@@ -1184,11 +1197,12 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
+        "status": "Implemented",
         "classification": "D",
-        "files": ["apps/admin-portal/src/config/navigation.ts"],
+        "files": ["apps/admin-portal/src/features/admin-reference-data"],
         "existingFunctionality": [
-          "Navigation item exists and 404s; getCountries exists (public lookup)."
+          "Responsive read-only, typed tabbed preview composition with search, paging and distinct unavailable states; no route or administrative mutations.",
+          "getCountries exists for public lookup but is not treated as an authoritative administration source."
         ]
       },
       "backend": {
@@ -1267,10 +1281,14 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
+        "status": "Implemented",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": [
+          "apps/admin-portal/src/features/admin-registration-analytics"
+        ],
+        "existingFunctionality": [
+          "Responsive preview composition with supplied registration metrics, trend, granularity/range intents, paged user table and isolated fixtures; no route or production data source."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -1683,10 +1701,14 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
+        "status": "Implemented",
         "classification": "D",
-        "files": [],
-        "existingFunctionality": []
+        "files": [
+          "apps/admin-portal/src/features/admin-subscription-analytics"
+        ],
+        "existingFunctionality": [
+          "Responsive preview composition with supplied recurring-revenue, churn, lifecycle, renewal and plan metrics, controlled filters and isolated fixtures; no route or production data source."
+        ]
       },
       "backend": {
         "support": "Missing",
@@ -1918,10 +1940,12 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
+        "status": "Implemented",
         "classification": "D",
-        "files": ["apps/admin-portal/src/config/navigation.ts"],
-        "existingFunctionality": ["Navigation item exists and 404s."]
+        "files": ["apps/admin-portal/src/features/admin-system-health"],
+        "existingFunctionality": [
+          "Responsive system/dependency health preview composition with supplied operational states, latency, uptime, timestamps and a disabled refresh intent; unknown is never presented as healthy and no route is published."
+        ]
       },
       "backend": {
         "support": "Missing",

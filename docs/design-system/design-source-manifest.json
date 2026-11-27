@@ -81,6 +81,27 @@
         "3-user-portal/UserCheckoutResult-{cancelled,pending,success}.html (+Dark, Mobile, MobileDark)",
         "3-user-portal/UserPurchaseDetail.html (+Dark, Mobile, MobileDark)"
       ]
+    },
+    {
+      "ticket": "FE-UI-015 (Trello)",
+      "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+      "commitDate": "2026-11-25T21:19:56+01:00",
+      "treeSha": "1000fc95c79c4cda8f3c6361d73f3b5d485cd0c2",
+      "scope": "Admin registration, active-user, payment and subscription analytics plus providers, reference data, audit and system health only. Per-file inventory, hashes and counts still describe commit (DR-083).",
+      "filesInRevision": 994,
+      "changesSincePinnedCommit": {
+        "4-admin-portal": "The 32 selected analytics and operational references are unchanged in structure for FE-UI-015; scoped revision ad9386e is used consistently with the preceding admin UI tickets."
+      },
+      "referencesUsed": [
+        "4-admin-portal/AdminRegistrations.html (+Dark, Mobile, MobileDark)",
+        "4-admin-portal/AdminActiveUsers.html (+Dark, Mobile, MobileDark)",
+        "4-admin-portal/AdminPaymentAnalytics.html (+Dark, Mobile, MobileDark)",
+        "4-admin-portal/AdminSubscriptionAnalytics.html (+Dark, Mobile, MobileDark)",
+        "4-admin-portal/AdminProviders.html (+Dark, Mobile, MobileDark)",
+        "4-admin-portal/AdminReferenceData.html (+Dark, Mobile, MobileDark)",
+        "4-admin-portal/AdminAudit.html (+Dark, Mobile, MobileDark)",
+        "4-admin-portal/AdminSystemHealth.html (+Dark, Mobile, MobileDark)"
+      ]
     }
   ],
   "discoveredOn": "2026-11-25",

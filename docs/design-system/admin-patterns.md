@@ -129,6 +129,16 @@ confirm. Use `AdminStepUpDialog` only where the preview assumes step-up
 
 ## Extension points and limits
 
+FE-UI-015 adds `features/admin-analytics-shared/analytics-layout.tsx`, an
+application-local composition layer over `AdminKpiCard`, `AdminChartSection`,
+`AdminFilterBar` and `AdminRangeFilter`. It standardises the repeated page,
+filter, metric, chart and breakdown arrangement used by the four analytics
+families; it owns no calculations or domain models. Registration, active-user,
+payment and subscription models stay in their feature directories. Providers,
+reference data, audit and system health reuse the existing list, section and
+status patterns directly. All eight remain test-preview compositions with no
+route, navigation item or production fixture import.
+
 - Charts: add a `kind` only when a screen needs it; replace the inline SVG
   with Recharts when TD-10 is decided, keeping `AdminChartData`.
 - Range filter: wire `onChange` to URL search params when an analytics API

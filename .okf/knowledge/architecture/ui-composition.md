@@ -101,6 +101,14 @@ status: stable
   Admin users, roles and KYC compositions (Trello FE-UI-013) follow the
   class-D pattern in `apps/admin-portal/src/features/admin-{users,roles,kyc}`
   with no route, navigation item or production import.
+  Registration, active-user, payment and subscription analytics plus providers,
+  reference data, audit and system health (Trello FE-UI-015) follow the same
+  class-D pattern in `apps/admin-portal/src/features/admin-*`. The four
+  analytics screens share only the application-local, domain-neutral
+  `admin-analytics-shared/analytics-layout.tsx`; metrics and business models
+  remain feature-local. All eight use typed test-only preview fixtures and
+  expose controlled filter/action intents, while routes and navigation wait
+  for authoritative admin reads (DR-134).
 - Dashboard pages start with `DashboardHeader` on the page background, then
   cards. New work uses `Card` + `CardHeader` + `ListRow`/`KeyValueList`;
   existing pages still use `SectionHeader` + `SettingsRow`. Feature
