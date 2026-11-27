@@ -148,12 +148,20 @@ For the owning backend implementation (proposed requirements):
   errors do not. Producers must be idempotent per business event (the renewal
   reminder already uses `MarkReminderSent`).
 - **Transactional vs marketing:** all 22 designs are transactional or security
-  notices. Security emails (OTP, reset, sign-in, lock, security change, admin
-  role) must not be suppressible by marketing preferences. The design footer's
-  "Email preferences" link should be omitted until a preferences surface exists
-  ([DR-051](./discrepancy-register.md#dr-051)); the current base template's
-  "Unsubscribe" link must go. Billing reminders may become preference-controlled
-  later; that is a product decision.
+  notices. Decided ([OD-20](./discrepancy-register.md#open-decisions),
+  2026-11-27):
+  - **Billing emails may be opted out of:** catalog categories `subscriptions`,
+    `invoices`, `payments` and `wallet` (11 templates). These carry the
+    "Email preferences" footer link once a preferences surface exists
+    (BE-NOTIF-08).
+  - **Security emails can never be opted out of:** categories `security` and
+    `authentication` (OTPs, reset, sign-in, lock, security change, admin
+    role). They carry no "Email preferences" or "Unsubscribe" link.
+  - `account` and `kyc` emails stay non-optional until Product decides
+    otherwise.
+  - Until BE-NOTIF-08 lands, omit the preferences link everywhere
+    ([DR-051](./discrepancy-register.md#dr-051)); the current base template's
+    empty "Unsubscribe" link must go.
 
 ## 6. Password-reset OTP (correction and FE-UI-020 contract)
 
@@ -228,7 +236,7 @@ implementation (BE-NOTIF-01) and FE-UI-016 visual QA of the design source only.
 | Contrast        | Light/dark token pairs from the design system                                                                      | Re-check after client dark-mode transforms                                                                         |
 | Accessibility   | `lang="en"`, `<h1>`, presentation tables, descriptive link text ("Review active sessions"); hidden preheader `div` | Set `lang` per `Language`; keep link text meaningful; title = subject                                              |
 | Plain text      | None in the design; none in the backend (`HtmlBody` only)                                                          | Generate a plain-text alternative for every type                                                                   |
-| Footer          | Sample `[Organization name]`, `support@example.com`, "Email preferences" and "Privacy" links (`href="#"`)          | Brand configuration; omit preferences link until it exists; no "Unsubscribe" on security mail                      |
+| Footer          | Sample `[Organization name]`, `support@example.com`, "Email preferences" and "Privacy" links (`href="#"`)          | Brand configuration; preferences link only on billing emails once BE-NOTIF-08 exists; never on security mail       |
 
 ## 8. Preview policy
 
@@ -356,6 +364,32 @@ producing module.
 - **Dependencies:** backend invoice/receipt domain (FE-UI-018 handoff),
   BE-NOTIF-01.
 
+### BE-NOTIF-08 — Billing email preferences
+
+- **Objective:** let recipients opt out of billing emails while security emails
+  stay mandatory (OD-20).
+- **Context:** no email-preference storage or API exists
+  ([DR-051](./discrepancy-register.md#dr-051)); the user portal Preferences
+  screen has non-working notification controls (DR-090).
+- **Types:** opt-out allowed for categories `subscriptions`, `invoices`,
+  `payments`, `wallet`; never for `security` or `authentication`; `account`
+  and `kyc` non-optional until decided.
+- **Scope:** per-user preference storage and owner-scoped read/update API; a
+  preference check in the dispatch path before rendering (skipped emails logged
+  as suppressed, not failed); `EmailPreferencesUrl` in the footer and a
+  one-click `List-Unsubscribe` / `List-Unsubscribe-Post` header on optional
+  emails only.
+- **Security:** the category-to-optional mapping is server-owned, so a client
+  cannot opt out of a security email; unsubscribe links use signed, expiring,
+  single-purpose tokens that grant no other access.
+- **Acceptance:** an opted-out user receives no billing email of that category
+  and still receives every security email; mandatory emails have no
+  unsubscribe header or link.
+- **Testing:** dispatcher tests for suppressed vs mandatory types; API tests
+  for owner scoping; token tamper and expiry tests.
+- **Dependencies:** BE-NOTIF-01; a frontend follow-up to wire the user portal
+  Preferences notification controls (DR-090).
+
 ## 10. FE-UI-016 QA handoff
 
 - Visual QA covers the design source only: compare `6-emails/` and
@@ -394,7 +428,8 @@ Registered as [OD-18 … OD-20](./discrepancy-register.md#open-decisions) and in
 each template's "open questions" in the catalog. Decided on 2026-11-27:
 in-session password change sends `SecuritySettingChanged` (OD-18); the
 reset-code lifetime becomes 3 minutes (OD-19); the `ConfirmEmail` subject
-becomes code-free (DR-142). Still open: whether billing emails become
-preference-controlled; trigger timing for
+becomes code-free (DR-142); billing emails may be opted out of and security
+emails never (OD-20, BE-NOTIF-08). Still open: whether `account` and `kyc`
+emails become optional; trigger timing for
 `AccountCreated` and `SubscriptionAllocated`; whether the receipt email keeps
 the `SubscriptionInvoice` name.

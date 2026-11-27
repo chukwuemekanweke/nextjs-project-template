@@ -86,15 +86,15 @@ Every row also needs the design-aligned layout, because the current backend temp
 
 **Shared branding variables** (resolved once by the backend base layout from tenant brand configuration, never by producers):
 
-| Variable                    | Type   | Required | Source                                                                                                             | Missing data                     |
-| --------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------- |
-| `ProductName`               | text   | yes      | Tenant brand configuration (backend key 'Product'; EmailConfirmationOtpSender hard-codes 'BackendProjectTemplate') | Configuration error: do not send |
-| `SupportEmail`              | email  | yes      | Tenant brand configuration                                                                                         | Configuration error: do not send |
-| `OrganizationName`          | text   | yes      | Tenant brand configuration (footer)                                                                                | Configuration error: do not send |
-| `OrganizationPostalAddress` | text   | no       | Tenant brand configuration (footer)                                                                                | Omit the line                    |
-| `PrivacyUrl`                | url    | no       | Tenant brand configuration (public portal /privacy)                                                                | Omit the link                    |
-| `EmailPreferencesUrl`       | url    | no       | Only if an email-preferences surface exists (none today, DR-051)                                                   | Omit the link                    |
-| `CopyrightYear`             | number | yes      | Render time                                                                                                        | n/a                              |
+| Variable                    | Type   | Required | Source                                                                                                                                                                                                | Missing data                     |
+| --------------------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `ProductName`               | text   | yes      | Tenant brand configuration (backend key 'Product'; EmailConfirmationOtpSender hard-codes 'BackendProjectTemplate')                                                                                    | Configuration error: do not send |
+| `SupportEmail`              | email  | yes      | Tenant brand configuration                                                                                                                                                                            | Configuration error: do not send |
+| `OrganizationName`          | text   | yes      | Tenant brand configuration (footer)                                                                                                                                                                   | Configuration error: do not send |
+| `OrganizationPostalAddress` | text   | no       | Tenant brand configuration (footer)                                                                                                                                                                   | Omit the line                    |
+| `PrivacyUrl`                | url    | no       | Tenant brand configuration (public portal /privacy)                                                                                                                                                   | Omit the link                    |
+| `EmailPreferencesUrl`       | url    | no       | Billing emails only (categories subscriptions, invoices, payments, wallet; OD-20), once the preferences surface exists (BE-NOTIF-08; none today, DR-051). Never on security or authentication emails. | Omit the link                    |
+| `CopyrightYear`             | number | yes      | Render time                                                                                                                                                                                           | n/a                              |
 
 **Recipient:** EmailNotificationContent.To (resolved by the producer from the stakeholder/Identity user; never from request input). Language: SendNotificationCommand.Language from the stakeholder preference ('en', 'fr' templates exist).
 

@@ -113,7 +113,7 @@
       "name": "EmailPreferencesUrl",
       "type": "url",
       "required": false,
-      "source": "Only if an email-preferences surface exists (none today, DR-051)",
+      "source": "Billing emails only (categories subscriptions, invoices, payments, wallet; OD-20), once the preferences surface exists (BE-NOTIF-08; none today, DR-051). Never on security or authentication emails.",
       "format": "url",
       "sensitive": "none",
       "missing": "Omit the link",
