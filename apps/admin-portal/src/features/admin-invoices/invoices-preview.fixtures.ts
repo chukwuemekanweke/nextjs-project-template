@@ -1,4 +1,7 @@
-import type { AdminListState } from "../admin-billing-shared/billing-model";
+import type {
+  AdminDetailState,
+  AdminListState,
+} from "../admin-billing-shared/billing-model";
 import type {
   AdminInvoiceDetail,
   AdminInvoiceRow,
@@ -7,30 +10,27 @@ import type {
 
 /*
  * PREVIEW ONLY. Deterministic fixtures for the admin invoice screens, used
- * by tests (the preview harness; there is no route). Fixed timestamps,
- * obviously synthetic customers, numbers and references; not documents
- * issued by the application. Production modules must never import this
- * file, use it as a fallback for a failed request or expose it behind a
- * toggle; `features/admin-preview-boundaries.test.ts` enforces the rule.
+ * only by tests (the isolated harness for these screens and for FE-UI-016;
+ * there is no route). Obviously synthetic customers, numbers and references.
+ * Production modules must never import this file
+ * (`features/admin-preview-boundaries.test.ts` enforces it).
  */
 
-export function fixtureInvoiceRow(
+function row(
   index: number,
   overrides: Partial<AdminInvoiceRow> = {},
 ): AdminInvoiceRow {
-  const day = String(10 + index).padStart(2, "0");
   const number = String(140 + index).padStart(4, "0");
   return {
-    billingInterval: "Monthly",
     currencyCode: "NGN",
-    customerDisplayName: `Fixture Customer ${index}`,
     customerEmail: `customer${index}@fixture.invalid`,
     customerId: `user-fixture-${index}`,
+    customerName: `Fixture Customer ${index}`,
     dueAtUtc: `2026-01-${String(17 + index).padStart(2, "0")}T00:00:00Z`,
     id: `inv-fixture-${index}`,
     invoiceNumber: `FIX-INV-${number}`,
-    issuedAtUtc: `2026-01-${day}T09:58:00Z`,
-    planName: "Fixture Standard",
+    issuedAtUtc: `2026-01-${String(10 + index).padStart(2, "0")}T09:58:00Z`,
+    planLabel: "Fixture Standard · monthly",
     receiptNumber: `FIX-RCT-${number}`,
     status: "Paid",
     total: 1_500_000,
@@ -38,48 +38,47 @@ export function fixtureInvoiceRow(
   };
 }
 
-export const fixtureInvoiceRows: readonly AdminInvoiceRow[] = [
-  fixtureInvoiceRow(1),
-  fixtureInvoiceRow(2, { receiptNumber: null, status: "Due" }),
-  fixtureInvoiceRow(3, { receiptNumber: null, status: "Overdue" }),
-  fixtureInvoiceRow(4, { receiptNumber: null, status: "Void" }),
-  fixtureInvoiceRow(5, {
-    billingInterval: null,
-    customerDisplayName: null,
+const rows: readonly AdminInvoiceRow[] = [
+  row(1),
+  row(2, { receiptNumber: null, status: "Due" }),
+  row(3, { receiptNumber: null, status: "Overdue" }),
+  row(4, { receiptNumber: null, status: "Void" }),
+  row(5, {
     customerEmail: null,
+    customerName: null,
     dueAtUtc: null,
-    planName: null,
+    planLabel: null,
   }),
-  fixtureInvoiceRow(6, { status: "ProviderReview" }),
+  row(6, { status: "ProviderReview" }),
 ];
 
 export function fixtureInvoiceList(
-  rows: readonly AdminInvoiceRow[] = fixtureInvoiceRows,
+  list: readonly AdminInvoiceRow[] = rows,
 ): AdminListState<AdminInvoiceRow> {
   return {
     page: 1,
     pageSize: 20,
-    rows,
+    rows: list,
     state: "ready",
-    totalItems: rows.length,
+    totalItems: list.length,
     totalPages: 1,
   };
 }
 
-const unavailableMetric = {
+const unavailable = {
   reason: "Not reported by the backend.",
   state: "unavailable",
 } as const;
 
 export const unavailableInvoiceSummary: AdminInvoiceSummary = {
-  collected: unavailableMetric,
-  invoiced: unavailableMetric,
-  outstanding: unavailableMetric,
-  overdue: unavailableMetric,
+  collected: unavailable,
+  invoiced: unavailable,
+  outstanding: unavailable,
+  overdue: unavailable,
 };
 
 export const fixtureInvoiceSummary: AdminInvoiceSummary = {
-  collected: { context: "FIXTURE", state: "ready", value: "NGN 61,000.00" },
+  collected: { state: "ready", value: "NGN 61,000.00" },
   invoiced: {
     context: "FIXTURE · 6 invoices",
     state: "ready",
@@ -93,17 +92,7 @@ export function fixtureInvoiceDetail(
   overrides: Partial<AdminInvoiceDetail> = {},
 ): AdminInvoiceDetail {
   return {
-    ...fixtureInvoiceRow(2),
-    actions: {
-      downloadPdf: {
-        reason: "FIXTURE: PDF rendering is not available.",
-        state: "unavailable",
-      },
-      resend: {
-        reason: "FIXTURE: resending is not available.",
-        state: "unavailable",
-      },
-    },
+    ...row(2),
     adjustments: [{ amount: 104_651, id: "tax-1", label: "VAT (7.5%)" }],
     amountDue: 0,
     amountPaid: 1_500_000,
@@ -113,12 +102,7 @@ export function fixtureInvoiceDetail(
       name: "Fixture Customer 2",
     },
     history: [
-      {
-        atUtc: "2026-01-12T10:02:00Z",
-        id: "h-3",
-        label: "Receipt emailed",
-        source: "FIXTURE",
-      },
+      { atUtc: "2026-01-12T10:02:00Z", id: "h-3", label: "Receipt emailed" },
       {
         atUtc: "2026-01-12T10:01:00Z",
         id: "h-2",
@@ -131,9 +115,8 @@ export function fixtureInvoiceDetail(
       addressLines: ["1 Fixture Street", "Fixture City, Fixtureland"],
       email: null,
       name: "Fixture Issuer Ltd",
-      registrationNumber: "FIX-RC-0001",
-      taxNumber: "FIX-TAX-0001",
     },
+    issuerLegalLines: ["Fixture Issuer Ltd · Registration no. FIX-RC-0001"],
     lineItems: [
       {
         amount: 1_395_349,
@@ -144,7 +127,7 @@ export function fixtureInvoiceDetail(
         unitAmount: 1_395_349,
       },
     ],
-    notes: ["FIXTURE: notes appear here exactly as returned."],
+    notes: ["FIXTURE: notes appear here exactly as supplied."],
     payment: {
       method: "Fixture Provider · card",
       paidAtUtc: "2026-01-12T10:01:00Z",
@@ -160,3 +143,53 @@ export function fixtureInvoiceDetail(
     ...overrides,
   };
 }
+
+/** Every list state, by name, for the browser harness and FE-UI-016. */
+export const invoiceListPreviews: Readonly<
+  Record<string, AdminListState<AdminInvoiceRow>>
+> = {
+  empty: fixtureInvoiceList([]),
+  error: { state: "error" },
+  forbidden: { permission: "invoices.read", state: "forbidden" },
+  loading: { state: "loading" },
+  ready: fixtureInvoiceList(),
+  unavailable: {
+    reason: "The backend has no invoice API yet.",
+    state: "unavailable",
+  },
+};
+
+/** Every detail state, by name. */
+export const invoiceDetailPreviews: Readonly<
+  Record<string, AdminDetailState<AdminInvoiceDetail>>
+> = {
+  due: {
+    record: fixtureInvoiceDetail({
+      amountPaid: null,
+      amountDue: 1_500_000,
+      payment: null,
+      receiptNumber: null,
+      status: "Due",
+    }),
+    state: "ready",
+  },
+  error: { state: "error" },
+  forbidden: { permission: "invoices.read", state: "forbidden" },
+  loading: { state: "loading" },
+  notFound: { state: "notFound" },
+  overdue: {
+    record: fixtureInvoiceDetail({
+      amountPaid: null,
+      amountDue: 1_500_000,
+      payment: null,
+      receiptNumber: null,
+      status: "Overdue",
+    }),
+    state: "ready",
+  },
+  paid: { record: fixtureInvoiceDetail(), state: "ready" },
+  unavailable: {
+    reason: "The backend has no invoice API yet.",
+    state: "unavailable",
+  },
+};

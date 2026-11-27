@@ -16,7 +16,8 @@ import { useId, type ReactNode } from "react";
  * The sheet always uses the light theme (`theme-light`), as the paper does
  * in every reference theme, so it reads the same on screen in dark mode and
  * in print. In print it drops its card frame and fills the printable width
- * (the dashboard shell hides navigation; pages hide their own controls),
+ * (`data-print-paper` makes the dashboard shell hide its navigation and the
+ * page print on light paper; pages hide their own controls),
  * repeats the line-item header on each page and keeps rows, totals and the
  * footer from splitting across pages.
  */
@@ -150,6 +151,7 @@ export function BillingDocument({
         className,
       )}
       data-billing-document=""
+      data-print-paper=""
     >
       <header className="flex break-inside-avoid flex-wrap items-start justify-between gap-6">
         <div className="flex min-w-0 items-center gap-2.5">

@@ -60,9 +60,11 @@ status: stable
   foundations (`ChartFrame`, `ChartLegend`, series colour helpers); Recharts
   is deferred (TD-10). `@template/dashboard-ui/documents` holds
   `BillingDocument`, a printable sheet rendered from caller-formatted text in
-  the `theme-light` scope (Trello FE-UI-018). In print `DashboardShell` hides
-  its chrome and padding; pages mark their own controls `print:hidden`, and
-  print overrides that compete with responsive utilities use the `!` suffix.
+  the `theme-light` scope (Trello FE-UI-018). It marks itself
+  `data-print-paper`; only pages containing it make `DashboardShell` hide its
+  chrome and padding in print (`group-has` variants), so other pages print
+  unchanged. Pages mark their own controls `print:hidden`; print overrides
+  that compete with responsive utilities use the `!` suffix.
 - App navigation (`apps/*/src/config/navigation.ts`) lists only implemented
   routes (tests check a `page.tsx` exists for each); the complete reference
   navigation is a workbench fixture. User identity comes from

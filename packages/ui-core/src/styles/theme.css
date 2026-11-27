@@ -308,85 +308,33 @@
     --elevation-lg: 0 16px 40px rgb(0 0 0 / 0.5);
   }
 
-  /* Light-only subtree: `class="theme-light"` keeps the light values inside
-     a dark page, for paper-like content that must read the same in every
-     theme and in print (billing documents). It restates every value `.dark`
-     overrides; theme.test.ts keeps the two in step. `dark:` variants still
-     match inside it, so content in this scope must not use them. */
+  /* Light paper inside a dark page (`class="theme-light"`, the billing
+     document sheet): restates only the light values paper content uses
+     (surfaces, border, text, brand, status, elevation). The values come from
+     `@theme static` above; theme.test.ts keeps them equal. `dark:` variants
+     still match inside, so this content must not use them. */
   .theme-light {
     color-scheme: light;
 
-    --color-bg: var(--palette-slate-50);
     --color-surface: var(--palette-slate-0);
     --color-surface-2: var(--palette-slate-25);
-    --color-surface-3: var(--palette-slate-100);
-    --color-hover: var(--palette-slate-100);
-    --color-surface-selected: var(--palette-slate-0);
-
     --color-border: var(--palette-slate-200);
-    --color-border-strong: var(--palette-slate-300);
-    --color-control-border: var(--palette-slate-450);
-
     --color-fg: var(--palette-slate-900);
     --color-fg-muted: var(--palette-slate-600);
     --color-fg-subtle: var(--palette-slate-500);
-
     --color-brand: var(--palette-blue-500);
-    --color-brand-hover: var(--palette-blue-600);
-    --color-brand-press: var(--palette-blue-700);
-    --color-brand-soft: var(--palette-blue-50);
-    --color-brand-soft-2: var(--palette-blue-100);
-    --color-brand-ink: var(--palette-blue-600);
     --color-on-brand: var(--palette-white);
-
-    --color-tab-active-fg: var(--palette-blue-600);
-    --color-tab-active-border: var(--palette-blue-500);
-
-    --color-nav-bg: var(--palette-slate-0);
-    --color-nav-active-bg: var(--palette-blue-50);
-    --color-nav-active-fg: var(--palette-blue-600);
-
     --color-success: var(--palette-green-700);
     --color-success-bg: var(--palette-green-50);
     --color-warning: var(--palette-amber-700);
     --color-warning-bg: var(--palette-amber-50);
     --color-danger: var(--palette-red-700);
     --color-danger-bg: var(--palette-red-50);
-    --color-danger-solid: var(--palette-red-700);
     --color-info: var(--palette-blue-600);
     --color-info-bg: var(--palette-blue-50);
     --color-neutral: var(--palette-slate-600);
     --color-neutral-bg: var(--palette-slate-75);
-
-    --color-chart-1: var(--palette-blue-500);
-    --color-chart-2: var(--palette-blue-300);
-    --color-chart-3: var(--palette-amber-500);
-    --color-chart-4: var(--palette-teal-700);
-    --color-grid: var(--palette-slate-125);
-    --color-chart-axis: var(--palette-slate-500);
-    --color-chart-area: color-mix(
-      in srgb,
-      var(--palette-blue-500) 12%,
-      transparent
-    );
-
-    --color-scrim: rgb(15 23 42 / 0.45);
-    --color-auth-panel: var(--palette-blue-500);
-    --color-auth-panel-border: var(--palette-blue-500);
-    --color-switch-thumb: var(--palette-white);
-    --color-switch-track: var(--palette-slate-450);
-
-    --elevation-xs: 0 1px 2px rgb(16 24 40 / 0.05);
-    --elevation-sm: 0 1px 3px rgb(16 24 40 / 0.12);
     --elevation-lg: 0 12px 32px rgb(16 24 40 / 0.14);
-  }
-
-  /* Print on light paper in every theme: the page canvas follows
-     color-scheme. Paper-like content uses `.theme-light`. */
-  @media print {
-    .dark {
-      color-scheme: light;
-    }
   }
 }
 
@@ -569,9 +517,15 @@
     line-height: var(--text-body--line-height);
   }
 
-  /* Paper, not the app background, behind printed content. */
+  /* Only pages that print paper-like content (`data-print-paper`, the
+     billing document sheet) print on light paper in every theme; other
+     pages keep the default print behaviour. */
   @media print {
-    body {
+    :root:has([data-print-paper]) {
+      color-scheme: light;
+    }
+
+    body:has([data-print-paper]) {
       background-color: transparent;
     }
   }

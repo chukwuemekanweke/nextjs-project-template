@@ -1,7 +1,6 @@
 import type {
-  DocumentIssuer,
-  DocumentLineItem,
   DocumentParty,
+  DocumentReadState,
   UserInvoice,
   UserReceipt,
 } from "./billing-documents-model";
@@ -9,32 +8,38 @@ import type {
 /*
  * PREVIEW ONLY. Deterministic fixtures for the reference
  * `UserInvoiceDetail-*`, `UserReceiptDetail-*`, `PrintInvoice` and
- * `PrintReceipt` artboards, used by tests (the isolated harness for these
- * screens; there is no route). Fixed timestamps, obviously synthetic names,
- * numbers and references. They are not documents issued by the application
- * and must never be printed or shown as one: production modules must never
- * import this file, use it as a fallback for a failed request or expose it
- * behind a toggle; `billing-documents-screens.test.tsx` enforces the import
- * rule.
+ * `PrintReceipt` artboards, used only by tests (the isolated harness for
+ * these screens and for FE-UI-016; there is no route). Obviously synthetic
+ * names, numbers and references; never a document issued by the application.
+ * Production modules must never import this file
+ * (`billing-documents-screens.test.tsx` enforces it).
  */
 
-export const FIXTURE_CURRENCY = "NGN";
-
-export const fixtureIssuer: DocumentIssuer = {
+const issuer: DocumentParty = {
   addressLines: ["1 Fixture Street", "Fixture City, Fixtureland"],
   email: null,
   name: "Fixture Issuer Ltd",
-  registrationNumber: "FIX-RC-0001",
-  taxNumber: "FIX-TAX-0001",
 };
 
-export const fixtureCustomer: DocumentParty = {
+const customer: DocumentParty = {
   addressLines: ["Fixture City, Fixtureland"],
   email: "customer@fixture.invalid",
   name: "Fixture Customer",
 };
 
-export const fixturePlanLine: DocumentLineItem = {
+const common = {
+  adjustments: [{ amount: 104_651, id: "tax-1", label: "VAT (7.5%)" }],
+  currencyCode: "NGN",
+  issuer,
+  issuerLegalLines: [
+    "Fixture Issuer Ltd · Registration no. FIX-RC-0001",
+    "Tax no. FIX-TAX-0001 · 1 Fixture Street, Fixture City",
+  ],
+  notes: ["FIXTURE: notes appear here exactly as supplied."],
+  subtotal: 1_395_349,
+} as const;
+
+const planLine = {
   amount: 1_395_349,
   description: "Fixture Standard plan",
   detail: "Monthly · 14 Jan 2026 – 14 Feb 2026",
@@ -43,30 +48,23 @@ export const fixturePlanLine: DocumentLineItem = {
   unitAmount: 1_395_349,
 };
 
-const capabilitiesOff = { downloadPdf: false, emailCopy: false } as const;
-
 export function fixtureInvoice(
   overrides: Partial<UserInvoice> = {},
 ): UserInvoice {
   return {
-    adjustments: [{ amount: 104_651, id: "tax-1", label: "VAT (7.5%)" }],
+    ...common,
     amountDue: 1_500_000,
     amountPaid: null,
-    billedTo: fixtureCustomer,
-    capabilities: { ...capabilitiesOff, pay: false },
-    currencyCode: FIXTURE_CURRENCY,
+    billedTo: customer,
     dueAtUtc: "2026-01-21T00:00:00Z",
     id: "inv-fixture-0142",
     invoiceNumber: "FIX-INV-0142",
     issuedAtUtc: "2026-01-14T09:58:00Z",
-    issuer: fixtureIssuer,
-    lineItems: [fixturePlanLine],
-    notes: ["FIXTURE: notes appear here exactly as the backend returns them."],
+    lineItems: [planLine],
     payment: null,
     periodEndUtc: "2026-02-14T00:00:00Z",
     periodStartUtc: "2026-01-14T00:00:00Z",
     status: "Due",
-    subtotal: 1_395_349,
     total: 1_500_000,
     ...overrides,
   };
@@ -89,14 +87,14 @@ export const fixturePaidInvoice = fixtureInvoice({
   status: "Paid",
 });
 
-/** Enough line items to span more than one printed page. */
+/** Enough line items to span several printed pages. */
 export const fixtureLongInvoice = fixtureInvoice({
   lineItems: Array.from({ length: 40 }, (_, index) => ({
-    amount: 100_000 + index,
+    amount: 100_000,
     description: `Fixture line item ${index + 1}`,
     detail: "FIXTURE: a secondary description line",
     id: `line-${index + 1}`,
-    quantity: index + 1,
+    quantity: 1,
     unitAmount: 100_000,
   })),
 });
@@ -105,31 +103,22 @@ export function fixtureReceipt(
   overrides: Partial<UserReceipt> = {},
 ): UserReceipt {
   return {
-    adjustments: [{ amount: 104_651, id: "tax-1", label: "VAT (7.5%)" }],
+    ...common,
     amountPaid: 1_500_000,
-    capabilities: capabilitiesOff,
-    currencyCode: FIXTURE_CURRENCY,
     id: "rct-fixture-0331",
     invoice: { id: "inv-fixture-0142", invoiceNumber: "FIX-INV-0142" },
-    issuer: fixtureIssuer,
     kind: "subscription",
     lineItems: [
-      {
-        ...fixturePlanLine,
-        detail:
-          "Monthly · 14 Jan 2026 – 14 Feb 2026 · for invoice FIX-INV-0142",
-      },
+      { ...planLine, detail: `${planLine.detail} · for invoice FIX-INV-0142` },
     ],
-    notes: ["FIXTURE: receipt notes appear here as returned."],
     paidAtUtc: "2026-01-14T10:01:00Z",
-    payer: fixtureCustomer,
+    payer: customer,
     paymentMethod: "Fixture Provider · card",
     paymentReference: "FIXPAY-8812",
     receiptNumber: "FIX-RCT-0331",
     status: "Paid",
-    subtotal: 1_395_349,
     totalPaid: 1_500_000,
-    walletTransaction: null,
+    walletReference: null,
     ...overrides,
   };
 }
@@ -158,5 +147,31 @@ export const fixtureWalletReceipt = fixtureReceipt({
   receiptNumber: "FIX-RCT-0352",
   subtotal: 2_000_000,
   totalPaid: 2_000_000,
-  walletTransaction: { reference: "FIX-WTX-21F9" },
+  walletReference: "FIX-WTX-21F9",
 });
+
+/** Every invoice state, by name, for the browser harness and FE-UI-016. */
+export const invoicePreviews: Readonly<
+  Record<string, DocumentReadState<UserInvoice>>
+> = {
+  due: { document: fixtureDueInvoice, state: "ready" },
+  error: { state: "error" },
+  loading: { state: "loading" },
+  long: { document: fixtureLongInvoice, state: "ready" },
+  notFound: { state: "notFound" },
+  overdue: { document: fixtureOverdueInvoice, state: "ready" },
+  paid: { document: fixturePaidInvoice, state: "ready" },
+  unavailable: { state: "unavailable" },
+};
+
+/** Every receipt state, by name. */
+export const receiptPreviews: Readonly<
+  Record<string, DocumentReadState<UserReceipt>>
+> = {
+  error: { state: "error" },
+  loading: { state: "loading" },
+  notFound: { state: "notFound" },
+  subscription: { document: fixtureSubscriptionReceipt, state: "ready" },
+  unavailable: { state: "unavailable" },
+  wallet: { document: fixtureWalletReceipt, state: "ready" },
+};

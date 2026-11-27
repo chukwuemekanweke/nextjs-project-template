@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useId } from "react";
 import { DashboardHeader } from "@template/dashboard-ui";
 import {
+  Button,
   DownloadIcon,
-  FormField,
-  SearchInput,
   formatMinorUnits,
   type TableColumn,
 } from "@template/ui-core";
@@ -26,39 +24,31 @@ import {
   BillingListTable,
   BillingStatusBadge,
   FilterSelect,
-  IntentButton,
   NotAvailable,
   UnavailableActionHint,
 } from "../admin-billing-shared/billing-sections";
 import {
-  INVOICE_SEARCH_MAX_LENGTH,
   describeInvoiceStatus,
-  hasActiveInvoiceFilters,
-  invoicePlanLabel,
-  invoiceStatusFilterOptions,
-  type AdminInvoiceFilters,
   type AdminInvoiceRow,
   type AdminInvoiceSummary,
 } from "./invoices-model";
 
 /*
  * Invoices list (reference `AdminInvoices*`, one responsive composition).
- * Presentation only: the future page owns URL filter state, the admin
- * invoice read and CSV export. PREVIEW-ONLY (DR-160): no route or
- * navigation item until an admin invoice API exists. Without handlers the
- * filters and export are inert with a visible reason; rows link to a detail
- * page only when the caller supplies `detailHref`, built from the backend
- * invoice id.
+ * PREVIEW-ONLY (BE-DS-007, DR-160): no route or navigation item. Export, the
+ * status filter and the date range are shown disabled with their reason;
+ * rows link to a detail page only through a caller-supplied `detailHref`
+ * built from the invoice id.
  */
 
-export const INVOICES_PAGE_TITLE = "Invoices & receipts";
+const STATUS_OPTIONS = [
+  { label: "Paid", value: "Paid" },
+  { label: "Due", value: "Due" },
+  { label: "Overdue", value: "Overdue" },
+];
 
 export function InvoicesScreen({
   detailHref,
-  exportBusy = false,
-  filters,
-  onExport,
-  onFiltersChange,
   onPageChange,
   onRetry,
   state,
@@ -66,18 +56,11 @@ export function InvoicesScreen({
 }: Readonly<{
   /** Detail URL for a row; omit while the detail route does not exist. */
   detailHref?: (row: AdminInvoiceRow) => string;
-  exportBusy?: boolean;
-  filters: AdminInvoiceFilters;
-  onExport?: () => void;
-  onFiltersChange?: (filters: AdminInvoiceFilters) => void;
   onPageChange?: (page: number) => void;
   onRetry?: () => void;
   state: AdminListState<AdminInvoiceRow>;
   summary: AdminInvoiceSummary;
 }>) {
-  const id = useId();
-  const exportHintId = `${id}-export-hint`;
-
   if (state.state === "forbidden") {
     return (
       <AdminForbidden
@@ -88,40 +71,28 @@ export function InvoicesScreen({
     );
   }
 
-  const live = Boolean(onFiltersChange) && state.state !== "unavailable";
-  const change = live
-    ? (patch: Partial<AdminInvoiceFilters>) =>
-        onFiltersChange?.({ ...filters, ...patch })
-    : undefined;
-  const filterReason = live ? undefined : UNAVAILABLE_FILTER_DESCRIPTION;
-  const searchHintId = `${id}-search-hint`;
-  const canExport = Boolean(onExport) && state.state === "ready";
-
   return (
     <section className="grid gap-5 md:gap-6">
       <DashboardHeader
         actions={
           <div className="grid justify-items-end gap-1 max-sm:justify-items-stretch">
-            <IntentButton
-              busy={exportBusy}
-              hintId={exportHintId}
-              intent="exportCsv"
+            <Button
+              aria-describedby="invoices-export-hint"
+              disabled
               leadingIcon={<DownloadIcon />}
-              onAction={canExport ? onExport : undefined}
               size="sm"
+              type="button"
               variant="secondary"
             >
               Export CSV
-            </IntentButton>
-            {canExport ? null : (
-              <UnavailableActionHint id={exportHintId}>
-                Export is not available yet.
-              </UnavailableActionHint>
-            )}
+            </Button>
+            <UnavailableActionHint id="invoices-export-hint">
+              Export is not available yet.
+            </UnavailableActionHint>
           </div>
         }
         description="Every invoice issued and the receipt for each payment."
-        title={INVOICES_PAGE_TITLE}
+        title="Invoices & receipts"
       />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <AdminKpiCard label="Invoiced (30d)" metric={summary.invoiced} />
@@ -133,37 +104,19 @@ export function InvoicesScreen({
         title="Invoices"
         toolbar={
           <AdminFilterBar label="Invoice filters">
-            <FormField
-              className="min-w-[220px] flex-[2_1_260px]"
-              descriptionId={filterReason ? searchHintId : undefined}
-              hint={filterReason}
-              inputId={`${id}-search`}
-              label="Search"
-            >
-              <SearchInput
-                aria-describedby={filterReason ? searchHintId : undefined}
-                disabled={!change}
-                id={`${id}-search`}
-                maxLength={INVOICE_SEARCH_MAX_LENGTH}
-                onChange={(event) => change?.({ query: event.target.value })}
-                placeholder="Invoice number or customer"
-                value={filters.query}
-              />
-            </FormField>
             <FilterSelect
-              disabledReason={filterReason}
-              id={`${id}-status`}
+              anyLabel="All"
+              disabledReason={UNAVAILABLE_FILTER_DESCRIPTION}
+              id="invoices-status"
               label="Status"
-              onChange={change ? (status) => change({ status }) : undefined}
-              options={invoiceStatusFilterOptions}
-              value={filters.status}
+              options={STATUS_OPTIONS}
+              value=""
             />
             <AdminRangeFilter
-              disabled={!change}
-              disabledReason={filterReason}
-              label="Issued"
-              onChange={change ? (range) => change({ range }) : undefined}
-              value={filters.range}
+              disabled
+              disabledReason={UNAVAILABLE_FILTER_DESCRIPTION}
+              label="Date range"
+              value="30d"
             />
           </AdminFilterBar>
         }
@@ -171,16 +124,7 @@ export function InvoicesScreen({
         <BillingListTable
           caption="Invoices"
           columns={invoiceColumns(detailHref)}
-          emptyDescription={
-            hasActiveInvoiceFilters(filters)
-              ? "Try a different search or clear some filters."
-              : undefined
-          }
-          emptyTitle={
-            hasActiveInvoiceFilters(filters)
-              ? "No invoices match these filters"
-              : "No invoices yet"
-          }
+          emptyTitle="No invoices yet"
           keyField={(row) => row.id}
           loadingLabel="Loading invoices"
           onPageChange={onPageChange}
@@ -192,8 +136,7 @@ export function InvoicesScreen({
   );
 }
 
-/** The eight reference columns, plus "View" when a detail route exists. */
-export function invoiceColumns(
+function invoiceColumns(
   detailHref?: (row: AdminInvoiceRow) => string,
 ): TableColumn<AdminInvoiceRow>[] {
   const columns: TableColumn<AdminInvoiceRow>[] = [
@@ -205,10 +148,10 @@ export function invoiceColumns(
     },
     {
       cell: (row) =>
-        row.customerDisplayName ? (
+        row.customerName ? (
           <span className="grid min-w-0">
             <span className="text-fg font-medium break-words">
-              {row.customerDisplayName}
+              {row.customerName}
             </span>
             {row.customerEmail ? (
               <span className="text-small text-fg-subtle break-all">
@@ -221,10 +164,7 @@ export function invoiceColumns(
         ),
       header: "Customer",
     },
-    {
-      cell: (row) => invoicePlanLabel(row) ?? <NotAvailable />,
-      header: "Plan",
-    },
+    { cell: (row) => row.planLabel ?? <NotAvailable />, header: "Plan" },
     {
       align: "right",
       cell: (row) => (
@@ -240,10 +180,7 @@ export function invoiceColumns(
       ),
       header: "Status",
     },
-    {
-      cell: (row) => <UtcDate value={row.issuedAtUtc} />,
-      header: "Issued",
-    },
+    { cell: (row) => <UtcDate value={row.issuedAtUtc} />, header: "Issued" },
     {
       cell: (row) =>
         row.dueAtUtc ? (

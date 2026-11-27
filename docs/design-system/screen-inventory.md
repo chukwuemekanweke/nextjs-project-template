@@ -493,10 +493,10 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserInvoiceDetail` (states due, overdue, paid) — 12 reference files (desktop/mobile; dark/light); `PrintInvoice` — 1 print reference (A4, light). Design revision `ad9386e`.
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
-- **Composition (Trello FE-UI-018):** `apps/user-portal/src/features/billing-documents/` — `billing-documents-model.ts` (invoice/receipt types, backend-status variants, UTC dates, sheet content), `invoice-detail-screen.tsx` (back link, header with Print and Download PDF, document sheet, summary card), `document-screen-parts.tsx`, `billing-documents-preview.fixtures.ts` (tests only); sheet from `@template/dashboard-ui/documents`. Rendered only by tests; no route, navigation item, API call or production import.
-- **Actions:** Print is an intent (the caller prints); Download PDF and Email me a copy need backend capability and a handler, otherwise disabled with a reason; Pay appears only when the invoice reports a supported payment integration; View receipt links only with a real receipt id.
-- **Print:** browser print CSS: the dashboard shell, page header and summary are hidden; the light document sheet fills the printable width, repeats the line-item header and keeps rows and totals whole. No separate print route and no PDF generation.
-- **Unsupported / missing backend:** Owner-scoped invoice read; invoice ids on billing-history rows and purchase status; invoice PDF, email copy and payment operations
+- **Composition (Trello FE-UI-018):** `apps/user-portal/src/features/billing-documents/` — `billing-documents-model.ts` (local invoice/receipt types, statuses, UTC dates, sheet content), `invoice-detail-screen.tsx` (back link, header with Print and Download PDF, document sheet, summary card), `document-parts.tsx`, `billing-documents-preview.fixtures.ts` (tests only; every state by name); sheet from `@template/dashboard-ui/documents`. Rendered by the static and browser tests only; no route, navigation item, API call or production import.
+- **Actions:** Print uses the browser; Download PDF and Email me a copy are disabled with a visible reason; there is no Pay action; View receipt links only with a receipt id.
+- **Print:** browser print CSS scoped to pages containing the sheet: the dashboard shell, page header and summary are hidden; the light sheet fills the printable width, repeats the line-item header and keeps rows and totals whole. No print route and no PDF generation.
+- **Unsupported / missing backend (BE-DS-007):** Owner-scoped invoice read; invoice ids on billing-history rows and purchase status; invoice PDF, email copy and payment operations
 - **Gap:** No invoice or receipt entity, read, render, email or payment operation exists in the backend or api-client (DR-160). Reference issuer placeholders, legal footer, VAT copy, payment-method promises and page numbering are not rendered unless the document model supplies them (DR-161).
 - **Depends on:** USR-BILLING-HISTORY; backend invoice read model
 - **Discrepancies:** [DR-160](./discrepancy-register.md#dr-160), [DR-161](./discrepancy-register.md#dr-161), [DR-162](./discrepancy-register.md#dr-162), [DR-164](./discrepancy-register.md#dr-164)
@@ -561,7 +561,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
 - **Composition (Trello FE-UI-018):** `receipt-detail-screen.tsx` in `apps/user-portal/src/features/billing-documents/` — one composition for subscription and wallet receipts (amount paid and time, parties, method, reference, line items, totals, payment card); the "For" row links an invoice only by its id. Rendered only by tests; no route, navigation item, API call or production import.
 - **Actions:** as `USR-INVOICE-DETAIL`; no Pay. A successful purchase or wallet top-up is never presented as a receipt.
-- **Unsupported / missing backend:** Owner-scoped receipt read; receipt ids on billing-history, purchase status and wallet rows; receipt PDF and email copy operations
+- **Unsupported / missing backend (BE-DS-007):** Owner-scoped receipt read; receipt ids on billing-history, purchase status and wallet rows; receipt PDF and email copy operations
 - **Gap:** No invoice or receipt entity, read, render, email or payment operation exists in the backend or api-client (DR-160).
 - **Depends on:** USR-BILLING-HISTORY; USR-WALLET; backend receipt read model
 - **Discrepancies:** [DR-160](./discrepancy-register.md#dr-160), [DR-161](./discrepancy-register.md#dr-161), [DR-162](./discrepancy-register.md#dr-162), [DR-164](./discrepancy-register.md#dr-164)
@@ -713,8 +713,8 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminInvoiceDetail` — 4 reference files (desktop/mobile; dark/light), revision `ad9386e`.
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
-- **Composition (Trello FE-UI-018):** `apps/admin-portal/src/features/admin-invoices/invoice-detail.tsx` — header with status and Print, the shared invoice document sheet, an invoice card (customer, subscription, payment, receipt; links only through ids and caller URL builders) with Resend and Download PDF gated on per-record availability, and a history timeline; loading/error/not found/unavailable/forbidden states. In print only the document remains.
-- **Unsupported / missing backend:** Admin invoice detail; resend and invoice PDF operations
+- **Composition (Trello FE-UI-018):** `apps/admin-portal/src/features/admin-invoices/invoice-detail.tsx` — header with status and Print, the shared invoice document sheet, an invoice card (customer, subscription, payment, receipt; links only through ids and caller URL builders) with Resend and Download PDF disabled with their reason, and a history timeline; loading/error/not found/unavailable/forbidden states. In print only the document remains.
+- **Unsupported / missing backend (BE-DS-007):** Admin invoice detail; resend and invoice PDF operations
 - **Gap:** No invoice or receipt entity, read, render, email or payment operation exists in the backend or api-client (DR-160).
 - **Depends on:** ADM-INVOICES
 - **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070), [DR-160](./discrepancy-register.md#dr-160), [DR-161](./discrepancy-register.md#dr-161), [DR-162](./discrepancy-register.md#dr-162), [DR-164](./discrepancy-register.md#dr-164)
@@ -725,8 +725,8 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminInvoices` — 4 reference files (desktop/mobile; dark/light), revision `ad9386e`.
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
-- **Composition (Trello FE-UI-018):** `apps/admin-portal/src/features/admin-invoices/` — `invoices-model.ts` (row/detail types, status, URL filter helpers, document sheet content), `invoices-list.tsx` (Export CSV intent, four KPI tiles, search + status + issued-range filters, eight-column table, pager), `invoices-preview.fixtures.ts` (tests only); shared states in `admin-billing-shared/`. Rendered only by `invoices-screens.test.tsx`; no route, navigation item or production import.
-- **Unsupported / missing backend:** Admin invoice search/list; KPI aggregates; CSV export
+- **Composition (Trello FE-UI-018):** `apps/admin-portal/src/features/admin-invoices/` — `invoices-model.ts` (local row/detail types, status, sheet content), `invoices-list.tsx` (disabled Export CSV, four KPI tiles, disabled status and date-range filters, eight-column table, pager), `invoices-preview.fixtures.ts` (tests only; every state by name); shared states in `admin-billing-shared/`. Rendered by the static and browser tests only; no route, navigation item or production import.
+- **Unsupported / missing backend (BE-DS-007):** Admin invoice search/list; KPI aggregates; CSV export
 - **Gap:** The reference adds an "Invoices" item under Operations; production navigation stays Dashboard-only until the route and API exist (DR-163).
 - **Depends on:** FE-UI-006; backend admin invoice API
 - **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070), [DR-160](./discrepancy-register.md#dr-160), [DR-162](./discrepancy-register.md#dr-162), [DR-163](./discrepancy-register.md#dr-163)

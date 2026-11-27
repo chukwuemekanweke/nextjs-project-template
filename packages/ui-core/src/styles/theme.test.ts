@@ -176,27 +176,29 @@ describe("theme.css semantic colours", () => {
   });
 });
 
-describe("theme.css light-only scope", () => {
-  it("restates every dark override with its light value", () => {
+describe("theme.css light paper scope", () => {
+  it("restates light values only, each equal to its light token", () => {
     const darkOnly = declarations(blockAfter("  .dark {"));
-    const lightOnly = declarations(blockAfter("  .theme-light {"));
+    const paper = declarations(blockAfter("  .theme-light {"));
     const lightValues = new Map([
       ...light,
       ...declarations(blockAfter("  :root {\n    color-scheme: light;")),
     ]);
-    expect([...lightOnly.keys()].sort()).toEqual([...darkOnly.keys()].sort());
-    for (const name of darkOnly.keys()) {
-      expect(lightOnly.get(name), name).toBe(lightValues.get(name));
+    expect(paper.size).toBeGreaterThan(0);
+    for (const [name, value] of paper) {
+      // Only tokens the dark theme changes need restating.
+      expect(darkOnly.has(name), name).toBe(true);
+      expect(value, name).toBe(lightValues.get(name));
     }
     expect(blockAfter("  .theme-light {")).toContain("color-scheme: light;");
   });
 
-  it("prints on light paper in every theme", () => {
-    const print = css.replace(/\s+/g, " ");
-    expect(print).toContain("@media print { .dark { color-scheme: light; } }");
-    expect(print).toContain(
-      "@media print { body { background-color: transparent; } }",
+  it("scopes print rules to pages that print paper", () => {
+    const flat = css.replace(/\s+/g, " ");
+    expect(flat).toContain(
+      "@media print { :root:has([data-print-paper]) { color-scheme: light; } body:has([data-print-paper]) { background-color: transparent; } }",
     );
+    expect(flat).not.toMatch(/@media print \{ (\.dark|body) \{/);
   });
 });
 

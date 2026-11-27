@@ -560,7 +560,7 @@
           "packages/dashboard-ui/src/documents/billing-document.tsx"
         ],
         "existingFunctionality": [
-          "Trello FE-UI-018 (design ad9386e): header with status and Print, the shared invoice document sheet, an invoice card (customer, subscription, payment, receipt; links only through ids and caller URL builders) with Resend and Download PDF gated on per-record availability, and a history timeline; loading/error/not found/unavailable/forbidden states."
+          "Trello FE-UI-018 (design ad9386e): header with status and Print, the shared invoice document sheet, an invoice card (customer, subscription, payment, receipt; links only through ids and caller URL builders) with Resend and Download PDF disabled with their reason, and a history timeline; loading/error/not found/unavailable/forbidden states."
         ]
       },
       "backend": {
@@ -578,7 +578,9 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-018",
       "discrepancies": ["DR-070", "DR-160", "DR-161", "DR-162", "DR-164"],
-      "notes": []
+      "notes": [
+        "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
+      ]
     },
     {
       "id": "ADM-INVOICES",
@@ -639,8 +641,8 @@
           "apps/admin-portal/src/features/admin-billing-shared/billing-sections.tsx"
         ],
         "existingFunctionality": [
-          "Trello FE-UI-018 (design ad9386e): header with Export CSV intent, four KPI tiles (unavailable until reported), search + status + issued-range filters, eight-column table with stacked phone rows and pager; loading/error/empty/unavailable/forbidden states. Rendered only by tests from typed fixtures; no route, navigation item or production import.",
-          "Filters, export and row links are inert without caller handlers/routes; rows link only through a detail URL built from the invoice id."
+          "Trello FE-UI-018 (design ad9386e): header with disabled Export CSV, four KPI tiles (unavailable until reported), disabled status and date-range filters with their reason, eight-column table with stacked phone rows and pager; loading/error/empty/unavailable/forbidden states. Rendered only by tests from typed fixtures; no route, navigation item or production import.",
+          "Rows link only through a detail URL built from the invoice id."
         ]
       },
       "backend": {
@@ -660,7 +662,9 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-018",
       "discrepancies": ["DR-070", "DR-160", "DR-162", "DR-163"],
-      "notes": []
+      "notes": [
+        "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
+      ]
     },
     {
       "id": "ADM-KYC",
@@ -4800,13 +4804,13 @@
         "files": [
           "apps/user-portal/src/features/billing-documents/invoice-detail-screen.tsx",
           "apps/user-portal/src/features/billing-documents/billing-documents-model.ts",
-          "apps/user-portal/src/features/billing-documents/document-screen-parts.tsx",
+          "apps/user-portal/src/features/billing-documents/document-parts.tsx",
           "apps/user-portal/src/features/billing-documents/billing-documents-preview.fixtures.ts",
           "packages/dashboard-ui/src/documents/billing-document.tsx"
         ],
         "existingFunctionality": [
           "Trello FE-UI-018 (design ad9386e): one responsive, theme-aware composition (back link, header with Print and Download PDF, invoice document sheet, summary card) for the due, overdue and paid variants, derived from the backend status only; loading/error/not found/unavailable states. Rendered only by tests from typed fixtures; no route, navigation item or API call.",
-          "Pay appears only when the invoice reports a supported payment integration and a handler exists; Download PDF and Email me a copy are disabled with a reason without backend support; View receipt links only with a real receipt id. Print uses browser print CSS: the shell, header and summary are hidden and the light document fills the page."
+          "No Pay action; Download PDF and Email me a copy are disabled with a visible reason; Print uses the browser; View receipt links only with a real receipt id. Print CSS is scoped to pages containing the sheet: the shell, header and summary are hidden and the light document fills the page."
         ]
       },
       "backend": {
@@ -4827,7 +4831,8 @@
       "roadmapTicket": "FE-UI-018",
       "discrepancies": ["DR-160", "DR-161", "DR-162", "DR-164"],
       "notes": [
-        "Preview-only: fixtures are imported only by tests (enforced); overdue is never computed from the clock."
+        "Preview-only: fixtures are imported only by tests (enforced); overdue is never computed from the clock.",
+        "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
       ]
     },
     {
@@ -5261,13 +5266,13 @@
         "files": [
           "apps/user-portal/src/features/billing-documents/receipt-detail-screen.tsx",
           "apps/user-portal/src/features/billing-documents/billing-documents-model.ts",
-          "apps/user-portal/src/features/billing-documents/document-screen-parts.tsx",
+          "apps/user-portal/src/features/billing-documents/document-parts.tsx",
           "apps/user-portal/src/features/billing-documents/billing-documents-preview.fixtures.ts",
           "packages/dashboard-ui/src/documents/billing-document.tsx"
         ],
         "existingFunctionality": [
           "Trello FE-UI-018 (design ad9386e): one composition for subscription and wallet receipts (amount paid, paid time, parties, method, reference, line items, totals, payment card); the 'For' row links an invoice only by its id. Rendered only by tests from typed fixtures; no route, navigation item or API call.",
-          "A successful purchase or wallet top-up is never shown as a receipt; Download PDF and Email me a copy are disabled with a reason without backend support."
+          "A successful purchase or wallet top-up is never shown as a receipt; Download PDF and Email me a copy are disabled with a visible reason."
         ]
       },
       "backend": {
@@ -5290,7 +5295,10 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-018",
       "discrepancies": ["DR-160", "DR-161", "DR-162", "DR-164"],
-      "notes": ["Preview-only: fixtures are imported only by tests (enforced)."]
+      "notes": [
+        "Preview-only: fixtures are imported only by tests (enforced).",
+        "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
+      ]
     },
     {
       "id": "USR-SECURITY",

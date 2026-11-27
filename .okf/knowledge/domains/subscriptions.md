@@ -122,13 +122,14 @@ minor units on the wire; format them only with `formatMinorUnits`
   proxy and validated `returnTo` carry the plan through sign-in/registration.
 
 - Invoices and receipts (Trello FE-UI-018) are preview-only: the backend has
-  no invoice/receipt entity or operation (DR-160). `features/billing-documents`
+  no invoice/receipt entity or operation (DR-160; deferred to BE-DS-007,
+  https://trello.com/c/8JZSDXfH). `features/billing-documents`
   (User Portal) and `features/admin-invoices` (Admin Portal) hold local models,
   screens and test-only fixtures on the shared `BillingDocument`; no route,
   navigation item, adapter or history/purchase/wallet link exists. Variants
-  come from the backend status only (overdue never from the clock); Pay,
-  PDF, email and resend need a reported capability plus a handler; links use
-  backend document ids only, never purchase ids or payment references; a
+  come from the status only (overdue never from the clock); there is no Pay
+  action, and PDF, email, resend, export and filters stay disabled with a
+  reason; Print uses the browser; links use document ids only, never purchase ids or payment references; a
   successful payment is never shown as a receipt.
 
 Unsupported by the backend customer API: upgrades, downgrades, proration,

@@ -1,5 +1,4 @@
 import type {
-  BillingDocumentFact,
   BillingDocumentParty,
   BillingDocumentProps,
   BillingDocumentTotal,
@@ -7,157 +6,101 @@ import type {
 import { formatMinorUnits, type BadgeTone } from "@template/ui-core";
 
 /*
- * Invoice and receipt view models for USR-INVOICE-DETAIL and
+ * Invoice and receipt presentation for USR-INVOICE-DETAIL and
  * USR-RECEIPT-DETAIL (Trello FE-UI-018, design `5-invoices-and-receipts`).
  *
- * There is no invoice or receipt contract in the backend or in
- * `@template/api-client` (DR-160): the billing history rows and purchase
- * status carry no invoice/receipt identifiers, and no operation lists, reads,
- * renders, emails or pays a document. These are local presentation types.
- * Nothing in production builds them yet. A future adapter maps an
- * authoritative owner-scoped document read into them; it must not derive a
- * document from a purchase, payment or wallet top-up (a successful payment
- * is not proof that a receipt was issued), and must never compute amounts,
- * taxes, totals, due dates or statuses. Fields the source does not return
- * stay `null` and are omitted from the document.
- *
- * Amounts are whole minor units in the document currency and are formatted
- * only with `formatMinorUnits`.
+ * PREVIEW-ONLY: the backend has no invoice or receipt capability yet
+ * (BE-DS-007, DR-160), so these are local presentation types describing what
+ * the reference screens show, not a backend contract. Nothing in production
+ * builds them. Amounts are whole minor units formatted with
+ * `formatMinorUnits`; statuses, totals and dates are shown as given and never
+ * computed (overdue is never derived from the clock).
  */
 
-/** Whole minor units, as returned. */
-export type DocumentMoney = number | string;
+/** Whole minor units. */
+type Money = number | string;
 
 export type DocumentParty = Readonly<{
   name: string;
   email: string | null;
-  /** Postal address lines exactly as returned. */
   addressLines: readonly string[];
 }>;
-
-/** The legal issuer, as returned by the backend (never app configuration). */
-export type DocumentIssuer = DocumentParty &
-  Readonly<{
-    registrationNumber: string | null;
-    taxNumber: string | null;
-  }>;
 
 export type DocumentLineItem = Readonly<{
   id: string;
   description: string;
   detail: string | null;
   quantity: number | null;
-  unitAmount: DocumentMoney | null;
-  amount: DocumentMoney;
+  unitAmount: Money | null;
+  amount: Money;
 }>;
 
-/** A labelled tax, discount or fee line, label and amount as returned. */
+/** A labelled tax, discount or fee line. */
 export type DocumentAdjustment = Readonly<{
   id: string;
   label: string;
-  amount: DocumentMoney;
+  amount: Money;
 }>;
 
-/**
- * Operations the backend reports as available for this document. A handler
- * alone never enables an action.
- */
-export type DocumentCapabilities = Readonly<{
-  downloadPdf: boolean;
-  emailCopy: boolean;
-}>;
-
-export type InvoicePayment = Readonly<{
-  paidAtUtc: string;
-  /** Method summary as returned, for example "Bachs · card". */
-  method: string | null;
-  reference: string | null;
-  /** Receipt identifier; navigation uses this id only. */
-  receiptId: string | null;
-  receiptNumber: string | null;
-}>;
-
-export type UserInvoice = Readonly<{
-  /** Backend invoice identifier; navigation uses this id only. */
+type DocumentBase = Readonly<{
+  /** Document identifier; navigation uses this id only. */
   id: string;
-  invoiceNumber: string;
-  /** Raw backend status (`Paid`, `Due`, `Overdue`, `Void`, …). */
+  /** Raw status. */
   status: string;
   currencyCode: string;
-  issuedAtUtc: string;
-  dueAtUtc: string | null;
-  periodStartUtc: string | null;
-  periodEndUtc: string | null;
-  issuer: DocumentIssuer;
-  billedTo: DocumentParty;
+  issuer: DocumentParty;
+  /** Issuer legal lines for the footer (registration, tax, address). */
+  issuerLegalLines: readonly string[];
   lineItems: readonly DocumentLineItem[];
-  subtotal: DocumentMoney | null;
+  subtotal: Money | null;
   adjustments: readonly DocumentAdjustment[];
-  total: DocumentMoney;
-  amountPaid: DocumentMoney | null;
-  amountDue: DocumentMoney | null;
-  payment: InvoicePayment | null;
-  /** Document notes as returned (terms, tax statements). */
   notes: readonly string[];
-  capabilities: DocumentCapabilities &
-    Readonly<{
-      /** Online payment of this invoice through a supported integration. */
-      pay: boolean;
-    }>;
 }>;
 
-export type ReceiptKind = "subscription" | "wallet";
+export type UserInvoice = DocumentBase &
+  Readonly<{
+    invoiceNumber: string;
+    issuedAtUtc: string;
+    dueAtUtc: string | null;
+    periodStartUtc: string | null;
+    periodEndUtc: string | null;
+    billedTo: DocumentParty;
+    total: Money;
+    amountPaid: Money | null;
+    amountDue: Money | null;
+    payment: Readonly<{
+      paidAtUtc: string;
+      method: string | null;
+      reference: string | null;
+      receiptId: string | null;
+      receiptNumber: string | null;
+    }> | null;
+  }>;
 
-export type UserReceipt = Readonly<{
-  /** Backend receipt identifier. */
-  id: string;
-  receiptNumber: string;
-  /** Raw backend status (`Paid`, `Refunded`, …). */
-  status: string;
-  kind: ReceiptKind;
-  currencyCode: string;
-  amountPaid: DocumentMoney;
-  paidAtUtc: string;
-  paymentMethod: string | null;
-  paymentReference: string | null;
-  issuer: DocumentIssuer;
-  payer: DocumentParty;
-  lineItems: readonly DocumentLineItem[];
-  subtotal: DocumentMoney | null;
-  adjustments: readonly DocumentAdjustment[];
-  totalPaid: DocumentMoney;
-  /** The invoice this receipt settles (subscription receipts). */
-  invoice: Readonly<{ id: string | null; invoiceNumber: string }> | null;
-  /** The wallet transaction this receipt covers (wallet receipts). */
-  walletTransaction: Readonly<{ reference: string | null }> | null;
-  notes: readonly string[];
-  capabilities: DocumentCapabilities;
-}>;
+export type UserReceipt = DocumentBase &
+  Readonly<{
+    receiptNumber: string;
+    kind: "subscription" | "wallet";
+    payer: DocumentParty;
+    paidAtUtc: string;
+    amountPaid: Money;
+    totalPaid: Money;
+    paymentMethod: string | null;
+    paymentReference: string | null;
+    /** The invoice a subscription receipt settles. */
+    invoice: Readonly<{ id: string | null; invoiceNumber: string }> | null;
+    /** The wallet transaction reference of a wallet receipt. */
+    walletReference: string | null;
+  }>;
 
 /** Read state of one owner-scoped document. */
 export type DocumentReadState<Document> =
   | Readonly<{ state: "loading" }>
-  | Readonly<{ state: "error"; message?: string }>
+  | Readonly<{ state: "error" }>
   /** Missing or not the caller's document; never says which. */
   | Readonly<{ state: "notFound" }>
-  /** No source for documents in this build. */
-  | Readonly<{ state: "unavailable"; reason: string }>
+  | Readonly<{ state: "unavailable" }>
   | Readonly<{ state: "ready"; document: Document }>;
-
-/** Why document screens have no data in this build (DR-160). */
-export const BILLING_DOCUMENTS_UNAVAILABLE_REASON =
-  "Invoices and receipts are not available yet.";
-
-/**
- * Presentation intents. The screen reports what the user chose; printing,
- * downloading, emailing and paying are the caller's job.
- */
-export type BillingDocumentAction =
-  | Readonly<{ type: "print" }>
-  | Readonly<{ documentId: string; type: "downloadPdf" }>
-  | Readonly<{ documentId: string; type: "emailCopy" }>
-  | Readonly<{ invoiceId: string; type: "pay" }>
-  | Readonly<{ type: "retry" }>;
 
 /* ------------------------------------------------------------------------ */
 /* Statuses                                                                  */
@@ -165,60 +108,51 @@ export type BillingDocumentAction =
 
 export type InvoiceVariant = "paid" | "due" | "overdue" | "other";
 
-export type DocumentStatusPresentation = Readonly<{
-  label: string;
-  tone: BadgeTone;
-}>;
+export type DocumentStatus = Readonly<{ label: string; tone: BadgeTone }>;
 
-const INVOICE_STATUSES: Readonly<
-  Record<string, DocumentStatusPresentation & { variant: InvoiceVariant }>
-> = {
-  Due: { label: "Due", tone: "warning", variant: "due" },
-  Open: { label: "Due", tone: "warning", variant: "due" },
-  Overdue: { label: "Overdue", tone: "danger", variant: "overdue" },
-  Paid: { label: "Paid", tone: "success", variant: "paid" },
-  Void: { label: "Void", tone: "neutral", variant: "other" },
-};
-
-/**
- * Invoice status from the backend value only. Overdue is never computed
- * from the due date and the clock; unknown values are shown as returned.
- */
+/** Invoice status and variant; unknown values are shown as returned. */
 export function describeInvoiceStatus(
   status: string,
-): DocumentStatusPresentation & { variant: InvoiceVariant } {
-  return (
-    INVOICE_STATUSES[status] ?? {
-      label: status,
-      tone: "neutral",
-      variant: "other",
-    }
-  );
+): DocumentStatus & Readonly<{ variant: InvoiceVariant }> {
+  switch (status) {
+    case "Paid":
+      return { label: "Paid", tone: "success", variant: "paid" };
+    case "Due":
+    case "Open":
+      return { label: "Due", tone: "warning", variant: "due" };
+    case "Overdue":
+      return { label: "Overdue", tone: "danger", variant: "overdue" };
+    case "Void":
+      return { label: "Void", tone: "neutral", variant: "other" };
+    default:
+      return { label: status, tone: "neutral", variant: "other" };
+  }
 }
 
-const RECEIPT_STATUSES: Readonly<Record<string, DocumentStatusPresentation>> = {
-  Paid: { label: "Paid", tone: "success" },
-  Refunded: { label: "Refunded", tone: "neutral" },
-};
-
-export function describeReceiptStatus(
-  status: string,
-): DocumentStatusPresentation {
-  return RECEIPT_STATUSES[status] ?? { label: status, tone: "neutral" };
+/** Receipt status; unknown values are shown as returned. */
+export function describeReceiptStatus(status: string): DocumentStatus {
+  switch (status) {
+    case "Paid":
+      return { label: "Paid", tone: "success" };
+    case "Refunded":
+      return { label: "Refunded", tone: "neutral" };
+    default:
+      return { label: status, tone: "neutral" };
+  }
 }
 
 /* ------------------------------------------------------------------------ */
 /* Dates (UTC, so a document reads the same for every viewer and in print)   */
 /* ------------------------------------------------------------------------ */
 
-const documentDate = new Intl.DateTimeFormat("en-GB", {
+const dateFormat = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "short",
   timeZone: "UTC",
   year: "numeric",
 });
 
-const documentTime = new Intl.DateTimeFormat("en-GB", {
+const timeFormat = new Intl.DateTimeFormat("en-GB", {
   hour: "2-digit",
   hourCycle: "h23",
   minute: "2-digit",
@@ -226,8 +160,7 @@ const documentTime = new Intl.DateTimeFormat("en-GB", {
 });
 
 function timestamp(value: string | null | undefined): number | undefined {
-  if (!value) return undefined;
-  const parsed = Date.parse(value);
+  const parsed = value ? Date.parse(value) : Number.NaN;
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
@@ -236,7 +169,7 @@ export function formatDocumentDate(
   value: string | null | undefined,
 ): string | undefined {
   const at = timestamp(value);
-  return at === undefined ? undefined : documentDate.format(at);
+  return at === undefined ? undefined : dateFormat.format(at);
 }
 
 /** "14 Nov 2026 · 10:01 UTC", or `undefined`. */
@@ -246,13 +179,12 @@ export function formatDocumentDateTime(
   const at = timestamp(value);
   return at === undefined
     ? undefined
-    : `${documentDate.format(at)} · ${documentTime.format(at)} UTC`;
+    : `${dateFormat.format(at)} · ${timeFormat.format(at)} UTC`;
 }
 
-/** "14 Nov 2026 – 14 Dec 2026" from both backend boundaries, or `undefined`. */
-export function formatDocumentPeriod(
-  start: string | null | undefined,
-  end: string | null | undefined,
+function formatPeriod(
+  start: string | null,
+  end: string | null,
 ): string | undefined {
   const from = formatDocumentDate(start);
   const to = formatDocumentDate(end);
@@ -265,68 +197,52 @@ export function formatDocumentPeriod(
 
 const quantityFormat = new Intl.NumberFormat("en-US");
 
-function money(amount: DocumentMoney, currencyCode: string): string {
-  return formatMinorUnits(amount, currencyCode);
-}
+type SheetContent = Omit<BillingDocumentProps, "brandName">;
 
 function party(label: string, source: DocumentParty): BillingDocumentParty {
   return {
     label,
-    lines: [
-      ...(source.email ? [source.email] : []),
-      ...source.addressLines.filter((line) => line.trim() !== ""),
-    ],
+    lines: [...(source.email ? [source.email] : []), ...source.addressLines],
     name: source.name,
   };
 }
 
-/** Issuer legal lines for the footer, only from returned fields. */
-export function issuerFooterLines(issuer: DocumentIssuer): string[] {
-  const identity = [
-    issuer.name,
-    issuer.registrationNumber
-      ? `Registration no. ${issuer.registrationNumber}`
-      : undefined,
-  ].filter(Boolean);
-  const tax = [
-    issuer.taxNumber ? `Tax no. ${issuer.taxNumber}` : undefined,
-    issuer.addressLines.filter((line) => line.trim() !== "").join(", ") ||
-      undefined,
-  ].filter(Boolean);
-  return [identity.join(" · "), tax.join(" · ")].filter(Boolean);
+/** Line items, subtotal and adjustments shared by both documents. */
+function commonContent(document: DocumentBase) {
+  const money = (amount: Money) =>
+    formatMinorUnits(amount, document.currencyCode);
+  const subtotal: BillingDocumentTotal[] =
+    document.subtotal === null
+      ? []
+      : [{ label: "Subtotal", value: money(document.subtotal) }];
+  return {
+    adjustments: [
+      ...subtotal,
+      ...document.adjustments.map((adjustment) => ({
+        id: adjustment.id,
+        label: adjustment.label,
+        value: money(adjustment.amount),
+      })),
+    ],
+    footerDetails: document.issuerLegalLines,
+    footerNotes: document.notes,
+    issuerName: document.issuer.name,
+    lineItems: document.lineItems.map((item) => ({
+      amount: money(item.amount),
+      description: item.description,
+      detail: item.detail ?? undefined,
+      id: item.id,
+      quantity:
+        item.quantity === null
+          ? undefined
+          : quantityFormat.format(item.quantity),
+      unitPrice: item.unitAmount === null ? undefined : money(item.unitAmount),
+    })),
+    money,
+  };
 }
 
-function lineItems(items: readonly DocumentLineItem[], currencyCode: string) {
-  return items.map((item) => ({
-    amount: money(item.amount, currencyCode),
-    description: item.description,
-    detail: item.detail ?? undefined,
-    id: item.id,
-    quantity:
-      item.quantity === null ? undefined : quantityFormat.format(item.quantity),
-    unitPrice:
-      item.unitAmount === null
-        ? undefined
-        : money(item.unitAmount, currencyCode),
-  }));
-}
-
-function adjustmentTotals(
-  adjustments: readonly DocumentAdjustment[],
-  currencyCode: string,
-): BillingDocumentTotal[] {
-  return adjustments.map((adjustment) => ({
-    id: adjustment.id,
-    label: adjustment.label,
-    value: money(adjustment.amount, currencyCode),
-  }));
-}
-
-function fact(label: string, value: string | undefined): BillingDocumentFact[] {
-  return value ? [{ label, value }] : [];
-}
-
-/** Payment confirmation line for a paid invoice, from returned fields. */
+/** Payment line of a paid invoice, from the recorded payment only. */
 export function invoicePaymentLine(invoice: UserInvoice): string | undefined {
   const payment = invoice.payment;
   if (!payment) return undefined;
@@ -341,12 +257,9 @@ export function invoicePaymentLine(invoice: UserInvoice): string | undefined {
     .join(" · ");
 }
 
-function invoiceNotice(
-  invoice: UserInvoice,
-): BillingDocumentProps["notice"] | undefined {
-  const { variant } = describeInvoiceStatus(invoice.status);
+function invoiceNotice(invoice: UserInvoice): SheetContent["notice"] {
   const due = formatDocumentDate(invoice.dueAtUtc);
-  switch (variant) {
+  switch (describeInvoiceStatus(invoice.status).variant) {
     case "paid": {
       const line = invoicePaymentLine(invoice);
       return line ? { content: line, tone: "success" } : undefined;
@@ -366,48 +279,19 @@ function invoiceNotice(
   }
 }
 
-/** Sheet content for an invoice; omits anything the source did not return. */
-export function invoiceDocumentContent(
-  invoice: UserInvoice,
-): Omit<BillingDocumentProps, "brandName"> {
-  const currency = invoice.currencyCode;
-  const totals: BillingDocumentTotal[] = [
-    ...(invoice.subtotal === null
-      ? []
-      : [{ label: "Subtotal", value: money(invoice.subtotal, currency) }]),
-    ...adjustmentTotals(invoice.adjustments, currency),
-    {
-      emphasis: "total",
-      label: "Total",
-      value: money(invoice.total, currency),
-    },
-    ...(invoice.amountPaid === null
-      ? []
-      : [{ label: "Amount paid", value: money(invoice.amountPaid, currency) }]),
-    ...(invoice.amountDue === null
-      ? []
-      : [
-          {
-            emphasis: "balance" as const,
-            label: "Amount due",
-            value: money(invoice.amountDue, currency),
-          },
-        ]),
-  ];
+export function invoiceDocumentContent(invoice: UserInvoice): SheetContent {
+  const { adjustments, money, ...common } = commonContent(invoice);
+  const issued = formatDocumentDate(invoice.issuedAtUtc);
+  const due = formatDocumentDate(invoice.dueAtUtc);
+  const period = formatPeriod(invoice.periodStartUtc, invoice.periodEndUtc);
   return {
+    ...common,
     facts: [
-      ...fact("Issue date", formatDocumentDate(invoice.issuedAtUtc)),
-      ...fact("Due date", formatDocumentDate(invoice.dueAtUtc)),
-      ...fact(
-        "Billing period",
-        formatDocumentPeriod(invoice.periodStartUtc, invoice.periodEndUtc),
-      ),
-      { label: "Currency", value: currency },
+      ...(issued ? [{ label: "Issue date", value: issued }] : []),
+      ...(due ? [{ label: "Due date", value: due }] : []),
+      ...(period ? [{ label: "Billing period", value: period }] : []),
+      { label: "Currency", value: invoice.currencyCode },
     ],
-    footerDetails: issuerFooterLines(invoice.issuer),
-    footerNotes: invoice.notes,
-    issuerName: invoice.issuer.name,
-    lineItems: lineItems(invoice.lineItems, currency),
     lineItemsCaption: `Invoice ${invoice.invoiceNumber} line items`,
     notice: invoiceNotice(invoice),
     number: invoice.invoiceNumber,
@@ -418,18 +302,34 @@ export function invoiceDocumentContent(
     ],
     status: describeInvoiceStatus(invoice.status),
     title: "Invoice",
-    totals,
+    totals: [
+      ...adjustments,
+      { emphasis: "total", label: "Total", value: money(invoice.total) },
+      ...(invoice.amountPaid === null
+        ? []
+        : [{ label: "Amount paid", value: money(invoice.amountPaid) }]),
+      ...(invoice.amountDue === null
+        ? []
+        : [
+            {
+              emphasis: "balance" as const,
+              label: "Amount due",
+              value: money(invoice.amountDue),
+            },
+          ]),
+    ],
   };
 }
 
-/** Sheet content for a receipt; omits anything the source did not return. */
-export function receiptDocumentContent(
-  receipt: UserReceipt,
-): Omit<BillingDocumentProps, "brandName"> {
-  const currency = receipt.currencyCode;
+export function receiptDocumentContent(receipt: UserReceipt): SheetContent {
+  const { adjustments, money, ...common } = commonContent(receipt);
+  const paidAt = formatDocumentDateTime(receipt.paidAtUtc);
   return {
+    ...common,
     facts: [
-      ...fact("Payment method", receipt.paymentMethod ?? undefined),
+      ...(receipt.paymentMethod
+        ? [{ label: "Payment method", value: receipt.paymentMethod }]
+        : []),
       ...(receipt.paymentReference
         ? [
             {
@@ -439,19 +339,13 @@ export function receiptDocumentContent(
             },
           ]
         : []),
-      { label: "Currency", value: currency },
+      { label: "Currency", value: receipt.currencyCode },
     ],
-    footerDetails: issuerFooterLines(receipt.issuer),
-    footerNotes: receipt.notes,
     highlight: {
-      detail: formatDocumentDateTime(receipt.paidAtUtc)
-        ? `Paid on ${formatDocumentDateTime(receipt.paidAtUtc)}`
-        : undefined,
+      detail: paidAt ? `Paid on ${paidAt}` : undefined,
       label: "Amount paid",
-      value: money(receipt.amountPaid, currency),
+      value: money(receipt.amountPaid),
     },
-    issuerName: receipt.issuer.name,
-    lineItems: lineItems(receipt.lineItems, currency),
     lineItemsCaption: `Receipt ${receipt.receiptNumber} line items`,
     number: receipt.receiptNumber,
     numberLabel: "Receipt no.",
@@ -462,14 +356,11 @@ export function receiptDocumentContent(
     status: describeReceiptStatus(receipt.status),
     title: "Receipt",
     totals: [
-      ...(receipt.subtotal === null
-        ? []
-        : [{ label: "Subtotal", value: money(receipt.subtotal, currency) }]),
-      ...adjustmentTotals(receipt.adjustments, currency),
+      ...adjustments,
       {
         emphasis: "total",
         label: "Total paid",
-        value: money(receipt.totalPaid, currency),
+        value: money(receipt.totalPaid),
       },
     ],
   };
@@ -481,7 +372,7 @@ export function invoicePageDescription(
 ): string | undefined {
   const parts = [
     invoice.lineItems.length === 1 ? invoice.lineItems[0]!.description : null,
-    formatDocumentPeriod(invoice.periodStartUtc, invoice.periodEndUtc),
+    formatPeriod(invoice.periodStartUtc, invoice.periodEndUtc),
   ].filter(Boolean);
   return parts.length > 0 ? parts.join(" · ") : undefined;
 }

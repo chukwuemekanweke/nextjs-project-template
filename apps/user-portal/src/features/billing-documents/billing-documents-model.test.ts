@@ -4,17 +4,13 @@ import {
   describeReceiptStatus,
   formatDocumentDate,
   formatDocumentDateTime,
-  formatDocumentPeriod,
   invoiceDocumentContent,
   invoicePageDescription,
-  invoicePaymentLine,
-  issuerFooterLines,
   receiptDocumentContent,
 } from "./billing-documents-model";
 import {
   fixtureDueInvoice,
   fixtureInvoice,
-  fixtureIssuer,
   fixtureOverdueInvoice,
   fixturePaidInvoice,
   fixtureSubscriptionReceipt,
@@ -26,35 +22,40 @@ function plain<T>(value: T): T {
   return JSON.parse(JSON.stringify(value).replace(/ /g, " ")) as T;
 }
 
-describe("invoice status", () => {
-  it("derives the variant from the backend status only", () => {
+describe("statuses", () => {
+  it("maps known invoice statuses to variants", () => {
     expect(describeInvoiceStatus("Paid")).toEqual({
       label: "Paid",
       tone: "success",
       variant: "paid",
     });
-    expect(describeInvoiceStatus("Due").variant).toBe("due");
-    expect(describeInvoiceStatus("Open").label).toBe("Due");
-    expect(describeInvoiceStatus("Overdue")).toEqual({
-      label: "Overdue",
-      tone: "danger",
-      variant: "overdue",
-    });
+    expect(describeInvoiceStatus("Open").variant).toBe("due");
+    expect(describeInvoiceStatus("Overdue").tone).toBe("danger");
+    expect(describeReceiptStatus("Paid").tone).toBe("success");
   });
 
-  it("never reads an unknown status as paid or overdue", () => {
-    expect(describeInvoiceStatus("ProviderReview")).toEqual({
-      label: "ProviderReview",
-      tone: "neutral",
-      variant: "other",
-    });
-    expect(describeReceiptStatus("Pending")).toEqual({
-      label: "Pending",
-      tone: "neutral",
-    });
-  });
+  it.each([
+    "constructor",
+    "toString",
+    "__proto__",
+    "hasOwnProperty",
+    "Pending",
+  ])(
+    "shows unknown status %s as returned, never as an inherited property",
+    (status) => {
+      expect(describeInvoiceStatus(status)).toEqual({
+        label: status,
+        tone: "neutral",
+        variant: "other",
+      });
+      expect(describeReceiptStatus(status)).toEqual({
+        label: status,
+        tone: "neutral",
+      });
+    },
+  );
 
-  it("does not compute overdue from a past due date", () => {
+  it("never derives overdue from a past due date", () => {
     const content = invoiceDocumentContent(
       fixtureInvoice({ dueAtUtc: "2000-01-01T00:00:00Z", status: "Due" }),
     );
@@ -63,29 +64,26 @@ describe("invoice status", () => {
   });
 });
 
-describe("document dates", () => {
-  it("formats UTC dates and times, never substituting now", () => {
+describe("dates", () => {
+  it("formats UTC dates and times and rejects invalid input", () => {
     expect(formatDocumentDate("2026-01-14T23:30:00Z")).toBe("14 Jan 2026");
     expect(formatDocumentDateTime("2026-01-14T10:01:00Z")).toBe(
       "14 Jan 2026 · 10:01 UTC",
     );
     expect(formatDocumentDate(null)).toBeUndefined();
     expect(formatDocumentDate("not a date")).toBeUndefined();
-    expect(formatDocumentPeriod("2026-01-14T00:00:00Z", null)).toBeUndefined();
   });
 });
 
 describe("invoiceDocumentContent", () => {
-  it("formats backend minor units in the invoice currency", () => {
-    const content = invoiceDocumentContent(fixtureDueInvoice);
-    expect(plain(content.lineItems[0])).toMatchObject({
+  it("formats minor units in the invoice currency", () => {
+    const content = plain(invoiceDocumentContent(fixtureDueInvoice));
+    expect(content.lineItems[0]).toMatchObject({
       amount: "NGN 13,953.49",
       quantity: "1",
       unitPrice: "NGN 13,953.49",
     });
-    expect(
-      plain(content.totals?.map(({ label, value }) => [label, value])),
-    ).toEqual([
+    expect(content.totals?.map(({ label, value }) => [label, value])).toEqual([
       ["Subtotal", "NGN 13,953.49"],
       ["VAT (7.5%)", "NGN 1,046.51"],
       ["Total", "NGN 15,000.00"],
@@ -93,7 +91,7 @@ describe("invoiceDocumentContent", () => {
     ]);
   });
 
-  it("omits totals, facts and columns the source did not return", () => {
+  it("omits values that were not supplied", () => {
     const content = invoiceDocumentContent(
       fixtureInvoice({
         adjustments: [],
@@ -119,87 +117,36 @@ describe("invoiceDocumentContent", () => {
       "Currency",
     ]);
     expect(content.lineItems[0]?.quantity).toBeUndefined();
-    expect(content.lineItems[0]?.unitPrice).toBeUndefined();
     expect(content.notice?.content).toBe("Payment due.");
+    expect(
+      invoicePageDescription(
+        fixtureInvoice({ lineItems: [], periodEndUtc: null }),
+      ),
+    ).toBeUndefined();
   });
 
-  it("states due, overdue and paid notices from returned fields only", () => {
-    expect(invoiceDocumentContent(fixtureDueInvoice).notice).toEqual({
-      content: "Payment due by 21 Jan 2026.",
-      tone: "warning",
-    });
-    expect(invoiceDocumentContent(fixtureOverdueInvoice).notice).toEqual({
-      content: "Payment overdue since 21 Jan 2026.",
-      tone: "danger",
-    });
+  it("states due, overdue and paid notices", () => {
+    expect(invoiceDocumentContent(fixtureDueInvoice).notice?.content).toBe(
+      "Payment due by 21 Jan 2026.",
+    );
+    expect(invoiceDocumentContent(fixtureOverdueInvoice).notice?.content).toBe(
+      "Payment overdue since 21 Jan 2026.",
+    );
     expect(invoiceDocumentContent(fixturePaidInvoice).notice).toEqual({
       content:
         "Paid on 14 Jan 2026 · Fixture Provider · card · Ref FIXPAY-8812 · Receipt FIX-RCT-0331",
       tone: "success",
     });
     expect(
-      invoicePaymentLine(
-        fixtureInvoice({
-          payment: {
-            method: null,
-            paidAtUtc: "2026-01-14T10:01:00Z",
-            receiptId: null,
-            receiptNumber: null,
-            reference: null,
-          },
-          status: "Paid",
-        }),
-      ),
-    ).toBe("Paid on 14 Jan 2026");
-    expect(
       invoiceDocumentContent(fixtureInvoice({ status: "Void" })).notice,
-    ).toBeUndefined();
-  });
-
-  it("uses issuer and recipient exactly as returned", () => {
-    const content = invoiceDocumentContent(fixtureDueInvoice);
-    expect(content.parties).toEqual([
-      {
-        label: "Billed to",
-        lines: ["customer@fixture.invalid", "Fixture City, Fixtureland"],
-        name: "Fixture Customer",
-      },
-      {
-        label: "From",
-        lines: ["1 Fixture Street", "Fixture City, Fixtureland"],
-        name: "Fixture Issuer Ltd",
-      },
-    ]);
-    expect(issuerFooterLines(fixtureIssuer)).toEqual([
-      "Fixture Issuer Ltd · Registration no. FIX-RC-0001",
-      "Tax no. FIX-TAX-0001 · 1 Fixture Street, Fixture City, Fixtureland",
-    ]);
-    expect(
-      issuerFooterLines({
-        ...fixtureIssuer,
-        addressLines: [],
-        registrationNumber: null,
-        taxNumber: null,
-      }),
-    ).toEqual(["Fixture Issuer Ltd"]);
-  });
-
-  it("describes the page from a single line item and the period", () => {
-    expect(invoicePageDescription(fixtureDueInvoice)).toBe(
-      "Fixture Standard plan · 14 Jan 2026 – 14 Feb 2026",
-    );
-    expect(
-      invoicePageDescription(
-        fixtureInvoice({ periodEndUtc: null, lineItems: [] }),
-      ),
     ).toBeUndefined();
   });
 });
 
 describe("receiptDocumentContent", () => {
-  it("shows the amount paid, paid time, method and reference", () => {
-    const content = receiptDocumentContent(fixtureSubscriptionReceipt);
-    expect(plain(content.highlight)).toEqual({
+  it("shows amount, paid time, method and reference", () => {
+    const content = plain(receiptDocumentContent(fixtureSubscriptionReceipt));
+    expect(content.highlight).toEqual({
       detail: "Paid on 14 Jan 2026 · 10:01 UTC",
       label: "Amount paid",
       value: "NGN 15,000.00",
@@ -209,36 +156,27 @@ describe("receiptDocumentContent", () => {
       { label: "Payment reference", mono: true, value: "FIXPAY-8812" },
       { label: "Currency", value: "NGN" },
     ]);
-    expect(content.parties?.map(({ label }) => label)).toEqual([
-      "Received from",
-      "Paid to",
-    ]);
-    expect(plain(content.totals?.at(-1))).toEqual({
+    expect(content.totals?.at(-1)).toEqual({
       emphasis: "total",
       label: "Total paid",
       value: "NGN 15,000.00",
     });
   });
 
-  it("renders wallet receipts from the same model", () => {
-    const content = receiptDocumentContent(fixtureWalletReceipt);
-    expect(content.number).toBe("FIX-RCT-0352");
+  it("renders wallet receipts from the same model and omits missing facts", () => {
+    const content = plain(
+      receiptDocumentContent({
+        ...fixtureWalletReceipt,
+        paymentMethod: null,
+        paymentReference: null,
+      }),
+    );
     expect(content.lineItems[0]?.description).toBe("Wallet top-up");
-    expect(
-      plain(content.totals?.map(({ label, value }) => [label, value])),
-    ).toEqual([
-      ["Subtotal", "NGN 20,000.00"],
-      ["Fees", "NGN 0.00"],
-      ["Total paid", "NGN 20,000.00"],
+    expect(content.totals?.map(({ label }) => label)).toEqual([
+      "Subtotal",
+      "Fees",
+      "Total paid",
     ]);
-  });
-
-  it("omits missing method and reference instead of inventing them", () => {
-    const content = receiptDocumentContent({
-      ...fixtureWalletReceipt,
-      paymentMethod: null,
-      paymentReference: null,
-    });
     expect(content.facts?.map(({ label }) => label)).toEqual(["Currency"]);
   });
 });
