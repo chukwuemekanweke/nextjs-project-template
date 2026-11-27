@@ -167,7 +167,7 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 ### FE-UI-012 — User authentication screens
 
-- **Status:** delivered by Trello FE-UI-006 (design revision `ad9386e`) together with `AuthLayout` (FE-UI-008) and `Steps`: DR-012/013/014/016/040 resolved, design-only data omitted (DR-086). Logic files under `src/lib/*` and BFF routes unchanged except the presentation-only `reason` on `createEmailConfirmationDestination` and the new `auth-feedback.ts` mapping. "Forgot password?" waits for Trello FE-UI-020.
+- **Status:** delivered by Trello FE-UI-006 (design revision `ad9386e`) together with `AuthLayout` (FE-UI-008) and `Steps`: DR-012/013/014/016/040 resolved, design-only data omitted (DR-086). Logic files under `src/lib/*` and BFF routes unchanged except the presentation-only `reason` on `createEmailConfirmationDestination` and the new `auth-feedback.ts` mapping. "Forgot password?" was added by Trello FE-UI-020.
 - **Screens:** `AUTH-SIGN-IN`, `AUTH-REGISTER`, `AUTH-CONFIRM-EMAIL`, `AUTH-TWO-FACTOR`, `AUTH-PASSKEY-SETUP`, `AUTH-GOOGLE-LINK`, `AUTH-GOOGLE-REGISTER`, `AUTH-MESSAGES`.
 - **Scope:** recompose on `AuthLayout`, `forms`, `Alert`, `Steps`; keep the GIS button (DR-013); omit "Keep me signed in" (OD-16); add the "Forgot password?" link only together with FE-UI-013.
 - **Prerequisites:** FE-UI-008, FE-UI-007; decision on DR-014.
@@ -177,13 +177,10 @@ Parallel streams after FE-UI-008/009: **public** (010, 011), **auth** (012 → 0
 
 ### FE-UI-013 — Forgot and reset password
 
-- **Status:** tracked as Trello FE-UI-020. Design `ad9386e` replaces the reset link with email entry, then OTP and a new password; revisit the route and DR-015 assumptions below. Set `forgotPasswordHref` on `SignInForm` to show the sign-in entry point.
+- **Status:** delivered by Trello FE-UI-020 (design `ad9386e`): one public `/forgot-password` route (email → emailed 6-digit code with new password → done), `PUBLIC_PATHS` addition, `useRequestPasswordReset`/`useCompletePasswordReset` hooks, password-reset browser calls routed to the existing BFF, and "Forgot password?" on sign-in. No `/reset-password` route: the design replaced the reset link. Backend gaps are listed under [DR-015](./discrepancy-register.md#dr-015).
 - **Screens:** `AUTH-FORGOT-PASSWORD`, `AUTH-RESET-PASSWORD`.
-- **Scope:** `/forgot-password` and `/reset-password` pages; `PUBLIC_PATHS` additions; api-react hooks for the existing mutation options; "Forgot password?" link on sign-in.
-- **Prerequisites:** FE-UI-012; DR-015 (reset-link format, error codes).
 - **At risk:** proxy guard (only explicit additions), account-enumeration leaks.
-- **Verification:** route/proxy tests; journey request → reset → sign in with mocked backend.
-- **Done when:** both flows work end-to-end against the backend; "sent" state is identical for known and unknown emails.
+- **Verification:** BFF, browser-API, public-path and schema tests; User Portal browser tests (`pnpm test:component`) for request → code → done, resend, change email and failures with a mocked domain client. Live end-to-end against a backend and mailbox is outstanding.
 
 ### FE-UI-014 — Admin sign-in
 

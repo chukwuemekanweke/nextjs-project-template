@@ -1,20 +1,25 @@
-import {
-  completePasswordReset,
-  type CompletePasswordResetMutationRequest,
-} from "@template/api-client/authentication";
-import { NextResponse } from "next/server";
-import { apiRouteError } from "@/lib/api-route-error";
+import { completePasswordReset } from "@template/api-client/authentication";
 import { createAppServerApiClient } from "@/lib/server-api";
+import {
+  passwordResetCompletionBody,
+  passwordResetCompletionError,
+  passwordResetJson,
+  readJson,
+} from "@/lib/password-reset-bff";
 
+/**
+ * Anonymous: submits the emailed code with the new password. The backend
+ * returns only a message, so no session is created and no cookie is set.
+ */
 export async function POST(request: Request) {
   try {
     const client = await createAppServerApiClient({ authenticated: false });
     const result = await completePasswordReset(
       client,
-      (await request.json()) as CompletePasswordResetMutationRequest,
+      passwordResetCompletionBody(await readJson(request)),
     );
-    return NextResponse.json(result);
+    return passwordResetJson(result);
   } catch (error) {
-    return apiRouteError(error);
+    return passwordResetCompletionError(error);
   }
 }

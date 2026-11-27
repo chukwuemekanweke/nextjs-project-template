@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   googleFeedback,
   passkeyFeedback,
+  passwordResetFeedback,
+  passwordResetResentFeedback,
   signInFeedback,
   twoFactorFeedback,
 } from "./auth-feedback";
@@ -93,5 +95,45 @@ describe("twoFactorFeedback", () => {
     expect(
       twoFactorFeedback({ message: "x", method: "authenticator", status: 503 }),
     ).toMatchObject({ title: "Verification unavailable", variant: "error" });
+  });
+});
+
+describe("passwordResetFeedback", () => {
+  it("states one combined outcome for a wrong, expired or used code", () => {
+    expect(passwordResetFeedback("invalid_code", "complete")).toEqual({
+      message: "It's wrong, expired or already used. Request a new code.",
+      title: "That code didn't work",
+      variant: "error",
+    });
+  });
+
+  it("separates request failures from completion failures", () => {
+    expect(passwordResetFeedback("unavailable", "request").title).toBe(
+      "We couldn't send a code",
+    );
+    expect(passwordResetFeedback("unavailable", "resend").title).toBe(
+      "We couldn't send a code",
+    );
+    expect(passwordResetFeedback("unavailable", "complete")).toMatchObject({
+      message: expect.stringContaining("wasn't changed"),
+      title: "Password reset unavailable",
+    });
+    expect(passwordResetFeedback("rate_limited", "complete")).toMatchObject({
+      title: "Too many requests",
+      variant: "warning",
+    });
+  });
+
+  it("never reveals account existence, attempts or a fabricated timer", () => {
+    const copy = JSON.stringify([
+      ...(["invalid_code", "rate_limited", "unavailable"] as const).flatMap(
+        (failure) =>
+          (["complete", "request", "resend"] as const).map((operation) =>
+            passwordResetFeedback(failure, operation),
+          ),
+      ),
+      passwordResetResentFeedback,
+    ]);
+    expect(copy).not.toMatch(/no account|not found|attempts? left|\d+ ?min/i);
   });
 });

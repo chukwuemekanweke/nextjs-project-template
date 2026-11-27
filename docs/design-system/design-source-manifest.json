@@ -102,6 +102,26 @@
         "4-admin-portal/AdminAudit.html (+Dark, Mobile, MobileDark)",
         "4-admin-portal/AdminSystemHealth.html (+Dark, Mobile, MobileDark)"
       ]
+    },
+    {
+      "ticket": "FE-UI-020 (Trello)",
+      "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+      "commitDate": "2026-11-25T21:19:56+01:00",
+      "treeSha": "1000fc95c79c4cda8f3c6361d73f3b5d485cd0c2",
+      "scope": "User Portal password reset by emailed code (AUTH-FORGOT-PASSWORD, AUTH-RESET-PASSWORD) only. Per-file inventory, hashes and counts still describe commit (DR-083).",
+      "filesInRevision": 994,
+      "changesSincePinnedCommit": {
+        "2-authentication": "AuthForgotPassword*, AuthForgotSent*, AuthResetPassword*, AuthResetExpired* and AuthStates* were updated in ad9386e (email entry, then code and new password); AuthResetDone* is unchanged and still applies."
+      },
+      "referencesUsed": [
+        "2-authentication/AuthForgotPassword.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthForgotSent.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthResetPassword.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthResetExpired.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthResetDone.html (+Dark, Mobile, MobileDark)",
+        "2-authentication/AuthStates.html (+Dark, Mobile, MobileDark)",
+        "email-pages/live/ResetPassword.html"
+      ]
     }
   ],
   "discoveredOn": "2026-11-25",

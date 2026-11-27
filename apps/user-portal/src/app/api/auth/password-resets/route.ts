@@ -1,20 +1,22 @@
-import {
-  requestPasswordReset,
-  type RequestPasswordResetMutationRequest,
-} from "@template/api-client/authentication";
-import { NextResponse } from "next/server";
-import { apiRouteError } from "@/lib/api-route-error";
+import { requestPasswordReset } from "@template/api-client/authentication";
 import { createAppServerApiClient } from "@/lib/server-api";
+import {
+  passwordResetJson,
+  passwordResetRequestBody,
+  passwordResetRequestError,
+  readJson,
+} from "@/lib/password-reset-bff";
 
+/** Anonymous: requests an emailed reset code. Never sets session cookies. */
 export async function POST(request: Request) {
   try {
     const client = await createAppServerApiClient({ authenticated: false });
     const result = await requestPasswordReset(
       client,
-      (await request.json()) as RequestPasswordResetMutationRequest,
+      passwordResetRequestBody(await readJson(request)),
     );
-    return NextResponse.json(result, { status: 202 });
+    return passwordResetJson(result, 202);
   } catch (error) {
-    return apiRouteError(error);
+    return passwordResetRequestError(error);
   }
 }

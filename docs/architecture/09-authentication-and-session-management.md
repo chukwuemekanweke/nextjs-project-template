@@ -1,6 +1,6 @@
 # Authentication and session management
 
-FE-021 added sign-in to the User and Admin portals, FE-022 tightened session storage, FE-023 added coordinated refresh, FE-024 added explicit logout, FE-025 protected dashboard routes, FE-030 added authenticated password changes, CAF-FE-004 added authenticator two-factor authentication to the User Portal, and CAF-FE-005 added passkey (WebAuthn) registration, management, and passwordless sign-in. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. The User Portal also owns the public `/register`, `/confirm-email`, and `/sign-in/two-factor` routes. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
+FE-021 added sign-in to the User and Admin portals, FE-022 tightened session storage, FE-023 added coordinated refresh, FE-024 added explicit logout, FE-025 protected dashboard routes, FE-030 added authenticated password changes, CAF-FE-004 added authenticator two-factor authentication to the User Portal, and CAF-FE-005 added passkey (WebAuthn) registration, management, and passwordless sign-in. Each portal owns its `/sign-in` page, validates the form with `@template/forms`, and sends credentials to its own `/api/auth/session` Route Handler. The User Portal also owns the public `/register`, `/confirm-email`, `/sign-in/two-factor`, and `/forgot-password` routes. Access and refresh tokens stay on the server side and are never returned to browser JavaScript.
 
 ## Sign-in flow
 
@@ -179,6 +179,31 @@ The password schema mirrors the Web API rules: at least eight characters with an
 
 The completed payload is sent through the handwritten `authentication.signUp` operation. An accepted registration navigates to `/confirm-email` with the email address and the backend's `retryAtUtc` cooldown. The page presents the six-character code as six coordinated inputs. It sends the combined value to its same-origin `/api/auth/email-confirmations` Route Handler, which calls the handwritten backend operation, stores the returned session tokens in HttpOnly cookies, and returns only non-sensitive session metadata to the browser. Its resend action remains disabled until five seconds after the backend timestamp to absorb small client/server clock differences, then calls `authentication.requestEmailConfirmationCode` and replaces the cooldown with the returned `retryAtUtc`. Successful confirmation continues to the optional [first-sign-in passkey prompt](#first-sign-in-passkey-prompt), and then to the validated destination; registration defaults to `/dashboard`. A conflict during the final registration request is treated like an existing-email result, covering the race between the initial check and submission.
 
+## Forgotten-password recovery
+
+Trello FE-UI-020 adds email one-time-code password reset to the User Portal. There is no reset link, URL token, or `/reset-password` route: the public `/forgot-password` page holds three app-local steps (email, code and new password, done) in React state, so a reload starts again at the email step. `SignInForm` links to it through `forgotPasswordHref`, keeping a validated `returnTo`.
+
+```mermaid
+sequenceDiagram
+  participant Browser
+  participant BFF as User Portal BFF
+  participant Backend
+  Browser->>BFF: POST /api/auth/password-resets { email }
+  BFF->>Backend: POST /api/v1/authentication/password-resets
+  Backend-->>BFF: 202 message (404 for an unknown email)
+  BFF-->>Browser: 202 message (404 folded into 202)
+  Browser->>BFF: POST /api/auth/password-resets/completions { email, otp, password, confirmPassword }
+  BFF->>Backend: POST /api/v1/authentication/password-resets/completions
+  Backend-->>BFF: 200 message, or 400 problem
+  BFF-->>Browser: 200 message, no cookies
+```
+
+- **Transport.** `useRequestPasswordReset` and `useCompletePasswordReset` wrap the existing handwritten operations; the User Portal browser adapter rewrites both to the anonymous same-origin Route Handlers, which forward only the contract fields through an anonymous server client (tenant header preserved) and answer with `Cache-Control: no-store`. The mutations use `gcTime: 0` and `retry: false`, and are reset when the flow moves on.
+- **Enumeration.** The backend returns `404` for an unknown email on both operations. The BFF answers a request exactly like an accepted one and a completion like an invalid code; copy says "If an account uses this address" and never claims delivery.
+- **Code and password.** The code is a string of exactly six ASCII digits (leading zeroes kept, pasting supported) entered with `ConfirmationCodeField`; it is never auto-submitted. Local validation mirrors the Web API password policy and requires a matching confirmation; passwords are sent unmodified. The email sent with a completion comes from the accepted request step, never from an editable field, and "Change email" unmounts the code form, resets both mutations and advances an attempt guard so late replies are ignored.
+- **Backend behaviour (verified in `BackendProjectTemplate`).** Codes are six random digits, live two minutes, are single-use, and are discarded after five wrong attempts. A request while a code is active sends nothing, and the response carries no cooldown or expiry, so the UI shows no countdown and its resend notice says an unexpired code stays valid. Wrong, expired, used and exhausted codes share one `400` problem without a stable code, shown as one combined message; `400` with field errors maps to the form; `429` (the `PasswordResetPolicy`, 5 per 15 minutes per client IP across both operations) shows a generic wait message. Completion revokes every session of the account and returns no tokens, so the done step says all sessions were signed out and links to `/sign-in`; no session or cookie is created. No success notification is sent.
+- **Gaps.** No machine-readable invalid-code error, no cooldown/expiry data, `Retry-After` not forwarded by the BFF, the code is consumed before ASP.NET Identity validates the password, and rate-limit partitioning by client IP sees the BFF unless forwarded headers are honoured. See DR-015 in `docs/design-system/discrepancy-register.md`.
+
 ## Session cookie policy
 
 Each portal keeps the access and refresh token in separate cookies. Only Route Handlers and server API clients read them.
@@ -245,7 +270,7 @@ Two-factor and passkey management follow the same authenticated BFF rule under `
 
 ## Protected routes
 
-Each dashboard app exports a Next.js `proxy` from `src/proxy.ts`. The matcher runs it for portal page requests while excluding authentication APIs, Next.js assets, and application static files. `/sign-in` is explicitly public in both portals; `/register`, `/confirm-email`, and `/sign-in/two-factor` are also public in the User Portal. Every other matched page is resolved before React rendering, so an unauthenticated request cannot briefly render the dashboard shell or page content.
+Each dashboard app exports a Next.js `proxy` from `src/proxy.ts`. The matcher runs it for portal page requests while excluding authentication APIs, Next.js assets, and application static files. `/sign-in` is explicitly public in both portals; `/register`, `/confirm-email`, `/sign-in/two-factor`, and `/forgot-password` are also public in the User Portal (exact paths in `src/lib/public-paths.ts`). Every other matched page is resolved before React rendering, so an unauthenticated request cannot briefly render the dashboard shell or page content.
 
 ```mermaid
 flowchart TD

@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { UserAuthLayout } from "@/components/user-auth-layout";
 import { env } from "@/config/env";
-import { safeEmailParameter, safeSignInDestination } from "@/lib/sign-in";
+import {
+  createForgotPasswordHref,
+  safeEmailParameter,
+  safeSignInDestination,
+} from "@/lib/sign-in";
 import { SignInForm } from "./sign-in-form";
 
 export const metadata: Metadata = { title: "Sign in" };
@@ -37,6 +41,7 @@ export default async function SignInPage({
       <SignInForm
         destination={destination}
         emailConfirmed={confirmed}
+        forgotPasswordHref={createForgotPasswordHref(destination)}
         googleClientId={env.googleClientId}
         initialEmail={initialEmail}
       />

@@ -32,6 +32,11 @@
         "ticket": "Trello FE-UI-015",
         "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
         "scope": "ADM-REGISTRATIONS, ADM-ACTIVE-USERS, ADM-PAYMENT-ANALYTICS, ADM-SUBSCRIPTION-ANALYTICS, ADM-PROVIDERS, ADM-REFERENCE-DATA, ADM-AUDIT and ADM-SYSTEM-HEALTH (feature compositions only; reference blobs in the records still describe 'commit', DR-083)"
+      },
+      {
+        "ticket": "Trello FE-UI-020",
+        "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+        "scope": "AUTH-FORGOT-PASSWORD, AUTH-RESET-PASSWORD (email OTP password reset on /forgot-password; reference blobs in the records still describe 'commit', DR-083)"
       }
     ]
   },
@@ -59,15 +64,15 @@
       "state-flow": 10
     },
     "byStatus": {
-      "Implemented": 38,
-      "Missing": 17,
+      "Implemented": 40,
+      "Missing": 15,
       "Partial": 3,
       "Reference-only": 0
     },
     "byClassification": {
-      "A": 15,
+      "A": 17,
       "B": 8,
-      "C": 10,
+      "C": 8,
       "D": 25
     },
     "byBackendSupport": {
@@ -79,8 +84,8 @@
     "artboards": 62,
     "canonicalReferenceFiles": 307,
     "editableArtboardFiles": 239,
-    "screensWithExistingRoute": 26,
-    "screensWithProposedRouteOnly": 27,
+    "screensWithExistingRoute": 28,
+    "screensWithProposedRouteOnly": 25,
     "screensWithUnsupportedCapabilities": 44
   },
   "screens": [
@@ -2216,13 +2221,13 @@
     },
     {
       "id": "AUTH-FORGOT-PASSWORD",
-      "name": "Forgot password (request and link sent)",
+      "name": "Forgot password (email and code steps)",
       "category": "authentication",
       "kind": "state-flow",
       "targetApplication": "user-portal",
       "route": {
-        "existing": null,
-        "proposed": "/forgot-password",
+        "existing": "/forgot-password",
+        "proposed": null,
         "type": "page",
         "authBoundary": "public"
       },
@@ -2231,7 +2236,7 @@
         "variants": {
           "viewports": ["desktop", "mobile"],
           "themes": ["dark", "light"],
-          "states": ["link-sent", "request"],
+          "states": ["code-entry", "request"],
           "interactiveStates": []
         },
         "referenceFiles": [
@@ -2268,28 +2273,28 @@
             "blob": "018c06208da2eabbebe4b1d32246e0d84ec1e03b",
             "viewport": "desktop",
             "theme": "light",
-            "state": "link-sent"
+            "state": "code-entry"
           },
           {
             "path": "2-authentication/AuthForgotSentDark.html",
             "blob": "d6cebc5fbed6448190d2605dc2956e53b8cf5f2c",
             "viewport": "desktop",
             "theme": "dark",
-            "state": "link-sent"
+            "state": "code-entry"
           },
           {
             "path": "2-authentication/AuthForgotSentMobile.html",
             "blob": "96cbfdb1501cb4b5abd3b0f59a648b9b139030f6",
             "viewport": "mobile",
             "theme": "light",
-            "state": "link-sent"
+            "state": "code-entry"
           },
           {
             "path": "2-authentication/AuthForgotSentMobileDark.html",
             "blob": "1d029593f653d1073f51a7d5b61743048baeb0ae",
             "viewport": "mobile",
             "theme": "dark",
-            "state": "link-sent"
+            "state": "code-entry"
           }
         ],
         "editableArtboards": [
@@ -2304,11 +2309,19 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
-        "classification": "C",
-        "files": ["apps/user-portal/src/app/api/auth/password-resets/route.ts"],
+        "status": "Implemented",
+        "classification": "A",
+        "files": [
+          "apps/user-portal/src/app/forgot-password/page.tsx",
+          "apps/user-portal/src/app/forgot-password/forgot-password-flow.tsx",
+          "apps/user-portal/src/app/forgot-password/password-reset-completion-form.tsx",
+          "apps/user-portal/src/lib/password-reset.ts",
+          "apps/user-portal/src/lib/password-reset-bff.ts",
+          "apps/user-portal/src/lib/auth-feedback.ts",
+          "apps/user-portal/src/app/api/auth/password-resets/route.ts"
+        ],
         "existingFunctionality": [
-          "BFF route and api-client operation exist; no page, no link, not in proxy PUBLIC_PATHS."
+          "Trello FE-UI-020 (design ad9386e): one public route; email step requests a 6-digit code through the same-origin BFF (unknown emails answered like accepted requests), then the code, new password and confirmation are submitted together; resend and Change email; 'Forgot password?' on sign-in."
         ]
       },
       "backend": {
@@ -2317,24 +2330,20 @@
           "requestPasswordReset POST /api/v1/authentication/password-resets"
         ],
         "missingCapabilities": [
-          "Resend cooldown value (design shows 0:45; backend contract has no retry-at field — verify)"
+          "No resend cooldown, retry-at or code-expiry value in the request response; a repeated request while a code is still active sends nothing (DR-015)"
         ]
       },
       "uiGaps": [
-        "Whole screen missing; 'sent' is an in-page state after submit and must not reveal whether the account exists.",
-        "'Open reset page (from email link)' button in the artboard is a prototype affordance - do not implement."
+        "The illustrative 'Resend code in 0:45' timer is not shown: the backend returns no cooldown; resend is always available and explains that an unexpired code stays valid.",
+        "Copy does not claim delivery or that the address has an account ('If an account uses …')."
       ],
-      "dependencies": [
-        "FE-UI-008 AuthLayout",
-        "proxy PUBLIC_PATHS addition",
-        "backend reset-email link target configuration"
-      ],
+      "dependencies": ["FE-UI-008 AuthLayout", "FE-UI-007 OTP field"],
       "priority": "P1",
       "roadmapTicket": "FE-UI-013",
       "discrepancies": ["DR-015"],
       "notes": [
-        "Add the path to PUBLIC_PATHS explicitly; do not loosen the proxy matcher.",
-        "Trello FE-UI-020 owns this screen: design ad9386e uses email entry, then OTP and a new password (not a reset link)."
+        "/forgot-password is in the proxy's exact PUBLIC_PATHS; the matcher is unchanged.",
+        "No reset link, URL token or separate /reset-password route: the design's email-OTP flow replaces them."
       ]
     },
     {
@@ -2558,7 +2567,7 @@
           "apps/user-portal/src/lib/passkey-sign-in.ts"
         ],
         "existingFunctionality": [
-          "Trello FE-UI-006 (design ad9386e): titled Alerts mapped from HTTP status / stable error codes; no attempt counts, lockout durations or 'No account for this email' (DR-016); password-updated belongs to the reset flow (FE-UI-020)."
+          "Trello FE-UI-006 (design ad9386e): titled Alerts mapped from HTTP status / stable error codes; no attempt counts, lockout durations or 'No account for this email' (DR-016); password-updated, code and rate-limit states are used by the reset flow (Trello FE-UI-020)."
         ]
       },
       "backend": {
@@ -2792,22 +2801,22 @@
     },
     {
       "id": "AUTH-RESET-PASSWORD",
-      "name": "Reset password (new password, done, link expired)",
+      "name": "Reset password (code, invalid code, done)",
       "category": "authentication",
       "kind": "state-flow",
       "targetApplication": "user-portal",
       "route": {
-        "existing": null,
-        "proposed": "/reset-password",
+        "existing": "/forgot-password (code step)",
+        "proposed": null,
         "type": "page",
-        "authBoundary": "public (token in link)"
+        "authBoundary": "public"
       },
       "design": {
         "artboards": ["AuthResetPassword", "AuthResetDone", "AuthResetExpired"],
         "variants": {
           "viewports": ["desktop", "mobile"],
           "themes": ["dark", "light"],
-          "states": ["done", "link-expired", "new-password"],
+          "states": ["done", "invalid-code", "password-mismatch"],
           "interactiveStates": []
         },
         "referenceFiles": [
@@ -2816,28 +2825,28 @@
             "blob": "a06cec8e89f98b67a3aa21600e9ec64ecbcf2e29",
             "viewport": "desktop",
             "theme": "light",
-            "state": "new-password"
+            "state": "password-mismatch"
           },
           {
             "path": "2-authentication/AuthResetPasswordDark.html",
             "blob": "671d2337109a32cb4c17d2b92f788bd76d19f4d5",
             "viewport": "desktop",
             "theme": "dark",
-            "state": "new-password"
+            "state": "password-mismatch"
           },
           {
             "path": "2-authentication/AuthResetPasswordMobile.html",
             "blob": "32bfde8dde6cb62790a06a91ad582bbf82c21406",
             "viewport": "mobile",
             "theme": "light",
-            "state": "new-password"
+            "state": "password-mismatch"
           },
           {
             "path": "2-authentication/AuthResetPasswordMobileDark.html",
             "blob": "a1881b03b123db9c267df4668f39b109d968194c",
             "viewport": "mobile",
             "theme": "dark",
-            "state": "new-password"
+            "state": "password-mismatch"
           },
           {
             "path": "2-authentication/AuthResetDone.html",
@@ -2872,28 +2881,28 @@
             "blob": "a8db8be082954436824a79be518b35d039ddf754",
             "viewport": "desktop",
             "theme": "light",
-            "state": "link-expired"
+            "state": "invalid-code"
           },
           {
             "path": "2-authentication/AuthResetExpiredDark.html",
             "blob": "7a9a8791d282a3e96e5970e77e85e5a7acd4c314",
             "viewport": "desktop",
             "theme": "dark",
-            "state": "link-expired"
+            "state": "invalid-code"
           },
           {
             "path": "2-authentication/AuthResetExpiredMobile.html",
             "blob": "1ad759599cd5a400cf65579348005f7c64bbd2fd",
             "viewport": "mobile",
             "theme": "light",
-            "state": "link-expired"
+            "state": "invalid-code"
           },
           {
             "path": "2-authentication/AuthResetExpiredMobileDark.html",
             "blob": "aa6b091b40b4cf173e89a11dffc4497ff2be53ea",
             "viewport": "mobile",
             "theme": "dark",
-            "state": "link-expired"
+            "state": "invalid-code"
           }
         ],
         "editableArtboards": [
@@ -2912,13 +2921,19 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
-        "classification": "C",
+        "status": "Implemented",
+        "classification": "A",
         "files": [
+          "apps/user-portal/src/app/forgot-password/page.tsx",
+          "apps/user-portal/src/app/forgot-password/forgot-password-flow.tsx",
+          "apps/user-portal/src/app/forgot-password/password-reset-completion-form.tsx",
+          "apps/user-portal/src/lib/password-reset.ts",
+          "apps/user-portal/src/lib/password-reset-bff.ts",
+          "apps/user-portal/src/lib/auth-feedback.ts",
           "apps/user-portal/src/app/api/auth/password-resets/completions/route.ts"
         ],
         "existingFunctionality": [
-          "BFF completion route and api-client operation exist; no page."
+          "Trello FE-UI-020 (design ad9386e): code, new password and confirmation in one form (no auto-submit); one combined 'That code didn't work' state with Send a new code; field-mapped backend validation; success only after the backend confirms, then Sign in. No session or cookie is created."
         ]
       },
       "backend": {
@@ -2927,19 +2942,19 @@
           "completePasswordReset POST /api/v1/authentication/password-resets/completions"
         ],
         "missingCapabilities": [
-          "Stable error code distinguishing an expired/used token from other failures (verify)"
+          "No stable error code: wrong, expired, used and attempt-exhausted codes share one 400 problem, so the UI shows one combined message (DR-015)"
         ]
       },
       "uiGaps": [
-        "Whole screen missing; done and expired are in-page states, not separate routes.",
-        "Reference copy claims other sessions are signed out; only state this if the backend guarantees it."
+        "The password-strength bar is replaced by the backend policy hint (upper- and lowercase, number, symbol; the reference hint omits the letter-case rules).",
+        "Session copy is backed by the backend: completion revokes all of the account's sessions, so the UI says all sessions were signed out."
       ],
-      "dependencies": ["AUTH-FORGOT-PASSWORD", "proxy PUBLIC_PATHS addition"],
+      "dependencies": ["AUTH-FORGOT-PASSWORD"],
       "priority": "P1",
       "roadmapTicket": "FE-UI-013",
       "discrepancies": ["DR-015"],
       "notes": [
-        "Trello FE-UI-020 owns this screen: design ad9386e uses email entry, then OTP and a new password (not a reset link)."
+        "Code-entry, invalid-code and done are in-page states of /forgot-password, not routes."
       ]
     },
     {
@@ -3008,7 +3023,7 @@
           "apps/user-portal/src/lib/sign-in.ts"
         ],
         "existingFunctionality": [
-          "Trello FE-UI-006 (design ad9386e): AuthLayout split layout; official GIS button kept (DR-013); passkey sign-in; titled alerts from auth-feedback; 'Keep me signed in' omitted (DR-012). 'Forgot password?' renders only with forgotPasswordHref (FE-UI-020)."
+          "Trello FE-UI-006 (design ad9386e): AuthLayout split layout; official GIS button kept (DR-013); passkey sign-in; titled alerts from auth-feedback; 'Keep me signed in' omitted (DR-012). 'Forgot password?' links to /forgot-password, keeping a validated returnTo (Trello FE-UI-020)."
         ]
       },
       "backend": {
@@ -3027,7 +3042,6 @@
       },
       "uiGaps": [
         "Split auth layout (form + brand panel) replaces the centered card.",
-        "'Forgot password?' link targets a route that does not exist yet (AUTH-FORGOT-PASSWORD).",
         "Reference draws a custom 'Continue with Google' button; implementation must keep Google's official GIS button (OKF constraint, Google branding)."
       ],
       "dependencies": ["FE-UI-008 AuthLayout", "FE-UI-007 forms"],

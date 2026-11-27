@@ -12,8 +12,10 @@ code_refs:
     apps/user-portal/src/app/sign-in/**,
     apps/user-portal/src/app/register/**,
     apps/user-portal/src/app/confirm-email/**,
+    apps/user-portal/src/app/forgot-password/**,
     apps/user-portal/src/app/security/**,
     apps/user-portal/src/lib/registration.ts,
+    apps/user-portal/src/lib/password-reset*.ts,
     apps/admin-portal/src/app/sign-in/**,
     apps/user-portal/src/lib/auth-feedback.ts,
     apps/user-portal/src/components/user-auth-layout.tsx,
@@ -24,13 +26,13 @@ code_refs:
 sources:
   - kind: file
     path: apps/user-portal/src/app/register/registration-form.tsx
-generated: { at: "2026-11-26T00:00:00Z", by: human }
+generated: { at: "2026-11-27T00:00:00Z", by: human }
 status: stable
 ---
 
 The User Portal implements email/password sign-in, staged registration, email
-confirmation and resend cooldown, password reset endpoints, password change, and
-logout. Registration checks normalized email existence first, redirects existing
+confirmation and resend cooldown, forgotten-password reset by emailed code,
+password change, and logout. Registration checks normalized email existence first, redirects existing
 users to sign-in, gathers profile/country and password data, then routes
 accepted registrations to confirmation. Confirmation posts through a same-origin
 BFF, creates the cookie session on success, and redirects into the protected
@@ -144,7 +146,20 @@ passkey cancellation stays silent. Never show attempt counts, lockout
 durations, "no account for this email", "keep me signed in", Google identity
 or email (the backend returns none), a terms checkbox, or admin passkey/MFA
 affordances. `SignInForm` renders "Forgot password?" only when given
-`forgotPasswordHref`; the reset route ships with Trello FE-UI-020.
+`forgotPasswordHref`; the sign-in page passes `/forgot-password`.
+
+Forgotten-password recovery (Trello FE-UI-020) is one public route,
+`/forgot-password`, with app-local steps (email → 6-digit code with new
+password and confirmation → done); no reset link, URL token or
+`/reset-password`. Both calls use api-react hooks over the existing operations,
+rewritten to the anonymous BFF routes, which fold the backend's unknown-email
+`404` into the accepted/invalid-code outcomes (no enumeration). The completion
+email comes from the accepted step, never an editable field; "Change email"
+resets mutations and an attempt guard drops late replies. The backend returns
+no cooldown, expiry or stable invalid-code error, so the UI shows no timer and
+one combined wrong/expired/used message. Completion revokes all sessions and
+returns no tokens: never create a session after a reset. Workflow rules live in
+`src/lib/password-reset.ts`; backend facts and gaps are in DR-015.
 
 Keep workflow schemas, copy, navigation, cooldown UI, conflict redirects, and
 admission presentation in the owning app. Reusable backend operations and query
