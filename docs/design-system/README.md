@@ -35,7 +35,7 @@ Always read designs at this commit, not the moving `main` branch. The canonical 
 | [`verification-strategy.md`](./verification-strategy.md)   | Component, visual, functional and accessibility verification; definition of done.                                                                                                                            |
 | [`discrepancy-register.md`](./discrepancy-register.md)     | Confirmed gaps, conflicts, risks (DR-xxx) and open decisions (OD-xx).                                                                                                                                        |
 
-Transactional email designs (`6-emails/`, `email-pages/`, Trello FE-UI-019) are not screens: they are cataloged in [`email-template-catalog.md`](./email-template-catalog.md) / [`email-template-catalog.json`](./email-template-catalog.json), with backend ownership, security, client-compatibility and follow-up backend tickets in [`email-notification-handoff.md`](./email-notification-handoff.md). Production email belongs to the backend notification module, not the Next.js apps.
+Transactional email designs (`6-emails/`, `email-pages/`, Trello FE-UI-019) are not screens: they are cataloged in [`email-template-catalog.json`](./email-template-catalog.json) (canonical) and summarized in [`email-template-catalog.md`](./email-template-catalog.md), with backend ownership, security, client compatibility and the deferred backend work (BE-DS-008) in [`email-notification-handoff.md`](./email-notification-handoff.md). Production email belongs to the backend notification module, not the Next.js apps.
 
 ## Key findings
 

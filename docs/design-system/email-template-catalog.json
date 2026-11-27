@@ -1,42 +1,75 @@
 {
   "$schemaVersion": 1,
   "ticket": "FE-UI-019 (Trello)",
-  "generatedOn": "2026-11-27",
-  "purpose": "Catalog of the transactional email designs and their notification content contracts. Documentation for the backend notification owner; not a production frontend contract. Backend source is authoritative for NotificationType values and payload keys.",
-  "designSource": {
-    "repository": "https://github.com/chukwuemekanweke/Project-Template-Design-System",
-    "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
-    "commitDate": "2026-11-25T21:19:56+01:00",
-    "treeSha": "1000fc95c79c4cda8f3c6361d73f3b5d485cd0c2",
-    "index": {
-      "path": "email-pages/index.html",
-      "blob": "845691ed942f822e1f7bf3075ab4e0fa80fa2e76"
-    },
-    "trees": {
-      "6-emails": "8958b95ed979028e91730ce544d0113a84608eb4",
-      "email-pages/live": "70679e8978ed320bae51ba1da42cce7970cefe51",
-      "email-pages/screens": "a84c1c052b08efd2f249950ef42ee6a02979a87a"
-    },
-    "roles": {
-      "6-emails/": "Canonical visual reference: 88 files = 22 templates x desktop/mobile x light/dark, each with an inbox strip (subject, sender, preheader).",
-      "email-pages/live/": "Responsive email HTML (22 files): table layout, inline styles, prefers-color-scheme and [data-ogsc] dark rules, 480px breakpoint. Starting point for client evaluation, not production templates.",
-      "email-pages/screens/": "Locked preview exports (88 files). Identical to 6-emails/ except the preview page background. Never deploy as email HTML.",
-      "email-pages/index.html": "Gallery: template name, subject, Existing/Proposed status and NotificationType per template."
-    },
-    "counting": "22 templates. Device/theme variants and the duplicated screens/ exports are not additional notification types or screens."
+  "updatedOn": "2026-11-28",
+  "purpose": "Canonical structured inventory of the 22 transactional email designs and their proposed notification content contracts, handed off to the backend notification owner. email-template-catalog.md is a short human-readable summary maintained by hand. This is documentation, not a production frontend contract: backend source stays authoritative for NotificationType values and payload keys.",
+  "backendFollowUp": {
+    "id": "BE-DS-008",
+    "url": "https://trello.com/c/RTpBnO3B",
+    "note": "Deferred backend notification work. BE-NOTIF-01…08 in email-notification-handoff.md are proposed work packages for it, not separate tickets."
   },
-  "backendSource": {
-    "repository": "https://github.com/chukwuemekanweke/dotnet-core-project-template",
-    "commit": "1fcad50 (origin/main; local checkout c0e439d has an identical tree)",
-    "inspectedOn": "2026-11-27",
-    "enum": "src/BackendProjectTemplate.Contracts/Commands/Notifications/NotificationType.cs",
-    "command": "src/BackendProjectTemplate.Contracts/Commands/Notifications/SendNotificationCommand.cs",
-    "payload": "EmailNotificationContent(To, Dictionary<string,string> Content, Cc, Bcc) — all values are strings",
-    "dispatcher": "src/BackendProjectTemplate.Infrastructure/Notifications/EmailNotificationDispatcher.cs",
-    "templateRegistry": "notifications.EmailNotificationTemplates seeded by src/BackendProjectTemplate.DatabaseMigrator/Scripts/PostDeploy/0001.template-seeder.postdeploy.sql",
-    "templateFiles": "src/BackendProjectTemplate.Consumer/EmailTemplates/TemplateSets/{brand}/{language}/NotificationTypes/*.html + BaseTemplate.html",
-    "placeholderSyntax": "{{:Key:}}"
+  "decisionStatuses": {
+    "approved": "Explicitly approved by Product; backend implementation still pending under BE-DS-008",
+    "proposed": "Recommendation from this handoff; pending backend review under BE-DS-008"
   },
+  "decisions": [
+    {
+      "id": "OD-18",
+      "status": "approved",
+      "date": "2026-11-27",
+      "templates": ["SecuritySettingChanged", "PasswordResetSuccessful"],
+      "decision": "An in-session password change sends SecuritySettingChanged; PasswordResetSuccessful is only for a completed password reset."
+    },
+    {
+      "id": "OD-19",
+      "status": "approved",
+      "date": "2026-11-27",
+      "templates": ["ResetPassword"],
+      "decision": "Password-reset code lifetime changes from 2 to 3 minutes. Current backend behaviour is 2 minutes."
+    },
+    {
+      "id": "OD-20",
+      "status": "approved",
+      "date": "2026-11-27",
+      "templates": [],
+      "decision": "Billing emails (categories subscriptions, invoices, payments, wallet) may be opted out of; security, authentication, account and KYC emails never."
+    },
+    {
+      "id": "DR-142",
+      "status": "approved",
+      "date": "2026-11-27",
+      "templates": ["ConfirmEmail"],
+      "decision": "The ConfirmEmail subject drops the code ('Your Template confirmation code')."
+    },
+    {
+      "id": "AccountCreated trigger",
+      "status": "approved",
+      "date": "2026-11-27",
+      "templates": ["AccountCreated"],
+      "decision": "AccountCreated is sent on UserEmailConfirmed, not UserCreated."
+    },
+    {
+      "id": "AccountCreated checklist",
+      "status": "approved",
+      "date": "2026-11-27",
+      "templates": ["AccountCreated"],
+      "decision": "The three-step checklist is fixed copy in every deployment, not capability-driven."
+    },
+    {
+      "id": "SubscriptionAllocated trigger",
+      "status": "approved",
+      "date": "2026-11-27",
+      "templates": ["SubscriptionAllocated"],
+      "decision": "SubscriptionAllocated is sent when the allocation becomes active, never when it is only scheduled."
+    },
+    {
+      "id": "Receipt type name",
+      "status": "proposed",
+      "date": "2026-11-27",
+      "templates": ["Invoice"],
+      "decision": "Rename the SubscriptionInvoice enum member to SubscriptionReceipt, keeping value 10, because the template is a receipt; Product delegated the choice, so it needs backend review."
+    }
+  ],
   "coverageStatuses": [
     "Implemented and verified",
     "Partially implemented",
@@ -134,6 +167,40 @@
     "to": "EmailNotificationContent.To (resolved by the producer from the stakeholder/Identity user; never from request input)",
     "language": "SendNotificationCommand.Language from the stakeholder preference ('en', 'fr' templates exist)"
   },
+  "designSource": {
+    "repository": "https://github.com/chukwuemekanweke/Project-Template-Design-System",
+    "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+    "commitDate": "2026-11-25T21:19:56+01:00",
+    "treeSha": "1000fc95c79c4cda8f3c6361d73f3b5d485cd0c2",
+    "index": {
+      "path": "email-pages/index.html",
+      "blob": "845691ed942f822e1f7bf3075ab4e0fa80fa2e76"
+    },
+    "trees": {
+      "6-emails": "8958b95ed979028e91730ce544d0113a84608eb4",
+      "email-pages/live": "70679e8978ed320bae51ba1da42cce7970cefe51",
+      "email-pages/screens": "a84c1c052b08efd2f249950ef42ee6a02979a87a"
+    },
+    "roles": {
+      "6-emails/": "Canonical visual reference: 88 files = 22 templates x desktop/mobile x light/dark, each with an inbox strip (subject, sender, preheader).",
+      "email-pages/live/": "Responsive email HTML (22 files): table layout, inline styles, prefers-color-scheme and [data-ogsc] dark rules, 480px breakpoint. Starting point for client evaluation, not production templates.",
+      "email-pages/screens/": "Locked preview exports (88 files). Identical to 6-emails/ except the preview page background. Never deploy as email HTML.",
+      "email-pages/index.html": "Gallery: template name, subject, Existing/Proposed status and NotificationType per template."
+    },
+    "counting": "22 templates. Device/theme variants and the duplicated screens/ exports are not additional notification types or screens."
+  },
+  "backendSource": {
+    "repository": "https://github.com/chukwuemekanweke/dotnet-core-project-template",
+    "commit": "1fcad50 (origin/main; local checkout c0e439d has an identical tree)",
+    "inspectedOn": "2026-11-27",
+    "enum": "src/BackendProjectTemplate.Contracts/Commands/Notifications/NotificationType.cs",
+    "command": "src/BackendProjectTemplate.Contracts/Commands/Notifications/SendNotificationCommand.cs",
+    "payload": "EmailNotificationContent(To, Dictionary<string,string> Content, Cc, Bcc) — all values are strings",
+    "dispatcher": "src/BackendProjectTemplate.Infrastructure/Notifications/EmailNotificationDispatcher.cs",
+    "templateRegistry": "notifications.EmailNotificationTemplates seeded by src/BackendProjectTemplate.DatabaseMigrator/Scripts/PostDeploy/0001.template-seeder.postdeploy.sql",
+    "templateFiles": "src/BackendProjectTemplate.Consumer/EmailTemplates/TemplateSets/{brand}/{language}/NotificationTypes/*.html + BaseTemplate.html",
+    "placeholderSyntax": "{{:Key:}}"
+  },
   "templates": [
     {
       "templateName": "AccountCreated",
@@ -153,7 +220,7 @@
       "preheader": "Your account is ready. Here's how to get started.",
       "category": "account",
       "recipient": "The new user",
-      "proposedTrigger": "UserEmailConfirmed, decided 2026-11-27 (the account becomes usable only after email confirmation; sending on UserCreated would welcome unconfirmed addresses). Produce it from the existing Consumer/Authentication/UserEmailConfirmedHandler.",
+      "proposedTrigger": "UserEmailConfirmed (approved 2026-11-27) (the account becomes usable only after email confirmation; sending on UserCreated would welcome unconfirmed addresses). Produce it from the existing Consumer/Authentication/UserEmailConfirmedHandler.",
       "variables": [
         {
           "name": "FirstName",
@@ -186,7 +253,7 @@
       "securitySensitive": [],
       "timeSensitive": [],
       "designOnlyContent": [
-        "Three-step checklist (passkey, identity verification, choose a plan) is fixed copy, decided 2026-11-27: render the same three steps in every deployment; it is not capability-driven."
+        "Three-step checklist (passkey, identity verification, choose a plan) is fixed copy (approved 2026-11-27): render the same three steps in every deployment; it is not capability-driven."
       ],
       "openQuestions": [],
       "followUpTicket": "BE-NOTIF-02",
@@ -255,7 +322,7 @@
         "Expiry: 5 minutes unless the registration session's remaining lifetime is shorter (AuthenticationOtpDefaults.EmailConfirmationLifetime)."
       ],
       "designOnlyContent": [
-        "Subject contains the code. Decided by Product: use a code-free subject ('Your Template confirmation code') so the code does not appear in lock-screen previews or mailbox search (DR-142).",
+        "Subject contains the code. Approved 2026-11-27: use a code-free subject ('Your Template confirmation code') so the code does not appear in lock-screen previews or mailbox search (DR-142).",
         "Backend template still renders a 'Confirm your email' button with an empty VerifyUrl; the design has no CTA. Remove the button and the VerifyUrl key."
       ],
       "openQuestions": [],
@@ -395,7 +462,7 @@
           "name": "OtpExpiresAtUtc",
           "type": "dateTime",
           "required": true,
-          "source": "TwoFactorOtp.ExpiresAtUtc (issue time + lifetime: 2 minutes today, 3 minutes decided in OD-19)",
+          "source": "TwoFactorOtp.ExpiresAtUtc (issue time + lifetime; 2 minutes today, 3 minutes approved in OD-19 and pending backend change)",
           "format": "dateTimeUtc; drop the relative suffix the backend appends today",
           "sensitive": "none",
           "missing": "Do not send",
@@ -409,7 +476,7 @@
         "LastName is sent but not rendered by the design; drop it from the payload (data minimisation)."
       ],
       "timeSensitive": [
-        "Verified expiry today: 2 minutes from issue (TwoFactorOtpService.ResolveLifetime). Decided (OD-19): change the password-reset lifetime to 3 minutes (BE-NOTIF-02). The design's '11:30 UTC' is sample data.",
+        "Current backend: expiry 2 minutes from issue (TwoFactorOtpService.ResolveLifetime). Approved, pending backend change: 3 minutes (OD-19). Render the backend's OtpExpiresAtUtc, never a hardcoded duration; the design's '11:30 UTC' is sample data.",
         "While an unexpired reset code exists, a new request sends nothing (ResetPasswordHandler returns early)."
       ],
       "designOnlyContent": [],
@@ -1044,7 +1111,7 @@
       ],
       "timeSensitive": [],
       "designOnlyContent": [
-        "Template is a receipt (payment confirmation) although its type is SubscriptionInvoice; the current backend template says 'Thank you for your order' with AmountDue. Decided 2026-11-27: rename the enum member to SubscriptionReceipt, keeping value 10 (no producer exists, so nothing persisted needs migrating), and rename Invoice.html and its seed rows to match; the Invoice name stays for InvoiceIssued and InvoiceOverdue, which are real invoices.",
+        "Template is a receipt (payment confirmation) although its type is SubscriptionInvoice; the current backend template says 'Thank you for your order' with AmountDue. Proposed, pending backend review: rename the enum member to SubscriptionReceipt, keeping value 10 (no producer exists, so nothing persisted needs migrating), and rename Invoice.html and its seed rows to match; the Invoice name stays for InvoiceIssued and InvoiceOverdue, which are real invoices.",
         "Attachments, tax lines and masked card details have no backend source."
       ],
       "openQuestions": ["Attachment vs authenticated link."],
@@ -1459,7 +1526,7 @@
       "preheader": "A security setting on your account changed.",
       "category": "security",
       "recipient": "The account holder",
-      "proposedTrigger": "UserSecurityActivityOccurred, one email per activity. Includes in-session password change (ChangePasswordHandler publishes password_changed), decided in OD-18.",
+      "proposedTrigger": "UserSecurityActivityOccurred, one email per activity. Includes in-session password change (ChangePasswordHandler publishes password_changed), approved in OD-18.",
       "variables": [
         {
           "name": "FirstName",
@@ -2144,7 +2211,7 @@
       "preheader": "A complimentary plan was added to your account.",
       "category": "subscriptions",
       "recipient": "The user receiving the allocation",
-      "proposedTrigger": "When the allocated subscription becomes active, decided 2026-11-27: in AllocateSubscriptionHandler for allocations that start immediately, and in ActivateAllocatedSubscriptionHandler for future-dated (Scheduled) ones. Exactly one email per allocation; nothing at scheduling time.",
+      "proposedTrigger": "When the allocated subscription becomes active (approved 2026-11-27): in AllocateSubscriptionHandler for allocations that start immediately, and in ActivateAllocatedSubscriptionHandler for future-dated (Scheduled) ones. Exactly one email per allocation; nothing at scheduling time.",
       "variables": [
         {
           "name": "FirstName",

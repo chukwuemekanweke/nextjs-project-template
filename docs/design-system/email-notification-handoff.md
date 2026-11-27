@@ -6,11 +6,15 @@ are in [`email-template-catalog.md`](./email-template-catalog.md) and
 [`email-template-catalog.json`](./email-template-catalog.json). This document
 covers ownership, the verified backend architecture, gaps, security,
 email-client compatibility, the password-reset OTP rules, preview policy and the
-follow-up backend tickets.
+deferred backend work, tracked as
+[BE-DS-008](https://trello.com/c/RTpBnO3B).
 
 Evidence levels used below: **verified** = read in backend or design source
-(paths given), **proposed** = recommendation for the follow-up tickets,
-**unverified** = not established from source; needs confirmation. Backend source
+(paths given); **approved** = explicit product decision, backend work still
+pending under BE-DS-008 (listed in the catalog's
+[Decisions](./email-template-catalog.md#decisions)); **proposed** =
+recommendation from this handoff, pending backend review; **unverified** = not
+established from source; needs confirmation. Backend source
 was read at `dotnet-core-project-template` `origin/main` `1fcad50` (identical
 tree to the local checkout `c0e439d`). No backend code was changed, no email was
 sent and no email client rendering was performed for this ticket.
@@ -130,8 +134,8 @@ For the owning backend implementation (proposed requirements):
   links (privacy, preferences) come from brand configuration and are omitted
   when not configured.
 - **Missing data:** required variables keep today's fail-fast behaviour (throw,
-  record on the log, alert); optional variables follow the catalog's
-  "missing data" column (omit the row/sentence/action). Never render empty
+  record on the log, alert); optional variables follow each catalog variable's
+  `missing` field (omit the row/sentence/action). Never render empty
   `href`s or "undefined".
 - **Dates and money:** absolute dates in UTC (or the recipient's zone, once
   stored), localized by `Language`; money formatted from decimal + ISO currency
@@ -147,21 +151,14 @@ For the owning backend implementation (proposed requirements):
 - **Retries:** transient provider errors retry (existing); configuration
   errors do not. Producers must be idempotent per business event (the renewal
   reminder already uses `MarkReminderSent`).
-- **Transactional vs marketing:** all 22 designs are transactional or security
-  notices. Decided ([OD-20](./discrepancy-register.md#open-decisions),
-  2026-11-27):
-  - **Billing emails may be opted out of:** catalog categories `subscriptions`,
-    `invoices`, `payments` and `wallet` (11 templates). These carry the
-    "Email preferences" footer link once a preferences surface exists
-    (BE-NOTIF-08).
-  - **Security emails can never be opted out of:** categories `security` and
-    `authentication` (OTPs, reset, sign-in, lock, security change, admin
-    role). They carry no "Email preferences" or "Unsubscribe" link.
-  - **Account and KYC emails can never be opted out of:** categories `account`
-    and `kyc`. They carry no "Email preferences" or "Unsubscribe" link.
-  - Until BE-NOTIF-08 lands, omit the preferences link everywhere
-    ([DR-051](./discrepancy-register.md#dr-051)); the current base template's
-    empty "Unsubscribe" link must go.
+- **Opt-out (approved, [OD-20](./discrepancy-register.md#open-decisions)):**
+  all 22 designs are transactional. Only billing emails (categories
+  `subscriptions`, `invoices`, `payments`, `wallet`; 11 templates) may be opted
+  out of; `security`, `authentication`, `account` and `kyc` emails never, and
+  carry no preferences or unsubscribe link. Mechanism: BE-NOTIF-08. Until it
+  exists, omit the preferences link everywhere
+  ([DR-051](./discrepancy-register.md#dr-051)) and remove the current base
+  template's empty "Unsubscribe" link.
 
 ## 6. Password-reset OTP (correction and FE-UI-020 contract)
 
@@ -172,47 +169,50 @@ for this? Ignore this email. Your password won't change unless someone enters
 this code." It has **no CTA**. Keep it that way: no "Reset password" link
 button, and never place the code in a URL.
 
-Verified backend facts:
+### Current backend behaviour (verified)
 
-| Fact                    | Value                                                                                                                                                                                   | Evidence                                                                                                                                     |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Notification type       | `ResetPasswordOtp` = 3, template `ResetPassword.html`, en + fr registered                                                                                                               | `NotificationType.cs`; `0001.template-seeder.postdeploy.sql`                                                                                 |
-| Trigger                 | Request handler sends `ResetPasswordCommand` only when the email belongs to a user; the consumer generates the code and sends the email                                                 | `Application/Authentication/Features/RequestPasswordReset/RequestPasswordResetHandler.cs`; `Consumer/Authentication/ResetPasswordHandler.cs` |
-| Code                    | 6 characters, numeric (`characterLength: 6, isAlphaNumeric: false`), cryptographic RNG                                                                                                  | `ResetPasswordHandler.cs`; `Infrastructure/Authentication/TwoFactorOtpService.cs`                                                            |
-| Expiry                  | 2 minutes from issue (`OtpIntent.PasswordReset => TimeSpan.FromMinutes(2)`); cache entry expires with it. Decided: change to 3 minutes (OD-19, BE-NOTIF-02)                             | `TwoFactorOtpService.ResolveLifetime`                                                                                                        |
-| Re-request while active | No new code and no email while an unexpired reset code exists                                                                                                                           | `ResetPasswordHandler` (`OtpExistsAsync` early return)                                                                                       |
-| Attempts                | 5 failed validations remove the code; a correct code is single-use (removed on success)                                                                                                 | `TwoFactorOtpService.ValidateOtpAsync`, `ResolveMaxFailedAttempts`                                                                           |
-| Validation input        | `Trim().ToUpperInvariant()`; inner spaces are **not** removed                                                                                                                           | `ValidateOtpAsync`                                                                                                                           |
-| Completion              | Unknown user, invalid/expired/exhausted code and password-policy failure return distinct statuses; on success the password is reset and **all** sessions are revoked (`RevokeAllAsync`) | `Application/Authentication/Features/CompletePasswordReset/CompletePasswordResetHandler.cs`                                                  |
-| Success notification    | **Not sent.** `PasswordResetSuccessful` (4) has templates but no producer                                                                                                               | Same handler; no `NotificationType.PasswordResetSuccessful` reference in source                                                              |
-| Payload today           | `FirstName`, `LastName`, `OtpCode`, `OtpExpiresAtUtc` (formatted `dddd, MMMM d, yyyy 'at' h:mm tt 'UTC'` + relative phrase)                                                             | `ResetPasswordHandler.cs`; `Domain/Common/Formatting/DateTimeFormatter.cs`                                                                   |
-| Logging                 | `OtpCode` is masked in `EmailNotificationLog` (key contains `otp`); telemetry event `PasswordResetOtpSent` carries no code                                                              | `NotificationContentObfuscator.cs`; `ResetPasswordHandler.cs`                                                                                |
+| Fact                    | Current behaviour                                                                                                                                                                                                       | Evidence                                                                                                                                     |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Notification type       | `ResetPasswordOtp` = 3, template `ResetPassword.html`, en + fr registered                                                                                                                                               | `NotificationType.cs`; `0001.template-seeder.postdeploy.sql`                                                                                 |
+| Trigger                 | Request handler sends `ResetPasswordCommand` only when the email belongs to a user; the consumer generates the code and sends the email                                                                                 | `Application/Authentication/Features/RequestPasswordReset/RequestPasswordResetHandler.cs`; `Consumer/Authentication/ResetPasswordHandler.cs` |
+| Code                    | 6 characters, numeric (`characterLength: 6, isAlphaNumeric: false`), cryptographic RNG                                                                                                                                  | `ResetPasswordHandler.cs`; `Infrastructure/Authentication/TwoFactorOtpService.cs`                                                            |
+| Expiry                  | 2 minutes from issue (`OtpIntent.PasswordReset => TimeSpan.FromMinutes(2)`); the cache entry expires with it                                                                                                            | `TwoFactorOtpService.ResolveLifetime`                                                                                                        |
+| Re-request while active | No new code and no email while an unexpired reset code exists                                                                                                                                                           | `ResetPasswordHandler` (`OtpExistsAsync` early return)                                                                                       |
+| Attempts                | 5 failed validations remove the code; a correct code is single-use (removed on success)                                                                                                                                 | `TwoFactorOtpService.ValidateOtpAsync`, `ResolveMaxFailedAttempts`                                                                           |
+| Validation input        | `Trim().ToUpperInvariant()`; inner spaces are **not** removed                                                                                                                                                           | `ValidateOtpAsync`                                                                                                                           |
+| Completion outcomes     | `UserNotFound`; `InvalidOtp` (one outcome for wrong, expired, used or exhausted codes); `ValidationFailed` (password policy, checked after the code is consumed); `Success` revokes **all** sessions (`RevokeAllAsync`) | `Application/Authentication/Features/CompletePasswordReset/CompletePasswordResetHandler.cs`                                                  |
+| Success notification    | **Not sent.** `PasswordResetSuccessful` (4) has templates but no producer                                                                                                                                               | Same handler; no `NotificationType.PasswordResetSuccessful` reference in source                                                              |
+| Payload                 | `FirstName`, `LastName`, `OtpCode`, `OtpExpiresAtUtc` (formatted `dddd, MMMM d, yyyy 'at' h:mm tt 'UTC'` + relative phrase)                                                                                             | `ResetPasswordHandler.cs`; `Domain/Common/Formatting/DateTimeFormatter.cs`                                                                   |
+| Logging                 | `OtpCode` is masked in `EmailNotificationLog` (key contains `otp`); telemetry event `PasswordResetOtpSent` carries no code                                                                                              | `NotificationContentObfuscator.cs`; `ResetPasswordHandler.cs`                                                                                |
 
-Template contract (`ResetPasswordOtp`): `OtpCode` (required, secret, 6 digits,
-displayed grouped `629 044`), `OtpExpiresAtUtc` (required, absolute time only,
-no relative phrase), `FirstName` (optional; greeting without a name when
-absent). Drop `LastName` from the payload. Subject stays code-free ("Your
-Template password reset code"). The sample time `11:30 UTC` in the design is
-illustrative; the only verified lifetime is 2 minutes, and the decided target
-is 3 minutes (OD-19). The email must render the backend's `OtpExpiresAtUtc`,
-never a hardcoded duration.
+### Changes for BE-DS-008
 
-`PasswordResetSuccessful` stays a separate notification, sent only after
-`CompletePasswordResetHandler` succeeds (proposed in BE-NOTIF-02). Its design
-copy "you were signed out of all other devices" matches reset behaviour
-(`RevokeAllAsync`). An in-session password change sends
-`SecuritySettingChanged` instead (OD-18): `ChangePasswordHandler` already
-publishes `UserSecurityActivityOccurred` (`password_changed`), and reset
-completion publishes no security activity, so the two never double-send.
+- **Approved ([OD-19](./discrepancy-register.md#open-decisions)):** the
+  reset-code lifetime becomes 3 minutes. Until that ships, 2 minutes is the
+  real lifetime.
+- **Approved ([OD-18](./discrepancy-register.md#open-decisions)):**
+  `PasswordResetSuccessful` is only for a completed reset; an in-session
+  password change sends `SecuritySettingChanged`. `ChangePasswordHandler`
+  already publishes `UserSecurityActivityOccurred` (`password_changed`) and
+  reset completion publishes no security activity, so the two cannot
+  double-send.
+- **Proposed:** add the `PasswordResetSuccessful` producer after
+  `CompletePasswordResetHandler` succeeds; its design copy "you were signed out
+  of all other devices" matches `RevokeAllAsync`.
+- **Proposed template contract (`ResetPasswordOtp`):** `OtpCode` (required,
+  secret, 6 digits, displayed grouped `629 044`); `OtpExpiresAtUtc` (required,
+  absolute time only, no relative phrase); `FirstName` (optional; greeting
+  without a name when absent); drop `LastName`. The subject stays code-free
+  ("Your Template password reset code"). Render the backend's
+  `OtpExpiresAtUtc`, never a hardcoded duration; the design's `11:30 UTC` is
+  sample data.
 
-Notes for FE-UI-020 (documentation only; this ticket changes no frontend auth
-code):
+### Frontend implications (FE-UI-020)
 
 - Strip whitespace inside the entered code before submitting; the email shows
   it grouped and the backend does not remove inner spaces.
-- While a code is active (2 minutes today, 3 once BE-NOTIF-02 lands), "resend"
-  sends nothing; the UI must not promise a new email in that case, and expiry
-  copy must not state a duration the backend does not return.
+- While a code is active, "resend" sends nothing; the UI must not promise a new
+  email, and expiry copy must not state a duration the backend does not return.
 - After 5 wrong codes the code is gone; the user must request a new one.
 - Never log or persist the entered code; use synthetic codes in fixtures.
 
@@ -240,18 +240,21 @@ implementation (BE-NOTIF-01) and FE-UI-016 visual QA of the design source only.
 
 ## 8. Preview policy
 
-No new preview tooling. The design repository's `email-pages/index.html`
-gallery (live HTML plus four locked views per template) is the preview for
-design and QA. A backend-side preview, if ever needed, belongs to the backend
-(synthetic fixtures, no sending, no production data). The frontend adds no
-preview route, Storybook story or fixture for emails.
+No new preview tooling is needed. The design repository's
+`email-pages/index.html` gallery (live HTML plus four locked views per template)
+is the preview for design and QA. If a developer preview is ever justified, keep
+it isolated and developer-only: synthetic fixtures, no sending path, no
+production data or secrets, and no public production route. Production
+rendering stays in the backend, and email templates are not duplicated into
+Storybook.
 
-## 9. Follow-up backend tickets (proposed, not created)
+## 9. Deferred backend work (BE-DS-008)
 
-No backend GitHub issues exist (checked with `gh issue list`); Trello was not
-accessible from this environment, so duplicates there were not checked. Group
-boundaries follow backend ownership: the notifications module first, then each
-producing module.
+Backend notification work is deferred to
+[BE-DS-008](https://trello.com/c/RTpBnO3B). The packages below are proposed
+scopes for it, grouped by backend ownership (the notifications module first,
+then each producing module). They are not separate tickets and were not created
+anywhere.
 
 ### BE-NOTIF-01 — Notification rendering hardening and design layout
 
@@ -285,14 +288,14 @@ producing module.
   `EmailConfirmationFollowUp`, `ResetPasswordOtp`, `PasswordResetSuccessful`,
   `SignInSuccessful`, `AccountLocked`, new `SecuritySettingChanged` (12,
   proposed value; append, never renumber).
-- **Triggers:** `UserEmailConfirmed` → `AccountCreated` (decided; produce it
+- **Triggers:** `UserEmailConfirmed` → `AccountCreated` (approved; produce it
   from the existing `UserEmailConfirmedHandler` consumer); scheduled follow-up
   while unconfirmed; successful reset completion → `PasswordResetSuccessful`;
   `UserSecurityActivityOccurred` → `SecuritySettingChanged`, including
   in-session `password_changed` (OD-18).
 - **Reset-code lifetime:** change `OtpIntent.PasswordReset` in
-  `TwoFactorOtpService.ResolveLifetime` from 2 to 3 minutes (OD-19), with its
-  unit test.
+  `TwoFactorOtpService.ResolveLifetime` from 2 to 3 minutes (approved, OD-19),
+  with its unit test.
 - **Payloads:** per the catalog: drop `LastName` and `VerifyUrl`; masked IP,
   device, location, method and time for security emails; absolute expiry; CTA
   URLs from configuration.
@@ -304,7 +307,7 @@ producing module.
   catalog.
 - **Testing:** consumer integration tests per trigger (existing
   `WhenHandling*` pattern), idempotency on redelivery.
-- **Dependencies:** BE-NOTIF-01 (OD-18 and OD-19 are decided).
+- **Dependencies:** BE-NOTIF-01.
 
 ### BE-NOTIF-03 — Subscription lifecycle notifications
 
@@ -312,7 +315,7 @@ producing module.
   `SubscriptionCancelled`, `TrialExpired`, `UpcomingRenewal` (new types for the
   proposed ones), payload enrichment of `SubscriptionRenewalReminder`.
 - **Triggers:** `ActivateSubscriptionHandler`; `SubscriptionAllocated` when the
-  allocation becomes active (decided): in `AllocateSubscriptionHandler` for an
+  allocation becomes active (approved): in `AllocateSubscriptionHandler` for an
   immediate start, in `ActivateAllocatedSubscriptionHandler` for a future-dated
   one, never at scheduling time; the three cancellation features,
   `ExpireSubscriptionHandler` (Trial source), a new scheduled pre-renewal
@@ -357,9 +360,11 @@ producing module.
 
 ### BE-NOTIF-07 — Invoice and receipt notifications
 
-- **Types:** `SubscriptionReceipt` (receipt design; renamed from
-  `SubscriptionInvoice`, value 10 unchanged, with `Invoice.html` and its seed
-  rows renamed to match), `InvoiceIssued`, `InvoiceOverdue`.
+- **Types:** `SubscriptionInvoice` (receipt design), `InvoiceIssued`,
+  `InvoiceOverdue`. Proposed, pending backend review: rename
+  `SubscriptionInvoice` to `SubscriptionReceipt` (value 10 unchanged, with
+  `Invoice.html` and its seed rows renamed), since the design is a receipt and
+  real invoices get their own types.
 - **Context:** no invoice or receipt entity, numbering, tax or PDF exists in the
   backend; FE-UI-018 owns the invoice/receipt screens and their backend gaps.
 - **Scope:** after the invoice/receipt domain lands: receipt email on successful
@@ -370,8 +375,8 @@ producing module.
 
 ### BE-NOTIF-08 — Billing email preferences
 
-- **Objective:** let recipients opt out of billing emails while security emails
-  stay mandatory (OD-20).
+- **Objective:** implement the approved opt-out rule (OD-20): billing emails
+  optional, everything else mandatory.
 - **Context:** no email-preference storage or API exists
   ([DR-051](./discrepancy-register.md#dr-051)); the user portal Preferences
   screen has non-working notification controls (DR-090).
@@ -411,30 +416,25 @@ producing module.
 No frontend API change is needed for email. Integration points the frontend
 must keep stable because emails link to them:
 
-| Email CTA destination         | Route                        | Status                               |
-| ----------------------------- | ---------------------------- | ------------------------------------ |
-| Dashboard                     | user portal `/dashboard`     | exists                               |
-| Billing / plans               | user portal `/billing`       | exists                               |
-| Security / sessions           | user portal `/security`      | exists                               |
-| Email confirmation            | user portal `/confirm-email` | exists; needs its session cookie     |
-| Password reset entry          | FE-UI-020 route              | in progress (FE-UI-020)              |
-| Receipt / invoice views       | FE-UI-018 routes             | in progress (FE-UI-018)              |
-| Identity verification, wallet | none                         | no route; omit CTAs until they exist |
-| Admin portal                  | admin portal `/`             | exists                               |
+| Email CTA destination         | Route                          | Status                                                                                        |
+| ----------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------- |
+| Dashboard                     | user portal `/dashboard`       | exists                                                                                        |
+| Billing / plans               | user portal `/billing`         | exists                                                                                        |
+| Security / sessions           | user portal `/security`        | exists                                                                                        |
+| Email confirmation            | user portal `/confirm-email`   | exists; needs its session cookie                                                              |
+| Password reset entry          | user portal `/forgot-password` | FE-UI-020                                                                                     |
+| Receipt / invoice views       | none                           | FE-UI-018 screens are preview-only until the backend invoice/receipt domain exists; omit CTAs |
+| Identity verification, wallet | none                           | no route; omit CTAs until they exist                                                          |
+| Admin portal                  | admin portal `/`               | exists                                                                                        |
 
 The backend needs configured base URLs for the user and admin portals to build
 these links (not present in `Notifications:Email` today; proposed in
 BE-NOTIF-01). Email-preference management has no API (DR-051).
 
-## 12. Open questions
+## 12. Decisions and open questions
 
-Registered as [OD-18 … OD-20](./discrepancy-register.md#open-decisions) and in
-each template's "open questions" in the catalog. Decided on 2026-11-27:
-in-session password change sends `SecuritySettingChanged` (OD-18); the
-reset-code lifetime becomes 3 minutes (OD-19); the `ConfirmEmail` subject
-becomes code-free (DR-142); billing emails may be opted out of and security
-emails never; account and KYC emails stay mandatory (OD-20, BE-NOTIF-08);
-`AccountCreated` fires on `UserEmailConfirmed` and its checklist is fixed copy;
-`SubscriptionAllocated` fires when the allocation becomes active; the receipt
-type is renamed `SubscriptionReceipt` (value 10 unchanged). Remaining per-template
-questions are listed in the catalog.
+Approved and proposed decisions are listed once, in the catalog's
+[Decisions](./email-template-catalog.md#decisions) table (structured in the
+JSON `decisions` list). Remaining questions are each template's
+`openQuestions` in the JSON; they are deferred to the BE-DS-008 API
+integration.

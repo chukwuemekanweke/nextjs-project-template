@@ -285,7 +285,7 @@ Each adds api-client contracts/operations and api-react hooks for the new endpoi
 ### Trello FE-UI-019 — Transactional email catalog (documentation only)
 
 - **Status:** delivered as documentation (design `ad9386e`). Not roadmap FE-UI-019 (admin MFA); see DR-077 for numbering.
-- **Scope:** catalog of the 22 email designs, content contracts, backend coverage, password-reset OTP contract, client-compatibility requirements and backend follow-up tickets BE-NOTIF-01 … 08: [`email-template-catalog.md`](./email-template-catalog.md), [`email-notification-handoff.md`](./email-notification-handoff.md).
+- **Scope:** catalog of the 22 email designs, content contracts, backend coverage, password-reset OTP contract, client-compatibility requirements and the deferred backend work (BE-DS-008, proposed packages BE-NOTIF-01 … 08): [`email-template-catalog.json`](./email-template-catalog.json), [`email-notification-handoff.md`](./email-notification-handoff.md).
 - **Frontend impact:** none. Email rendering and delivery stay in the backend; the apps only keep CTA destination routes stable (handoff §11). FE-UI-016 reviews the email design source, not portal screens.
 
 ## 5. Recommended order (deviations from the ticket's suggested sequence)
