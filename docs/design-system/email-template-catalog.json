@@ -1,0 +1,2354 @@
+{
+  "$schemaVersion": 1,
+  "ticket": "FE-UI-019 (Trello)",
+  "generatedOn": "2026-11-27",
+  "purpose": "Catalog of the transactional email designs and their notification content contracts. Documentation for the backend notification owner; not a production frontend contract. Backend source is authoritative for NotificationType values and payload keys.",
+  "designSource": {
+    "repository": "https://github.com/chukwuemekanweke/Project-Template-Design-System",
+    "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+    "commitDate": "2026-11-25T21:19:56+01:00",
+    "treeSha": "1000fc95c79c4cda8f3c6361d73f3b5d485cd0c2",
+    "index": {
+      "path": "email-pages/index.html",
+      "blob": "845691ed942f822e1f7bf3075ab4e0fa80fa2e76"
+    },
+    "trees": {
+      "6-emails": "8958b95ed979028e91730ce544d0113a84608eb4",
+      "email-pages/live": "70679e8978ed320bae51ba1da42cce7970cefe51",
+      "email-pages/screens": "a84c1c052b08efd2f249950ef42ee6a02979a87a"
+    },
+    "roles": {
+      "6-emails/": "Canonical visual reference: 88 files = 22 templates x desktop/mobile x light/dark, each with an inbox strip (subject, sender, preheader).",
+      "email-pages/live/": "Responsive email HTML (22 files): table layout, inline styles, prefers-color-scheme and [data-ogsc] dark rules, 480px breakpoint. Starting point for client evaluation, not production templates.",
+      "email-pages/screens/": "Locked preview exports (88 files). Identical to 6-emails/ except the preview page background. Never deploy as email HTML.",
+      "email-pages/index.html": "Gallery: template name, subject, Existing/Proposed status and NotificationType per template."
+    },
+    "counting": "22 templates. Device/theme variants and the duplicated screens/ exports are not additional notification types or screens."
+  },
+  "backendSource": {
+    "repository": "https://github.com/chukwuemekanweke/dotnet-core-project-template",
+    "commit": "1fcad50 (origin/main; local checkout c0e439d has an identical tree)",
+    "inspectedOn": "2026-11-27",
+    "enum": "src/BackendProjectTemplate.Contracts/Commands/Notifications/NotificationType.cs",
+    "command": "src/BackendProjectTemplate.Contracts/Commands/Notifications/SendNotificationCommand.cs",
+    "payload": "EmailNotificationContent(To, Dictionary<string,string> Content, Cc, Bcc) — all values are strings",
+    "dispatcher": "src/BackendProjectTemplate.Infrastructure/Notifications/EmailNotificationDispatcher.cs",
+    "templateRegistry": "notifications.EmailNotificationTemplates seeded by src/BackendProjectTemplate.DatabaseMigrator/Scripts/PostDeploy/0001.template-seeder.postdeploy.sql",
+    "templateFiles": "src/BackendProjectTemplate.Consumer/EmailTemplates/TemplateSets/{brand}/{language}/NotificationTypes/*.html + BaseTemplate.html",
+    "placeholderSyntax": "{{:Key:}}"
+  },
+  "coverageStatuses": [
+    "Implemented and verified",
+    "Partially implemented",
+    "Backend trigger exists but template missing",
+    "Proposed notification",
+    "Contract not verified",
+    "Not supported"
+  ],
+  "variableFields": {
+    "status": "backend-key = key already used by the backend template or producer; proposed = new key for the follow-up ticket",
+    "sensitive": "none | personal | financial | secret",
+    "missing": "Required behaviour when the value is absent"
+  },
+  "formats": {
+    "dateTimeUtc": "Absolute UTC date and time, e.g. '25 Nov 2026 · 11:30 UTC' (en). Today the backend formats 'dddd, MMMM d, yyyy at h:mm tt UTC (relative)'; drop the relative part because it is computed at send time and is wrong when read later.",
+    "date": "Absolute date, e.g. '14 Dec 2026' (en); localize by SendNotificationCommand.Language.",
+    "money": "Formatted by the backend from decimal + ISO 4217 currency with the currency's minor units. The design mixes 'NGN 15,000.00' and '₦15,000.00'; pick one convention.",
+    "otp": "6 numeric digits. Display grouped '629 044' for readability; the plain-text part should show the ungrouped code. Grouping is presentation only (see FE-UI-020 note in the handoff).",
+    "url": "Absolute https URL built by the backend from configured portal base URLs and a fixed path allowlist; HTML-attribute encoded; no secrets or personal data.",
+    "text": "Plain text, HTML-escaped before insertion."
+  },
+  "sharedVariables": [
+    {
+      "name": "ProductName",
+      "type": "text",
+      "required": true,
+      "source": "Tenant brand configuration (backend key 'Product'; EmailConfirmationOtpSender hard-codes 'BackendProjectTemplate')",
+      "format": "Plain text",
+      "sensitive": "none",
+      "missing": "Configuration error: do not send",
+      "status": "backend-key"
+    },
+    {
+      "name": "SupportEmail",
+      "type": "email",
+      "required": true,
+      "source": "Tenant brand configuration",
+      "format": "mailto link",
+      "sensitive": "none",
+      "missing": "Configuration error: do not send",
+      "status": "proposed"
+    },
+    {
+      "name": "OrganizationName",
+      "type": "text",
+      "required": true,
+      "source": "Tenant brand configuration (footer)",
+      "format": "Plain text",
+      "sensitive": "none",
+      "missing": "Configuration error: do not send",
+      "status": "proposed"
+    },
+    {
+      "name": "OrganizationPostalAddress",
+      "type": "text",
+      "required": false,
+      "source": "Tenant brand configuration (footer)",
+      "format": "Plain text",
+      "sensitive": "none",
+      "missing": "Omit the line",
+      "status": "proposed"
+    },
+    {
+      "name": "PrivacyUrl",
+      "type": "url",
+      "required": false,
+      "source": "Tenant brand configuration (public portal /privacy)",
+      "format": "url",
+      "sensitive": "none",
+      "missing": "Omit the link",
+      "status": "proposed"
+    },
+    {
+      "name": "EmailPreferencesUrl",
+      "type": "url",
+      "required": false,
+      "source": "Only if an email-preferences surface exists (none today, DR-051)",
+      "format": "url",
+      "sensitive": "none",
+      "missing": "Omit the link",
+      "status": "proposed"
+    },
+    {
+      "name": "CopyrightYear",
+      "type": "number",
+      "required": true,
+      "source": "Render time",
+      "format": "Four digits",
+      "sensitive": "none",
+      "missing": "n/a",
+      "status": "proposed"
+    }
+  ],
+  "recipientFields": {
+    "to": "EmailNotificationContent.To (resolved by the producer from the stakeholder/Identity user; never from request input)",
+    "language": "SendNotificationCommand.Language from the stakeholder preference ('en', 'fr' templates exist)"
+  },
+  "templates": [
+    {
+      "templateName": "AccountCreated",
+      "designNotificationType": "AccountCreated",
+      "designStatus": "Existing",
+      "backend": {
+        "notificationType": "AccountCreated",
+        "enumValue": 1,
+        "templateFile": "AccountCreated.html",
+        "templateRegistered": ["en", "fr"],
+        "producer": null,
+        "existingTrigger": "None. No code sends NotificationType.AccountCreated.",
+        "currentPayloadKeys": ["Product", "FirstName", "DashboardUrl"],
+        "coverage": "Partially implemented"
+      },
+      "subject": "Welcome to Template",
+      "preheader": "Your account is ready. Here's how to get started.",
+      "category": "account",
+      "recipient": "The new user",
+      "proposedTrigger": "UserEmailConfirmed (the account becomes usable only after email confirmation). Sending on UserCreated would welcome unconfirmed addresses.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "DashboardUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /dashboard)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "backend-key"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Go to your dashboard",
+          "kind": "primary",
+          "destination": "User portal /dashboard (sign-in redirects as usual)"
+        }
+      ],
+      "securitySensitive": [],
+      "timeSensitive": [],
+      "designOnlyContent": [
+        "Three-step checklist (passkey, identity verification, choose a plan) is product copy; keep only steps the deployment supports (KYC and plans are configurable)."
+      ],
+      "openQuestions": [
+        "Trigger: UserEmailConfirmed (recommended) or UserCreated?",
+        "Is the checklist static copy or capability-driven?"
+      ],
+      "followUpTicket": "BE-NOTIF-02",
+      "references": {
+        "live": "email-pages/live/AccountCreated.html",
+        "desktopLight": "6-emails/EmailAccountCreated.html",
+        "desktopDark": "6-emails/EmailAccountCreatedDark.html",
+        "mobileLight": "6-emails/EmailAccountCreatedMobile.html",
+        "mobileDark": "6-emails/EmailAccountCreatedMobileDark.html",
+        "lockedPreviews": "email-pages/screens/AccountCreated{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "ConfirmEmail",
+      "designNotificationType": "EmailConfirmationOtp",
+      "designStatus": "Existing",
+      "backend": {
+        "notificationType": "EmailConfirmationOtp",
+        "enumValue": 2,
+        "templateFile": "ConfirmEmail.html",
+        "templateRegistered": ["en", "fr"],
+        "producer": "src/BackendProjectTemplate.Consumer/Authentication/EmailConfirmationOtpSender.cs (called by UserCreatedHandler and SendEmailConfirmationOtpHandler)",
+        "existingTrigger": "UserCreated event; SendEmailConfirmationOtp command (resend)",
+        "currentPayloadKeys": [
+          "FirstName",
+          "LastName",
+          "OtpCode",
+          "OtpExpiresAtUtc",
+          "VerifyUrl",
+          "Product"
+        ],
+        "coverage": "Implemented and verified"
+      },
+      "subject": "Your Template confirmation code: 481 902",
+      "preheader": "Enter this code to confirm your email address.",
+      "category": "authentication",
+      "recipient": "The registering user (unconfirmed address)",
+      "proposedTrigger": "Unchanged: UserCreated and the resend command.",
+      "variables": [
+        {
+          "name": "OtpCode",
+          "type": "otp",
+          "required": true,
+          "source": "ITwoFactorOtpService (intent EmailConfirmation)",
+          "format": "otp (see formats)",
+          "sensitive": "secret",
+          "missing": "Do not send",
+          "status": "backend-key"
+        },
+        {
+          "name": "OtpExpiresAtUtc",
+          "type": "dateTime",
+          "required": true,
+          "source": "TwoFactorOtp.ExpiresAtUtc",
+          "format": "dateTimeUtc",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "backend-key"
+        }
+      ],
+      "actions": [],
+      "securitySensitive": [
+        "One-time code. Never in a URL, log, telemetry or analytics event; the notification log already masks keys containing 'otp'."
+      ],
+      "timeSensitive": [
+        "Expiry: 5 minutes unless the registration session's remaining lifetime is shorter (AuthenticationOtpDefaults.EmailConfirmationLifetime)."
+      ],
+      "designOnlyContent": [
+        "Subject contains the code. Recommend a code-free subject ('Your Template confirmation code') so it does not appear in lock-screen previews and mailbox search (DR-142).",
+        "Backend template still renders a 'Confirm your email' button with an empty VerifyUrl; the design has no CTA. Remove the button and the VerifyUrl key."
+      ],
+      "openQuestions": ["Approve removing the code from the subject?"],
+      "followUpTicket": "BE-NOTIF-02",
+      "references": {
+        "live": "email-pages/live/ConfirmEmail.html",
+        "desktopLight": "6-emails/EmailConfirmEmail.html",
+        "desktopDark": "6-emails/EmailConfirmEmailDark.html",
+        "mobileLight": "6-emails/EmailConfirmEmailMobile.html",
+        "mobileDark": "6-emails/EmailConfirmEmailMobileDark.html",
+        "lockedPreviews": "email-pages/screens/ConfirmEmail{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "EmailConfirmationFollowUp",
+      "designNotificationType": "EmailConfirmationFollowUp",
+      "designStatus": "Existing",
+      "backend": {
+        "notificationType": "EmailConfirmationFollowUp",
+        "enumValue": 5,
+        "templateFile": "EmailConfirmationFollowUp.html",
+        "templateRegistered": ["en", "fr"],
+        "producer": null,
+        "existingTrigger": "None. No code sends NotificationType.EmailConfirmationFollowUp.",
+        "currentPayloadKeys": ["OtpCode", "Product", "VerifyUrl"],
+        "coverage": "Partially implemented"
+      },
+      "subject": "Reminder: confirm your email for Template",
+      "preheader": "You're one step away from finishing your account.",
+      "category": "account",
+      "recipient": "A registered user whose email is still unconfirmed",
+      "proposedTrigger": "Scheduled reminder after registration while the email is unconfirmed and the registration session is alive (EmailConfirmationSessionLifetime is 1 day). Must issue a fresh OTP through the same service and invalidate the previous one.",
+      "variables": [
+        {
+          "name": "OtpCode",
+          "type": "otp",
+          "required": true,
+          "source": "ITwoFactorOtpService (intent EmailConfirmation)",
+          "format": "otp (see formats)",
+          "sensitive": "secret",
+          "missing": "Do not send",
+          "status": "backend-key"
+        },
+        {
+          "name": "OtpExpiresAtUtc",
+          "type": "dateTime",
+          "required": true,
+          "source": "TwoFactorOtp.ExpiresAtUtc",
+          "format": "dateTimeUtc",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "ContinueSetupUrl",
+          "type": "url",
+          "required": false,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /confirm-email)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Omit the action",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Continue setup",
+          "kind": "primary",
+          "destination": "User portal /confirm-email. The confirmation page needs its email-confirmation session cookie; a cold link must fall back to sign-in, which routes unconfirmed users back to confirmation."
+        }
+      ],
+      "securitySensitive": ["One-time code; never in the CTA URL."],
+      "timeSensitive": [
+        "Design copy says 'Codes expire after a short time' without a time; add the verified expiry instead."
+      ],
+      "designOnlyContent": [],
+      "openQuestions": [
+        "Reminder schedule and maximum count are not defined anywhere.",
+        "Does a reminder with a new code conflict with the 'active OTP exists' rule in EmailConfirmationOtpSender?"
+      ],
+      "followUpTicket": "BE-NOTIF-02",
+      "references": {
+        "live": "email-pages/live/EmailConfirmationFollowUp.html",
+        "desktopLight": "6-emails/EmailEmailConfirmationFollowUp.html",
+        "desktopDark": "6-emails/EmailEmailConfirmationFollowUpDark.html",
+        "mobileLight": "6-emails/EmailEmailConfirmationFollowUpMobile.html",
+        "mobileDark": "6-emails/EmailEmailConfirmationFollowUpMobileDark.html",
+        "lockedPreviews": "email-pages/screens/EmailConfirmationFollowUp{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "ResetPassword",
+      "designNotificationType": "ResetPasswordOtp",
+      "designStatus": "Existing",
+      "backend": {
+        "notificationType": "ResetPasswordOtp",
+        "enumValue": 3,
+        "templateFile": "ResetPassword.html",
+        "templateRegistered": ["en", "fr"],
+        "producer": "src/BackendProjectTemplate.Consumer/Authentication/ResetPasswordHandler.cs",
+        "existingTrigger": "POST password-reset request -> RequestPasswordResetHandler sends ResetPasswordCommand (only for an existing user) -> ResetPasswordHandler",
+        "currentPayloadKeys": [
+          "FirstName",
+          "LastName",
+          "OtpCode",
+          "OtpExpiresAtUtc"
+        ],
+        "coverage": "Implemented and verified"
+      },
+      "subject": "Your Template password reset code",
+      "preheader": "Use this code to choose a new password.",
+      "category": "security",
+      "recipient": "The account holder of the submitted email address",
+      "proposedTrigger": "Unchanged.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "OtpCode",
+          "type": "otp",
+          "required": true,
+          "source": "ITwoFactorOtpService (intent PasswordReset), 6 numeric digits",
+          "format": "otp (see formats)",
+          "sensitive": "secret",
+          "missing": "Do not send",
+          "status": "backend-key"
+        },
+        {
+          "name": "OtpExpiresAtUtc",
+          "type": "dateTime",
+          "required": true,
+          "source": "TwoFactorOtp.ExpiresAtUtc (issue time + 2 minutes)",
+          "format": "dateTimeUtc; drop the relative suffix the backend appends today",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "backend-key"
+        }
+      ],
+      "actions": [],
+      "securitySensitive": [
+        "OTP, not a link: no 'Reset password' button and never put the code in a URL.",
+        "Must say the password changes only if someone enters the code, and to ignore the email otherwise (present in the design).",
+        "LastName is sent but not rendered by the design; drop it from the payload (data minimisation)."
+      ],
+      "timeSensitive": [
+        "Verified expiry 2 minutes from issue (TwoFactorOtpService.ResolveLifetime). The design's '11:30 UTC' is sample data.",
+        "While an unexpired reset code exists, a new request sends nothing (ResetPasswordHandler returns early)."
+      ],
+      "designOnlyContent": [],
+      "openQuestions": [
+        "Is a 2-minute lifetime long enough for email delivery? (OD-19)"
+      ],
+      "followUpTicket": "BE-NOTIF-02",
+      "references": {
+        "live": "email-pages/live/ResetPassword.html",
+        "desktopLight": "6-emails/EmailResetPassword.html",
+        "desktopDark": "6-emails/EmailResetPasswordDark.html",
+        "mobileLight": "6-emails/EmailResetPasswordMobile.html",
+        "mobileDark": "6-emails/EmailResetPasswordMobileDark.html",
+        "lockedPreviews": "email-pages/screens/ResetPassword{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "PasswordResetSuccessful",
+      "designNotificationType": "PasswordResetSuccessful",
+      "designStatus": "Existing",
+      "backend": {
+        "notificationType": "PasswordResetSuccessful",
+        "enumValue": 4,
+        "templateFile": "PasswordResetSuccessful.html",
+        "templateRegistered": ["en", "fr"],
+        "producer": null,
+        "existingTrigger": "None. CompletePasswordResetHandler resets the password and revokes all sessions but sends no notification.",
+        "currentPayloadKeys": [],
+        "coverage": "Partially implemented"
+      },
+      "subject": "Your Template password was changed",
+      "preheader": "Your password was just changed. If this wasn't you, act now.",
+      "category": "security",
+      "recipient": "The account holder",
+      "proposedTrigger": "Only after CompletePasswordResetHandler succeeds (password reset and RevokeAllAsync committed). Never on the request step.",
+      "variables": [
+        {
+          "name": "ChangedAtUtc",
+          "type": "dateTime",
+          "required": true,
+          "source": "Event timestamp",
+          "format": "dateTimeUtc",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "DeviceDescription",
+          "type": "text",
+          "required": false,
+          "source": "Parsed user agent (browser + platform), as already stored on SecurityActivity",
+          "format": "Plain text, e.g. 'Chrome on macOS'",
+          "sensitive": "personal",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "ApproximateLocation",
+          "type": "text",
+          "required": false,
+          "source": "IP geolocation already resolved for SecurityActivity (city, country code)",
+          "format": "Plain text, e.g. 'Lagos, NG'",
+          "sensitive": "personal",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "SecureAccountUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /forgot-password (FE-UI-020))",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Secure my account",
+          "kind": "primary",
+          "destination": "User portal password-reset entry (FE-UI-020 route) with no token or code; support contact in the footer."
+        }
+      ],
+      "securitySensitive": [
+        "Copy 'you were signed out of all other devices' is accurate for reset: RevokeAllAsync revokes every session. Do not reuse this copy for in-session password change."
+      ],
+      "timeSensitive": [],
+      "designOnlyContent": [
+        "Device and location rows need the request's IP and user agent passed into the completion event; omit rows when absent."
+      ],
+      "openQuestions": [
+        "Does in-session ChangePassword send this template or SecuritySettingChanged (password_changed)? (OD-18)"
+      ],
+      "followUpTicket": "BE-NOTIF-02",
+      "references": {
+        "live": "email-pages/live/PasswordResetSuccessful.html",
+        "desktopLight": "6-emails/EmailPasswordResetSuccessful.html",
+        "desktopDark": "6-emails/EmailPasswordResetSuccessfulDark.html",
+        "mobileLight": "6-emails/EmailPasswordResetSuccessfulMobile.html",
+        "mobileDark": "6-emails/EmailPasswordResetSuccessfulMobileDark.html",
+        "lockedPreviews": "email-pages/screens/PasswordResetSuccessful{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "SignInSuccessful",
+      "designNotificationType": "SignInSuccessful",
+      "designStatus": "Existing",
+      "backend": {
+        "notificationType": "SignInSuccessful",
+        "enumValue": 6,
+        "templateFile": "SignInSuccessful.html",
+        "templateRegistered": ["en", "fr"],
+        "producer": "src/BackendProjectTemplate.Consumer/Authentication/UserSignInSuccessfulHandler.cs",
+        "existingTrigger": "UserSignInSuccessful event (every successful sign-in)",
+        "currentPayloadKeys": ["IpAddress", "UserAgent"],
+        "coverage": "Implemented and verified"
+      },
+      "subject": "New sign-in to your Template account",
+      "preheader": "We noticed a new sign-in. Review it if it wasn't you.",
+      "category": "security",
+      "recipient": "The account holder",
+      "proposedTrigger": "Unchanged, optionally limited to new devices (product decision).",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "SignedInAtUtc",
+          "type": "dateTime",
+          "required": true,
+          "source": "Event timestamp",
+          "format": "dateTimeUtc",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "SignInMethod",
+          "type": "enum",
+          "required": false,
+          "source": "Sign-in event (password, passkey, Google)",
+          "format": "Display label",
+          "sensitive": "none",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "DeviceDescription",
+          "type": "text",
+          "required": false,
+          "source": "Parsed user agent (browser + platform), as already stored on SecurityActivity",
+          "format": "Plain text, e.g. 'Chrome on macOS'",
+          "sensitive": "personal",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "MaskedIpAddress",
+          "type": "text",
+          "required": false,
+          "source": "UserSignInSuccessful.IpAddress, masked by the backend",
+          "format": "IPv4 last two octets masked ('102.89.x.x'); IPv6 prefix only",
+          "sensitive": "personal",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "ApproximateLocation",
+          "type": "text",
+          "required": false,
+          "source": "IP geolocation already resolved for SecurityActivity (city, country code)",
+          "format": "Plain text, e.g. 'Lagos, NG'",
+          "sensitive": "personal",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "ActiveSessionsUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /security)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Review active sessions",
+          "kind": "primary",
+          "destination": "User portal /security (sessions list)"
+        }
+      ],
+      "securitySensitive": [
+        "Backend currently sends the raw IP and full user-agent string and inserts them unescaped (DR-140). Replace with masked IP and parsed device text."
+      ],
+      "timeSensitive": [],
+      "designOnlyContent": [],
+      "openQuestions": [
+        "Send on every sign-in or only for unrecognised devices?",
+        "IP masking policy (OD-09)."
+      ],
+      "followUpTicket": "BE-NOTIF-02",
+      "references": {
+        "live": "email-pages/live/SignInSuccessful.html",
+        "desktopLight": "6-emails/EmailSignInSuccessful.html",
+        "desktopDark": "6-emails/EmailSignInSuccessfulDark.html",
+        "mobileLight": "6-emails/EmailSignInSuccessfulMobile.html",
+        "mobileDark": "6-emails/EmailSignInSuccessfulMobileDark.html",
+        "lockedPreviews": "email-pages/screens/SignInSuccessful{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "AccountLocked",
+      "designNotificationType": "AccountLocked",
+      "designStatus": "Existing",
+      "backend": {
+        "notificationType": "AccountLocked",
+        "enumValue": 7,
+        "templateFile": "AccountLocked.html",
+        "templateRegistered": ["en", "fr"],
+        "producer": "src/BackendProjectTemplate.Consumer/Authentication/UserSignInFailedHandler.cs",
+        "existingTrigger": "UserSignInFailed with InvalidCredentials when Identity reports the user locked out (Authentication:Lockout MaxFailedAttempts 5, Duration 12h in Consumer appsettings); all sessions are revoked first.",
+        "currentPayloadKeys": ["LockedUntilUtc"],
+        "coverage": "Implemented and verified"
+      },
+      "subject": "Your Template account is temporarily locked",
+      "preheader": "Too many failed sign-in attempts.",
+      "category": "security",
+      "recipient": "The account holder",
+      "proposedTrigger": "Unchanged.",
+      "variables": [
+        {
+          "name": "LockedUntilUtc",
+          "type": "dateTime",
+          "required": true,
+          "source": "Identity lockout end",
+          "format": "dateTimeUtc",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "backend-key"
+        },
+        {
+          "name": "ResetPasswordUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /forgot-password (FE-UI-020))",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Reset password",
+          "kind": "primary",
+          "destination": "User portal password-reset entry (FE-UI-020 route); no token or code"
+        }
+      ],
+      "securitySensitive": [
+        "Do not state the number of attempts or the attacker's IP."
+      ],
+      "timeSensitive": ["Lock end time is absolute; no relative phrase."],
+      "designOnlyContent": ["Two-factor suggestion is static copy."],
+      "openQuestions": [
+        "Does a password reset while locked clear the lockout? Not verified."
+      ],
+      "followUpTicket": "BE-NOTIF-02",
+      "references": {
+        "live": "email-pages/live/AccountLocked.html",
+        "desktopLight": "6-emails/EmailAccountLocked.html",
+        "desktopDark": "6-emails/EmailAccountLockedDark.html",
+        "mobileLight": "6-emails/EmailAccountLockedMobile.html",
+        "mobileDark": "6-emails/EmailAccountLockedMobileDark.html",
+        "lockedPreviews": "email-pages/screens/AccountLocked{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "TrialExpired",
+      "designNotificationType": "TrialExpired",
+      "designStatus": "Existing",
+      "backend": {
+        "notificationType": "TrialExpired",
+        "enumValue": 8,
+        "templateFile": "TrialExpired.html",
+        "templateRegistered": ["en", "fr"],
+        "producer": null,
+        "existingTrigger": "None. Trials exist only as SubscriptionAllocationSource.Trial on admin allocations; ExpireSubscriptionHandler sends nothing.",
+        "currentPayloadKeys": ["Product", "BillingPortalUrl"],
+        "coverage": "Partially implemented"
+      },
+      "subject": "Your Template free trial has ended",
+      "preheader": "Choose a plan to keep going — your data is safe for 30 days.",
+      "category": "subscriptions",
+      "recipient": "The billing-account owner whose trial allocation expired",
+      "proposedTrigger": "ExpireSubscriptionHandler expiring a subscription whose allocation source is Trial.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "ChoosePlanUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /billing)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Choose a plan",
+          "kind": "primary",
+          "destination": "User portal /billing"
+        }
+      ],
+      "securitySensitive": [],
+      "timeSensitive": [],
+      "designOnlyContent": [
+        "'We'll keep your account and data for 30 days' has no backend retention policy behind it; remove unless one is defined."
+      ],
+      "openQuestions": ["Data retention after trial expiry."],
+      "followUpTicket": "BE-NOTIF-03",
+      "references": {
+        "live": "email-pages/live/TrialExpired.html",
+        "desktopLight": "6-emails/EmailTrialExpired.html",
+        "desktopDark": "6-emails/EmailTrialExpiredDark.html",
+        "mobileLight": "6-emails/EmailTrialExpiredMobile.html",
+        "mobileDark": "6-emails/EmailTrialExpiredMobileDark.html",
+        "lockedPreviews": "email-pages/screens/TrialExpired{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "CancelledSubscription",
+      "designNotificationType": "SubscriptionCancelled",
+      "designStatus": "Existing",
+      "backend": {
+        "notificationType": "SubscriptionCancelled",
+        "enumValue": 9,
+        "templateFile": "CancelledSubscription.html",
+        "templateRegistered": ["en", "fr"],
+        "producer": null,
+        "existingTrigger": "None. CancelSubscriptionAtPeriodEnd, CancelSubscriptionImmediately and AdministrativelyCancelSubscriptionAtPeriodEnd send no notification.",
+        "currentPayloadKeys": ["Product", "FeedbackUrl"],
+        "coverage": "Partially implemented"
+      },
+      "subject": "Your Template subscription was cancelled",
+      "preheader": "You keep access until the end of your billing period.",
+      "category": "subscriptions",
+      "recipient": "The billing-account owner",
+      "proposedTrigger": "Successful user or administrative cancellation (at period end or immediate).",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "PlanName",
+          "type": "text",
+          "required": true,
+          "source": "Subscription plan",
+          "format": "Plain text",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "AccessEndsAtUtc",
+          "type": "date",
+          "required": false,
+          "source": "Subscription CurrentPeriodEndUtc (at-period-end cancellation)",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Immediate cancellation: use a variant without the 'keep access until' sentence",
+          "status": "proposed"
+        },
+        {
+          "name": "ResubscribeUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /billing)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "FeedbackUrl",
+          "type": "url",
+          "required": false,
+          "source": "Backend-built from the configured portal base URL + fixed path (configured feedback form)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Omit the action",
+          "status": "backend-key"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Resubscribe",
+          "kind": "primary",
+          "destination": "User portal /billing"
+        },
+        {
+          "label": "Share feedback",
+          "kind": "secondary",
+          "destination": "Configured feedback URL; omit when not configured"
+        }
+      ],
+      "securitySensitive": [],
+      "timeSensitive": ["Access end date."],
+      "designOnlyContent": [
+        "Immediate cancellation has no 'keep access until' date; the design shows only the at-period-end case."
+      ],
+      "openQuestions": [
+        "One template with conditional copy, or separate types for immediate vs period-end?",
+        "Notify on administrative cancellation?"
+      ],
+      "followUpTicket": "BE-NOTIF-03",
+      "references": {
+        "live": "email-pages/live/CancelledSubscription.html",
+        "desktopLight": "6-emails/EmailCancelledSubscription.html",
+        "desktopDark": "6-emails/EmailCancelledSubscriptionDark.html",
+        "mobileLight": "6-emails/EmailCancelledSubscriptionMobile.html",
+        "mobileDark": "6-emails/EmailCancelledSubscriptionMobileDark.html",
+        "lockedPreviews": "email-pages/screens/CancelledSubscription{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "Invoice",
+      "designNotificationType": "SubscriptionInvoice",
+      "designStatus": "Existing",
+      "backend": {
+        "notificationType": "SubscriptionInvoice",
+        "enumValue": 10,
+        "templateFile": "Invoice.html",
+        "templateRegistered": ["en", "fr"],
+        "producer": null,
+        "existingTrigger": "None. The backend has no invoice or receipt entity, numbering or PDF generation.",
+        "currentPayloadKeys": [
+          "FirstName",
+          "InvoiceNumber",
+          "InvoiceDate",
+          "Currency",
+          "AmountDue",
+          "DownloadInvoiceUrl"
+        ],
+        "coverage": "Partially implemented"
+      },
+      "subject": "Receipt for your Template payment — INV-2026-0142",
+      "preheader": "Thanks for your payment. Your receipt and invoice are attached.",
+      "category": "invoices",
+      "recipient": "The billing-account owner",
+      "proposedTrigger": "Successful subscription payment once invoice and receipt records exist (after ActivateSubscription / renewal fulfilment).",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "InvoiceNumber",
+          "type": "text",
+          "required": true,
+          "source": "Invoice record (not yet modelled)",
+          "format": "As issued",
+          "sensitive": "financial",
+          "missing": "Do not send",
+          "status": "backend-key"
+        },
+        {
+          "name": "ReceiptNumber",
+          "type": "text",
+          "required": true,
+          "source": "Receipt record (not yet modelled)",
+          "format": "As issued",
+          "sensitive": "financial",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "PlanName",
+          "type": "text",
+          "required": true,
+          "source": "Subscription plan",
+          "format": "Plain text + billing interval",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "BillingPeriodStartUtc",
+          "type": "date",
+          "required": true,
+          "source": "Subscription period",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "BillingPeriodEndUtc",
+          "type": "date",
+          "required": true,
+          "source": "Subscription period",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "PaidAtUtc",
+          "type": "date",
+          "required": true,
+          "source": "Payment transaction",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "PaymentMethodDescription",
+          "type": "text",
+          "required": false,
+          "source": "Provider + masked instrument if the provider returns one",
+          "format": "e.g. 'card •••• 4242'",
+          "sensitive": "financial",
+          "missing": "Show provider only",
+          "status": "proposed"
+        },
+        {
+          "name": "TaxAmount",
+          "type": "money",
+          "required": false,
+          "source": "Decimal amount + ISO 4217 currency from the owning record",
+          "format": "money (see formats)",
+          "sensitive": "financial",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "TaxLabel",
+          "type": "text",
+          "required": false,
+          "source": "Tax configuration (not yet modelled)",
+          "format": "e.g. 'VAT (7.5%)'",
+          "sensitive": "none",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "TotalPaid",
+          "type": "money",
+          "required": true,
+          "source": "Decimal amount + ISO 4217 currency from the owning record",
+          "format": "money (see formats)",
+          "sensitive": "financial",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "NextChargeAtUtc",
+          "type": "date",
+          "required": false,
+          "source": "Subscription renewal schedule",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Omit the sentence",
+          "status": "proposed"
+        },
+        {
+          "name": "ReceiptUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal receipt view (FE-UI-018))",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "InvoicePdfUrl",
+          "type": "url",
+          "required": false,
+          "source": "Backend-built from the configured portal base URL + fixed path (authenticated invoice download (FE-UI-018))",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Omit the action",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "View receipt",
+          "kind": "primary",
+          "destination": "User portal receipt view (FE-UI-018; route not yet defined)"
+        },
+        {
+          "label": "Download invoice (PDF)",
+          "kind": "link",
+          "destination": "Authenticated download; never a public or signed long-lived URL"
+        }
+      ],
+      "securitySensitive": [
+        "PDF attachments: the delivery message has no attachment support today (EmailDeliveryMessage has HtmlBody only)."
+      ],
+      "timeSensitive": [],
+      "designOnlyContent": [
+        "Template is a receipt (payment confirmation) although its type is SubscriptionInvoice; the current backend template says 'Thank you for your order' with AmountDue.",
+        "Attachments, tax lines and masked card details have no backend source."
+      ],
+      "openQuestions": [
+        "Rename to a receipt type or keep SubscriptionInvoice for the receipt email?",
+        "Attachment vs authenticated link."
+      ],
+      "followUpTicket": "BE-NOTIF-07",
+      "references": {
+        "live": "email-pages/live/Invoice.html",
+        "desktopLight": "6-emails/EmailInvoice.html",
+        "desktopDark": "6-emails/EmailInvoiceDark.html",
+        "mobileLight": "6-emails/EmailInvoiceMobile.html",
+        "mobileDark": "6-emails/EmailInvoiceMobileDark.html",
+        "lockedPreviews": "email-pages/screens/Invoice{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "InvoiceIssued",
+      "designNotificationType": "InvoiceIssued",
+      "designStatus": "Proposed",
+      "backend": {
+        "notificationType": null,
+        "enumValue": null,
+        "templateFile": null,
+        "templateRegistered": [],
+        "producer": null,
+        "existingTrigger": "None. No invoice domain.",
+        "currentPayloadKeys": [],
+        "coverage": "Not supported"
+      },
+      "subject": "Invoice INV-2026-0142 from Template — due 21 Dec 2026",
+      "preheader": "Your invoice is ready. Pay by the due date to keep your plan.",
+      "category": "invoices",
+      "recipient": "The billing-account owner",
+      "proposedTrigger": "Invoice issued (requires backend invoice issuance).",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "InvoiceNumber",
+          "type": "text",
+          "required": true,
+          "source": "Invoice record",
+          "format": "As issued",
+          "sensitive": "financial",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "PlanName",
+          "type": "text",
+          "required": true,
+          "source": "Subscription plan",
+          "format": "Plain text + billing interval",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "IssuedAtUtc",
+          "type": "date",
+          "required": true,
+          "source": "Invoice record",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "BillingPeriodStartUtc",
+          "type": "date",
+          "required": true,
+          "source": "Invoice record",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "BillingPeriodEndUtc",
+          "type": "date",
+          "required": true,
+          "source": "Invoice record",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "DueAtUtc",
+          "type": "date",
+          "required": true,
+          "source": "Invoice record",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "AmountDue",
+          "type": "money",
+          "required": true,
+          "source": "Decimal amount + ISO 4217 currency from the owning record",
+          "format": "money (see formats)",
+          "sensitive": "financial",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "PayInvoiceUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal invoice payment (FE-UI-018))",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "InvoiceUrl",
+          "type": "url",
+          "required": false,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal invoice view (FE-UI-018))",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Omit the action",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Pay invoice",
+          "kind": "primary",
+          "destination": "User portal invoice payment flow (not yet defined)"
+        },
+        {
+          "label": "View invoice online",
+          "kind": "link",
+          "destination": "User portal invoice view (FE-UI-018)"
+        }
+      ],
+      "securitySensitive": [],
+      "timeSensitive": ["Due date in subject and body."],
+      "designOnlyContent": [
+        "'If auto-renew is on, we'll charge your saved payment method' depends on recurring authorization state."
+      ],
+      "openQuestions": [
+        "Does the product issue invoices before payment at all, or only receipts?"
+      ],
+      "followUpTicket": "BE-NOTIF-07",
+      "references": {
+        "live": "email-pages/live/InvoiceIssued.html",
+        "desktopLight": "6-emails/EmailInvoiceIssued.html",
+        "desktopDark": "6-emails/EmailInvoiceIssuedDark.html",
+        "mobileLight": "6-emails/EmailInvoiceIssuedMobile.html",
+        "mobileDark": "6-emails/EmailInvoiceIssuedMobileDark.html",
+        "lockedPreviews": "email-pages/screens/InvoiceIssued{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "InvoiceOverdue",
+      "designNotificationType": "InvoiceOverdue",
+      "designStatus": "Proposed",
+      "backend": {
+        "notificationType": null,
+        "enumValue": null,
+        "templateFile": null,
+        "templateRegistered": [],
+        "producer": null,
+        "existingTrigger": "None. No invoice domain or due-date tracking.",
+        "currentPayloadKeys": [],
+        "coverage": "Not supported"
+      },
+      "subject": "Overdue: invoice INV-2026-0142 from Template",
+      "preheader": "Your invoice is past due. Pay now to keep access.",
+      "category": "invoices",
+      "recipient": "The billing-account owner",
+      "proposedTrigger": "Scheduled check after an invoice's due date while unpaid.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "InvoiceNumber",
+          "type": "text",
+          "required": true,
+          "source": "Invoice record",
+          "format": "As issued",
+          "sensitive": "financial",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "AmountDue",
+          "type": "money",
+          "required": true,
+          "source": "Decimal amount + ISO 4217 currency from the owning record",
+          "format": "money (see formats)",
+          "sensitive": "financial",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "DueAtUtc",
+          "type": "date",
+          "required": true,
+          "source": "Invoice record",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "PlanName",
+          "type": "text",
+          "required": true,
+          "source": "Subscription plan",
+          "format": "Plain text",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "AccessPausedAtUtc",
+          "type": "date",
+          "required": false,
+          "source": "Grace-period policy",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Omit the warning block",
+          "status": "proposed"
+        },
+        {
+          "name": "PayInvoiceUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal invoice payment (FE-UI-018))",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Pay now",
+          "kind": "primary",
+          "destination": "User portal invoice payment flow (not yet defined)"
+        }
+      ],
+      "securitySensitive": [],
+      "timeSensitive": ["Due date and pause date."],
+      "designOnlyContent": [
+        "'Already paid? Reply to this email' assumes a monitored reply-to mailbox."
+      ],
+      "openQuestions": [
+        "How does this relate to SubscriptionRenewalReminder, which already covers failed renewals?"
+      ],
+      "followUpTicket": "BE-NOTIF-07",
+      "references": {
+        "live": "email-pages/live/InvoiceOverdue.html",
+        "desktopLight": "6-emails/EmailInvoiceOverdue.html",
+        "desktopDark": "6-emails/EmailInvoiceOverdueDark.html",
+        "mobileLight": "6-emails/EmailInvoiceOverdueMobile.html",
+        "mobileDark": "6-emails/EmailInvoiceOverdueMobileDark.html",
+        "lockedPreviews": "email-pages/screens/InvoiceOverdue{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "SubscriptionRenewalReminder",
+      "designNotificationType": "SubscriptionRenewalReminder",
+      "designStatus": "Existing",
+      "backend": {
+        "notificationType": "SubscriptionRenewalReminder",
+        "enumValue": 11,
+        "templateFile": "SubscriptionRenewalReminder.html",
+        "templateRegistered": [],
+        "producer": "src/BackendProjectTemplate.Consumer/Subscriptions/SendSubscriptionRenewalReminderHandler.cs",
+        "existingTrigger": "RenewSubscriptionHandler schedules reminders at period start + Subscriptions:Renewal:ReminderSchedule (2 and 6 days) while the renewal is unfulfilled and the subscription is still Active.",
+        "currentPayloadKeys": ["SubscriptionId", "PeriodEnd"],
+        "coverage": "Backend trigger exists but template missing"
+      },
+      "subject": "Action needed: we couldn't renew your Template subscription",
+      "preheader": "Update your payment to keep access.",
+      "category": "payments",
+      "recipient": "The billing-account owner",
+      "proposedTrigger": "Unchanged.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "PlanName",
+          "type": "text",
+          "required": true,
+          "source": "Subscription plan",
+          "format": "Plain text + billing interval",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "AmountDue",
+          "type": "money",
+          "required": true,
+          "source": "Decimal amount + ISO 4217 currency from the owning record",
+          "format": "money (see formats)",
+          "sensitive": "financial",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "PeriodEndedAtUtc",
+          "type": "date",
+          "required": true,
+          "source": "Renewal TargetPeriodStartUtc (sent today as ISO 8601 'PeriodEnd')",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "Reference",
+          "type": "text",
+          "required": false,
+          "source": "Renewal or payment reference safe to show customers (not the subscription GUID)",
+          "format": "Short reference",
+          "sensitive": "none",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "AccessEndsAtUtc",
+          "type": "date",
+          "required": false,
+          "source": "Period start + Subscriptions:Renewal:GracePeriod (7 days)",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Omit the date from the warning",
+          "status": "proposed"
+        },
+        {
+          "name": "PayNowUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /billing)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Pay now",
+          "kind": "primary",
+          "destination": "User portal /billing (renewal payment)"
+        }
+      ],
+      "securitySensitive": [
+        "Do not expose the internal SubscriptionId GUID; the current template prints it."
+      ],
+      "timeSensitive": ["Grace period end."],
+      "designOnlyContent": [
+        "'We'll retry automatically' is true only when a usable recurring authorization exists."
+      ],
+      "openQuestions": [],
+      "followUpTicket": "BE-NOTIF-01",
+      "references": {
+        "live": "email-pages/live/SubscriptionRenewalReminder.html",
+        "desktopLight": "6-emails/EmailSubscriptionRenewalReminder.html",
+        "desktopDark": "6-emails/EmailSubscriptionRenewalReminderDark.html",
+        "mobileLight": "6-emails/EmailSubscriptionRenewalReminderMobile.html",
+        "mobileDark": "6-emails/EmailSubscriptionRenewalReminderMobileDark.html",
+        "lockedPreviews": "email-pages/screens/SubscriptionRenewalReminder{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "SecuritySettingChanged",
+      "designNotificationType": "SecuritySettingChanged",
+      "designStatus": "Proposed",
+      "backend": {
+        "notificationType": null,
+        "enumValue": null,
+        "templateFile": null,
+        "templateRegistered": [],
+        "producer": null,
+        "existingTrigger": "UserSecurityActivityOccurred (passkey_added, passkey_removed, two_factor_enabled, two_factor_disabled, two_factor_recovery_codes_regenerated, password_changed); UserSecurityActivityOccurredHandler records activity only.",
+        "currentPayloadKeys": [],
+        "coverage": "Backend trigger exists but template missing"
+      },
+      "subject": "Security change on your Template account",
+      "preheader": "A security setting on your account changed.",
+      "category": "security",
+      "recipient": "The account holder",
+      "proposedTrigger": "UserSecurityActivityOccurred, one email per activity.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "ChangeType",
+          "type": "enum",
+          "required": true,
+          "source": "UserSecurityActivityTypes value",
+          "format": "Mapped to a localized heading and sentence per type",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "ChangedAtUtc",
+          "type": "dateTime",
+          "required": true,
+          "source": "Event timestamp",
+          "format": "dateTimeUtc",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "DeviceDescription",
+          "type": "text",
+          "required": false,
+          "source": "Parsed user agent (browser + platform), as already stored on SecurityActivity",
+          "format": "Plain text, e.g. 'Chrome on macOS'",
+          "sensitive": "personal",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "ApproximateLocation",
+          "type": "text",
+          "required": false,
+          "source": "IP geolocation already resolved for SecurityActivity (city, country code)",
+          "format": "Plain text, e.g. 'Lagos, NG'",
+          "sensitive": "personal",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "SecuritySettingsUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /security)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Review security",
+          "kind": "primary",
+          "destination": "User portal /security"
+        }
+      ],
+      "securitySensitive": [
+        "Never include recovery codes, authenticator secrets or passkey identifiers."
+      ],
+      "timeSensitive": [],
+      "designOnlyContent": [],
+      "openQuestions": [
+        "Should password_changed use this template or PasswordResetSuccessful? (OD-18)"
+      ],
+      "followUpTicket": "BE-NOTIF-02",
+      "references": {
+        "live": "email-pages/live/SecuritySettingChanged.html",
+        "desktopLight": "6-emails/EmailSecuritySettingChanged.html",
+        "desktopDark": "6-emails/EmailSecuritySettingChangedDark.html",
+        "mobileLight": "6-emails/EmailSecuritySettingChangedMobile.html",
+        "mobileDark": "6-emails/EmailSecuritySettingChangedMobileDark.html",
+        "lockedPreviews": "email-pages/screens/SecuritySettingChanged{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "KycVerified",
+      "designNotificationType": "KycVerified",
+      "designStatus": "Proposed",
+      "backend": {
+        "notificationType": null,
+        "enumValue": null,
+        "templateFile": null,
+        "templateRegistered": [],
+        "producer": null,
+        "existingTrigger": "StakeholderKycVerified event (KycWebhookReceivedHandler, KycReconciliationService); no consumer handles it.",
+        "currentPayloadKeys": [],
+        "coverage": "Backend trigger exists but template missing"
+      },
+      "subject": "You're verified on Template",
+      "preheader": "Your identity verification was approved.",
+      "category": "kyc",
+      "recipient": "The verified user",
+      "proposedTrigger": "StakeholderKycVerified.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "DashboardUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /dashboard)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Go to dashboard",
+          "kind": "primary",
+          "destination": "User portal /dashboard"
+        }
+      ],
+      "securitySensitive": [
+        "No document data, provider references or verification details."
+      ],
+      "timeSensitive": [],
+      "designOnlyContent": [
+        "'Payouts and higher limits are now available' is an unsupported claim (see DR-102)."
+      ],
+      "openQuestions": [],
+      "followUpTicket": "BE-NOTIF-05",
+      "references": {
+        "live": "email-pages/live/KycVerified.html",
+        "desktopLight": "6-emails/EmailKycVerified.html",
+        "desktopDark": "6-emails/EmailKycVerifiedDark.html",
+        "mobileLight": "6-emails/EmailKycVerifiedMobile.html",
+        "mobileDark": "6-emails/EmailKycVerifiedMobileDark.html",
+        "lockedPreviews": "email-pages/screens/KycVerified{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "KycRejected",
+      "designNotificationType": "KycRejected",
+      "designStatus": "Proposed",
+      "backend": {
+        "notificationType": null,
+        "enumValue": null,
+        "templateFile": null,
+        "templateRegistered": [],
+        "producer": null,
+        "existingTrigger": "None. KycVerification transitions to Rejected but no event is published.",
+        "currentPayloadKeys": [],
+        "coverage": "Proposed notification"
+      },
+      "subject": "Your Template verification needs another try",
+      "preheader": "We couldn't approve your identity verification.",
+      "category": "kyc",
+      "recipient": "The user whose verification was rejected",
+      "proposedTrigger": "New StakeholderKycRejected event on the Rejected transition.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "RejectionReason",
+          "type": "text",
+          "required": false,
+          "source": "Customer-safe reason mapped from the provider decision",
+          "format": "Plain text, HTML-escaped; never raw provider output",
+          "sensitive": "personal",
+          "missing": "Show 'No reason was provided for this decision.'",
+          "status": "proposed"
+        },
+        {
+          "name": "CanRetry",
+          "type": "boolean",
+          "required": true,
+          "source": "KYC retry policy",
+          "format": "Controls the CTA",
+          "sensitive": "none",
+          "missing": "Treat as false",
+          "status": "proposed"
+        },
+        {
+          "name": "VerificationUrl",
+          "type": "url",
+          "required": false,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal verification screen (not yet routed))",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Omit the action",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Try again",
+          "kind": "primary",
+          "destination": "User portal verification screen; omit when retry is not allowed or the route does not exist"
+        }
+      ],
+      "securitySensitive": [
+        "Reasons can reveal document problems; keep generic and customer-safe."
+      ],
+      "timeSensitive": [],
+      "designOnlyContent": [
+        "Sample reason and photo guidance are illustrative."
+      ],
+      "openQuestions": ["Retry policy and reason mapping."],
+      "followUpTicket": "BE-NOTIF-05",
+      "references": {
+        "live": "email-pages/live/KycRejected.html",
+        "desktopLight": "6-emails/EmailKycRejected.html",
+        "desktopDark": "6-emails/EmailKycRejectedDark.html",
+        "mobileLight": "6-emails/EmailKycRejectedMobile.html",
+        "mobileDark": "6-emails/EmailKycRejectedMobileDark.html",
+        "lockedPreviews": "email-pages/screens/KycRejected{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "WalletTopUpSucceeded",
+      "designNotificationType": "WalletTopUpSucceeded",
+      "designStatus": "Proposed",
+      "backend": {
+        "notificationType": null,
+        "enumValue": null,
+        "templateFile": null,
+        "templateRegistered": [],
+        "producer": null,
+        "existingTrigger": "SuccessfulPaymentConfirmed -> CreditWalletCommand -> CreditWalletHandler; sends nothing.",
+        "currentPayloadKeys": [],
+        "coverage": "Backend trigger exists but template missing"
+      },
+      "subject": "Your Template wallet was topped up",
+      "preheader": "Funds were added to your wallet.",
+      "category": "wallet",
+      "recipient": "The wallet owner",
+      "proposedTrigger": "After CreditWalletHandler commits the credit (idempotent per payment transaction).",
+      "variables": [
+        {
+          "name": "AmountCredited",
+          "type": "money",
+          "required": true,
+          "source": "Decimal amount + ISO 4217 currency from the owning record",
+          "format": "money (see formats)",
+          "sensitive": "financial",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "MerchantReference",
+          "type": "text",
+          "required": true,
+          "source": "Payment transaction merchant reference",
+          "format": "As stored",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "ProviderName",
+          "type": "text",
+          "required": false,
+          "source": "Payment provider display name",
+          "format": "Plain text",
+          "sensitive": "none",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "CreditedAtUtc",
+          "type": "dateTime",
+          "required": true,
+          "source": "Event timestamp",
+          "format": "dateTimeUtc",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "NewBalance",
+          "type": "money",
+          "required": false,
+          "source": "Decimal amount + ISO 4217 currency from the owning record",
+          "format": "money (see formats)",
+          "sensitive": "financial",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "ReceiptNumber",
+          "type": "text",
+          "required": false,
+          "source": "Receipt record (not yet modelled)",
+          "format": "As issued",
+          "sensitive": "financial",
+          "missing": "Omit the receipt sentence",
+          "status": "proposed"
+        },
+        {
+          "name": "ReceiptUrl",
+          "type": "url",
+          "required": false,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal wallet receipt (FE-UI-018))",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Omit the action",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "View receipt",
+          "kind": "primary",
+          "destination": "User portal wallet transaction/receipt (FE-UI-018); omit until it exists"
+        }
+      ],
+      "securitySensitive": [],
+      "timeSensitive": [],
+      "designOnlyContent": [
+        "New balance requires the wallet read model (BE-DS-005); receipt attachment has no backend support."
+      ],
+      "openQuestions": [],
+      "followUpTicket": "BE-NOTIF-04",
+      "references": {
+        "live": "email-pages/live/WalletTopUpSucceeded.html",
+        "desktopLight": "6-emails/EmailWalletTopUpSucceeded.html",
+        "desktopDark": "6-emails/EmailWalletTopUpSucceededDark.html",
+        "mobileLight": "6-emails/EmailWalletTopUpSucceededMobile.html",
+        "mobileDark": "6-emails/EmailWalletTopUpSucceededMobileDark.html",
+        "lockedPreviews": "email-pages/screens/WalletTopUpSucceeded{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "PaymentFailed",
+      "designNotificationType": "PaymentFailed",
+      "designStatus": "Proposed",
+      "backend": {
+        "notificationType": null,
+        "enumValue": null,
+        "templateFile": null,
+        "templateRegistered": [],
+        "producer": null,
+        "existingTrigger": "UnsuccessfulPaymentConcluded (failed, expired or uncredited underpayment); handler updates subscription purchases only.",
+        "currentPayloadKeys": [],
+        "coverage": "Backend trigger exists but template missing"
+      },
+      "subject": "Your Template payment didn't go through",
+      "preheader": "Your payment failed — you have not been charged.",
+      "category": "payments",
+      "recipient": "The payer",
+      "proposedTrigger": "UnsuccessfulPaymentConcluded for user-initiated payments (wallet top-up, subscription purchase); not for renewals, which use SubscriptionRenewalReminder.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "PaymentPurpose",
+          "type": "enum",
+          "required": true,
+          "source": "PaymentIntent",
+          "format": "Localized label ('wallet top-up', 'subscription')",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "Amount",
+          "type": "money",
+          "required": true,
+          "source": "Decimal amount + ISO 4217 currency from the owning record",
+          "format": "money (see formats)",
+          "sensitive": "financial",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "FailureReason",
+          "type": "text",
+          "required": false,
+          "source": "Customer-safe mapping of PaymentStatus/provider reason",
+          "format": "Plain text",
+          "sensitive": "none",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "MerchantReference",
+          "type": "text",
+          "required": true,
+          "source": "Payment transaction",
+          "format": "As stored",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "ProviderName",
+          "type": "text",
+          "required": false,
+          "source": "Payment provider display name",
+          "format": "Plain text",
+          "sensitive": "none",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "RetryUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /billing or wallet top-up)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Try again",
+          "kind": "primary",
+          "destination": "The originating flow (billing checkout or wallet top-up)"
+        }
+      ],
+      "securitySensitive": [
+        "'You have not been charged' is only true for failed/expired states; an uncredited underpayment means money moved. Copy must vary by PaymentStatus."
+      ],
+      "timeSensitive": [],
+      "designOnlyContent": [],
+      "openQuestions": [
+        "Which PaymentStatus values qualify; underpayment wording."
+      ],
+      "followUpTicket": "BE-NOTIF-04",
+      "references": {
+        "live": "email-pages/live/PaymentFailed.html",
+        "desktopLight": "6-emails/EmailPaymentFailed.html",
+        "desktopDark": "6-emails/EmailPaymentFailedDark.html",
+        "mobileLight": "6-emails/EmailPaymentFailedMobile.html",
+        "mobileDark": "6-emails/EmailPaymentFailedMobileDark.html",
+        "lockedPreviews": "email-pages/screens/PaymentFailed{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "SubscriptionActivated",
+      "designNotificationType": "SubscriptionActivated",
+      "designStatus": "Proposed",
+      "backend": {
+        "notificationType": null,
+        "enumValue": null,
+        "templateFile": null,
+        "templateRegistered": [],
+        "producer": null,
+        "existingTrigger": "SuccessfulPaymentConfirmed -> ActivateSubscriptionCommand -> ActivateSubscriptionHandler; sends nothing.",
+        "currentPayloadKeys": [],
+        "coverage": "Backend trigger exists but template missing"
+      },
+      "subject": "Your Template Premium plan is active",
+      "preheader": "Your subscription is now active.",
+      "category": "subscriptions",
+      "recipient": "The billing-account owner",
+      "proposedTrigger": "After ActivateSubscriptionHandler commits a paid activation.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "PlanName",
+          "type": "text",
+          "required": true,
+          "source": "Subscription plan",
+          "format": "Plain text + billing interval; also used in the subject",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "PeriodStartUtc",
+          "type": "date",
+          "required": true,
+          "source": "Subscription period",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "PeriodEndUtc",
+          "type": "date",
+          "required": true,
+          "source": "Subscription period",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "AutoRenew",
+          "type": "boolean",
+          "required": true,
+          "source": "Recurring authorization state",
+          "format": "'On' / 'Off'",
+          "sensitive": "none",
+          "missing": "Omit the row",
+          "status": "proposed"
+        },
+        {
+          "name": "BillingUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /billing)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Go to billing",
+          "kind": "primary",
+          "destination": "User portal /billing"
+        }
+      ],
+      "securitySensitive": [],
+      "timeSensitive": [],
+      "designOnlyContent": [
+        "Subject embeds the plan name ('Premium'); subjects need the same placeholder support as bodies (already supported)."
+      ],
+      "openQuestions": ["Send for renewals too, or only first activation?"],
+      "followUpTicket": "BE-NOTIF-03",
+      "references": {
+        "live": "email-pages/live/SubscriptionActivated.html",
+        "desktopLight": "6-emails/EmailSubscriptionActivated.html",
+        "desktopDark": "6-emails/EmailSubscriptionActivatedDark.html",
+        "mobileLight": "6-emails/EmailSubscriptionActivatedMobile.html",
+        "mobileDark": "6-emails/EmailSubscriptionActivatedMobileDark.html",
+        "lockedPreviews": "email-pages/screens/SubscriptionActivated{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "UpcomingRenewal",
+      "designNotificationType": "UpcomingRenewal",
+      "designStatus": "Proposed",
+      "backend": {
+        "notificationType": null,
+        "enumValue": null,
+        "templateFile": null,
+        "templateRegistered": [],
+        "producer": null,
+        "existingTrigger": "None. Renewal is scheduled at period end (RenewSubscriptionCommand); there is no pre-renewal notice.",
+        "currentPayloadKeys": [],
+        "coverage": "Proposed notification"
+      },
+      "subject": "Your Template subscription renews on 14 Dec 2026",
+      "preheader": "A heads-up before we charge your saved payment method.",
+      "category": "subscriptions",
+      "recipient": "The billing-account owner with auto-renew on",
+      "proposedTrigger": "Scheduled N days before CurrentPeriodEndUtc when a usable recurring authorization exists and the subscription is not cancelling.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "RenewsAtUtc",
+          "type": "date",
+          "required": true,
+          "source": "Subscription CurrentPeriodEndUtc",
+          "format": "date; also used in the subject",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "RenewalAmount",
+          "type": "money",
+          "required": true,
+          "source": "Decimal amount + ISO 4217 currency from the owning record",
+          "format": "money (see formats)",
+          "sensitive": "financial",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "PlanName",
+          "type": "text",
+          "required": true,
+          "source": "Subscription plan",
+          "format": "Plain text + billing interval",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "ManageSubscriptionUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /billing)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Manage subscription",
+          "kind": "primary",
+          "destination": "User portal /billing"
+        }
+      ],
+      "securitySensitive": [],
+      "timeSensitive": ["Renewal date."],
+      "designOnlyContent": [],
+      "openQuestions": [
+        "Lead time (days before renewal)?",
+        "Regulatory need for pre-renewal notices per market?"
+      ],
+      "followUpTicket": "BE-NOTIF-03",
+      "references": {
+        "live": "email-pages/live/UpcomingRenewal.html",
+        "desktopLight": "6-emails/EmailUpcomingRenewal.html",
+        "desktopDark": "6-emails/EmailUpcomingRenewalDark.html",
+        "mobileLight": "6-emails/EmailUpcomingRenewalMobile.html",
+        "mobileDark": "6-emails/EmailUpcomingRenewalMobileDark.html",
+        "lockedPreviews": "email-pages/screens/UpcomingRenewal{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "SubscriptionAllocated",
+      "designNotificationType": "SubscriptionAllocated",
+      "designStatus": "Proposed",
+      "backend": {
+        "notificationType": null,
+        "enumValue": null,
+        "templateFile": null,
+        "templateRegistered": [],
+        "producer": null,
+        "existingTrigger": "AllocateSubscription (admin) and ActivateAllocatedSubscriptionHandler; send nothing.",
+        "currentPayloadKeys": [],
+        "coverage": "Backend trigger exists but template missing"
+      },
+      "subject": "You've been given Template Premium",
+      "preheader": "A complimentary plan was added to your account.",
+      "category": "subscriptions",
+      "recipient": "The user receiving the allocation",
+      "proposedTrigger": "Allocation created (or activated, if it starts later) — decide one.",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "PlanName",
+          "type": "text",
+          "required": true,
+          "source": "Allocated plan",
+          "format": "Plain text; also used in the subject",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "StartsAtUtc",
+          "type": "date",
+          "required": true,
+          "source": "Allocation StartAtUtc",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "EndsAtUtc",
+          "type": "date",
+          "required": false,
+          "source": "Allocation end",
+          "format": "date",
+          "sensitive": "none",
+          "missing": "Omit the row (open-ended)",
+          "status": "proposed"
+        },
+        {
+          "name": "AllocationSource",
+          "type": "enum",
+          "required": false,
+          "source": "SubscriptionAllocationSource (Trial, complimentary, ...)",
+          "format": "Selects copy; Trial uses trial wording",
+          "sensitive": "none",
+          "missing": "Use neutral copy",
+          "status": "proposed"
+        },
+        {
+          "name": "PlanDetailsUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (user portal /billing)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "See what's included",
+          "kind": "primary",
+          "destination": "User portal /billing"
+        }
+      ],
+      "securitySensitive": [
+        "Do not name the administrator who made the allocation unless product approves."
+      ],
+      "timeSensitive": [],
+      "designOnlyContent": [
+        "'Auto-renew Off' row is implied by allocation; omit unless meaningful."
+      ],
+      "openQuestions": ["Send at allocation or at activation?"],
+      "followUpTicket": "BE-NOTIF-03",
+      "references": {
+        "live": "email-pages/live/SubscriptionAllocated.html",
+        "desktopLight": "6-emails/EmailSubscriptionAllocated.html",
+        "desktopDark": "6-emails/EmailSubscriptionAllocatedDark.html",
+        "mobileLight": "6-emails/EmailSubscriptionAllocatedMobile.html",
+        "mobileDark": "6-emails/EmailSubscriptionAllocatedMobileDark.html",
+        "lockedPreviews": "email-pages/screens/SubscriptionAllocated{,Dark,Mobile,MobileDark}.html"
+      }
+    },
+    {
+      "templateName": "AdminRoleChanged",
+      "designNotificationType": "AdminRoleChanged",
+      "designStatus": "Proposed",
+      "backend": {
+        "notificationType": null,
+        "enumValue": null,
+        "templateFile": null,
+        "templateRegistered": [],
+        "producer": null,
+        "existingTrigger": "Admin role assignment/removal (Infrastructure/Persistence/AdminUserRoleAdministration.cs; audited as users.roles.assigned / users.roles.removed by AdminUserMutationExecutor); no event or notification.",
+        "currentPayloadKeys": [],
+        "coverage": "Backend trigger exists but template missing"
+      },
+      "subject": "Your Template admin access changed",
+      "preheader": "Your administrative role was updated.",
+      "category": "security",
+      "recipient": "The administrator whose roles changed",
+      "proposedTrigger": "Committed role assignment or removal (one email per change set).",
+      "variables": [
+        {
+          "name": "FirstName",
+          "type": "text",
+          "required": false,
+          "source": "Stakeholder profile",
+          "format": "Plain text, HTML-escaped",
+          "sensitive": "personal",
+          "missing": "Omit the name: greeting reads 'Hi,' / heading without the name",
+          "status": "backend-key"
+        },
+        {
+          "name": "RoleName",
+          "type": "text",
+          "required": true,
+          "source": "Role display name",
+          "format": "Plain text",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "ChangeKind",
+          "type": "enum",
+          "required": true,
+          "source": "Assigned | Removed",
+          "format": "Selects heading",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        },
+        {
+          "name": "ChangedByName",
+          "type": "text",
+          "required": false,
+          "source": "Acting administrator display name",
+          "format": "Plain text",
+          "sensitive": "personal",
+          "missing": "Say 'An administrator'",
+          "status": "proposed"
+        },
+        {
+          "name": "PermissionSummary",
+          "type": "list",
+          "required": false,
+          "source": "Role permission groups",
+          "format": "Up to N label/description pairs",
+          "sensitive": "none",
+          "missing": "Omit the list",
+          "status": "proposed"
+        },
+        {
+          "name": "AdminPortalUrl",
+          "type": "url",
+          "required": true,
+          "source": "Backend-built from the configured portal base URL + fixed path (admin portal /)",
+          "format": "Absolute https URL on an allowlisted portal origin; no tokens, OTPs or personal data in the query",
+          "sensitive": "none",
+          "missing": "Do not send",
+          "status": "proposed"
+        }
+      ],
+      "actions": [
+        {
+          "label": "Open admin portal",
+          "kind": "primary",
+          "destination": "Admin portal root (sign-in as usual)"
+        }
+      ],
+      "securitySensitive": [
+        "Admin portal URL must come from configuration, never from request headers."
+      ],
+      "timeSensitive": [],
+      "designOnlyContent": [
+        "'Sensitive actions will ask for your authenticator code' depends on admin MFA policy (OD-14)."
+      ],
+      "openQuestions": ["Notify on removal as well as assignment?"],
+      "followUpTicket": "BE-NOTIF-06",
+      "references": {
+        "live": "email-pages/live/AdminRoleChanged.html",
+        "desktopLight": "6-emails/EmailAdminRoleChanged.html",
+        "desktopDark": "6-emails/EmailAdminRoleChangedDark.html",
+        "mobileLight": "6-emails/EmailAdminRoleChangedMobile.html",
+        "mobileDark": "6-emails/EmailAdminRoleChangedMobileDark.html",
+        "lockedPreviews": "email-pages/screens/AdminRoleChanged{,Dark,Mobile,MobileDark}.html"
+      }
+    }
+  ]
+}

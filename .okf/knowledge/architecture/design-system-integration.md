@@ -57,6 +57,14 @@ lives in `docs/design-system/`; load it only for UI redesign work.
   `api-client` contracts or feature models, and imported only by tests and
   stories; feature tests fail if production code imports them or adds the
   route early.
+- Transactional email designs (`6-emails/`, `email-pages/`; Trello FE-UI-019,
+  not roadmap FE-UI-019) are not screens: no route, story, fixture or screen
+  record. The backend notification module owns email rendering, sending,
+  retries and delivery audit; `docs/design-system/email-template-catalog.json`
+  documents the 22 designs and proposed content contracts for it (handoff:
+  `email-notification-handoff.md`). Apps and packages never render or send
+  email, hold provider credentials or mirror `NotificationType`; they keep CTA
+  destination routes stable.
 - Target direction (adopted ticket by ticket, see
   `docs/design-system/migration-roadmap.md`): semantic tokens and
   `next-themes` (landed, `design-tokens-theming`); Radix-based primitives,

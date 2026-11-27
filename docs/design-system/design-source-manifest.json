@@ -102,6 +102,26 @@
         "4-admin-portal/AdminAudit.html (+Dark, Mobile, MobileDark)",
         "4-admin-portal/AdminSystemHealth.html (+Dark, Mobile, MobileDark)"
       ]
+    },
+    {
+      "ticket": "FE-UI-019 (Trello)",
+      "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+      "commitDate": "2026-11-25T21:19:56+01:00",
+      "treeSha": "1000fc95c79c4cda8f3c6361d73f3b5d485cd0c2",
+      "scope": "Transactional email designs only (6-emails/, email-pages/). Cataloged in email-template-catalog.json, not as screens; per-file inventory, hashes and counts still describe commit (DR-083).",
+      "filesInRevision": 994,
+      "changesSincePinnedCommit": {
+        "6-emails": "88 canonical email references: 22 templates x desktop/mobile x light/dark (tree 8958b95)",
+        "email-pages/live": "22 responsive email HTML files (tree 70679e8)",
+        "email-pages/screens": "88 locked previews identical to 6-emails apart from the preview background (tree a84c1c0)",
+        "email-pages/index.html": "Gallery of the 22 templates with subject, Existing/Proposed status and NotificationType (blob 845691e)"
+      },
+      "referencesUsed": [
+        "email-pages/index.html",
+        "email-pages/live/*.html (22)",
+        "6-emails/Email*.html (88)",
+        "email-pages/screens/*.html (88, duplicate check only)"
+      ]
     }
   ],
   "discoveredOn": "2026-11-25",
