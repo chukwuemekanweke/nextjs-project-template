@@ -8,12 +8,17 @@ import type { ReactNode } from "react";
 import {
   CHART_HEIGHT,
   CHART_WIDTH,
+  categoryBand,
   chartScaleMax,
   gridLines,
   groupedBars,
   linePath,
   type ChartValue,
 } from "./chart-geometry";
+import {
+  ChartPeriodPicker,
+  type AdminChartSelection,
+} from "./chart-period-picker";
 
 /*
  * Admin chart section: `ChartFrame` (title, legend, state, text summary)
@@ -52,6 +57,7 @@ export function AdminChartSection({
   formatValue = String,
   kind,
   onRetry,
+  selection,
   title,
 }: Readonly<{
   /** Header actions, for example a link to an implemented report route. */
@@ -62,8 +68,13 @@ export function AdminChartSection({
   formatValue?: (value: number) => string;
   kind: AdminChartKind;
   onRetry?: () => void;
+  selection?: AdminChartSelection;
   title: string;
 }>) {
+  const selectedIndex =
+    data.state === "ready" && selection?.selected
+      ? data.categories.indexOf(selection.selected)
+      : -1;
   const frameState = data.state === "unavailable" ? "empty" : data.state;
   const showLegend =
     data.state === "ready" && (kind === "bars" || data.series.length > 1);
@@ -93,15 +104,27 @@ export function AdminChartSection({
       >
         {data.state === "ready" ? (
           kind === "line" ? (
-            <LinePlot series={data.series} />
+            <LinePlot
+              categoryCount={data.categories.length}
+              selectedIndex={selectedIndex}
+              series={data.series}
+            />
           ) : (
             <BarPlot
               categoryCount={data.categories.length}
+              selectedIndex={selectedIndex}
               series={data.series}
             />
           )
         ) : null}
       </ChartFrame>
+      {data.state === "ready" && selection ? (
+        <ChartPeriodPicker
+          categories={data.categories}
+          selectedIndex={selectedIndex}
+          selection={selection}
+        />
+      ) : null}
       {data.state === "ready" ? (
         <ChartDataTable
           categories={data.categories}
@@ -130,15 +153,47 @@ export function chartSummary(title: string, data: AdminChartData): string {
   }
 }
 
+function SelectedBand({
+  categoryCount,
+  index,
+  kind,
+}: Readonly<{ categoryCount: number; index: number; kind: AdminChartKind }>) {
+  if (index < 0) {
+    return null;
+  }
+  const band = categoryBand(index, categoryCount, kind);
+  return (
+    <rect
+      data-selected-band=""
+      fill={chartColors.area}
+      height={CHART_HEIGHT}
+      width={band.width}
+      x={band.x}
+      y={0}
+    />
+  );
+}
+
 function LinePlot({
+  categoryCount,
+  selectedIndex,
   series,
-}: Readonly<{ series: readonly AdminChartSeries[] }>) {
+}: Readonly<{
+  categoryCount: number;
+  selectedIndex: number;
+  series: readonly AdminChartSeries[];
+}>) {
   const max = chartScaleMax(series.map(({ values }) => values));
   return (
     <svg
       preserveAspectRatio="none"
       viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
     >
+      <SelectedBand
+        categoryCount={categoryCount}
+        index={selectedIndex}
+        kind="line"
+      />
       <Grid />
       {series.map(({ label, series: colour, values }) => (
         <path
@@ -158,8 +213,13 @@ function LinePlot({
 
 function BarPlot({
   categoryCount,
+  selectedIndex,
   series,
-}: Readonly<{ categoryCount: number; series: readonly AdminChartSeries[] }>) {
+}: Readonly<{
+  categoryCount: number;
+  selectedIndex: number;
+  series: readonly AdminChartSeries[];
+}>) {
   const max = chartScaleMax(series.map(({ values }) => values));
   const bars = groupedBars(
     series.map(({ values }) => values),
@@ -171,6 +231,11 @@ function BarPlot({
       preserveAspectRatio="none"
       viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
     >
+      <SelectedBand
+        categoryCount={categoryCount}
+        index={selectedIndex}
+        kind="bars"
+      />
       <Grid />
       {bars.map((bar) => (
         <rect

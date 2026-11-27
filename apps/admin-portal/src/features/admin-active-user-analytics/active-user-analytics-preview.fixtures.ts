@@ -1,7 +1,15 @@
 import { countMetric } from "@/components/admin-patterns";
-import type { ActiveUserAnalyticsModel } from "./active-user-analytics-model";
+import type {
+  ActiveUserAnalyticsModel,
+  ActiveUserDay,
+} from "./active-user-analytics-model";
+
+const days: readonly ActiveUserDay[] = [19, 20, 21, 22, 23, 24, 25].map(
+  (day) => ({ date: `2026-11-${day}`, label: `${day} Nov` }),
+);
 
 export const activeUserAnalyticsPreview: ActiveUserAnalyticsModel = {
+  days,
   metrics: {
     dau: {
       delta: { label: "+4.2%", trend: "up" },
@@ -9,20 +17,12 @@ export const activeUserAnalyticsPreview: ActiveUserAnalyticsModel = {
       value: "842",
     },
     mau: countMetric(7_430),
-    stickiness: { state: "ready", value: "11.3%", context: "DAU / MAU" },
+    stickiness: { context: "DAU / MAU", state: "ready", value: "11.3%" },
     wau: countMetric(3_210),
   },
   reportingRange: { end: "2026-11-25", start: "2026-11-19" },
   trend: {
-    categories: [
-      "19 Nov",
-      "20 Nov",
-      "21 Nov",
-      "22 Nov",
-      "23 Nov",
-      "24 Nov",
-      "25 Nov",
-    ],
+    categories: days.map((day) => day.label),
     series: [
       {
         label: "Active users",

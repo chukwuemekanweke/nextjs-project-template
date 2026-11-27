@@ -1,59 +1,126 @@
 "use client";
 
+import { useState } from "react";
 import {
   Badge,
   Button,
-  SearchInput,
+  ConfirmDialog,
   type BadgeTone,
   type TableColumn,
 } from "@template/ui-core";
 import { DashboardHeader } from "@template/dashboard-ui";
 import {
+  ADMIN_ACTION_UNAVAILABLE,
   AdminForbidden,
   AdminListCard,
   AdminListPager,
   AdminListTable,
+  AdminSearchFilter,
 } from "@/components/admin-patterns";
-import type {
-  AdminProvider,
-  ProviderAction,
-  ProviderStatus,
-  ProvidersModel,
+import {
+  PROVIDER_ACTION_TYPES,
+  canRequestProviderAction,
+  type AdminProvider,
+  type ProviderAction,
+  type ProviderActionType,
+  type ProviderFilters,
+  type ProviderStatus,
+  type ProvidersModel,
 } from "./providers-model";
 
 const statusTone: Readonly<Record<ProviderStatus, BadgeTone>> = {
-  operational: "success",
   degraded: "warning",
   inactive: "neutral",
+  operational: "success",
   unknown: "neutral",
 };
 
+const statusLabel: Readonly<Record<ProviderStatus, string>> = {
+  degraded: "Degraded",
+  inactive: "Inactive",
+  operational: "Operational",
+  unknown: "Unknown",
+};
+
+const actionLabels: Readonly<Record<ProviderActionType, string>> = {
+  configure: "Configure",
+  makeActive: "Make active",
+  test: "Test",
+};
+
+/**
+ * Provider directory (reference `AdminProvidersPage`). Each operation is
+ * enabled only when `onAction` is supplied and the record reports it as
+ * available; operations with a confirmation are captured and re-checked
+ * against the current record before the intent is reported. Outcomes come
+ * back through the model; nothing is assumed to succeed.
+ */
 export function ProvidersScreen({
+  filters,
   model,
   onAction,
+  onFiltersChange,
   onPageChange,
+  onRetry,
 }: Readonly<{
+  filters: ProviderFilters;
   model: ProvidersModel;
   onAction?: (action: ProviderAction) => void;
+  onFiltersChange?: (filters: ProviderFilters) => void;
   onPageChange?: (page: number) => void;
+  onRetry?: () => void;
 }>) {
-  if (model.state === "forbidden")
-    return <AdminForbidden resourceLabel="Providers" />;
+  const [captured, setCaptured] = useState<ProviderAction | null>(null);
+
+  if (model.state === "forbidden") {
+    return (
+      <AdminForbidden
+        permission={model.permission}
+        requestDetails={model.requestDetails}
+        resourceLabel="Providers"
+      />
+    );
+  }
+
+  const capturedProvider =
+    captured && model.state === "ready"
+      ? model.rows.find((row) => row.id === captured.providerId)
+      : undefined;
+  const confirmation =
+    captured && capturedProvider
+      ? capturedProvider.actions[captured.type].confirmation
+      : undefined;
+
+  function requestAction(action: ProviderAction, provider: AdminProvider) {
+    if (provider.actions[action.type].confirmation) {
+      setCaptured(action);
+      return;
+    }
+    onAction?.(action);
+  }
+
+  function confirmCaptured() {
+    if (
+      captured &&
+      capturedProvider &&
+      canRequestProviderAction(capturedProvider, captured.type)
+    ) {
+      onAction?.(captured);
+    }
+    setCaptured(null);
+  }
+
+  function changeQuery(query: string) {
+    onFiltersChange?.({ query });
+  }
+
   return (
     <section className="grid gap-5 md:gap-6">
       <DashboardHeader
-        title="Providers"
         description="Provider availability and supported capabilities. Sensitive configuration is never displayed."
+        title="Providers"
       />
       <AdminListCard
-        title="Provider directory"
-        toolbar={
-          <SearchInput
-            aria-label="Search providers"
-            disabled
-            placeholder="Search providers"
-          />
-        }
         footer={
           <AdminListPager
             label="Provider pages"
@@ -61,23 +128,43 @@ export function ProvidersScreen({
             state={model}
           />
         }
+        title="Provider directory"
+        toolbar={
+          <AdminSearchFilter
+            label="Search providers"
+            onChange={onFiltersChange ? changeQuery : undefined}
+            placeholder="Provider name"
+            value={filters.query}
+          />
+        }
       >
         <AdminListTable
           caption="Providers"
-          columns={providerColumns(onAction)}
+          columns={providerColumns(onAction ? requestAction : undefined)}
           emptyTitle="No providers"
           keyField={(row) => row.id}
           loadingLabel="Loading providers"
           onPageChange={onPageChange}
+          onRetry={onRetry}
           state={model}
         />
       </AdminListCard>
+      {captured && confirmation ? (
+        <ConfirmDialog
+          confirmLabel={confirmation.confirmLabel}
+          description={confirmation.description}
+          onCancel={() => setCaptured(null)}
+          onConfirm={confirmCaptured}
+          open
+          title={confirmation.title}
+        />
+      ) : null}
     </section>
   );
 }
 
 function providerColumns(
-  onAction?: (action: ProviderAction) => void,
+  onRequest?: (action: ProviderAction, provider: AdminProvider) => void,
 ): readonly TableColumn<AdminProvider>[] {
   return [
     {
@@ -101,42 +188,72 @@ function providerColumns(
     {
       header: "Status",
       cell: (row) => (
-        <Badge tone={statusTone[row.status]}>
-          {row.status === "unknown" ? "Unknown" : row.status}
-        </Badge>
+        <Badge tone={statusTone[row.status]}>{statusLabel[row.status]}</Badge>
       ),
     },
     {
       header: "Capabilities",
       cell: (row) =>
-        row.capabilities.length ? (
+        row.capabilities.length > 0 ? (
           row.capabilities.join(", ")
         ) : (
           <span className="text-fg-subtle">Not reported</span>
         ),
     },
     {
-      header: "Actions",
       align: "right",
+      header: "Actions",
       cell: (row) => (
-        <div className="grid justify-items-end gap-1">
-          <Button
-            disabled={!onAction}
-            onClick={() =>
-              onAction?.({ providerId: row.id, type: "makeActive" })
-            }
-            size="sm"
-            variant="secondary"
-          >
-            Make active
-          </Button>
-          {!onAction ? (
-            <span className="text-caption text-fg-subtle">
-              Management is unavailable.
-            </span>
-          ) : null}
+        <div className="flex flex-wrap justify-end gap-2">
+          {PROVIDER_ACTION_TYPES.map((type) => (
+            <ProviderActionButton
+              key={type}
+              onRequest={onRequest}
+              provider={row}
+              type={type}
+            />
+          ))}
         </div>
       ),
     },
   ];
+}
+
+function ProviderActionButton({
+  onRequest,
+  provider,
+  type,
+}: Readonly<{
+  onRequest?: (action: ProviderAction, provider: AdminProvider) => void;
+  provider: AdminProvider;
+  type: ProviderActionType;
+}>) {
+  const availability = provider.actions[type];
+  const pending = availability.state === "available" && availability.pending;
+  let reason: string | undefined;
+  if (availability.state === "unavailable") {
+    reason = availability.reason;
+  } else if (!onRequest) {
+    reason = ADMIN_ACTION_UNAVAILABLE;
+  }
+  const enabled =
+    Boolean(onRequest) && canRequestProviderAction(provider, type);
+
+  return (
+    <div className="grid justify-items-end gap-1">
+      <Button
+        aria-label={`${actionLabels[type]} ${provider.name}`}
+        disabled={!enabled}
+        loading={pending}
+        onClick={() => onRequest?.({ providerId: provider.id, type }, provider)}
+        size="sm"
+        variant="secondary"
+      >
+        {actionLabels[type]}
+      </Button>
+      {reason ? (
+        <span className="text-caption text-fg-subtle">{reason}</span>
+      ) : null}
+    </div>
+  );
 }

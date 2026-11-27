@@ -70,7 +70,12 @@ durable boundaries and pure behavior rather than broad browser rendering:
   (`vitest.browser.config.ts`, `*.browser.test.tsx`, `pnpm test:component`)
   for form input, confirmation lifecycles, pending/duplicate submission and
   stale-data behaviour; a pure-function test is not enough when the rendered
-  component could still expose stale state.
+  component could still expose stale state. Feature tests live beside their
+  feature (`features/<feature>/*.test.tsx`); shared feature-composition
+  helpers keep their own tests, and cross-feature boundary checks (fixture
+  imports, unpublished routes) live in one named test such as
+  `features/admin-preview-boundaries.test.ts`. Controlled screens are
+  exercised in browser tests through a state-owning harness.
 
 Conventions: shared components get component tests and representative
 workbench stories; shared layouts get component tests and selective stories;

@@ -8,6 +8,7 @@ const chart = (title: string, values: readonly number[]) => ({
   summary: `${title} for September through November.`,
 });
 export const subscriptionAnalyticsPreview: SubscriptionAnalyticsModel = {
+  reportedCurrencyCode: "NGN",
   lifecycleTrend: {
     categories: ["Sep", "Oct", "Nov"],
     series: [

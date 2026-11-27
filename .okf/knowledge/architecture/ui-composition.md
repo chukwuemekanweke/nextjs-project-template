@@ -105,10 +105,17 @@ status: stable
   reference data, audit and system health (Trello FE-UI-015) follow the same
   class-D pattern in `apps/admin-portal/src/features/admin-*`. The four
   analytics screens share only the application-local, domain-neutral
-  `admin-analytics-shared/analytics-layout.tsx`; metrics and business models
-  remain feature-local. All eight use typed test-only preview fixtures and
-  expose controlled filter/action intents, while routes and navigation wait
-  for authoritative admin reads (DR-134).
+  `admin-analytics-shared/` (layout, screen-state boundary, option select,
+  reporting-period fields, reported-currency notice); metrics and business
+  models remain feature-local. All eight use typed test-only preview fixtures
+  and expose controlled filter/action intents, while routes and navigation
+  wait for authoritative admin reads (DR-134). Chart drill-down is
+  `AdminChartSection` `selection` (intent only; the page loads records).
+  Financial figures are formatted in the model's reported currency, never a
+  pending filter value. Per-record `AdminActionAvailability` gates each
+  operation; a handler alone never enables one. Feature tests are colocated;
+  `features/admin-preview-boundaries.test.ts` guards fixture imports and
+  unpublished routes across features.
 - Dashboard pages start with `DashboardHeader` on the page background, then
   cards. New work uses `Card` + `CardHeader` + `ListRow`/`KeyValueList`;
   existing pages still use `SectionHeader` + `SettingsRow`. Feature

@@ -8,49 +8,129 @@ import {
   type TableColumn,
 } from "@template/ui-core";
 import {
-  AnalyticsBreakdownCard,
-  AnalyticsRangeControl,
+  AdminListCard,
+  AdminRangeFilter,
+  adminOptionsUnavailableText,
+  readyAdminOptions,
+  type AdminOption,
+  type AdminOptionsState,
+  type AdminRangePreset,
+} from "@/components/admin-patterns";
+import {
   AnalyticsScreenLayout,
+  AnalyticsScreenStateBoundary,
   AnalyticsSelect,
+  type AnalyticsScreenState,
 } from "../admin-analytics-shared/analytics-layout";
-import type {
-  PaymentAnalyticsFilters,
-  PaymentAnalyticsModel,
-  PaymentBreakdownRow,
+import { ReportedCurrencyNotice } from "../admin-analytics-shared/reported-currency-notice";
+import {
+  parsePaymentInterval,
+  type PaymentAnalyticsFilters,
+  type PaymentAnalyticsModel,
+  type PaymentBreakdownRow,
 } from "./payment-analytics-model";
 
-const intervals = [
+const intervalOptions: readonly AdminOption[] = [
   { label: "Day", value: "day" },
   { label: "Week", value: "week" },
   { label: "Month", value: "month" },
-] as const;
+];
 
+const DESCRIPTION =
+  "Currency-scoped payment volume, outcomes and provider performance.";
+const FILTERS_UNAVAILABLE =
+  "Payment analytics filters require an authoritative admin aggregate API.";
+
+/**
+ * Payment analytics (reference `AdminPaymentAnalyticsPage`). Screen-level
+ * loading, error, unavailable and forbidden states come from `state`;
+ * currency and provider options come from their own reads.
+ */
 export function PaymentAnalyticsScreen({
+  currencyOptions,
+  filters,
+  onFiltersChange,
+  onRetry,
+  providerOptions,
+  state,
+}: Readonly<{
+  currencyOptions?: AdminOptionsState;
+  filters: PaymentAnalyticsFilters;
+  onFiltersChange?: (filters: PaymentAnalyticsFilters) => void;
+  onRetry?: () => void;
+  providerOptions?: AdminOptionsState;
+  state: AnalyticsScreenState<PaymentAnalyticsModel>;
+}>) {
+  return (
+    <AnalyticsScreenStateBoundary
+      description={DESCRIPTION}
+      label="Payment analytics"
+      onRetry={onRetry}
+      state={state}
+      title="Payment analytics"
+    >
+      {(model) => (
+        <PaymentAnalyticsContent
+          currencyOptions={currencyOptions}
+          filters={filters}
+          model={model}
+          onFiltersChange={onFiltersChange}
+          providerOptions={providerOptions}
+        />
+      )}
+    </AnalyticsScreenStateBoundary>
+  );
+}
+
+function PaymentAnalyticsContent({
+  currencyOptions,
   filters,
   model,
   onFiltersChange,
+  providerOptions,
 }: Readonly<{
+  currencyOptions?: AdminOptionsState;
   filters: PaymentAnalyticsFilters;
   model: PaymentAnalyticsModel;
   onFiltersChange?: (filters: PaymentAnalyticsFilters) => void;
+  providerOptions?: AdminOptionsState;
 }>) {
-  const update = onFiltersChange
-    ? <K extends keyof PaymentAnalyticsFilters>(
-        key: K,
-        value: PaymentAnalyticsFilters[K],
-      ) => onFiltersChange({ ...filters, [key]: value })
-    : undefined;
-  const reason =
-    "Payment analytics filters require an authoritative admin aggregate API.";
+  const wired = Boolean(onFiltersChange);
+
+  function changeRange(range: AdminRangePreset) {
+    onFiltersChange?.({ ...filters, range });
+  }
+
+  function changeInterval(value: string) {
+    const interval = parsePaymentInterval(value);
+    if (interval) {
+      onFiltersChange?.({ ...filters, interval });
+    }
+  }
+
+  function changeCurrency(currency: string) {
+    onFiltersChange?.({ ...filters, currency });
+  }
+
+  function changeProvider(provider: string) {
+    onFiltersChange?.({ ...filters, provider });
+  }
+
+  // Figures are formatted in the currency they were reported in, never in
+  // a newly selected filter value that has not loaded yet.
+  const formatAmount = (value: number) =>
+    formatMinorUnits(value, model.reportedCurrencyCode);
+
   return (
     <AnalyticsScreenLayout
       charts={[
         {
           data: model.volumeTrend,
+          description: `Amounts in ${model.reportedCurrencyCode}`,
+          formatValue: formatAmount,
           id: "volume",
           kind: "bars",
           title: "Payment volume over time",
-          formatValue: (value) => formatMinorUnits(value, filters.currency),
         },
         {
           data: model.statusBreakdown,
@@ -59,41 +139,49 @@ export function PaymentAnalyticsScreen({
           title: "By status",
         },
       ]}
-      description="Currency-scoped payment volume, outcomes and provider performance."
+      description={DESCRIPTION}
+      filterNotice={
+        <ReportedCurrencyNotice
+          reportedCurrencyCode={model.reportedCurrencyCode}
+          requestedCurrencyCode={filters.currency}
+        />
+      }
       filters={
         <>
-          <AnalyticsRangeControl
-            disabledReason={reason}
-            onChange={update ? (value) => update("range", value) : undefined}
+          <AdminRangeFilter
+            disabledReason={FILTERS_UNAVAILABLE}
+            onChange={wired ? changeRange : undefined}
             range={model.reportingRange}
             value={filters.range}
           />
           <AnalyticsSelect
-            disabledReason={reason}
+            disabledReason={wired ? undefined : FILTERS_UNAVAILABLE}
             label="Interval"
-            onChange={update ? (value) => update("interval", value) : undefined}
-            options={intervals}
+            onChange={wired ? changeInterval : undefined}
+            options={intervalOptions}
             value={filters.interval}
           />
           <AnalyticsSelect
-            disabledReason={reason}
+            disabledReason={
+              wired
+                ? adminOptionsUnavailableText(currencyOptions, "Currencies")
+                : FILTERS_UNAVAILABLE
+            }
             label="Currency"
-            onChange={update ? (value) => update("currency", value) : undefined}
-            options={[
-              {
-                label: filters.currency || "Not available",
-                value: filters.currency,
-              },
-            ]}
+            onChange={wired ? changeCurrency : undefined}
+            options={readyAdminOptions(currencyOptions)}
             value={filters.currency}
           />
           <AnalyticsSelect
-            disabledReason={reason}
+            allLabel="All providers"
+            disabledReason={
+              wired
+                ? adminOptionsUnavailableText(providerOptions, "Providers")
+                : FILTERS_UNAVAILABLE
+            }
             label="Provider"
-            onChange={update ? (value) => update("provider", value) : undefined}
-            options={[
-              { label: filters.provider || "All", value: filters.provider },
-            ]}
+            onChange={wired ? changeProvider : undefined}
+            options={readyAdminOptions(providerOptions)}
             value={filters.provider}
           />
         </>
@@ -102,8 +190,8 @@ export function PaymentAnalyticsScreen({
       title="Payment analytics"
     >
       <div className="grid gap-5 xl:grid-cols-2">
-        <Breakdown title="By provider" rows={model.providers} />
-        <Breakdown title="By payment intent" rows={model.intents} />
+        <Breakdown rows={model.providers} title="By provider" />
+        <Breakdown rows={model.intents} title="By payment intent" />
       </div>
     </AnalyticsScreenLayout>
   );
@@ -114,7 +202,7 @@ function Breakdown({
   title,
 }: Readonly<{ rows: readonly PaymentBreakdownRow[] | null; title: string }>) {
   return (
-    <AnalyticsBreakdownCard title={title}>
+    <AdminListCard title={title}>
       {rows ? (
         <DataTable
           caption={title}
@@ -132,9 +220,10 @@ function Breakdown({
           </p>
         </CardContent>
       )}
-    </AnalyticsBreakdownCard>
+    </AdminListCard>
   );
 }
+
 const breakdownColumns: readonly TableColumn<PaymentBreakdownRow>[] = [
   { header: "Name", cell: (row) => row.label },
   {

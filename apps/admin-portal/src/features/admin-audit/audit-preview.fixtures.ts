@@ -8,6 +8,7 @@ export const auditPreview: AuditModel = {
       actorId: "fixture-admin-1",
       actorName: "Ada Fixture",
       atUtc: "2026-11-25T10:30:00Z",
+      detailAction: { state: "available" },
       id: "fixture-audit-1",
       outcome: "success",
       reason: "Approved test change",
@@ -19,6 +20,10 @@ export const auditPreview: AuditModel = {
       actorId: null,
       actorName: null,
       atUtc: "invalid",
+      detailAction: {
+        reason: "Details were not retained for this event.",
+        state: "unavailable",
+      },
       id: "fixture-audit-2",
       outcome: "unknown",
       reason: null,

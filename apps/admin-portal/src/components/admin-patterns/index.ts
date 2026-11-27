@@ -9,6 +9,7 @@ export * from "./admin-read-state";
 export * from "./admin-states";
 export * from "./admin-status";
 export * from "./admin-values";
+export * from "./chart-period-picker";
 export * from "./chart-section";
 export * from "./filter-bar";
 export * from "./forbidden";

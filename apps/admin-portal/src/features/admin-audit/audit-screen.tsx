@@ -3,21 +3,28 @@
 import {
   Badge,
   Button,
-  FormField,
-  SearchInput,
   type BadgeTone,
   type TableColumn,
 } from "@template/ui-core";
 import { DashboardHeader } from "@template/dashboard-ui";
 import {
+  ADMIN_ACTION_UNAVAILABLE,
+  ADMIN_FILTERS_UNAVAILABLE,
+  AdminDateTime,
   AdminFilterBar,
   AdminForbidden,
   AdminListCard,
   AdminListPager,
   AdminListTable,
   AdminRangeFilter,
-  formatAdminDateTime,
+  AdminSearchFilter,
+  adminOptionsUnavailableText,
+  readyAdminOptions,
+  type AdminActionAvailability,
+  type AdminOptionsState,
+  type AdminRangePreset,
 } from "@/components/admin-patterns";
+import { AnalyticsSelect } from "../admin-analytics-shared/analytics-layout";
 import type {
   AuditAction,
   AuditEvent,
@@ -33,45 +40,75 @@ const tones: Readonly<Record<AuditOutcome, BadgeTone>> = {
   unknown: "neutral",
 };
 
+const outcomeLabels: Readonly<Record<AuditOutcome, string>> = {
+  denied: "Denied",
+  failed: "Failed",
+  success: "Success",
+  unknown: "Unknown",
+};
+
+/**
+ * Audit history (reference `AdminAuditPage`). Filters, page and actions are
+ * controlled; export and each event's details have their own availability
+ * from the source, so a handler alone never enables them.
+ */
 export function AuditScreen({
+  actionOptions,
+  actorOptions,
+  exportAction,
   filters,
   model,
   onAction,
   onFiltersChange,
   onPageChange,
+  onRetry,
 }: Readonly<{
+  actionOptions?: AdminOptionsState;
+  actorOptions?: AdminOptionsState;
+  exportAction: AdminActionAvailability;
   filters: AuditFilters;
   model: AuditModel;
   onAction?: (action: AuditAction) => void;
   onFiltersChange?: (filters: AuditFilters) => void;
   onPageChange?: (page: number) => void;
+  onRetry?: () => void;
 }>) {
   if (model.state === "forbidden") {
-    return <AdminForbidden resourceLabel="Audit history" />;
+    return (
+      <AdminForbidden
+        permission={model.permission}
+        requestDetails={model.requestDetails}
+        resourceLabel="Audit history"
+      />
+    );
   }
-  const change = onFiltersChange
-    ? (patch: Partial<AuditFilters>) =>
-        onFiltersChange({ ...filters, ...patch })
-    : undefined;
+
+  const wired = Boolean(onFiltersChange);
+
+  function changeFilters(patch: Partial<AuditFilters>) {
+    onFiltersChange?.({ ...filters, ...patch });
+  }
+
+  function optionsReason(
+    options: AdminOptionsState | undefined,
+    noun: string,
+  ): string | undefined {
+    return wired
+      ? adminOptionsUnavailableText(options, noun)
+      : ADMIN_FILTERS_UNAVAILABLE;
+  }
+
   return (
     <section className="grid gap-5 md:gap-6">
       <DashboardHeader
         actions={
-          <div className="grid justify-items-end gap-1">
-            <Button
-              disabled={!onAction}
-              onClick={() => onAction?.({ type: "exportCsv" })}
-              size="sm"
-              variant="secondary"
-            >
-              Export CSV
-            </Button>
-            {!onAction ? (
-              <span className="text-caption text-fg-subtle">
-                Export is unavailable.
-              </span>
-            ) : null}
-          </div>
+          <ActionWithReason
+            availability={exportAction}
+            label="Export CSV"
+            onRequest={
+              onAction ? () => onAction({ type: "exportCsv" }) : undefined
+            }
+          />
         }
         description="Immutable administrative events, actors, resources and reported outcomes."
         title="Audit history"
@@ -87,19 +124,37 @@ export function AuditScreen({
         title="Events"
         toolbar={
           <AdminFilterBar label="Audit filters">
-            <FormField inputId="audit-search" label="Search">
-              <SearchInput
-                disabled={!change}
-                id="audit-search"
-                onChange={(event) => change?.({ query: event.target.value })}
-                placeholder="Actor, action or resource"
-                value={filters.query}
-              />
-            </FormField>
+            <AdminSearchFilter
+              onChange={wired ? (query) => changeFilters({ query }) : undefined}
+              placeholder="Actor, action or resource"
+              value={filters.query}
+            />
             <AdminRangeFilter
-              disabledReason="Audit filters require the audit API."
-              onChange={change ? (range) => change({ range }) : undefined}
+              disabledReason={ADMIN_FILTERS_UNAVAILABLE}
+              onChange={
+                wired
+                  ? (range: AdminRangePreset) => changeFilters({ range })
+                  : undefined
+              }
               value={filters.range}
+            />
+            <AnalyticsSelect
+              allLabel="Any action"
+              disabledReason={optionsReason(actionOptions, "Actions")}
+              label="Action"
+              onChange={
+                wired ? (action) => changeFilters({ action }) : undefined
+              }
+              options={readyAdminOptions(actionOptions)}
+              value={filters.action}
+            />
+            <AnalyticsSelect
+              allLabel="Any actor"
+              disabledReason={optionsReason(actorOptions, "Actors")}
+              label="Actor"
+              onChange={wired ? (actor) => changeFilters({ actor }) : undefined}
+              options={readyAdminOptions(actorOptions)}
+              value={filters.actor}
             />
           </AdminFilterBar>
         }
@@ -111,10 +166,48 @@ export function AuditScreen({
           keyField={(row) => row.id}
           loadingLabel="Loading audit events"
           onPageChange={onPageChange}
+          onRetry={onRetry}
           state={model}
         />
       </AdminListCard>
     </section>
+  );
+}
+
+/** An operation button with its pending state and, when inert, its reason. */
+function ActionWithReason({
+  availability,
+  label,
+  onRequest,
+  variant = "secondary",
+}: Readonly<{
+  availability: AdminActionAvailability;
+  label: string;
+  onRequest?: () => void;
+  variant?: "secondary" | "ghost";
+}>) {
+  const pending = availability.state === "available" && availability.pending;
+  let reason: string | undefined;
+  if (availability.state === "unavailable") {
+    reason = availability.reason;
+  } else if (!onRequest) {
+    reason = ADMIN_ACTION_UNAVAILABLE;
+  }
+  return (
+    <div className="grid justify-items-end gap-1">
+      <Button
+        disabled={Boolean(reason) || pending}
+        loading={pending}
+        onClick={onRequest}
+        size="sm"
+        variant={variant}
+      >
+        {label}
+      </Button>
+      {reason ? (
+        <span className="text-caption text-fg-subtle">{reason}</span>
+      ) : null}
+    </div>
   );
 }
 
@@ -124,14 +217,7 @@ function auditColumns(
   return [
     {
       header: "When",
-      cell: (row) => {
-        const text = formatAdminDateTime(row.atUtc);
-        return text ? (
-          <time dateTime={row.atUtc}>{text}</time>
-        ) : (
-          <span className="text-fg-subtle">Not recorded</span>
-        );
-      },
+      cell: (row) => <AdminDateTime value={row.atUtc} />,
     },
     {
       header: "Actor",
@@ -156,9 +242,7 @@ function auditColumns(
     {
       header: "Outcome",
       cell: (row) => (
-        <Badge tone={tones[row.outcome]}>
-          {row.outcome === "unknown" ? "Unknown" : row.outcome}
-        </Badge>
+        <Badge tone={tones[row.outcome]}>{outcomeLabels[row.outcome]}</Badge>
       ),
     },
     {
@@ -170,14 +254,16 @@ function auditColumns(
       align: "right",
       header: "Actions",
       cell: (row) => (
-        <Button
-          disabled={!onAction}
-          onClick={() => onAction?.({ eventId: row.id, type: "viewDetails" })}
-          size="sm"
+        <ActionWithReason
+          availability={row.detailAction}
+          label="Details"
+          onRequest={
+            onAction
+              ? () => onAction({ eventId: row.id, type: "viewDetails" })
+              : undefined
+          }
           variant="ghost"
-        >
-          Details
-        </Button>
+        />
       ),
     },
   ];

@@ -1,37 +1,47 @@
 "use client";
 
 import Link from "next/link";
+import { Avatar, type TableColumn } from "@template/ui-core";
 import {
-  Avatar,
-  CardContent,
-  SearchInput,
-  type TableColumn,
-} from "@template/ui-core";
-import {
+  AdminDateTime,
   AdminForbidden,
+  AdminListCard,
   AdminListPager,
   AdminListTable,
-  formatAdminDateTime,
+  AdminSearchFilter,
+  formatUtcRange,
+  type AdminOption,
 } from "@/components/admin-patterns";
 import {
-  AnalyticsBreakdownCard,
-  AnalyticsRangeControl,
+  AnalyticsReportingPeriodFields,
   AnalyticsScreenLayout,
   AnalyticsSelect,
+  type AnalyticsReportingPeriod,
 } from "../admin-analytics-shared/analytics-layout";
-import type {
-  RegistrationAnalyticsFilters,
-  RegistrationAnalyticsModel,
-  RegistrationUser,
+import {
+  isSameUtcRange,
+  parseRegistrationGranularity,
+  type RegistrationAnalyticsFilters,
+  type RegistrationAnalyticsModel,
+  type RegistrationUser,
 } from "./registration-analytics-model";
 
-const granularities = [
+const granularityOptions: readonly AdminOption[] = [
   { label: "Day", value: "day" },
   { label: "Week", value: "week" },
   { label: "Month", value: "month" },
   { label: "Year", value: "year" },
-] as const;
+];
 
+const FILTERS_UNAVAILABLE =
+  "Registration filters become available with the admin analytics API.";
+
+/**
+ * Registration analytics (reference `AdminRegistrationsPage`). Controlled:
+ * filters, the selected chart period and the page are owned by the caller,
+ * which loads the matching users. Changing the range or granularity clears
+ * the selected period, since the chart periods change with them.
+ */
 export function RegistrationAnalyticsScreen({
   filters,
   model,
@@ -44,20 +54,40 @@ export function RegistrationAnalyticsScreen({
   onPageChange?: (page: number) => void;
 }>) {
   if (model.users.state === "forbidden") {
-    return <AdminForbidden resourceLabel="Registration analytics" />;
+    return (
+      <AdminForbidden
+        permission={model.users.permission}
+        requestDetails={model.users.requestDetails}
+        resourceLabel="Registration analytics"
+      />
+    );
   }
-  const unavailable =
-    "Analytics filters become available with the admin analytics API.";
-  const metrics = [
-    {
-      id: "total",
-      label: "Total registered users",
-      metric: model.metrics.total,
-    },
-    { id: "today", label: "New today", metric: model.metrics.today },
-    { id: "week", label: "New this week", metric: model.metrics.week },
-    { id: "month", label: "New this month", metric: model.metrics.month },
-  ];
+
+  const selectedPeriod = model.periods.find((period) =>
+    isSameUtcRange(period.range, filters.selectedPeriod),
+  );
+
+  function changePeriod(period: AnalyticsReportingPeriod) {
+    onFiltersChange?.({ ...filters, ...period, selectedPeriod: null });
+  }
+
+  function changeGranularity(value: string) {
+    const granularity = parseRegistrationGranularity(value);
+    if (granularity) {
+      onFiltersChange?.({ ...filters, granularity, selectedPeriod: null });
+    }
+  }
+
+  function selectChartPeriod(label: string | null) {
+    const period = model.periods.find((item) => item.label === label);
+    onFiltersChange?.({ ...filters, selectedPeriod: period?.range ?? null });
+  }
+
+  function changeQuery(query: string) {
+    onFiltersChange?.({ ...filters, query });
+  }
+
+  const wired = Boolean(onFiltersChange);
   return (
     <AnalyticsScreenLayout
       charts={[
@@ -65,46 +95,68 @@ export function RegistrationAnalyticsScreen({
           data: model.trend,
           id: "registrations",
           kind: "line",
+          selection: {
+            disabledReason: FILTERS_UNAVAILABLE,
+            label: "Registration period",
+            onSelect: wired ? selectChartPeriod : undefined,
+            selected: selectedPeriod?.label ?? null,
+          },
           title: "New registrations",
         },
       ]}
       description="Registration growth and the users behind it. Reporting dates use UTC."
       filters={
         <>
-          <AnalyticsRangeControl
-            disabledReason={unavailable}
-            onChange={
-              onFiltersChange
-                ? (range) => onFiltersChange({ ...filters, range })
-                : undefined
-            }
-            range={model.reportingRange}
-            value={filters.range}
+          <AnalyticsReportingPeriodFields
+            disabledReason={FILTERS_UNAVAILABLE}
+            onChange={wired ? changePeriod : undefined}
+            reportedRange={model.reportingRange}
+            value={{ customRange: filters.customRange, range: filters.range }}
           />
           <AnalyticsSelect
-            disabledReason={unavailable}
+            disabledReason={wired ? undefined : FILTERS_UNAVAILABLE}
             label="Granularity"
-            onChange={
-              onFiltersChange
-                ? (granularity) => onFiltersChange({ ...filters, granularity })
-                : undefined
-            }
-            options={granularities}
+            onChange={wired ? changeGranularity : undefined}
+            options={granularityOptions}
             value={filters.granularity}
           />
         </>
       }
-      metrics={metrics}
+      metrics={[
+        {
+          id: "total",
+          label: "Total registered users",
+          metric: model.metrics.total,
+        },
+        { id: "today", label: "New today", metric: model.metrics.today },
+        { id: "week", label: "New this week", metric: model.metrics.week },
+        { id: "month", label: "New this month", metric: model.metrics.month },
+      ]}
       title="Registrations"
     >
-      <AnalyticsBreakdownCard title="Users registered in period">
-        <CardContent className="border-border border-b py-3">
-          <SearchInput
-            disabled
-            placeholder="Search users"
-            aria-label="Search registered users"
+      <AdminListCard
+        footer={
+          <AdminListPager
+            label="Registration pages"
+            onPageChange={onPageChange}
+            state={model.users}
           />
-        </CardContent>
+        }
+        title={
+          filters.selectedPeriod
+            ? `Users registered ${formatUtcRange(filters.selectedPeriod)}`
+            : "Users registered in the reporting period"
+        }
+        toolbar={
+          <AdminSearchFilter
+            disabledReason={FILTERS_UNAVAILABLE}
+            label="Search registered users"
+            onChange={wired ? changeQuery : undefined}
+            placeholder="Name or email"
+            value={filters.query}
+          />
+        }
+      >
         <AdminListTable
           caption="Registered users"
           columns={registrationColumns}
@@ -114,14 +166,7 @@ export function RegistrationAnalyticsScreen({
           onPageChange={onPageChange}
           state={model.users}
         />
-        <div className="border-border border-t p-4">
-          <AdminListPager
-            label="Registration pages"
-            onPageChange={onPageChange}
-            state={model.users}
-          />
-        </div>
-      </AnalyticsBreakdownCard>
+      </AdminListCard>
     </AnalyticsScreenLayout>
   );
 }
@@ -141,13 +186,13 @@ const registrationColumns: readonly TableColumn<RegistrationUser>[] = [
   },
   {
     header: "Signed up",
-    cell: (row) => <UtcValue value={row.signedUpAtUtc} />,
+    cell: (row) => <AdminDateTime value={row.signedUpAtUtc} />,
   },
   {
     header: "Last login",
     cell: (row) =>
       row.lastLoginAtUtc ? (
-        <UtcValue value={row.lastLoginAtUtc} />
+        <AdminDateTime value={row.lastLoginAtUtc} />
       ) : (
         <span className="text-fg-subtle">Never</span>
       ),
@@ -168,12 +213,3 @@ const registrationColumns: readonly TableColumn<RegistrationUser>[] = [
       ),
   },
 ];
-
-function UtcValue({ value }: Readonly<{ value: string }>) {
-  const formatted = formatAdminDateTime(value);
-  return formatted ? (
-    <time dateTime={value}>{formatted}</time>
-  ) : (
-    <span className="text-fg-subtle">Not available</span>
-  );
-}

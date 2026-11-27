@@ -23,6 +23,26 @@ const presetDays: Readonly<Record<AdminRangePreset, number>> = {
 
 export type UtcDateRange = Readonly<{ start: string; end: string }>;
 
+/** A preset, or "custom" when the page owns an explicit `UtcDateRange`. */
+export type AdminReportingRange = AdminRangePreset | "custom";
+
+const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/** True for real ISO calendar dates with `start` on or before `end`. */
+export function isValidUtcDateRange(range: UtcDateRange): boolean {
+  return (
+    isIsoDate(range.start) && isIsoDate(range.end) && range.start <= range.end
+  );
+}
+
+function isIsoDate(value: string): boolean {
+  if (!ISO_DATE_PATTERN.test(value)) {
+    return false;
+  }
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && isoDate(date.getTime()) === value;
+}
+
 /** Narrows untrusted input (a select value, a query parameter). */
 export function parseAdminRangePreset(
   value: string | null | undefined,

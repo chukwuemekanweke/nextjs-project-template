@@ -618,7 +618,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminActiveUsers` — 4 reference files (desktop/mobile; dark/light; interactive: range:7d|30d|90d|custom, day-selected drill-down).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-031.
-- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-active-user-analytics/` — supplied DAU/WAU/MAU and stickiness metrics, daily chart, UTC range intent and paged activity table. No route, navigation item or production source; deterministic fixtures are test-only.
+- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-active-user-analytics/` — supplied DAU/WAU/MAU and stickiness metrics, daily chart with controlled day drill-down (typed ISO date), preset and custom UTC ranges, and a paged activity table titled with the selected date ([DR-135](./discrepancy-register.md#dr-135)). No route, navigation item or production source; deterministic fixtures are test-only.
 - **Unsupported / missing backend:** DAU/WAU/MAU and per-day active-user list
 - **Gap:** Stat tiles, daily chart with day drill-down, table.
 - **Depends on:** FE-UI-031
@@ -642,7 +642,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminAudit` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-030.
-- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-audit/` — immutable event table, UTC dates, actor/action/resource/outcome presentation, controlled filter/paging and disabled detail/export intents. No route, navigation item or production source.
+- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-audit/` — immutable event table, UTC dates, actor/action/resource/outcome presentation, controlled search, range and source-supplied actor/action options, paging, and export/detail intents gated by their own availability. No route, navigation item or production source.
 - **Unsupported / missing backend:** Audit-log API (reference itself says 'Proposed screen - needs an audit-log API')
 - **Gap:** Search, action/actor/date filters, table, CSV export.
 - **Depends on:** audit API
@@ -720,7 +720,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminPaymentAnalytics` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-031.
-- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-payment-analytics/` — currency-scoped supplied metrics, volume/outcome charts, provider and intent breakdowns and controlled filters. Missing values stay unavailable; no route or production source.
+- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-payment-analytics/` — currency-scoped supplied metrics, volume/outcome charts, provider and intent breakdowns, controlled filters with source-supplied currency and provider options, and screen-level loading/error/forbidden states. Figures stay labelled with the reported currency during filter transitions ([DR-136](./discrepancy-register.md#dr-136)); missing values stay unavailable; no route or production source.
 - **Unsupported / missing backend:** Payment volume/success aggregates by status, provider and intent
 - **Gap:** 7 stat tiles, stacked bar chart, donut, two breakdown tables, filter buttons.
 - **Depends on:** FE-UI-031
@@ -770,7 +770,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminProviders` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (D); **backend:** Partial; **priority:** P3; **ticket:** FE-UI-029.
-- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-providers/` — provider directory, supplied operational status, capabilities and disabled management intents. No credentials, route, navigation item or production list source. Existing mutations remain unwired until an authoritative read exists.
+- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-providers/` — provider directory, supplied operational status, capabilities, search, and per-provider make-active/configure/test intents with their own availability, pending state and confirmation. No credentials, route, navigation item or production list source. Existing mutations remain unwired until an authoritative read exists.
 - **Operations:** setPaymentProviderActivation PUT /api/v1/payment-providers/{id}/activation; setActiveProvider PUT /api/v1/providers/active
 - **Unsupported / missing backend:** Provider list/read endpoints (current activation state); Step-up enforcement
 - **Gap:** Payment provider switches + service provider 'Make active' rows; cannot render current state without a read API.
@@ -783,7 +783,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminReferenceData` — 4 reference files (desktop/mobile; dark/light; interactive: tab:countries, tab:languages (not drawn), tab:currencies (not drawn)).
 - **Status:** Implemented (D); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-029.
-- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-reference-data/` — typed, read-only category tabs, search presentation and paging. The public country lookup is not treated as an administrative source; no route, navigation item or mutations.
+- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-reference-data/` — typed, read-only category tabs, search and paging, each controlled and explained when not wired. The public country lookup is not treated as an administrative source; no route, navigation item or mutations.
 - **Operations:** getCountries GET /api/v1/reference-data/countries
 - **Unsupported / missing backend:** Languages and currencies lists; Country status/dial code/currency fields (verify contract)
 - **Gap:** Read-only tabbed tables with search and pager; only Countries tab is drawn.
@@ -797,7 +797,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminRegistrations` — 4 reference files (desktop/mobile; dark/light; interactive: granularity:day|week|month|year, day-selected drill-down).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-031.
-- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-registration-analytics/` — supplied count/growth metrics, line chart, UTC range and granularity intents, and a paged user table with avatar fallback and distinct last-login semantics. No route or production source.
+- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-registration-analytics/` — supplied count/growth metrics, line chart with controlled period drill-down (typed UTC range), preset and custom UTC ranges, granularity, search and a paged user table titled with the selected period ([DR-135](./discrepancy-register.md#dr-135)) with avatar fallback and distinct last-login semantics. No route or production source.
 - **Unsupported / missing backend:** Registration counts/time series; Users registered in period list
 - **Gap:** Charts, granularity toggle, date-range filter, drill-down table.
 - **Depends on:** FE-UI-031 charts; admin analytics APIs
@@ -849,7 +849,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminSubscriptionAnalytics` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-031.
-- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-subscription-analytics/` — supplied recurring-revenue, churn, growth, lifecycle, renewal and plan metrics/charts with currency-aware formatting. No frontend calculation, route or production source.
+- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-subscription-analytics/` — supplied recurring-revenue, churn, growth, lifecycle, renewal and plan metrics/charts formatted in the reported currency, source-supplied plan/owner/currency options and screen-level states ([DR-136](./discrepancy-register.md#dr-136)). No frontend calculation, route or production source.
 - **Unsupported / missing backend:** MRR/ARR, churn, renewal aggregates
 - **Gap:** 8 stat tiles, 4 charts.
 - **Depends on:** FE-UI-031
@@ -885,7 +885,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminSystemHealth` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-030.
-- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-system-health/` — supplied overall/service states, latency, uptime, check timestamps and disabled refresh intent. Unknown never reads as healthy; no Grafana link, polling, route or production source.
+- **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-system-health/` — supplied overall/service states, latency, uptime, check timestamps, screen-level forbidden/retry states and a refresh intent gated by its own availability and pending state. Unknown never reads as healthy; no Grafana link, polling, route or production source.
 - **Unsupported / missing backend:** Aggregated health-check read API (reference marks the screen 'Proposed'); Grafana URL configuration
 - **Gap:** Service status card grid; 'Open Grafana' external link.
 - **Depends on:** health API

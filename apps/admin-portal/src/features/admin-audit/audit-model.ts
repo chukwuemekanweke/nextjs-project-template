@@ -1,6 +1,7 @@
 import type {
   AdminListState,
   AdminRangePreset,
+  AdminActionAvailability,
 } from "@/components/admin-patterns";
 
 export type AuditOutcome = "success" | "failed" | "denied" | "unknown";
@@ -14,6 +15,7 @@ export type AuditEvent = Readonly<{
   resourceId?: string | null;
   outcome: AuditOutcome;
   reason?: string | null;
+  detailAction: AdminActionAvailability;
 }>;
 export type AuditFilters = Readonly<{
   query: string;

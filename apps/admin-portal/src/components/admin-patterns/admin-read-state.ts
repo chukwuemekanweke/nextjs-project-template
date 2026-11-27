@@ -60,6 +60,11 @@ export type AdminOptionsState =
   | Readonly<{ state: "unavailable"; reason: string }>
   | Readonly<{ state: "ready"; options: readonly AdminOption[] }>;
 
+/** Whether a backend-owned operation may be requested right now. */
+export type AdminActionAvailability =
+  | Readonly<{ state: "available"; pending?: boolean }>
+  | Readonly<{ state: "unavailable"; reason: string }>;
+
 /** The options a control may offer; none unless the read is ready. */
 export function readyAdminOptions(
   options: AdminOptionsState | undefined,

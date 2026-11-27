@@ -3,6 +3,8 @@ import { describe, expect, it, vi } from "vitest";
 import { countMetric, moneyMetric } from "./admin-metric";
 import {
   CHART_HEIGHT,
+  CHART_WIDTH,
+  categoryBand,
   chartScaleMax,
   groupedBars,
   linePath,
@@ -18,6 +20,7 @@ import {
 import { decideStepUpSubmit, validateStepUp } from "./step-up-form";
 import {
   formatUtcRange,
+  isValidUtcDateRange,
   parseAdminRangePreset,
   resolveUtcRange,
 } from "./utc-range";
@@ -83,7 +86,38 @@ describe("chart geometry", () => {
   });
 });
 
+describe("chart category bands", () => {
+  it("covers a bar group and clips a line band to the plot", () => {
+    expect(categoryBand(1, 4, "bars")).toEqual({
+      width: CHART_WIDTH / 4,
+      x: CHART_WIDTH / 4,
+    });
+    expect(categoryBand(0, 4, "line")).toEqual({
+      width: CHART_WIDTH / 8,
+      x: 0,
+    });
+    const last = categoryBand(3, 4, "line");
+    expect(last.x + last.width).toBe(CHART_WIDTH);
+  });
+});
+
 describe("UTC reporting periods", () => {
+  it("accepts only real, ordered custom ranges", () => {
+    expect(
+      isValidUtcDateRange({ end: "2026-11-25", start: "2026-11-01" }),
+    ).toBe(true);
+    expect(
+      isValidUtcDateRange({ end: "2026-11-25", start: "2026-11-25" }),
+    ).toBe(true);
+    expect(
+      isValidUtcDateRange({ end: "2026-11-01", start: "2026-11-25" }),
+    ).toBe(false);
+    expect(
+      isValidUtcDateRange({ end: "2026-02-30", start: "2026-02-01" }),
+    ).toBe(false);
+    expect(isValidUtcDateRange({ end: "", start: "2026-02-01" })).toBe(false);
+  });
+
   it("resolves inclusive UTC days regardless of local time", () => {
     expect(
       resolveUtcRange("30d", new Date("2026-11-25T23:30:00-05:00")),

@@ -1,4 +1,9 @@
-import type { AdminMetric, AdminSection } from "@/components/admin-patterns";
+import type {
+  AdminActionAvailability,
+  AdminForbiddenState,
+  AdminMetric,
+  AdminSection,
+} from "@/components/admin-patterns";
 
 export type HealthStatus =
   "operational" | "degraded" | "unavailable" | "unknown";
@@ -16,3 +21,6 @@ export type SystemHealthModel = Readonly<{
   overall: HealthStatus;
   services: AdminSection<readonly ServiceHealth[]>;
 }>;
+export type SystemHealthScreenState =
+  AdminSection<SystemHealthModel> | AdminForbiddenState;
+export type SystemHealthRefreshState = AdminActionAvailability;

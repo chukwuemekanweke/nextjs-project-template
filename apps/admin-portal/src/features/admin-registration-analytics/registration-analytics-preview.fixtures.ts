@@ -1,5 +1,21 @@
 import { countMetric } from "@/components/admin-patterns";
-import type { RegistrationAnalyticsModel } from "./registration-analytics-model";
+import type {
+  RegistrationAnalyticsModel,
+  RegistrationPeriod,
+} from "./registration-analytics-model";
+
+const day = (label: string, date: string): RegistrationPeriod => ({
+  label,
+  range: { end: date, start: date },
+});
+
+const periods = [
+  day("21 Nov", "2026-11-21"),
+  day("22 Nov", "2026-11-22"),
+  day("23 Nov", "2026-11-23"),
+  day("24 Nov", "2026-11-24"),
+  day("25 Nov", "2026-11-25"),
+];
 
 export const registrationAnalyticsPreview: RegistrationAnalyticsModel = {
   metrics: {
@@ -8,9 +24,10 @@ export const registrationAnalyticsPreview: RegistrationAnalyticsModel = {
     total: countMetric(12_480),
     week: countMetric(34),
   },
+  periods,
   reportingRange: { end: "2026-11-25", start: "2026-10-27" },
   trend: {
-    categories: ["21 Nov", "22 Nov", "23 Nov", "24 Nov", "25 Nov"],
+    categories: periods.map((period) => period.label),
     series: [
       { label: "Registrations", series: 1, values: [12, 18, null, 26, 21] },
     ],

@@ -1,17 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Avatar, CardContent, type TableColumn } from "@template/ui-core";
+import { Avatar, type TableColumn } from "@template/ui-core";
 import {
+  AdminDateTime,
   AdminForbidden,
+  AdminListCard,
   AdminListPager,
   AdminListTable,
-  formatAdminDateTime,
+  formatAdminDate,
 } from "@/components/admin-patterns";
 import {
-  AnalyticsBreakdownCard,
-  AnalyticsRangeControl,
+  AnalyticsReportingPeriodFields,
   AnalyticsScreenLayout,
+  type AnalyticsReportingPeriod,
 } from "../admin-analytics-shared/analytics-layout";
 import type {
   ActiveUserAnalyticsFilters,
@@ -19,6 +21,14 @@ import type {
   ActiveUserRow,
 } from "./active-user-analytics-model";
 
+const FILTERS_UNAVAILABLE =
+  "Activity filters become available with the admin analytics API.";
+
+/**
+ * Active-user analytics (reference `AdminActiveUsersPage`). Controlled: the
+ * reporting period and the selected chart date are owned by the caller,
+ * which loads that day's active users. Changing the period clears the date.
+ */
 export function ActiveUserAnalyticsScreen({
   filters,
   model,
@@ -30,11 +40,31 @@ export function ActiveUserAnalyticsScreen({
   onFiltersChange?: (filters: ActiveUserAnalyticsFilters) => void;
   onPageChange?: (page: number) => void;
 }>) {
-  if (model.users.state === "forbidden")
-    return <AdminForbidden resourceLabel="Active-user analytics" />;
-  const selected = filters.selectedDate
-    ? `Active on ${filters.selectedDate} (UTC)`
-    : "Active users in selected period";
+  if (model.users.state === "forbidden") {
+    return (
+      <AdminForbidden
+        permission={model.users.permission}
+        requestDetails={model.users.requestDetails}
+        resourceLabel="Active-user analytics"
+      />
+    );
+  }
+
+  const selectedDay = model.days.find(
+    (day) => day.date === filters.selectedDate,
+  );
+
+  function changePeriod(period: AnalyticsReportingPeriod) {
+    onFiltersChange?.({ ...filters, ...period, selectedDate: null });
+  }
+
+  function selectChartDate(label: string | null) {
+    const day = model.days.find((item) => item.label === label);
+    onFiltersChange?.({ ...filters, selectedDate: day?.date ?? null });
+  }
+
+  const wired = Boolean(onFiltersChange);
+  const selectedDateLabel = formatAdminDate(filters.selectedDate);
   return (
     <AnalyticsScreenLayout
       charts={[
@@ -42,26 +72,32 @@ export function ActiveUserAnalyticsScreen({
           data: model.trend,
           id: "active-users",
           kind: "line",
+          selection: {
+            disabledReason: FILTERS_UNAVAILABLE,
+            label: "Activity date",
+            onSelect: wired ? selectChartDate : undefined,
+            selected: selectedDay?.label ?? null,
+          },
           title: "Daily active users",
         },
       ]}
       description="Daily, weekly and monthly qualifying activity. Token refresh is not counted as activity."
       filters={
-        <AnalyticsRangeControl
-          disabledReason="Activity filters require the admin analytics API."
-          onChange={
-            onFiltersChange
-              ? (range) => onFiltersChange({ ...filters, range })
-              : undefined
-          }
-          range={model.reportingRange}
-          value={filters.range}
+        <AnalyticsReportingPeriodFields
+          disabledReason={FILTERS_UNAVAILABLE}
+          onChange={wired ? changePeriod : undefined}
+          reportedRange={model.reportingRange}
+          value={{ customRange: filters.customRange, range: filters.range }}
         />
       }
       metrics={[
         { id: "dau", label: "Daily active users", metric: model.metrics.dau },
         { id: "wau", label: "Weekly active users", metric: model.metrics.wau },
-        { id: "mau", label: "Monthly active users", metric: model.metrics.mau },
+        {
+          id: "mau",
+          label: "Monthly active users",
+          metric: model.metrics.mau,
+        },
         {
           id: "stickiness",
           label: "DAU / MAU stickiness",
@@ -70,7 +106,20 @@ export function ActiveUserAnalyticsScreen({
       ]}
       title="Active users"
     >
-      <AnalyticsBreakdownCard title={selected}>
+      <AdminListCard
+        footer={
+          <AdminListPager
+            label="Active-user pages"
+            onPageChange={onPageChange}
+            state={model.users}
+          />
+        }
+        title={
+          selectedDateLabel
+            ? `Active on ${selectedDateLabel} (UTC)`
+            : "Active users in the reporting period"
+        }
+      >
         <AdminListTable
           caption="Active users"
           columns={activeColumns}
@@ -80,14 +129,7 @@ export function ActiveUserAnalyticsScreen({
           onPageChange={onPageChange}
           state={model.users}
         />
-        <CardContent className="border-border border-t">
-          <AdminListPager
-            label="Active-user pages"
-            onPageChange={onPageChange}
-            state={model.users}
-          />
-        </CardContent>
-      </AnalyticsBreakdownCard>
+      </AdminListCard>
     </AnalyticsScreenLayout>
   );
 }
@@ -107,11 +149,11 @@ const activeColumns: readonly TableColumn<ActiveUserRow>[] = [
   },
   {
     header: "First activity",
-    cell: (row) => <Utc value={row.firstActivityAtUtc} />,
+    cell: (row) => <AdminDateTime value={row.firstActivityAtUtc} />,
   },
   {
     header: "Last activity",
-    cell: (row) => <Utc value={row.lastActivityAtUtc} />,
+    cell: (row) => <AdminDateTime value={row.lastActivityAtUtc} />,
   },
   {
     header: "Activity",
@@ -122,7 +164,7 @@ const activeColumns: readonly TableColumn<ActiveUserRow>[] = [
     header: "Last login",
     cell: (row) =>
       row.lastLoginAtUtc ? (
-        <Utc value={row.lastLoginAtUtc} />
+        <AdminDateTime value={row.lastLoginAtUtc} />
       ) : (
         <span className="text-fg-subtle">Never</span>
       ),
@@ -143,11 +185,3 @@ const activeColumns: readonly TableColumn<ActiveUserRow>[] = [
       ),
   },
 ];
-function Utc({ value }: Readonly<{ value: string }>) {
-  const text = formatAdminDateTime(value);
-  return text ? (
-    <time dateTime={value}>{text}</time>
-  ) : (
-    <span className="text-fg-subtle">Not available</span>
-  );
-}

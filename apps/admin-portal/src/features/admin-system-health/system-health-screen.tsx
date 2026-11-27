@@ -11,6 +11,7 @@ import {
 } from "@template/ui-core";
 import { DashboardHeader } from "@template/dashboard-ui";
 import {
+  AdminForbidden,
   AdminKpiCard,
   AdminSectionBody,
   formatAdminDateTime,
@@ -19,6 +20,8 @@ import type {
   HealthStatus,
   ServiceHealth,
   SystemHealthModel,
+  SystemHealthRefreshState,
+  SystemHealthScreenState,
 } from "./system-health-model";
 
 const tone: Readonly<Record<HealthStatus, BadgeTone>> = {
@@ -29,25 +32,50 @@ const tone: Readonly<Record<HealthStatus, BadgeTone>> = {
 };
 
 export function SystemHealthScreen({
-  model,
+  state,
+  refreshAction,
+  onRetry,
   onRefresh,
-}: Readonly<{ model: SystemHealthModel; onRefresh?: () => void }>) {
+}: Readonly<{
+  onRefresh?: () => void;
+  onRetry?: () => void;
+  refreshAction: SystemHealthRefreshState;
+  state: SystemHealthScreenState;
+}>) {
+  if (state.state === "forbidden") {
+    return (
+      <AdminForbidden
+        permission={state.permission}
+        requestDetails={state.requestDetails}
+        resourceLabel="System health"
+      />
+    );
+  }
+  const canRefresh = Boolean(onRefresh) && refreshAction.state === "available";
   return (
     <section className="grid gap-5 md:gap-6">
       <DashboardHeader
         actions={
           <div className="grid justify-items-end gap-1">
             <Button
-              disabled={!onRefresh}
+              disabled={
+                !canRefresh ||
+                (refreshAction.state === "available" && refreshAction.pending)
+              }
+              loading={
+                refreshAction.state === "available" && refreshAction.pending
+              }
               onClick={onRefresh}
               size="sm"
               variant="secondary"
             >
               Refresh
             </Button>
-            {!onRefresh ? (
+            {!canRefresh ? (
               <span className="text-caption text-fg-subtle">
-                Live refresh is unavailable.
+                {refreshAction.state === "unavailable"
+                  ? refreshAction.reason
+                  : "Live refresh is unavailable."}
               </span>
             ) : null}
           </div>
@@ -55,6 +83,19 @@ export function SystemHealthScreen({
         description="Authoritative service and dependency checks. Frontend health alone is not system health."
         title="System health"
       />
+      <AdminSectionBody label="system health" onRetry={onRetry} section={state}>
+        {(model) => <SystemHealthContent model={model} onRetry={onRetry} />}
+      </AdminSectionBody>
+    </section>
+  );
+}
+
+function SystemHealthContent({
+  model,
+  onRetry,
+}: Readonly<{ model: SystemHealthModel; onRetry?: () => void }>) {
+  return (
+    <>
       <Card>
         <CardContent className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -64,7 +105,11 @@ export function SystemHealthScreen({
           <Badge tone={tone[model.overall]}>{statusLabel(model.overall)}</Badge>
         </CardContent>
       </Card>
-      <AdminSectionBody label="service health" section={model.services}>
+      <AdminSectionBody
+        label="service health"
+        onRetry={onRetry}
+        section={model.services}
+      >
         {(services) =>
           services.length ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -83,7 +128,7 @@ export function SystemHealthScreen({
           )
         }
       </AdminSectionBody>
-    </section>
+    </>
   );
 }
 
@@ -123,7 +168,8 @@ function ServiceCard({ service }: Readonly<{ service: ServiceHealth }>) {
 }
 
 function statusLabel(status: HealthStatus) {
-  return status === "unknown"
-    ? "Unknown"
-    : `${status[0]?.toUpperCase()}${status.slice(1)}`;
+  if (status === "unknown") {
+    return "Unknown";
+  }
+  return `${status[0]?.toUpperCase()}${status.slice(1)}`;
 }

@@ -2,6 +2,7 @@ import { countMetric, moneyMetric } from "@/components/admin-patterns";
 import type { PaymentAnalyticsModel } from "./payment-analytics-model";
 
 export const paymentAnalyticsPreview: PaymentAnalyticsModel = {
+  reportedCurrencyCode: "NGN",
   intents: [
     {
       amountMinor: 8_400_000,
