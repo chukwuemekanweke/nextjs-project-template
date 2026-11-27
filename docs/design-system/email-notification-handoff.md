@@ -285,7 +285,8 @@ producing module.
   `EmailConfirmationFollowUp`, `ResetPasswordOtp`, `PasswordResetSuccessful`,
   `SignInSuccessful`, `AccountLocked`, new `SecuritySettingChanged` (12,
   proposed value; append, never renumber).
-- **Triggers:** `UserEmailConfirmed` → `AccountCreated`; scheduled follow-up
+- **Triggers:** `UserEmailConfirmed` → `AccountCreated` (decided; produce it
+  from the existing `UserEmailConfirmedHandler` consumer); scheduled follow-up
   while unconfirmed; successful reset completion → `PasswordResetSuccessful`;
   `UserSecurityActivityOccurred` → `SecuritySettingChanged`, including
   in-session `password_changed` (OD-18).
@@ -429,7 +430,7 @@ each template's "open questions" in the catalog. Decided on 2026-11-27:
 in-session password change sends `SecuritySettingChanged` (OD-18); the
 reset-code lifetime becomes 3 minutes (OD-19); the `ConfirmEmail` subject
 becomes code-free (DR-142); billing emails may be opted out of and security
-emails never; account and KYC emails stay mandatory (OD-20, BE-NOTIF-08).
-Still open: trigger timing for
-`AccountCreated` and `SubscriptionAllocated`; whether the receipt email keeps
+emails never; account and KYC emails stay mandatory (OD-20, BE-NOTIF-08);
+`AccountCreated` fires on `UserEmailConfirmed`. Still open: trigger timing for
+`SubscriptionAllocated`; whether the receipt email keeps
 the `SubscriptionInvoice` name.

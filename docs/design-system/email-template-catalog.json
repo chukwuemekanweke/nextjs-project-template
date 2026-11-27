@@ -153,7 +153,7 @@
       "preheader": "Your account is ready. Here's how to get started.",
       "category": "account",
       "recipient": "The new user",
-      "proposedTrigger": "UserEmailConfirmed (the account becomes usable only after email confirmation). Sending on UserCreated would welcome unconfirmed addresses.",
+      "proposedTrigger": "UserEmailConfirmed, decided 2026-11-27 (the account becomes usable only after email confirmation; sending on UserCreated would welcome unconfirmed addresses). Produce it from the existing Consumer/Authentication/UserEmailConfirmedHandler.",
       "variables": [
         {
           "name": "FirstName",
@@ -188,10 +188,7 @@
       "designOnlyContent": [
         "Three-step checklist (passkey, identity verification, choose a plan) is product copy; keep only steps the deployment supports (KYC and plans are configurable)."
       ],
-      "openQuestions": [
-        "Trigger: UserEmailConfirmed (recommended) or UserCreated?",
-        "Is the checklist static copy or capability-driven?"
-      ],
+      "openQuestions": ["Is the checklist static copy or capability-driven?"],
       "followUpTicket": "BE-NOTIF-02",
       "references": {
         "live": "email-pages/live/AccountCreated.html",

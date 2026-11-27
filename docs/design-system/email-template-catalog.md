@@ -117,10 +117,10 @@ Every row also needs the design-aligned layout, because the current backend temp
 - **Subject (sample):** Welcome to Template
 - **Preheader:** Your account is ready. Here's how to get started.
 - **Category / recipient:** account · The new user
-- **Trigger:** UserEmailConfirmed (the account becomes usable only after email confirmation). Sending on UserCreated would welcome unconfirmed addresses.
+- **Trigger:** UserEmailConfirmed, decided 2026-11-27 (the account becomes usable only after email confirmation; sending on UserCreated would welcome unconfirmed addresses). Produce it from the existing Consumer/Authentication/UserEmailConfirmedHandler.
 - **Actions:** primary "Go to your dashboard" → User portal /dashboard (sign-in redirects as usual)
 - **Design content without a backend source:** Three-step checklist (passkey, identity verification, choose a plan) is product copy; keep only steps the deployment supports (KYC and plans are configurable).
-- **Open questions:** Trigger: UserEmailConfirmed (recommended) or UserCreated? Is the checklist static copy or capability-driven?
+- **Open questions:** Is the checklist static copy or capability-driven?
 
 | Variable       | Type | Req. | Source                                                                                  | Format                                                                                            | Sensitive | Missing data                                                   | Status      |
 | -------------- | ---- | ---- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------- | ----------- |
