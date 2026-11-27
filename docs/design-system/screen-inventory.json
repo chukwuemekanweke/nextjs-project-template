@@ -2933,7 +2933,7 @@
           "apps/user-portal/src/app/api/auth/password-resets/completions/route.ts"
         ],
         "existingFunctionality": [
-          "Trello FE-UI-020 (design ad9386e): code, new password and confirmation in one form (no auto-submit); one combined 'That code didn't work' state with Send a new code; field-mapped backend validation; success only after the backend confirms, then Sign in. No session or cookie is created."
+          "Trello FE-UI-020 (design ad9386e): code, new password and confirmation in one form (no auto-submit); one combined 'That code didn't work' state (new code via Resend code); field-mapped backend validation; success only after the backend confirms, then Sign in. No session or cookie is created."
         ]
       },
       "backend": {

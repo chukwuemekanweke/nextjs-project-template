@@ -158,8 +158,11 @@ email comes from the accepted step, never an editable field; "Change email"
 resets mutations and an attempt guard drops late replies. The backend returns
 no cooldown, expiry or stable invalid-code error, so the UI shows no timer and
 one combined wrong/expired/used message. Completion revokes all sessions and
-returns no tokens: never create a session after a reset. Workflow rules live in
-`src/lib/password-reset.ts`; backend facts and gaps are in DR-015.
+returns no tokens: never create a session after a reset. A lost completion
+response is reported as unconfirmed, never as "not changed". Workflow rules
+live in `src/lib/password-reset.ts`; backend facts are in DR-015 and backend/API
+gaps (including the interim unknown-email BFF mapping) are deferred to
+BE-DS-006; do not add further BFF workarounds for them.
 
 Keep workflow schemas, copy, navigation, cooldown UI, conflict redirects, and
 admission presentation in the owning app. Reusable backend operations and query

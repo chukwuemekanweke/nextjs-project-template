@@ -4,9 +4,7 @@ import {
   classifyPasswordResetFailure,
   createAttemptGuard,
   createPasswordResetCompletion,
-  normalizePasswordResetEmail,
   passwordResetCompletionSchema,
-  passwordResetEmailSchema,
 } from "./password-reset";
 
 // Synthetic values only.
@@ -31,23 +29,6 @@ function otpIssues(otp: string) {
     ? []
     : result.error.issues.filter((issue) => issue.path[0] === "otp");
 }
-
-describe("password-reset request", () => {
-  it("rejects an invalid email before any request", () => {
-    expect(passwordResetEmailSchema.safeParse({ email: "nope" }).success).toBe(
-      false,
-    );
-    expect(
-      passwordResetEmailSchema.safeParse({ email: "ada@example.test" }).success,
-    ).toBe(true);
-  });
-
-  it("normalizes the email the same way as registration and the backend", () => {
-    expect(normalizePasswordResetEmail("  Ada@Example.TEST ")).toBe(
-      "ada@example.test",
-    );
-  });
-});
 
 describe("password-reset completion schema", () => {
   it("accepts exactly six digits and keeps leading zeroes as text", () => {

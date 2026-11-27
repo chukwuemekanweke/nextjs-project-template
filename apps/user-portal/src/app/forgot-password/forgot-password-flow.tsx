@@ -20,7 +20,7 @@ import {
   KeyIcon,
 } from "@template/ui-core";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AuthFeedbackAlert } from "@/components/auth-feedback-alert";
 import { authLinkClassName } from "@/components/auth-link";
 import { passwordResetFeedback, type AuthFeedback } from "@/lib/auth-feedback";
@@ -28,15 +28,15 @@ import {
   classifyPasswordResetFailure,
   createAttemptGuard,
   createPasswordResetCompletion,
-  normalizePasswordResetEmail,
-  passwordResetEmailSchema,
   type GuardedResult,
   type PasswordResetCompletionValues,
-  type PasswordResetEmailValues,
   type PasswordResetStep,
 } from "@/lib/password-reset";
+import { emailSchema, normalizeRegistrationEmail } from "@/lib/registration";
 import { createSignInHref } from "@/lib/sign-in";
 import { PasswordResetCompletionForm } from "./password-reset-completion-form";
+
+type EmailValues = { email: string };
 
 const headingIcon = (icon: ReactNode, tone?: "success") => (
   <IconTile className="size-14 rounded-[14px]" size="lg" tone={tone}>
@@ -63,6 +63,20 @@ export function ForgotPasswordFlow({
 
   function requestCode(email: string): Promise<GuardedResult<unknown>> {
     return attempts.run(() => requestReset.mutateAsync({ email }));
+  }
+
+  async function complete(
+    email: string,
+    values: PasswordResetCompletionValues,
+  ) {
+    const result = await attempts.run(() =>
+      completeReset.mutateAsync(createPasswordResetCompletion(email, values)),
+    );
+    // Drop the code and passwords held as mutation variables once the
+    // attempt settles, success or failure. A stale attempt leaves state
+    // alone: "Change email" already reset it and a newer one may own it.
+    if (result.status !== "stale") completeReset.reset();
+    return result;
   }
 
   function changeEmail() {
@@ -93,18 +107,10 @@ export function ForgotPasswordFlow({
     const email = step.email;
     return (
       <PasswordResetCompletionForm
-        complete={(values: PasswordResetCompletionValues) =>
-          attempts.run(() =>
-            completeReset.mutateAsync(
-              createPasswordResetCompletion(email, values),
-            ),
-          )
-        }
+        complete={(values) => complete(email, values)}
         email={email}
         onChangeEmail={changeEmail}
         onCompleted={() => {
-          // Drop the retained variables (code and passwords) immediately.
-          completeReset.reset();
           requestReset.reset();
           setStep({ email, kind: "done" });
         }}
@@ -115,22 +121,40 @@ export function ForgotPasswordFlow({
   }
 
   return (
-    <>
+    <PasswordResetDone
+      signInHref={createSignInHref({
+        email: step.email,
+        returnTo: signInDestination,
+      })}
+    />
+  );
+}
+
+/**
+ * Success replaces the form the user was in, so focus moves to this region
+ * (announcing the heading) instead of falling back to the document body.
+ */
+function PasswordResetDone({ signInHref }: Readonly<{ signInHref: string }>) {
+  const region = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    region.current?.focus();
+  }, []);
+
+  return (
+    <div
+      className="flex flex-col gap-5 outline-none md:gap-6"
+      ref={region}
+      tabIndex={-1}
+    >
       <AuthHeading
         description="You can now sign in with your new password. For your security, all your existing sessions were signed out."
         icon={headingIcon(<CircleCheckIcon />, "success")}
         title="Password updated"
       />
-      <Link
-        className={buttonVariants({ fullWidth: true })}
-        href={createSignInHref({
-          email: step.email,
-          returnTo: signInDestination,
-        })}
-      >
+      <Link className={buttonVariants({ fullWidth: true })} href={signInHref}>
         Sign in
       </Link>
-    </>
+    </div>
   );
 }
 
@@ -148,14 +172,13 @@ function PasswordResetRequestForm({
   signInHref: string;
 }>) {
   const [feedback, setFeedback] = useState<AuthFeedback>();
-  const form = useValidatedForm(passwordResetEmailSchema, {
+  const form = useValidatedForm(emailSchema, {
     defaultValues: { email: defaultEmail },
   });
 
-  async function submit(values: PasswordResetEmailValues) {
-    if (pending) return;
+  async function submit(values: EmailValues) {
     setFeedback(undefined);
-    const email = normalizePasswordResetEmail(values.email);
+    const email = normalizeRegistrationEmail(values.email);
     const result = await requestCode(email);
     if (result.status === "stale") return;
     if (result.status === "fulfilled") {
@@ -190,7 +213,7 @@ function PasswordResetRequestForm({
         onSubmit={submit}
       >
         <AuthFeedbackAlert feedback={feedback} />
-        <TextField<PasswordResetEmailValues>
+        <TextField<EmailValues>
           autoComplete="email"
           autoFocus
           inputMode="email"

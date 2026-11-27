@@ -9,8 +9,9 @@ import {
   useValidatedForm,
 } from "@template/forms";
 import { AuthHeading } from "@template/dashboard-ui";
-import { Alert, IconTile, MailIcon } from "@template/ui-core";
-import { useRef, useState } from "react";
+import { IconTile, MailIcon } from "@template/ui-core";
+import { useState } from "react";
+import { AuthFeedbackAlert } from "@/components/auth-feedback-alert";
 import { authLinkClassName } from "@/components/auth-link";
 import {
   passwordResetFeedback,
@@ -26,8 +27,6 @@ import {
   type PasswordResetCompletionValues,
 } from "@/lib/password-reset";
 
-type Feedback = AuthFeedback & Readonly<{ offerNewCode?: boolean }>;
-
 const EMPTY_VALUES: PasswordResetCompletionValues = {
   confirmPassword: "",
   otp: "",
@@ -38,6 +37,9 @@ const EMPTY_VALUES: PasswordResetCompletionValues = {
  * Code + new password (design `AuthForgotSent`, `AuthResetPassword`,
  * `AuthResetExpired`). The code and both passwords are submitted together;
  * there is no separate verify step and no auto-submit on the sixth digit.
+ *
+ * Fields stay enabled while submitting so focus is never dropped; the
+ * loading submit button already blocks repeated and implicit submission.
  */
 export function PasswordResetCompletionForm({
   complete,
@@ -56,56 +58,47 @@ export function PasswordResetCompletionForm({
   resend: () => Promise<GuardedResult<unknown>>;
   resendPending: boolean;
 }>) {
-  const [feedback, setFeedback] = useState<Feedback>();
-  const submitting = useRef(false);
+  const [feedback, setFeedback] = useState<AuthFeedback>();
   const form = useValidatedForm(passwordResetCompletionSchema, {
     defaultValues: EMPTY_VALUES,
   });
   const busy = form.formState.isSubmitting;
 
   async function submit(values: PasswordResetCompletionValues) {
-    if (submitting.current) return;
-    submitting.current = true;
     setFeedback(undefined);
-    try {
-      const result = await complete(values);
-      if (result.status === "stale") return;
-      if (result.status === "fulfilled") {
-        form.reset(EMPTY_VALUES);
-        onCompleted();
-        return;
-      }
-      const failure = classifyPasswordResetFailure(result.error, "complete");
-      if (failure === "validation") {
-        const general = applyBackendValidation(result.error, form.setError, [
-          "otp",
-          "password",
-          "confirmPassword",
-        ]);
-        setFeedback(
-          general[0]
-            ? {
-                message: general[0],
-                title: "Check your details",
-                variant: "error",
-              }
-            : undefined,
-        );
-        return;
-      }
-      if (failure === "invalid_code") {
-        form.setError("otp", { message: "Invalid or expired code." });
-      }
-      setFeedback({
-        ...passwordResetFeedback(failure, "complete"),
-        offerNewCode: failure === "invalid_code",
-      });
-    } finally {
-      submitting.current = false;
+    const result = await complete(values);
+    if (result.status === "stale") return;
+    if (result.status === "fulfilled") {
+      form.reset(EMPTY_VALUES);
+      onCompleted();
+      return;
     }
+    const failure = classifyPasswordResetFailure(result.error, "complete");
+    if (failure === "validation") {
+      const general = applyBackendValidation(result.error, form.setError, [
+        "otp",
+        "password",
+        "confirmPassword",
+      ]);
+      setFeedback(
+        general[0]
+          ? {
+              message: general[0],
+              title: "Check your details",
+              variant: "error",
+            }
+          : undefined,
+      );
+      return;
+    }
+    if (failure === "invalid_code") {
+      form.setError("otp", { message: "Invalid or expired code." });
+    }
+    setFeedback(passwordResetFeedback(failure, "complete"));
   }
 
   async function resendCode() {
+    // `aria-disabled`, not `disabled`, keeps focus on the control while busy.
     if (resendPending || busy) return;
     setFeedback(undefined);
     const result = await resend();
@@ -155,29 +148,9 @@ export function PasswordResetCompletionForm({
         form={form}
         onSubmit={submit}
       >
-        {feedback ? (
-          <Alert
-            action={
-              feedback.offerNewCode ? (
-                <button
-                  className={authLinkClassName}
-                  disabled={resendPending}
-                  onClick={resendCode}
-                  type="button"
-                >
-                  Send a new code
-                </button>
-              ) : undefined
-            }
-            title={feedback.title}
-            variant={feedback.variant}
-          >
-            {feedback.message}
-          </Alert>
-        ) : null}
+        <AuthFeedbackAlert feedback={feedback} />
         <ConfirmationCodeField<PasswordResetCompletionValues>
           autoFocus
-          disabled={busy}
           label="Reset code"
           length={PASSWORD_RESET_CODE_LENGTH}
           name="otp"
@@ -185,7 +158,6 @@ export function PasswordResetCompletionForm({
         />
         <PasswordField<PasswordResetCompletionValues>
           autoComplete="new-password"
-          disabled={busy}
           hint={PASSWORD_POLICY_HINT}
           label="New password"
           name="password"
@@ -193,7 +165,6 @@ export function PasswordResetCompletionForm({
         />
         <PasswordField<PasswordResetCompletionValues>
           autoComplete="new-password"
-          disabled={busy}
           label="Confirm new password"
           name="confirmPassword"
           required
@@ -205,8 +176,8 @@ export function PasswordResetCompletionForm({
       <p className="text-small text-fg-muted text-center">
         Didn&apos;t get it?{" "}
         <button
-          className={authLinkClassName}
-          disabled={resendPending || busy}
+          aria-disabled={resendPending || busy || undefined}
+          className={`${authLinkClassName} aria-disabled:cursor-not-allowed aria-disabled:opacity-60`}
           onClick={resendCode}
           type="button"
         >

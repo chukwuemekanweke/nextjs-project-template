@@ -123,7 +123,8 @@ export function passwordResetFeedback(
 ): AuthFeedback {
   if (failure === "invalid_code") {
     return {
-      message: "It's wrong, expired or already used. Request a new code.",
+      message:
+        "It's wrong, expired or already used. Use Resend code to get a new one.",
       title: "That code didn't work",
       variant: "error",
     };
@@ -135,11 +136,12 @@ export function passwordResetFeedback(
       variant: "warning",
     };
   }
+  // A lost response does not show whether the backend applied the reset.
   return operation === "complete"
     ? {
         message:
-          "Your password wasn't changed. Check your connection and try again.",
-        title: "Password reset unavailable",
+          "Check your connection, then try signing in with your new password. If that doesn't work, try again or request a new code.",
+        title: "We couldn't confirm your password reset",
         variant: "error",
       }
     : {

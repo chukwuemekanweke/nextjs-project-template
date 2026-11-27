@@ -101,7 +101,8 @@ describe("twoFactorFeedback", () => {
 describe("passwordResetFeedback", () => {
   it("states one combined outcome for a wrong, expired or used code", () => {
     expect(passwordResetFeedback("invalid_code", "complete")).toEqual({
-      message: "It's wrong, expired or already used. Request a new code.",
+      message:
+        "It's wrong, expired or already used. Use Resend code to get a new one.",
       title: "That code didn't work",
       variant: "error",
     });
@@ -114,14 +115,21 @@ describe("passwordResetFeedback", () => {
     expect(passwordResetFeedback("unavailable", "resend").title).toBe(
       "We couldn't send a code",
     );
-    expect(passwordResetFeedback("unavailable", "complete")).toMatchObject({
-      message: expect.stringContaining("wasn't changed"),
-      title: "Password reset unavailable",
-    });
+    expect(passwordResetFeedback("unavailable", "complete").title).toBe(
+      "We couldn't confirm your password reset",
+    );
     expect(passwordResetFeedback("rate_limited", "complete")).toMatchObject({
       title: "Too many requests",
       variant: "warning",
     });
+  });
+
+  it("does not claim an outcome it cannot know after a lost response", () => {
+    const { message, title } = passwordResetFeedback("unavailable", "complete");
+    expect(`${title} ${message}`).not.toMatch(
+      /wasn't changed|not changed|unchanged|was reset|succeeded|failed/i,
+    );
+    expect(message).toContain("try signing in with your new password");
   });
 
   it("never reveals account existence, attempts or a fabricated timer", () => {

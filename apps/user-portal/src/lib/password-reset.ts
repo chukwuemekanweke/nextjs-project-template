@@ -1,7 +1,6 @@
 import { isApiError } from "@template/api-client";
 import type { CompletePasswordResetRequest } from "@template/api-client/authentication";
 import { z } from "zod";
-import { emailSchema, normalizeRegistrationEmail } from "./registration";
 
 /**
  * Forgotten-password recovery by emailed one-time code (Trello FE-UI-020).
@@ -18,9 +17,6 @@ export const PASSWORD_RESET_CODE_LENGTH = 6;
 /** Backend policy (`CompletePasswordResetValidator` + ASP.NET Identity). */
 export const PASSWORD_POLICY_HINT =
   "At least 8 characters with upper- and lowercase letters, a number and a symbol.";
-
-export const passwordResetEmailSchema = emailSchema;
-export type PasswordResetEmailValues = z.infer<typeof passwordResetEmailSchema>;
 
 export const passwordResetCompletionSchema = z
   .object({
@@ -51,10 +47,6 @@ export const passwordResetCompletionSchema = z
 export type PasswordResetCompletionValues = z.infer<
   typeof passwordResetCompletionSchema
 >;
-
-export function normalizePasswordResetEmail(email: string): string {
-  return normalizeRegistrationEmail(email);
-}
 
 /**
  * The exact completion contract. The email comes from the accepted request

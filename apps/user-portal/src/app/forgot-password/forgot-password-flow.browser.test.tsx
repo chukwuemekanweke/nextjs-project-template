@@ -1,5 +1,8 @@
 import { ApiError, type ApiClient } from "@template/api-client";
-import { ApiProvider } from "@template/api-react/query-client";
+import {
+  ApiProvider,
+  createApiQueryClient,
+} from "@template/api-react/query-client";
 import { describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-react";
@@ -39,12 +42,16 @@ async function renderFlow() {
     completePasswordReset: vi.fn(),
     requestPasswordReset: vi.fn(),
   };
+  const queryClient = createApiQueryClient();
   const screen = await render(
-    <ApiProvider apiClient={{ authentication } as unknown as ApiClient}>
+    <ApiProvider
+      apiClient={{ authentication } as unknown as ApiClient}
+      queryClient={queryClient}
+    >
       <ForgotPasswordFlow signInDestination="/dashboard" />
     </ApiProvider>,
   );
-  return { authentication, screen };
+  return { authentication, queryClient, screen };
 }
 
 const emailInput = (screen: Screen) => screen.getByLabelText(/^Email address/);
@@ -123,6 +130,8 @@ describe("forgot password: request step", () => {
       .element(screen.getByRole("heading", { name: "Enter your reset code" }))
       .toBeVisible();
     await expect.element(screen.getByText(EMAIL)).toBeVisible();
+    // Focus follows the step: the first code box is ready for typing.
+    await expect.element(codeBox(screen, 1)).toHaveFocus();
   });
 
   it("stays on the email step when the request fails", async () => {
@@ -212,6 +221,10 @@ describe("forgot password: code and new password", () => {
       .toHaveAttribute("href", "/sign-in?email=reset%40example.test");
     expect(document.querySelectorAll("input")).toHaveLength(0);
     expect(document.body.innerHTML).not.toContain(PASSWORD);
+    // Focus moves to the success region instead of falling to the body.
+    const focused = document.activeElement;
+    expect(focused).not.toBe(document.body);
+    expect(focused?.querySelector("h1")?.textContent).toBe("Password updated");
   });
 
   it("explains a wrong, expired or used code and keeps the passwords", async () => {
@@ -231,7 +244,10 @@ describe("forgot password: code and new password", () => {
     await expect.element(newPassword(screen)).toHaveValue(PASSWORD);
 
     authentication.requestPasswordReset.mockResolvedValueOnce({ message: "" });
-    await screen.getByRole("button", { name: "Send a new code" }).click();
+    expect(
+      screen.getByRole("button", { name: "Send a new code" }).query(),
+    ).toBeNull();
+    await screen.getByRole("button", { name: "Resend code" }).click();
     await expect.element(screen.getByText("Code requested")).toBeVisible();
     expect(authentication.requestPasswordReset).toHaveBeenLastCalledWith({
       email: EMAIL,
@@ -242,10 +258,10 @@ describe("forgot password: code and new password", () => {
 
   it.each([
     [apiError(429), "Too many requests"],
-    [apiError(503), "Password reset unavailable"],
+    [apiError(503), "We couldn't confirm your password reset"],
     [
       new ApiError({ kind: "network", safeMessage: "Offline." }),
-      "Password reset unavailable",
+      "We couldn't confirm your password reset",
     ],
   ])("reports %s without advancing", async (error, title) => {
     const { authentication, screen } = await renderFlow();
@@ -257,6 +273,60 @@ describe("forgot password: code and new password", () => {
 
     await expect.element(screen.getByText(title)).toBeVisible();
     await expect.element(resetButton(screen)).toBeVisible();
+  });
+
+  it("never claims an unverified outcome after a lost response", async () => {
+    const { authentication, screen } = await renderFlow();
+    await reachResetStep(screen, authentication);
+    authentication.completePasswordReset.mockRejectedValue(
+      new ApiError({ kind: "network", safeMessage: "Offline." }),
+    );
+
+    await fillCompletion(screen);
+    await resetButton(screen).click();
+
+    await expect
+      .element(screen.getByText(/try signing in with your new password/))
+      .toBeVisible();
+    expect(document.body.textContent).not.toMatch(/wasn't changed/i);
+    // Recoverable: the code and passwords stay for a retry.
+    await expect.element(codeBox(screen, 6)).toHaveValue("5");
+    await expect.element(newPassword(screen)).toHaveValue(PASSWORD);
+  });
+
+  it("releases the code and passwords held by the mutation once settled", async () => {
+    const { authentication, queryClient, screen } = await renderFlow();
+    await reachResetStep(screen, authentication);
+    authentication.completePasswordReset.mockRejectedValueOnce(apiError(400));
+
+    await fillCompletion(screen);
+    await resetButton(screen).click();
+    await expect
+      .element(screen.getByText("That code didn't work"))
+      .toBeVisible();
+
+    await expect
+      .poll(() =>
+        JSON.stringify(
+          queryClient
+            .getMutationCache()
+            .getAll()
+            .map((mutation) => mutation.state.variables),
+        ),
+      )
+      .not.toMatch(/012345|Synthetic/);
+  });
+
+  it("keeps focus on the submit button when a completion fails", async () => {
+    const { authentication, screen } = await renderFlow();
+    await reachResetStep(screen, authentication);
+    authentication.completePasswordReset.mockRejectedValue(apiError(429));
+
+    await fillCompletion(screen);
+    await resetButton(screen).click();
+
+    await expect.element(screen.getByRole("alert")).toBeVisible();
+    await expect.element(resetButton(screen)).toHaveFocus();
   });
 
   it("maps backend field validation onto the form", async () => {
@@ -286,7 +356,11 @@ describe("forgot password: resend and change email", () => {
     await screen.getByRole("button", { name: "Resend code" }).click();
     await expect
       .element(screen.getByRole("button", { name: "Sending…" }))
-      .toBeDisabled();
+      .toHaveAttribute("aria-disabled", "true");
+    // Still focused: an aria-disabled control does not drop focus.
+    await expect
+      .element(screen.getByRole("button", { name: "Sending…" }))
+      .toHaveFocus();
     pending.resolve({ message: "ok" });
     await expect.element(screen.getByText("Code requested")).toBeVisible();
 
@@ -308,6 +382,7 @@ describe("forgot password: resend and change email", () => {
 
     await screen.getByRole("button", { name: "Change email" }).click();
     await expect.element(emailInput(screen)).toHaveValue(EMAIL);
+    await expect.element(emailInput(screen)).toHaveFocus();
     expect(screen.getByText("That code didn't work").query()).toBeNull();
 
     await reachResetStep(screen, authentication, "other@example.test");
