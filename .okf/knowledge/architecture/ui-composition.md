@@ -58,7 +58,11 @@ status: stable
   supply brand, copy and panel; the User Portal wraps it once as
   `UserAuthLayout`, the Admin Portal composes it in its sign-in page. `@template/dashboard-ui/charts` holds chart
   foundations (`ChartFrame`, `ChartLegend`, series colour helpers); Recharts
-  is deferred (TD-10).
+  is deferred (TD-10). `@template/dashboard-ui/documents` holds
+  `BillingDocument`, a printable sheet rendered from caller-formatted text in
+  the `theme-light` scope (Trello FE-UI-018). In print `DashboardShell` hides
+  its chrome and padding; pages mark their own controls `print:hidden`, and
+  print overrides that compete with responsive utilities use the `!` suffix.
 - App navigation (`apps/*/src/config/navigation.ts`) lists only implemented
   routes (tests check a `page.tsx` exists for each); the complete reference
   navigation is a workbench fixture. User identity comes from
@@ -101,6 +105,9 @@ status: stable
   Admin users, roles and KYC compositions (Trello FE-UI-013) follow the
   class-D pattern in `apps/admin-portal/src/features/admin-{users,roles,kyc}`
   with no route, navigation item or production import.
+  Admin invoices (Trello FE-UI-018, `admin-invoices`, sharing
+  `admin-billing-shared`) and the User Portal invoice/receipt screens
+  (`features/billing-documents`) follow the same pattern (DR-160).
   Registration, active-user, payment and subscription analytics plus providers,
   reference data, audit and system health (Trello FE-UI-015) follow the same
   class-D pattern in `apps/admin-portal/src/features/admin-*`. The four

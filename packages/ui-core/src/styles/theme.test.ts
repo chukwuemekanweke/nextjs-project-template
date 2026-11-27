@@ -176,6 +176,30 @@ describe("theme.css semantic colours", () => {
   });
 });
 
+describe("theme.css light-only scope", () => {
+  it("restates every dark override with its light value", () => {
+    const darkOnly = declarations(blockAfter("  .dark {"));
+    const lightOnly = declarations(blockAfter("  .theme-light {"));
+    const lightValues = new Map([
+      ...light,
+      ...declarations(blockAfter("  :root {\n    color-scheme: light;")),
+    ]);
+    expect([...lightOnly.keys()].sort()).toEqual([...darkOnly.keys()].sort());
+    for (const name of darkOnly.keys()) {
+      expect(lightOnly.get(name), name).toBe(lightValues.get(name));
+    }
+    expect(blockAfter("  .theme-light {")).toContain("color-scheme: light;");
+  });
+
+  it("prints on light paper in every theme", () => {
+    const print = css.replace(/\s+/g, " ");
+    expect(print).toContain("@media print { .dark { color-scheme: light; } }");
+    expect(print).toContain(
+      "@media print { body { background-color: transparent; } }",
+    );
+  });
+});
+
 const textPairs: ReadonlyArray<[string, string]> = [
   ["--color-fg", "--color-bg"],
   ["--color-fg", "--color-surface"],

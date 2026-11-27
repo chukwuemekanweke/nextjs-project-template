@@ -2,6 +2,7 @@ import { DarkModeSwitch, ThemeProvider } from "@template/ui-core";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import { render } from "vitest-browser-react";
+import { emulateMedia } from "../../test/print-media";
 import type { DashboardNavGroup } from "../types";
 import { Breadcrumbs } from "./breadcrumbs";
 import { DashboardBrand } from "./dashboard-brand";
@@ -403,5 +404,37 @@ describe("tablet", () => {
       .not.toBeVisible();
     expect(getComputedStyle(sidebar()).display).toBe("none");
     expect(document.documentElement.scrollWidth).toBe(834);
+  });
+});
+
+describe("print", () => {
+  afterEach(async () => {
+    await emulateMedia("");
+  });
+
+  it("prints only the page content, without navigation or offsets", async () => {
+    await render(<Shell />);
+    await emulateMedia("print");
+
+    expect(matchMedia("print").matches).toBe(true);
+    const chrome = document.querySelectorAll("[data-print-hidden]");
+    expect(chrome).toHaveLength(3);
+    for (const element of chrome) {
+      await expect.poll(() => getComputedStyle(element).display).toBe("none");
+    }
+    const main = document.getElementById("main-content")!;
+    const shell = document.querySelector("[data-dashboard-shell]")!;
+    // Polled: the stylesheet can update after the first render.
+    await expect.poll(() => getComputedStyle(main).padding).toBe("0px");
+    await expect.poll(() => getComputedStyle(main).maxWidth).toBe("none");
+    await expect
+      .poll(() => getComputedStyle(main.parentElement!).paddingLeft)
+      .toBe("0px");
+    await expect
+      .poll(() => getComputedStyle(shell).backgroundColor)
+      .toBe("rgba(0, 0, 0, 0)");
+    await expect
+      .element(page.getByRole("heading", { name: "Page" }))
+      .toBeVisible();
   });
 });

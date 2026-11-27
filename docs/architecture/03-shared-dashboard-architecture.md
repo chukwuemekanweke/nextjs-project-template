@@ -41,6 +41,8 @@ Breakpoints: phone below `md` (top bar, tab bar for the user portal, drawer), ta
 
 `DashboardTopbar` is the sticky application bar (68px desktop, 64px phone minimums with the reference padding around 44px controls): the menu button (below `lg`) or the collapse button (from `lg`), the brand (below `lg`), breadcrumbs (from `md`), the bordered theme switch (from `md`; on phones it is the drawer's Dark mode switch) and app `actions` such as `ProfileMenu`. It is distinct from `DashboardHeader`, the page heading inside the content area. `ProfileMenu` is a Radix dropdown: keyboard navigation, Escape and outside-click dismissal, focus return; each action must spread the props it receives (the apps' `LogoutButton` does). `main` (`#main-content`, with a skip link) is max 1280px with 32px padding (20×16px on phones) and is not centred, as in the reference. Layers: top bar and sidebar `z-sticky`, tab bar `z-tabbar`, drawer scrim/panel `z-overlay`/`z-drawer`, menus `z-popover`, tooltips `z-tooltip`.
 
+In print, `DashboardShell` hides the sidebar, drawer, top bar and tab bar and removes the content offset, padding and width cap, so only page content prints; pages hide their own controls (Trello FE-UI-018 billing documents).
+
 The shell components are client modules (context, media queries, event handlers). `Breadcrumbs`, `DashboardHeader` and `DashboardBrand` are server-renderable; all app-specific values are supplied by the app shells.
 
 ## Page and settings conventions
