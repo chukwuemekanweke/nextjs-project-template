@@ -186,9 +186,9 @@
       "securitySensitive": [],
       "timeSensitive": [],
       "designOnlyContent": [
-        "Three-step checklist (passkey, identity verification, choose a plan) is product copy; keep only steps the deployment supports (KYC and plans are configurable)."
+        "Three-step checklist (passkey, identity verification, choose a plan) is fixed copy, decided 2026-11-27: render the same three steps in every deployment; it is not capability-driven."
       ],
-      "openQuestions": ["Is the checklist static copy or capability-driven?"],
+      "openQuestions": [],
       "followUpTicket": "BE-NOTIF-02",
       "references": {
         "live": "email-pages/live/AccountCreated.html",
@@ -1044,13 +1044,10 @@
       ],
       "timeSensitive": [],
       "designOnlyContent": [
-        "Template is a receipt (payment confirmation) although its type is SubscriptionInvoice; the current backend template says 'Thank you for your order' with AmountDue.",
+        "Template is a receipt (payment confirmation) although its type is SubscriptionInvoice; the current backend template says 'Thank you for your order' with AmountDue. Decided 2026-11-27: rename the enum member to SubscriptionReceipt, keeping value 10 (no producer exists, so nothing persisted needs migrating), and rename Invoice.html and its seed rows to match; the Invoice name stays for InvoiceIssued and InvoiceOverdue, which are real invoices.",
         "Attachments, tax lines and masked card details have no backend source."
       ],
-      "openQuestions": [
-        "Rename to a receipt type or keep SubscriptionInvoice for the receipt email?",
-        "Attachment vs authenticated link."
-      ],
+      "openQuestions": ["Attachment vs authenticated link."],
       "followUpTicket": "BE-NOTIF-07",
       "references": {
         "live": "email-pages/live/Invoice.html",
@@ -2147,7 +2144,7 @@
       "preheader": "A complimentary plan was added to your account.",
       "category": "subscriptions",
       "recipient": "The user receiving the allocation",
-      "proposedTrigger": "Allocation created (or activated, if it starts later) — decide one.",
+      "proposedTrigger": "When the allocated subscription becomes active, decided 2026-11-27: in AllocateSubscriptionHandler for allocations that start immediately, and in ActivateAllocatedSubscriptionHandler for future-dated (Scheduled) ones. Exactly one email per allocation; nothing at scheduling time.",
       "variables": [
         {
           "name": "FirstName",
@@ -2224,7 +2221,7 @@
       "designOnlyContent": [
         "'Auto-renew Off' row is implied by allocation; omit unless meaningful."
       ],
-      "openQuestions": ["Send at allocation or at activation?"],
+      "openQuestions": [],
       "followUpTicket": "BE-NOTIF-03",
       "references": {
         "live": "email-pages/live/SubscriptionAllocated.html",

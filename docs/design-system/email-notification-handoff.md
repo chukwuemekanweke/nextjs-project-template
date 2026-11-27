@@ -311,8 +311,10 @@ producing module.
 - **Types:** `SubscriptionActivated`, `SubscriptionAllocated`,
   `SubscriptionCancelled`, `TrialExpired`, `UpcomingRenewal` (new types for the
   proposed ones), payload enrichment of `SubscriptionRenewalReminder`.
-- **Triggers:** `ActivateSubscriptionHandler`, `AllocateSubscription` /
-  `ActivateAllocatedSubscriptionHandler`, the three cancellation features,
+- **Triggers:** `ActivateSubscriptionHandler`; `SubscriptionAllocated` when the
+  allocation becomes active (decided): in `AllocateSubscriptionHandler` for an
+  immediate start, in `ActivateAllocatedSubscriptionHandler` for a future-dated
+  one, never at scheduling time; the three cancellation features,
   `ExpireSubscriptionHandler` (Trial source), a new scheduled pre-renewal
   command.
 - **Payloads:** plan name and interval, period dates, auto-renew state, amounts
@@ -355,8 +357,9 @@ producing module.
 
 ### BE-NOTIF-07 — Invoice and receipt notifications
 
-- **Types:** `SubscriptionInvoice` (receipt design), `InvoiceIssued`,
-  `InvoiceOverdue`.
+- **Types:** `SubscriptionReceipt` (receipt design; renamed from
+  `SubscriptionInvoice`, value 10 unchanged, with `Invoice.html` and its seed
+  rows renamed to match), `InvoiceIssued`, `InvoiceOverdue`.
 - **Context:** no invoice or receipt entity, numbering, tax or PDF exists in the
   backend; FE-UI-018 owns the invoice/receipt screens and their backend gaps.
 - **Scope:** after the invoice/receipt domain lands: receipt email on successful
@@ -431,6 +434,7 @@ in-session password change sends `SecuritySettingChanged` (OD-18); the
 reset-code lifetime becomes 3 minutes (OD-19); the `ConfirmEmail` subject
 becomes code-free (DR-142); billing emails may be opted out of and security
 emails never; account and KYC emails stay mandatory (OD-20, BE-NOTIF-08);
-`AccountCreated` fires on `UserEmailConfirmed`. Still open: trigger timing for
-`SubscriptionAllocated`; whether the receipt email keeps
-the `SubscriptionInvoice` name.
+`AccountCreated` fires on `UserEmailConfirmed` and its checklist is fixed copy;
+`SubscriptionAllocated` fires when the allocation becomes active; the receipt
+type is renamed `SubscriptionReceipt` (value 10 unchanged). Remaining per-template
+questions are listed in the catalog.

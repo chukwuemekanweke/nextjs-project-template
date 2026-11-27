@@ -119,8 +119,7 @@ Every row also needs the design-aligned layout, because the current backend temp
 - **Category / recipient:** account · The new user
 - **Trigger:** UserEmailConfirmed, decided 2026-11-27 (the account becomes usable only after email confirmation; sending on UserCreated would welcome unconfirmed addresses). Produce it from the existing Consumer/Authentication/UserEmailConfirmedHandler.
 - **Actions:** primary "Go to your dashboard" → User portal /dashboard (sign-in redirects as usual)
-- **Design content without a backend source:** Three-step checklist (passkey, identity verification, choose a plan) is product copy; keep only steps the deployment supports (KYC and plans are configurable).
-- **Open questions:** Is the checklist static copy or capability-driven?
+- **Design content without a backend source:** Three-step checklist (passkey, identity verification, choose a plan) is fixed copy, decided 2026-11-27: render the same three steps in every deployment; it is not capability-driven.
 
 | Variable       | Type | Req. | Source                                                                                  | Format                                                                                            | Sensitive | Missing data                                                   | Status      |
 | -------------- | ---- | ---- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------- | ----------- |
@@ -281,8 +280,8 @@ Every row also needs the design-aligned layout, because the current backend temp
 - **Trigger:** Successful subscription payment once invoice and receipt records exist (after ActivateSubscription / renewal fulfilment).
 - **Actions:** primary "View receipt" → User portal receipt view (FE-UI-018; route not yet defined); link "Download invoice (PDF)" → Authenticated download; never a public or signed long-lived URL
 - **Security:** PDF attachments: the delivery message has no attachment support today (EmailDeliveryMessage has HtmlBody only).
-- **Design content without a backend source:** Template is a receipt (payment confirmation) although its type is SubscriptionInvoice; the current backend template says 'Thank you for your order' with AmountDue. Attachments, tax lines and masked card details have no backend source.
-- **Open questions:** Rename to a receipt type or keep SubscriptionInvoice for the receipt email? Attachment vs authenticated link.
+- **Design content without a backend source:** Template is a receipt (payment confirmation) although its type is SubscriptionInvoice; the current backend template says 'Thank you for your order' with AmountDue. Decided 2026-11-27: rename the enum member to SubscriptionReceipt, keeping value 10 (no producer exists, so nothing persisted needs migrating), and rename Invoice.html and its seed rows to match; the Invoice name stays for InvoiceIssued and InvoiceOverdue, which are real invoices. Attachments, tax lines and masked card details have no backend source.
+- **Open questions:** Attachment vs authenticated link.
 
 | Variable                   | Type  | Req. | Source                                                                                                      | Format                                                                                            | Sensitive | Missing data                                                   | Status      |
 | -------------------------- | ----- | ---- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------- | ----------- |
@@ -510,11 +509,10 @@ Every row also needs the design-aligned layout, because the current backend temp
 - **Subject (sample):** You've been given Template Premium
 - **Preheader:** A complimentary plan was added to your account.
 - **Category / recipient:** subscriptions · The user receiving the allocation
-- **Trigger:** Allocation created (or activated, if it starts later) — decide one.
+- **Trigger:** When the allocated subscription becomes active, decided 2026-11-27: in AllocateSubscriptionHandler for allocations that start immediately, and in ActivateAllocatedSubscriptionHandler for future-dated (Scheduled) ones. Exactly one email per allocation; nothing at scheduling time.
 - **Actions:** primary "See what's included" → User portal /billing
 - **Security:** Do not name the administrator who made the allocation unless product approves.
 - **Design content without a backend source:** 'Auto-renew Off' row is implied by allocation; omit unless meaningful.
-- **Open questions:** Send at allocation or at activation?
 
 | Variable           | Type | Req. | Source                                                                                | Format                                                                                            | Sensitive | Missing data                                                   | Status      |
 | ------------------ | ---- | ---- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------- | ----------- |
