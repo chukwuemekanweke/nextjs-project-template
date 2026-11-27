@@ -89,6 +89,29 @@ export function groupedBars(
   return bars;
 }
 
+/**
+ * Horizontal extent of one category, for highlighting a selected period.
+ * Bars use the category's group; a line uses an equal-width band centred on
+ * the point and clipped to the plot.
+ */
+export function categoryBand(
+  index: number,
+  categoryCount: number,
+  kind: "line" | "bars",
+): Readonly<{ x: number; width: number }> {
+  const width = CHART_WIDTH / Math.max(categoryCount, 1);
+  if (kind === "bars") {
+    return { width: round(width), x: round(index * width) };
+  }
+  const centre =
+    categoryCount > 1
+      ? (index * CHART_WIDTH) / (categoryCount - 1)
+      : CHART_WIDTH / 2;
+  const start = Math.max(0, centre - width / 2);
+  const end = Math.min(CHART_WIDTH, centre + width / 2);
+  return { width: round(end - start), x: round(start) };
+}
+
 /** Horizontal gridline positions (quarters of the scale). */
 export function gridLines(): number[] {
   return [0, 0.25, 0.5, 0.75, 1].map((fraction) =>

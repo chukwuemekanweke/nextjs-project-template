@@ -33,7 +33,8 @@ vi.mock("@template/ui-core", async (importOriginal) => ({
       : null,
 }));
 
-import { AdminRangeFilter } from "./filter-bar";
+import { AdminChartSection } from "./chart-section";
+import { AdminRangeFilter, AdminSearchFilter } from "./filter-bar";
 import { AdminForbidden } from "./forbidden";
 import { AdminKpiCard } from "./kpi-card";
 import { AdminDetailHeader, AdminListCard } from "./list-detail";
@@ -119,6 +120,81 @@ describe("AdminRangeFilter", () => {
     );
     expect(markup).toMatch(/<select[^>]*disabled=""/);
     expect(markup).toContain("Not connected.");
+  });
+
+  it("offers a custom range only when the page can own explicit dates", () => {
+    const preset = renderToStaticMarkup(
+      <AdminRangeFilter onChange={() => undefined} value="30d" />,
+    );
+    expect(preset).not.toContain("Custom range");
+    const custom = renderToStaticMarkup(
+      <AdminRangeFilter
+        onChange={() => undefined}
+        onSelectCustom={() => undefined}
+        value="custom"
+      />,
+    );
+    expect(custom).toMatch(/<option value="custom" selected="">Custom range/);
+  });
+});
+
+describe("AdminSearchFilter", () => {
+  it("links its reason when no handler is wired", () => {
+    const markup = renderToStaticMarkup(
+      <AdminSearchFilter placeholder="Name" value="" />,
+    );
+    const describedBy = /aria-describedby="([^"]+)"/.exec(markup)?.[1];
+    expect(describedBy).toBeDefined();
+    expect(markup).toContain(`id="${describedBy}"`);
+    expect(markup).toContain("Filtering is not available yet");
+    expect(markup).toMatch(/<input[^>]*disabled=""/);
+  });
+});
+
+describe("AdminChartSection selection", () => {
+  const data = {
+    categories: ["Mon", "Tue"],
+    series: [{ label: "Users", series: 1 as const, values: [3, 5] }],
+    state: "ready" as const,
+    summary: "Users rose from 3 to 5.",
+  };
+
+  it("marks the selected period on the buttons and the plot", () => {
+    const markup = renderToStaticMarkup(
+      <AdminChartSection
+        data={data}
+        kind="line"
+        selection={{
+          label: "Period",
+          onSelect: () => undefined,
+          selected: "Tue",
+        }}
+        title="Users"
+      />,
+    );
+    expect(markup).toContain('aria-label="Period"');
+    expect(markup).toMatch(/aria-pressed="true"[^>]*>(?:<[^>]*>)*Tue/);
+    expect(markup).toMatch(/aria-pressed="false"[^>]*>(?:<[^>]*>)*Mon/);
+    expect(markup).toContain("data-selected-band");
+    expect(markup).toContain("Selected: Tue.");
+  });
+
+  it("explains inert selection and draws no band without a selection", () => {
+    const markup = renderToStaticMarkup(
+      <AdminChartSection
+        data={data}
+        kind="bars"
+        selection={{
+          disabledReason: "Needs the analytics API.",
+          label: "Period",
+          selected: null,
+        }}
+        title="Users"
+      />,
+    );
+    expect(markup).toContain("Needs the analytics API.");
+    expect(markup).not.toContain("data-selected-band");
+    expect(markup).toMatch(/<button[^>]*disabled=""/);
   });
 });
 
