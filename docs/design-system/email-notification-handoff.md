@@ -171,7 +171,7 @@ Verified backend facts:
 | Notification type       | `ResetPasswordOtp` = 3, template `ResetPassword.html`, en + fr registered                                                                                                               | `NotificationType.cs`; `0001.template-seeder.postdeploy.sql`                                                                                 |
 | Trigger                 | Request handler sends `ResetPasswordCommand` only when the email belongs to a user; the consumer generates the code and sends the email                                                 | `Application/Authentication/Features/RequestPasswordReset/RequestPasswordResetHandler.cs`; `Consumer/Authentication/ResetPasswordHandler.cs` |
 | Code                    | 6 characters, numeric (`characterLength: 6, isAlphaNumeric: false`), cryptographic RNG                                                                                                  | `ResetPasswordHandler.cs`; `Infrastructure/Authentication/TwoFactorOtpService.cs`                                                            |
-| Expiry                  | 2 minutes from issue (`OtpIntent.PasswordReset => TimeSpan.FromMinutes(2)`); cache entry expires with it                                                                                | `TwoFactorOtpService.ResolveLifetime`                                                                                                        |
+| Expiry                  | 2 minutes from issue (`OtpIntent.PasswordReset => TimeSpan.FromMinutes(2)`); cache entry expires with it. Decided: change to 3 minutes (OD-19, BE-NOTIF-02)                             | `TwoFactorOtpService.ResolveLifetime`                                                                                                        |
 | Re-request while active | No new code and no email while an unexpired reset code exists                                                                                                                           | `ResetPasswordHandler` (`OtpExistsAsync` early return)                                                                                       |
 | Attempts                | 5 failed validations remove the code; a correct code is single-use (removed on success)                                                                                                 | `TwoFactorOtpService.ValidateOtpAsync`, `ResolveMaxFailedAttempts`                                                                           |
 | Validation input        | `Trim().ToUpperInvariant()`; inner spaces are **not** removed                                                                                                                           | `ValidateOtpAsync`                                                                                                                           |
@@ -185,21 +185,26 @@ displayed grouped `629 044`), `OtpExpiresAtUtc` (required, absolute time only,
 no relative phrase), `FirstName` (optional; greeting without a name when
 absent). Drop `LastName` from the payload. Subject stays code-free ("Your
 Template password reset code"). The sample time `11:30 UTC` in the design is
-illustrative; the only verified lifetime is 2 minutes.
+illustrative; the only verified lifetime is 2 minutes, and the decided target
+is 3 minutes (OD-19). The email must render the backend's `OtpExpiresAtUtc`,
+never a hardcoded duration.
 
 `PasswordResetSuccessful` stays a separate notification, sent only after
 `CompletePasswordResetHandler` succeeds (proposed in BE-NOTIF-02). Its design
 copy "you were signed out of all other devices" matches reset behaviour
-(`RevokeAllAsync`).
+(`RevokeAllAsync`). An in-session password change sends
+`SecuritySettingChanged` instead (OD-18): `ChangePasswordHandler` already
+publishes `UserSecurityActivityOccurred` (`password_changed`), and reset
+completion publishes no security activity, so the two never double-send.
 
 Notes for FE-UI-020 (documentation only; this ticket changes no frontend auth
 code):
 
 - Strip whitespace inside the entered code before submitting; the email shows
   it grouped and the backend does not remove inner spaces.
-- With a 2-minute lifetime, "resend" within that window sends nothing; the UI
-  must not promise a new email in that case, and expiry copy must not invent a
-  different duration.
+- While a code is active (2 minutes today, 3 once BE-NOTIF-02 lands), "resend"
+  sends nothing; the UI must not promise a new email in that case, and expiry
+  copy must not state a duration the backend does not return.
 - After 5 wrong codes the code is gone; the user must request a new one.
 - Never log or persist the entered code; use synthetic codes in fixtures.
 
@@ -274,18 +279,23 @@ producing module.
   proposed value; append, never renumber).
 - **Triggers:** `UserEmailConfirmed` → `AccountCreated`; scheduled follow-up
   while unconfirmed; successful reset completion → `PasswordResetSuccessful`;
-  `UserSecurityActivityOccurred` → `SecuritySettingChanged`.
+  `UserSecurityActivityOccurred` → `SecuritySettingChanged`, including
+  in-session `password_changed` (OD-18).
+- **Reset-code lifetime:** change `OtpIntent.PasswordReset` in
+  `TwoFactorOtpService.ResolveLifetime` from 2 to 3 minutes (OD-19), with its
+  unit test.
 - **Payloads:** per the catalog: drop `LastName` and `VerifyUrl`; masked IP,
   device, location, method and time for security emails; absolute expiry; CTA
   URLs from configuration.
 - **Security:** no OTP in subject or URL; `ConfirmEmail` subject made code-free
-  (needs product approval, DR-142); no recovery codes or secrets.
+  ("Your Template confirmation code", approved, DR-142); no recovery codes or
+  secrets.
 - **Acceptance:** each trigger produces exactly one email per event; reset
   success email only after completion; design copy and variables match the
   catalog.
 - **Testing:** consumer integration tests per trigger (existing
   `WhenHandling*` pattern), idempotency on redelivery.
-- **Dependencies:** BE-NOTIF-01; OD-18, OD-19.
+- **Dependencies:** BE-NOTIF-01 (OD-18 and OD-19 are decided).
 
 ### BE-NOTIF-03 — Subscription lifecycle notifications
 
@@ -381,9 +391,10 @@ BE-NOTIF-01). Email-preference management has no API (DR-051).
 ## 12. Open questions
 
 Registered as [OD-18 … OD-20](./discrepancy-register.md#open-decisions) and in
-each template's "open questions" in the catalog. Highlights: whether in-session
-password change sends `PasswordResetSuccessful` or `SecuritySettingChanged`;
-whether a 2-minute reset-code lifetime survives real email latency; whether
-billing emails become preference-controlled; trigger timing for
+each template's "open questions" in the catalog. Decided on 2026-11-27:
+in-session password change sends `SecuritySettingChanged` (OD-18); the
+reset-code lifetime becomes 3 minutes (OD-19); the `ConfirmEmail` subject
+becomes code-free (DR-142). Still open: whether billing emails become
+preference-controlled; trigger timing for
 `AccountCreated` and `SubscriptionAllocated`; whether the receipt email keeps
 the `SubscriptionInvoice` name.

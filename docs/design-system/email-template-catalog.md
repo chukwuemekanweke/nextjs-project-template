@@ -137,8 +137,7 @@ Every row also needs the design-aligned layout, because the current backend temp
 - **Actions:** none (code only)
 - **Security:** One-time code. Never in a URL, log, telemetry or analytics event; the notification log already masks keys containing 'otp'.
 - **Time-sensitive:** Expiry: 5 minutes unless the registration session's remaining lifetime is shorter (AuthenticationOtpDefaults.EmailConfirmationLifetime).
-- **Design content without a backend source:** Subject contains the code. Recommend a code-free subject ('Your Template confirmation code') so it does not appear in lock-screen previews and mailbox search (DR-142). Backend template still renders a 'Confirm your email' button with an empty VerifyUrl; the design has no CTA. Remove the button and the VerifyUrl key.
-- **Open questions:** Approve removing the code from the subject?
+- **Design content without a backend source:** Subject contains the code. Decided by Product: use a code-free subject ('Your Template confirmation code') so the code does not appear in lock-screen previews or mailbox search (DR-142). Backend template still renders a 'Confirm your email' button with an empty VerifyUrl; the design has no CTA. Remove the button and the VerifyUrl key.
 
 | Variable          | Type     | Req. | Source                                          | Format            | Sensitive | Missing data | Status      |
 | ----------------- | -------- | ---- | ----------------------------------------------- | ----------------- | --------- | ------------ | ----------- |
@@ -172,14 +171,13 @@ Every row also needs the design-aligned layout, because the current backend temp
 - **Trigger:** Unchanged.
 - **Actions:** none (code only)
 - **Security:** OTP, not a link: no 'Reset password' button and never put the code in a URL. Must say the password changes only if someone enters the code, and to ignore the email otherwise (present in the design). LastName is sent but not rendered by the design; drop it from the payload (data minimisation).
-- **Time-sensitive:** Verified expiry 2 minutes from issue (TwoFactorOtpService.ResolveLifetime). The design's '11:30 UTC' is sample data. While an unexpired reset code exists, a new request sends nothing (ResetPasswordHandler returns early).
-- **Open questions:** Is a 2-minute lifetime long enough for email delivery? (OD-19)
+- **Time-sensitive:** Verified expiry today: 2 minutes from issue (TwoFactorOtpService.ResolveLifetime). Decided (OD-19): change the password-reset lifetime to 3 minutes (BE-NOTIF-02). The design's '11:30 UTC' is sample data. While an unexpired reset code exists, a new request sends nothing (ResetPasswordHandler returns early).
 
-| Variable          | Type     | Req. | Source                                                        | Format                                                          | Sensitive | Missing data                                                   | Status      |
-| ----------------- | -------- | ---- | ------------------------------------------------------------- | --------------------------------------------------------------- | --------- | -------------------------------------------------------------- | ----------- |
-| `FirstName`       | text     | no   | Stakeholder profile                                           | Plain text, HTML-escaped                                        | personal  | Omit the name: greeting reads 'Hi,' / heading without the name | backend-key |
-| `OtpCode`         | otp      | yes  | ITwoFactorOtpService (intent PasswordReset), 6 numeric digits | otp (see formats)                                               | secret    | Do not send                                                    | backend-key |
-| `OtpExpiresAtUtc` | dateTime | yes  | TwoFactorOtp.ExpiresAtUtc (issue time + 2 minutes)            | dateTimeUtc; drop the relative suffix the backend appends today | none      | Do not send                                                    | backend-key |
+| Variable          | Type     | Req. | Source                                                                                         | Format                                                          | Sensitive | Missing data                                                   | Status      |
+| ----------------- | -------- | ---- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | --------- | -------------------------------------------------------------- | ----------- |
+| `FirstName`       | text     | no   | Stakeholder profile                                                                            | Plain text, HTML-escaped                                        | personal  | Omit the name: greeting reads 'Hi,' / heading without the name | backend-key |
+| `OtpCode`         | otp      | yes  | ITwoFactorOtpService (intent PasswordReset), 6 numeric digits                                  | otp (see formats)                                               | secret    | Do not send                                                    | backend-key |
+| `OtpExpiresAtUtc` | dateTime | yes  | TwoFactorOtp.ExpiresAtUtc (issue time + lifetime: 2 minutes today, 3 minutes decided in OD-19) | dateTimeUtc; drop the relative suffix the backend appends today | none      | Do not send                                                    | backend-key |
 
 ### PasswordResetSuccessful
 
@@ -189,9 +187,8 @@ Every row also needs the design-aligned layout, because the current backend temp
 - **Category / recipient:** security · The account holder
 - **Trigger:** Only after CompletePasswordResetHandler succeeds (password reset and RevokeAllAsync committed). Never on the request step.
 - **Actions:** primary "Secure my account" → User portal password-reset entry (FE-UI-020 route) with no token or code; support contact in the footer.
-- **Security:** Copy 'you were signed out of all other devices' is accurate for reset: RevokeAllAsync revokes every session. Do not reuse this copy for in-session password change.
+- **Security:** Copy 'you were signed out of all other devices' is accurate for reset: RevokeAllAsync revokes every session. In-session password change sends SecuritySettingChanged instead (OD-18), so this copy is never used for it.
 - **Design content without a backend source:** Device and location rows need the request's IP and user agent passed into the completion event; omit rows when absent.
-- **Open questions:** Does in-session ChangePassword send this template or SecuritySettingChanged (password_changed)? (OD-18)
 
 | Variable              | Type     | Req. | Source                                                                                                    | Format                                                                                            | Sensitive | Missing data | Status   |
 | --------------------- | -------- | ---- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | --------- | ------------ | -------- |
@@ -379,10 +376,9 @@ Every row also needs the design-aligned layout, because the current backend temp
 - **Subject (sample):** Security change on your Template account
 - **Preheader:** A security setting on your account changed.
 - **Category / recipient:** security · The account holder
-- **Trigger:** UserSecurityActivityOccurred, one email per activity.
+- **Trigger:** UserSecurityActivityOccurred, one email per activity. Includes in-session password change (ChangePasswordHandler publishes password_changed), decided in OD-18.
 - **Actions:** primary "Review security" → User portal /security
 - **Security:** Never include recovery codes, authenticator secrets or passkey identifiers.
-- **Open questions:** Should password_changed use this template or PasswordResetSuccessful? (OD-18)
 
 | Variable              | Type     | Req. | Source                                                                                 | Format                                                                                            | Sensitive | Missing data                                                   | Status      |
 | --------------------- | -------- | ---- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------- | ----------- |

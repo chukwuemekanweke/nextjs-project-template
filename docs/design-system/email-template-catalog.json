@@ -258,10 +258,10 @@
         "Expiry: 5 minutes unless the registration session's remaining lifetime is shorter (AuthenticationOtpDefaults.EmailConfirmationLifetime)."
       ],
       "designOnlyContent": [
-        "Subject contains the code. Recommend a code-free subject ('Your Template confirmation code') so it does not appear in lock-screen previews and mailbox search (DR-142).",
+        "Subject contains the code. Decided by Product: use a code-free subject ('Your Template confirmation code') so the code does not appear in lock-screen previews or mailbox search (DR-142).",
         "Backend template still renders a 'Confirm your email' button with an empty VerifyUrl; the design has no CTA. Remove the button and the VerifyUrl key."
       ],
-      "openQuestions": ["Approve removing the code from the subject?"],
+      "openQuestions": [],
       "followUpTicket": "BE-NOTIF-02",
       "references": {
         "live": "email-pages/live/ConfirmEmail.html",
@@ -398,7 +398,7 @@
           "name": "OtpExpiresAtUtc",
           "type": "dateTime",
           "required": true,
-          "source": "TwoFactorOtp.ExpiresAtUtc (issue time + 2 minutes)",
+          "source": "TwoFactorOtp.ExpiresAtUtc (issue time + lifetime: 2 minutes today, 3 minutes decided in OD-19)",
           "format": "dateTimeUtc; drop the relative suffix the backend appends today",
           "sensitive": "none",
           "missing": "Do not send",
@@ -412,13 +412,11 @@
         "LastName is sent but not rendered by the design; drop it from the payload (data minimisation)."
       ],
       "timeSensitive": [
-        "Verified expiry 2 minutes from issue (TwoFactorOtpService.ResolveLifetime). The design's '11:30 UTC' is sample data.",
+        "Verified expiry today: 2 minutes from issue (TwoFactorOtpService.ResolveLifetime). Decided (OD-19): change the password-reset lifetime to 3 minutes (BE-NOTIF-02). The design's '11:30 UTC' is sample data.",
         "While an unexpired reset code exists, a new request sends nothing (ResetPasswordHandler returns early)."
       ],
       "designOnlyContent": [],
-      "openQuestions": [
-        "Is a 2-minute lifetime long enough for email delivery? (OD-19)"
-      ],
+      "openQuestions": [],
       "followUpTicket": "BE-NOTIF-02",
       "references": {
         "live": "email-pages/live/ResetPassword.html",
@@ -498,15 +496,13 @@
         }
       ],
       "securitySensitive": [
-        "Copy 'you were signed out of all other devices' is accurate for reset: RevokeAllAsync revokes every session. Do not reuse this copy for in-session password change."
+        "Copy 'you were signed out of all other devices' is accurate for reset: RevokeAllAsync revokes every session. In-session password change sends SecuritySettingChanged instead (OD-18), so this copy is never used for it."
       ],
       "timeSensitive": [],
       "designOnlyContent": [
         "Device and location rows need the request's IP and user agent passed into the completion event; omit rows when absent."
       ],
-      "openQuestions": [
-        "Does in-session ChangePassword send this template or SecuritySettingChanged (password_changed)? (OD-18)"
-      ],
+      "openQuestions": [],
       "followUpTicket": "BE-NOTIF-02",
       "references": {
         "live": "email-pages/live/PasswordResetSuccessful.html",
@@ -1469,7 +1465,7 @@
       "preheader": "A security setting on your account changed.",
       "category": "security",
       "recipient": "The account holder",
-      "proposedTrigger": "UserSecurityActivityOccurred, one email per activity.",
+      "proposedTrigger": "UserSecurityActivityOccurred, one email per activity. Includes in-session password change (ChangePasswordHandler publishes password_changed), decided in OD-18.",
       "variables": [
         {
           "name": "FirstName",
@@ -1544,9 +1540,7 @@
       ],
       "timeSensitive": [],
       "designOnlyContent": [],
-      "openQuestions": [
-        "Should password_changed use this template or PasswordResetSuccessful? (OD-18)"
-      ],
+      "openQuestions": [],
       "followUpTicket": "BE-NOTIF-02",
       "references": {
         "live": "email-pages/live/SecuritySettingChanged.html",
