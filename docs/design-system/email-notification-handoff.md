@@ -157,8 +157,8 @@ For the owning backend implementation (proposed requirements):
   - **Security emails can never be opted out of:** categories `security` and
     `authentication` (OTPs, reset, sign-in, lock, security change, admin
     role). They carry no "Email preferences" or "Unsubscribe" link.
-  - `account` and `kyc` emails stay non-optional until Product decides
-    otherwise.
+  - **Account and KYC emails can never be opted out of:** categories `account`
+    and `kyc`. They carry no "Email preferences" or "Unsubscribe" link.
   - Until BE-NOTIF-08 lands, omit the preferences link everywhere
     ([DR-051](./discrepancy-register.md#dr-051)); the current base template's
     empty "Unsubscribe" link must go.
@@ -372,8 +372,8 @@ producing module.
   ([DR-051](./discrepancy-register.md#dr-051)); the user portal Preferences
   screen has non-working notification controls (DR-090).
 - **Types:** opt-out allowed for categories `subscriptions`, `invoices`,
-  `payments`, `wallet`; never for `security` or `authentication`; `account`
-  and `kyc` non-optional until decided.
+  `payments`, `wallet`; never for `security`, `authentication`, `account` or
+  `kyc`.
 - **Scope:** per-user preference storage and owner-scoped read/update API; a
   preference check in the dispatch path before rendering (skipped emails logged
   as suppressed, not failed); `EmailPreferencesUrl` in the footer and a
@@ -429,7 +429,7 @@ each template's "open questions" in the catalog. Decided on 2026-11-27:
 in-session password change sends `SecuritySettingChanged` (OD-18); the
 reset-code lifetime becomes 3 minutes (OD-19); the `ConfirmEmail` subject
 becomes code-free (DR-142); billing emails may be opted out of and security
-emails never (OD-20, BE-NOTIF-08). Still open: whether `account` and `kyc`
-emails become optional; trigger timing for
+emails never; account and KYC emails stay mandatory (OD-20, BE-NOTIF-08).
+Still open: trigger timing for
 `AccountCreated` and `SubscriptionAllocated`; whether the receipt email keeps
 the `SubscriptionInvoice` name.
