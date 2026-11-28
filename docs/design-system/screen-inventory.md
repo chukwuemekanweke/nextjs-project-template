@@ -640,15 +640,15 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 **Identity verification (KYC)** — state-flow; target `user-portal`; auth: authenticated.
 
 - **Artboards:** `UserVerification` — 24 reference files (desktop/mobile; dark/light; states: expired, inprogress, notstarted, pending, rejected, verified).
-- **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-022.
-- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 14 compared, 10 compared-representative.
-- **Works today:** Only profile.isVerified is displayed.
-- **Composition (Trello FE-UI-009):** `apps/user-portal/src/features/verification/` — `verification-model.ts` (six-state union, history, loading/error/unknown, action availability, date formatting), `verification-sections.tsx` (header, status panel, instruction steps, history table with stacked phone rows, action slot), `verification-preview.fixtures.ts` (deterministic fixtures, tests only). All six states, loading, error, unknown and empty history are rendered by `verification-screen.test.tsx`; no route, navigation item or production import.
-- **Actions:** start / continue / retry / refresh are intents reported through `onAction`; without a handler they render disabled with "Identity verification is not available yet." Pending offers only Refresh status; verified has none; rejected without retry shows the configured support email.
-- **Unsupported / missing backend:** KYC session creation (hosted provider link); Verification status and attempt history; Retry rules
-- **Gap:** No production route, navigation item or data adapter until a KYC API exists. CAF-FE-006 adds `/verification` (breadcrumb Account > Verification, sidebar after Profile) and maps the API into the view model.
-- **Depends on:** Backend KYC API
-- **Note:** Blocked for production. Previews are typed fixtures rendered by app tests, never the workbench (no duplicate pages).
+- **Status:** Implemented (A); **backend:** Existing; **priority:** P3; **ticket:** CAF-FE-006.
+- **QA (FE-UI-016):** approved composition baseline passed (14 compared, 10 representative); CAF-FE-006 preserved it for the live route.
+- **Works today:** `/verification`, sidebar/breadcrumb navigation and the dashboard callout use authoritative current KYC state through authenticated BFF routes.
+- **Composition:** `verification-live.tsx` connects the existing `verification-model.ts` and `verification-sections.tsx` through `verification-adapter.ts`. Preview fixtures remain deterministic and test-only.
+- **Actions:** start / continue / retry use the single backend start endpoint; review states refresh only. Duplicate clicks are ignored, navigation accepts only the backend-returned HTTPS URL, and verified has no action.
+- **Operations:** getCurrentKycVerification GET /api/v1/stakeholders/me/kyc; startKycVerification POST /api/v1/stakeholders/me/kyc/start.
+- **Unsupported / missing backend:** customer attempt history; stable machine-readable KYC error codes.
+- **Depends on:** Environment-specific `Kyc:Kycaid:RedirectUrl`, KYCAid credentials, form ID and trusted hosts.
+- **Note:** `Pending`/`InProgress` polling is bounded with manual refresh. Provider return and URL parameters never prove verification. Automated tests use mocks, not live KYCAid.
 - **Discrepancies:** [DR-054](./discrepancy-register.md#dr-054), [DR-102](./discrepancy-register.md#dr-102), [DR-103](./discrepancy-register.md#dr-103)
 
 ### USR-WALLET

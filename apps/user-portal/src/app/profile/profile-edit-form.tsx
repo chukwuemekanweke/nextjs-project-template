@@ -161,8 +161,8 @@ export function ProfileEditForm({
 }
 
 /**
- * Account verification from `profile.isVerified`. This is not identity
- * verification (KYC), which has no API (DR-054).
+ * Stakeholder verification from the current profile response. The dedicated
+ * KYC workflow and detailed lifecycle live on `/verification`.
  */
 function VerificationBadge({ isVerified }: Readonly<{ isVerified: boolean }>) {
   return isVerified ? (

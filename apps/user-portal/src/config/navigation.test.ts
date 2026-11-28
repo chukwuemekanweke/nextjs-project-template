@@ -33,18 +33,22 @@ describe("user navigation", () => {
     }
   });
 
-  it("does not expose unbuilt wallet or verification screens", () => {
+  it("exposes verification but not the unbuilt wallet screen", () => {
     const labels = [...userNavigation, ...userTabNavigation].map(
       ({ label }) => label,
     );
     expect(labels).not.toContain("Wallet");
-    expect(labels).not.toContain("Verification");
+    expect(userNavigation).toContainEqual({
+      href: "/verification",
+      label: "Verification",
+    });
   });
 
   it("lists Preferences after Security, as in the reference sidebar", () => {
     expect(userNavigation.map(({ label }) => label)).toEqual([
       "Overview",
       "Profile",
+      "Verification",
       "Billing",
       "Security",
       "Preferences",
@@ -82,6 +86,10 @@ describe("userBreadcrumbs", () => {
     expect(userBreadcrumbs("/preferences")).toEqual([
       { label: "Account" },
       { label: "Preferences" },
+    ]);
+    expect(userBreadcrumbs("/verification")).toEqual([
+      { label: "Account" },
+      { label: "Verification" },
     ]);
     expect(userBreadcrumbs("/billing/history")).toEqual([
       { label: "Billing", href: "/billing" },

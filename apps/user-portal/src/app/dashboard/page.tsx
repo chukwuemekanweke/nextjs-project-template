@@ -17,6 +17,7 @@ import {
 import { createAppServerApiClient } from "@/lib/server-api";
 import {
   DashboardMetrics,
+  DashboardVerificationCallout,
   RecentBillingActivityCard,
   SecurityChecklistCard,
 } from "./dashboard-live";
@@ -32,8 +33,7 @@ const PAGE_DESCRIPTION = "Here is the state of your account today.";
  * security and session tiles, the checklist and billing activity load in the
  * browser from the portal's existing queries. Reference content without a
  * backend source is not rendered as data: the wallet tile is unavailable,
- * and the KYC callout, "Top up wallet", country/language/member-since and
- * wallet activity are omitted (DR-018, DR-050, DR-054, DR-059).
+ * while the KYC callout uses the authoritative verification query.
  */
 export default async function DashboardPage() {
   const api = await createAppServerApiClient();
@@ -59,6 +59,8 @@ export default async function DashboardPage() {
         description={PAGE_DESCRIPTION}
         title={`Welcome back, ${greetingName(profile, displayName)}`}
       />
+
+      <DashboardVerificationCallout />
 
       <DashboardMetrics />
 

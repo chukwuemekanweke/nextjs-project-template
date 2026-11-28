@@ -522,4 +522,40 @@ describe("User Portal browser API", () => {
       "http://api.test/api/v1/subscription-plans",
     );
   });
+
+  it("routes KYC reads and starts through the authenticated same-origin BFF", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(
+        Response.json({ isVerified: false, status: "NotStarted" }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({
+          provider: "kycaid",
+          status: "Pending",
+          verificationId: "verification-1",
+          verificationUrl: "https://forms.kycaid.com/form/1",
+        }),
+      );
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+
+    await client.kyc.getCurrentKycVerification();
+    await client.kyc.startKycVerification();
+
+    expect(
+      fetchImplementation.mock.calls.map(([input, init]) => [
+        input.toString(),
+        init?.method,
+        init?.credentials,
+        new Headers(init?.headers).get("Authorization"),
+      ]),
+    ).toEqual([
+      ["/api/kyc", "GET", "same-origin", null],
+      ["/api/kyc/start", "POST", "same-origin", null],
+    ]);
+  });
 });

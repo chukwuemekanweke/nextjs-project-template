@@ -20,6 +20,7 @@ export const FIXTURE_REJECTION_REASON =
 
 const fixtureStates: Record<VerificationStatus, VerificationState> = {
   expired: { expiredAt: "2026-01-16T09:14:00Z", status: "expired" },
+  failed: { decidedAt: "2026-01-16T09:14:00Z", status: "failed" },
   inProgress: { startedAt: "2026-01-15T10:32:00Z", status: "inProgress" },
   notStarted: { status: "notStarted" },
   pending: { status: "pending", submittedAt: "2026-01-15T10:41:00Z" },
@@ -71,6 +72,7 @@ const fixtureAttempts: Record<
   readonly VerificationAttempt[]
 > = {
   expired: [fixtureAttempt(1, "expired")],
+  failed: [fixtureAttempt(1, "failed")],
   inProgress: [fixtureAttempt(1, "inProgress", { updatedAt: undefined })],
   notStarted: [],
   pending: [fixtureAttempt(2, "pending"), fixtureAttempt(1, "rejected")],
@@ -98,5 +100,6 @@ export const verificationFixtureStatuses: readonly VerificationStatus[] = [
   "pending",
   "verified",
   "rejected",
+  "failed",
   "expired",
 ];
