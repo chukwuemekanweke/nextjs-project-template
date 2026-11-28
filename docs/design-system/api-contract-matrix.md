@@ -55,7 +55,7 @@ The backend was not run. Its OpenAPI document was not generated, and no endpoint
 | Frontend operations vs backend            | All 48 methods and paths match. DTO spot checks match the backend records for profile, avatar upload, password reset, purchase, wallet transaction and initiate-payment. Known mismatches: `setPaymentProviderActivation` and `setActiveProvider` omit the backend's optional `reason`, and neither can send the required `X-Step-Up-Authorization` header ([GAP-017-012](./integration-handoff.md#gap-017-012), [GAP-017-002](./integration-handoff.md#gap-017-002)). |
 | Backend vs frontend operations            | 47 non-webhook endpoints have no frontend operation: 40 admin endpoints (users, roles, sessions, KYC, payments, plans, subscriptions, allocation, analytics, audit), plus step-up verification, the payment-provider list, languages, customer KYC (2) and preferences (2).                                                                                                                                                                                            |
 | BFF vs operations                         | Every authenticated User Portal operation goes through a same-origin BFF route. Two BFF routes have no caller: User Portal `POST /api/auth/registrations`, because `useSignUp` calls the backend directly, and Admin Portal `POST /api/auth/session/google`, which has no UI ([GAP-017-022](./integration-handoff.md#gap-017-022)). The Admin Portal has no data BFF routes at all.                                                                                    |
-| Docs/inventory vs backend                 | Several sources still say "no API exists" when the backend now has one: admin compositions (DR-070…074), `productionAdminDashboard`, `USR-VERIFICATION` ("KYC API missing"), `USR-PREFERENCES` and DR-051 (no preferences API), and the OKF authentication domain ("no step-up endpoint or admin MFA exists"). The patch proposal below covers the inventory. OKF and DR updates belong to the lead.                                                                   |
+| Docs/inventory vs backend                 | Several sources still say "no API exists" when the backend now has one: admin compositions (DR-070…074), `productionAdminDashboard`, `USR-PREFERENCES` and DR-051 (no preferences API), and the OKF authentication domain ("no step-up endpoint or admin MFA exists"). Customer KYC was reconciled by CAF-FE-006. The patch proposal below covers the remaining inventory drift.                                                                                       |
 
 ## Authentication and security (B4)
 
@@ -80,7 +80,7 @@ The backend was not run. Its OpenAPI document was not generated, and no endpoint
 - **Billing history** uses page/pageSize, with no filters, export or row drill-down ([GAP-017-025](./integration-handoff.md#gap-017-025)).
 - **Invoices and receipts** have no backend (BE-DS-007, [GAP-017-016](./integration-handoff.md#gap-017-016)). Browser print is `local-static`. Server PDF download is `unavailable`.
 - **Wallet.** Transactions, top-up lookup and payment initiation exist on the backend, but there is no balance read model (BE-DS-005) and no customer list of providers. The initiate amount is a decimal with no idempotency key ([GAP-017-019](./integration-handoff.md#gap-017-019)).
-- **Customer KYC.** The start and status endpoints exist. The frontend must navigate only to the `verificationUrl` the backend returns. The provider's return URL is backend configuration ([GAP-017-017](./integration-handoff.md#gap-017-017)).
+- **Customer KYC.** CAF-FE-006 integrates status and start/resume/restart through authenticated BFF routes. The frontend navigates only to the backend-returned `verificationUrl`, re-reads authoritative state on `/verification`, and polls `Pending`/`InProgress` with a bounded budget. The provider return URL remains environment-specific backend configuration.
 
 ## Admin and public (B6)
 
@@ -159,7 +159,7 @@ The backend was not run. Its OpenAPI document was not generated, and no endpoint
 | `USR-RECEIPT-DETAIL`         | user-portal   | /billing/receipts/[receiptId] (proposed)     | mock-preview-only |       2 | mock-preview-only 1, local-static 1                | 016                |
 | `USR-SECURITY`               | user-portal   | /security?tab=…                              | live              |      16 | live 15, local-static 1                            | —                  |
 | `USR-TWO-FACTOR-SETUP`       | user-portal   | /security (dialog)                           | live              |       4 | live 2, local-static 2                             | —                  |
-| `USR-VERIFICATION`           | user-portal   | /verification (proposed)                     | mock-preview-only |       4 | mock-preview-only 3, unavailable 1                 | 017                |
+| `USR-VERIFICATION`           | user-portal   | /verification                                | live              |       4 | live 4                                             | —                  |
 | `USR-WALLET`                 | user-portal   | /wallet (proposed)                           | mock-preview-only |       4 | mock-preview-only 3, unavailable 1                 | 019                |
 | `USR-WALLET-TOP-UP`          | user-portal   | /wallet (dialog, proposed)                   | mock-preview-only |       2 | mock-preview-only 1, unavailable 1                 | 019                |
 
@@ -231,6 +231,7 @@ Trello was verified on 2026-11-28:
 - Roadmap IDs in `screen-inventory.json` are not Trello IDs; the collision is tracked by GAP-017-023.
 
 BE-DS-001 is in verification rather than DONE, so FE-UI-017 remains open pending acceptance and the PR #56 merge order.
+
 ## Unresolved sources and limitations
 
 - Trello was reconciled on 2026-11-28. Exact verified owners and URLs are in the canonical JSON gap records; roadmap FE-UI identifiers remain distinct from Trello card identifiers.

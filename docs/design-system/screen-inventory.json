@@ -6746,8 +6746,8 @@
       "kind": "state-flow",
       "targetApplication": "user-portal",
       "route": {
-        "existing": null,
-        "proposed": "/verification",
+        "existing": "/verification",
+        "proposed": null,
         "type": "page",
         "authBoundary": "authenticated"
       },
@@ -6964,42 +6964,51 @@
         ]
       },
       "implementation": {
-        "status": "Missing",
-        "classification": "D",
+        "status": "Implemented",
+        "classification": "A",
         "files": [
+          "apps/user-portal/src/app/verification/page.tsx",
+          "apps/user-portal/src/app/api/kyc/route.ts",
+          "apps/user-portal/src/app/api/kyc/start/route.ts",
+          "apps/user-portal/src/features/verification/verification-live.tsx",
+          "apps/user-portal/src/features/verification/verification-adapter.ts",
           "apps/user-portal/src/features/verification/verification-model.ts",
           "apps/user-portal/src/features/verification/verification-sections.tsx",
           "apps/user-portal/src/features/verification/verification-preview.fixtures.ts"
         ],
         "existingFunctionality": [
-          "Only profile.isVerified is displayed.",
-          "Trello FE-UI-009: feature-local composition (header, status panel for all six states, instruction steps, history table with stacked phone rows, loading/error/unknown/empty states) rendered only by tests from typed fixtures; no route or navigation item."
+          "CAF-FE-006: authenticated /verification route, navigation and dashboard callout read authoritative KYC state through same-origin BFF routes.",
+          "The approved FE-UI-009 composition renders loading, preparation, review, verified, rejected, failed, expired, API error, unknown status and bounded-polling exhaustion states."
         ]
       },
       "backend": {
-        "support": "Missing",
-        "operations": [],
+        "support": "Existing",
+        "operations": [
+          "getCurrentKycVerification GET /api/v1/stakeholders/me/kyc",
+          "startKycVerification POST /api/v1/stakeholders/me/kyc/start"
+        ],
         "missingCapabilities": [
-          "KYC session creation (hosted provider link)",
-          "Verification status and attempt history",
-          "Retry rules"
+          "Customer verification attempt history",
+          "Stable machine-readable KYC error codes"
         ]
       },
       "uiGaps": [
-        "No production route, navigation item or data adapter until a KYC API exists; CAF-FE-006 wires /verification (breadcrumb Account > Verification)."
+        "No customer verification-attempt history is shown because the backend exposes only the current attempt."
       ],
-      "dependencies": ["Backend KYC API"],
+      "dependencies": [
+        "Environment-specific backend Kyc:Kycaid:RedirectUrl and KYCAid credentials"
+      ],
       "priority": "P3",
       "roadmapTicket": "FE-UI-022",
       "discrepancies": ["DR-054", "DR-102", "DR-103"],
       "notes": [
-        "Blocked for production. The composition reports start/continue/retry/refresh intents through a callback and renders them disabled without one; it never contacts a provider or collects documents. Fixtures are imported only by tests (enforced)."
+        "The browser navigates only to a backend-returned HTTPS provider URL. Returning to /verification re-reads authoritative state; navigation is never verification proof. Fixtures remain test-only (enforced)."
       ],
       "qa": {
         "ticket": "FE-UI-016 (Trello)",
         "designRevision": "ad9386e",
-        "surface": "preview-composition",
-        "deployedRoute": null,
+        "surface": "application-route",
+        "deployedRoute": "/verification",
         "referenceFiles": {
           "compared": 14,
           "compared-representative": 10

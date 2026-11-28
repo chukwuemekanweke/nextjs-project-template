@@ -12765,28 +12765,31 @@
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
       "route": {
-        "existing": null,
-        "proposed": "/verification",
-        "previewOnly": true
+        "existing": "/verification",
+        "proposed": null,
+        "previewOnly": false
       },
       "implementationFiles": [
+        "apps/user-portal/src/app/verification/page.tsx",
+        "apps/user-portal/src/features/verification/verification-live.tsx",
+        "apps/user-portal/src/features/verification/verification-adapter.ts",
         "apps/user-portal/src/features/verification/verification-sections.tsx",
         "apps/user-portal/src/features/verification/verification-model.ts"
       ],
       "inventoryClassification": {
-        "status": "Missing",
-        "classification": "D",
-        "backendSupport": "Missing"
+        "status": "Implemented",
+        "classification": "A",
+        "backendSupport": "Existing"
       },
-      "mappedClassification": "mock-preview-only",
+      "mappedClassification": "live",
       "actions": [
         {
           "id": "USR-VERIFICATION.read-kyc-status",
           "screenId": "USR-VERIFICATION",
           "verb": "read",
           "name": "Read current KYC status",
-          "classification": "mock-preview-only",
-          "backendCapability": "verified-existing-not-integrated",
+          "classification": "live",
+          "backendCapability": "verified-existing",
           "backend": {
             "endpoint": "GET /api/v1/stakeholders/me/kyc",
             "method": "GET",
@@ -12795,23 +12798,20 @@
             "inCheckedInOpenApi": false
           },
           "bff": {
-            "value": null,
-            "reason": "No BFF route exists (proposed integration)."
+            "value": "GET /api/kyc"
           },
           "apiClient": {
-            "value": null,
-            "reason": "No handwritten api-client operation exists for this verified backend endpoint (proposed integration)."
+            "value": "kyc.getCurrentKycVerification"
           },
           "apiReact": {
-            "value": null,
-            "reason": "No api-react adapter (proposed integration)."
+            "value": "useCurrentKycVerification"
           },
           "dto": {
             "summary": "GetCurrentKycVerificationResponse {verificationId?, provider?, status (NotStarted|Pending|InProgress|Verified|Rejected|Failed|Expired), isVerified, verificationUrl? (resumable, validated HTTPS trusted host), startedAtUtc?, submittedAtUtc?, completedAtUtc?}."
           },
           "authPolicy": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
           "statusSemantics": "Declared: 200, 401.",
-          "uiBehavior": "Preview-only composition: typed loading/empty/error/forbidden states rendered from fixtures in tests; no production route, navigation item or adapter.",
+          "uiBehavior": "Live authenticated route maps authoritative backend state into the approved presentation model; polls only Pending/InProgress with a bounded budget and manual refresh.",
           "backendAuthoritativeFields": [
             "status",
             "isVerified",
@@ -12821,18 +12821,16 @@
             "docs/kycaid-kyc.md@1fcad50 (backend)",
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/KycController.cs:41@1fcad50"
           ],
-          "gapIds": [
-            "GAP-017-017"
-          ],
-          "followUp": "CAF-FE-006 (referenced in docs; status unverified)"
+          "gapIds": [],
+          "followUp": null
         },
         {
           "id": "USR-VERIFICATION.start-verification",
           "screenId": "USR-VERIFICATION",
           "verb": "submit",
           "name": "Start or resume verification",
-          "classification": "mock-preview-only",
-          "backendCapability": "verified-existing-not-integrated",
+          "classification": "live",
+          "backendCapability": "verified-existing",
           "backend": {
             "endpoint": "POST /api/v1/stakeholders/me/kyc/start",
             "method": "POST",
@@ -12841,16 +12839,13 @@
             "inCheckedInOpenApi": false
           },
           "bff": {
-            "value": null,
-            "reason": "No BFF route exists (proposed integration)."
+            "value": "POST /api/kyc/start"
           },
           "apiClient": {
-            "value": null,
-            "reason": "No handwritten api-client operation exists for this verified backend endpoint (proposed integration)."
+            "value": "kyc.startKycVerification"
           },
           "apiReact": {
-            "value": null,
-            "reason": "No api-react adapter (proposed integration)."
+            "value": "useStartKycVerification"
           },
           "dto": {
             "summary": "No body -> StartKycVerificationResponse {verificationId, provider, status, verificationUrl?}."
@@ -12863,18 +12858,16 @@
             "docs/kycaid-kyc.md@1fcad50 (backend)",
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/KycController.cs:20@1fcad50"
           ],
-          "gapIds": [
-            "GAP-017-017"
-          ],
-          "followUp": "CAF-FE-006"
+          "gapIds": [],
+          "followUp": null
         },
         {
           "id": "USR-VERIFICATION.retry-verification",
           "screenId": "USR-VERIFICATION",
           "verb": "retry",
           "name": "Restart after rejected/failed/expired",
-          "classification": "mock-preview-only",
-          "backendCapability": "verified-existing-not-integrated",
+          "classification": "live",
+          "backendCapability": "verified-existing",
           "backend": {
             "endpoint": "POST /api/v1/stakeholders/me/kyc/start",
             "method": "POST",
@@ -12883,16 +12876,13 @@
             "inCheckedInOpenApi": false
           },
           "bff": {
-            "value": null,
-            "reason": "No BFF route exists (proposed integration)."
+            "value": "POST /api/kyc/start"
           },
           "apiClient": {
-            "value": null,
-            "reason": "No handwritten api-client operation exists for this verified backend endpoint (proposed integration)."
+            "value": "kyc.startKycVerification"
           },
           "apiReact": {
-            "value": null,
-            "reason": "No api-react adapter (proposed integration)."
+            "value": "useStartKycVerification"
           },
           "dto": {
             "summary": "Response 200:StartKycVerificationResponse (backend record names; fields not copied)."
@@ -12904,9 +12894,7 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/KycController.cs:20@1fcad50"
           ],
-          "gapIds": [
-            "GAP-017-017"
-          ],
+          "gapIds": [],
           "followUp": null
         },
         {
@@ -12914,11 +12902,10 @@
           "screenId": "USR-VERIFICATION",
           "verb": "navigate",
           "name": "Return from the provider form",
-          "classification": "unavailable",
-          "backendCapability": "partial",
+          "classification": "live",
+          "backendCapability": "verified-existing",
           "backend": {
-            "value": null,
-            "reason": "Provider redirect target is backend configuration Kyc:Kycaid:RedirectUrl (docs example /kyc/complete); no frontend route exists and /verification is only proposed."
+            "value": "Kyc:Kycaid:RedirectUrl -> environment /verification"
           },
           "bff": {
             "value": null,
@@ -12943,9 +12930,7 @@
           "evidence": [
             "docs/kycaid-kyc.md@1fcad50 (backend)"
           ],
-          "gapIds": [
-            "GAP-017-017"
-          ],
+          "gapIds": [],
           "followUp": null
         }
       ]
@@ -13724,32 +13709,6 @@
         "BE-DS-007 — Define invoice and receipt domain and API requirements (https://trello.com/c/8JZSDXfH/44-be-ds-007-define-invoice-and-receipt-domain-and-api-requirements)"
       ],
       "blocker": true,
-      "ticketStatusVerified": true
-    },
-    {
-      "id": "GAP-017-017",
-      "severity": "high",
-      "kind": "missing-integration",
-      "title": "Customer KYC API exists; verification screen is preview-only",
-      "owner": "frontend (+ backend config)",
-      "observed": "GET /stakeholders/me/kyc and POST /stakeholders/me/kyc/start exist since b4c66ed (KYCAID). Inventory and route-mapping still say 'KYC API missing'. Provider redirect target is backend config Kyc:Kycaid:RedirectUrl (doc example /kyc/complete) and no frontend return route exists.",
-      "desired": "api-client kyc operations, BFF routes, /verification route + nav (CAF-FE-006), configured RedirectUrl pointing at the chosen route.",
-      "evidence": [
-        "docs/kycaid-kyc.md@1fcad50 (backend)",
-        "apps/user-portal/src/features/verification/verification-model.ts"
-      ],
-      "prerequisite": "Decide the return route; backend deploy config.",
-      "acceptanceCriteria": [
-        "Navigate only to backend verificationUrl; status re-read on return; restart only for Rejected/Failed/Expired."
-      ],
-      "tests": [
-        "Operation + BFF tests; verification composition tests with live adapter."
-      ],
-      "sequencing": "Highest-value unblocked customer integration.",
-      "relatedTickets": [
-        "CAF-FE-006 — Implement KYCAid KYC user flow (https://trello.com/c/EWDTKQ3u/7-caf-fe-006-implement-kycaid-kyc-user-flow)"
-      ],
-      "blocker": false,
       "ticketStatusVerified": true
     },
     {
