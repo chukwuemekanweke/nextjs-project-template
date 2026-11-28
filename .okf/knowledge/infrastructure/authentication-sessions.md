@@ -17,6 +17,7 @@ code_refs:
     apps/user-portal/src/app/api/auth/passkey/**,
     apps/user-portal/src/proxy.ts,
     apps/user-portal/src/lib/public-paths.ts,
+    apps/user-portal/src/lib/user-layout.ts,
     apps/user-portal/src/app/api/auth/session/**,
     apps/admin-portal/src/lib/session-*.ts,
     apps/admin-portal/src/proxy.ts,
@@ -64,7 +65,9 @@ it to `SessionTokenResponse` rather than introducing a second session format.
 
 The User Portal proxy admits only the exact public pages in
 `src/lib/public-paths.ts` (sign-in, two-factor, register, confirm-email,
-forgot-password); add pages there, never by widening the matcher. Password
+forgot-password); add pages there, never by widening the matcher, and also
+to the authentication-layout paths in `src/lib/user-layout.ts` so anonymous
+pages never render the signed-in dashboard chrome. Password
 reset BFF routes are anonymous, `no-store`, and never set or clear cookies.
 
 Protected-route proxies validate access-token time claims and refresh from the

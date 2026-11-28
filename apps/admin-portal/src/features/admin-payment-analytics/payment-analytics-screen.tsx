@@ -189,7 +189,8 @@ function PaymentAnalyticsContent({
       metrics={model.metrics}
       title="Payment analytics"
     >
-      <div className="grid gap-5 xl:grid-cols-2">
+      {/* min-w-0 + grid-cols-1: tables scroll in their region on phones. */}
+      <div className="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-2">
         <Breakdown rows={model.providers} title="By provider" />
         <Breakdown rows={model.intents} title="By payment intent" />
       </div>

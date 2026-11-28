@@ -133,7 +133,7 @@ function UserDashboardShell({
                 <span className="text-fg-muted break-words">
                   Email{" "}
                   <a
-                    className="text-brand-ink underline-offset-2 hover:underline"
+                    className="text-brand-ink underline underline-offset-2"
                     href={`mailto:${branding.supportEmail}`}
                   >
                     {branding.supportEmail}

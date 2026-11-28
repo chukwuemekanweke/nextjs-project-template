@@ -51,7 +51,12 @@ beforeEach(() => {
 
 describe("UserLayoutShell", () => {
   it("leaves authentication pages outside the dashboard shell", () => {
-    for (const pathname of ["/sign-in", "/sign-in/two-factor", "/register"]) {
+    for (const pathname of [
+      "/sign-in",
+      "/sign-in/two-factor",
+      "/register",
+      "/forgot-password",
+    ]) {
       state.pathname = pathname;
       const markup = render();
       expect(markup).toBe("<p>Page body</p>");
@@ -115,6 +120,11 @@ describe("UserLayoutShell", () => {
     const markup = render();
 
     expect(markup).toContain('href="mailto:support@example.com"');
+    // A link inside running text needs more than colour (WCAG 1.4.1).
+    const supportLinkClass = markup.match(
+      /<a class="([^"]*)" href="mailto:support@example.com"/,
+    )?.[1];
+    expect(supportLinkClass?.split(" ")).toContain("underline");
     expect(markup).toContain("Sign out");
     expect(markup).toContain("<p>Page body</p>");
     expect(markup).toContain('id="main-content"');

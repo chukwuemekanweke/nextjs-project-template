@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@template/ui-core";
+import { Card } from "@template/ui-core";
 import type { FaqItem } from "../types";
 
 /**
@@ -9,11 +9,10 @@ export function FaqGrid({ items }: Readonly<{ items: readonly FaqItem[] }>) {
   return (
     <dl className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
       {items.map((item) => (
-        <Card key={item.question}>
-          <CardContent>
-            <dt className="text-h3 text-fg">{item.question}</dt>
-            <dd className="text-fg-muted mt-1.5">{item.answer}</dd>
-          </CardContent>
+        // The card is the dt/dd group: a <dl> allows one wrapping <div>.
+        <Card className="p-card" key={item.question}>
+          <dt className="text-h3 text-fg">{item.question}</dt>
+          <dd className="text-fg-muted mt-1.5">{item.answer}</dd>
         </Card>
       ))}
     </dl>

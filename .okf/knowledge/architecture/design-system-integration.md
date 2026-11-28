@@ -25,15 +25,17 @@ status: stable
 ---
 
 The UI is being redesigned design-first against the Project Template design
-system, pinned at commit `d23eb85` of
-`chukwuemekanweke/Project-Template-Design-System`; the dashboard shell
-(FE-UI-004) follows revision `a7e2a63` and the authentication screens
-(Trello FE-UI-006) and billing screens (Trello FE-UI-010) follow `ad9386e`,
-each recorded as a scoped revision in the manifest (full manifest
-regeneration outstanding, DR-083; the invoice/receipt records of Trello
-FE-UI-018 also follow `ad9386e`, email templates are tracked separately) (canonical files: the
-numbered `0-foundations` … `4-admin-portal` directories). Detailed planning
-lives in `docs/design-system/`; load it only for UI redesign work.
+system, pinned at commit `ad9386e` of
+`chukwuemekanweke/Project-Template-Design-System` (Trello FE-UI-016
+regenerated the manifest, DR-083 resolved; earlier tickets' `d23eb85` and
+`a7e2a63` pins are kept as `previousPins`). Canonical files are the numbered
+directories: `0-foundations` … `5-invoices-and-receipts` (337 screen files,
+each mapped to one screen record) and `6-emails` (88 email files, mapped to
+the email catalog); `email-pages/` and `project-template-design-html/` are
+exports, never extra references. FE-UI-016's visual, accessibility and
+responsive results are in `docs/design-system/final-visual-qa.md` (matrix:
+`final-visual-qa.json`; per-screen `qa` blocks in the inventory). Detailed
+planning lives in `docs/design-system/`; load it only for UI redesign work.
 
 - Before implementing a screen, read its record in
   `docs/design-system/screen-inventory.json` (reference files, states, route,

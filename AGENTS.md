@@ -42,8 +42,8 @@ repository-wide changes must finish with repository-level verification.
 
 Shared UI and layout changes also run `pnpm test:component`. Test feature pages
 in their apps; the UI workbench holds representative stories for shared
-components only, and visual snapshots stay selective (full visual QA is
-FE-UI-016). See the OKF `testing-strategy` concept.
+components only, and visual snapshots stay selective (the full visual QA
+pass ran in FE-UI-016). See the OKF `testing-strategy` concept.
 
 ## Git output
 
