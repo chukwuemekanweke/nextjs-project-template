@@ -280,6 +280,12 @@ Each adds api-client contracts/operations and api-react hooks for the new endpoi
 - **Scope:** delete compatibility aliases, `tailadmin-theme.css`, deprecated components (`buttonClassName`, `Modal`, `Pagination`, `StatusBadge`, `SectionHeader`, `ThemeToggle`, Solid sections), unused dependencies; licence notices per OD-06; lint rule to error level; full visual and accessibility pass across every implemented screen; update OKF and `docs/architecture/03`, `04`.
 - **Done when:** no TailAdmin/Solid-derived code remains, or remaining files are listed with their notices kept; all verification suites green.
 
+### Trello FE-UI-019 — Transactional email catalog (documentation only)
+
+- **Status:** delivered as documentation (design `ad9386e`). Not roadmap FE-UI-019 (admin MFA); see DR-077 for numbering.
+- **Scope:** catalog of the 22 email designs, content contracts, backend coverage, password-reset OTP contract, client-compatibility requirements and the deferred backend work (BE-DS-008, proposed packages BE-NOTIF-01 … 08): [`email-template-catalog.json`](./email-template-catalog.json), [`email-notification-handoff.md`](./email-notification-handoff.md).
+- **Frontend impact:** none. Email rendering and delivery stay in the backend; the apps only keep CTA destination routes stable (handoff §11). FE-UI-016 reviews the email design source, not portal screens.
+
 ## 5. Recommended order (deviations from the ticket's suggested sequence)
 
 The ticket suggested public → auth → user → admin after primitives. This roadmap runs public and authenticated streams **in parallel** after the shells and puts the verification harness **first**. The public site is low risk but also low dependency, while the auth and billing journeys carry the most live behaviour and benefit most from early, isolated changes. Admin screens beyond the overview are gated by backend capabilities, not by frontend order.

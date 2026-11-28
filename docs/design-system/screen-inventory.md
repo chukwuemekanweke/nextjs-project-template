@@ -6,6 +6,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - A **logical screen** is one user-facing surface (one route, one in-page state machine, one dialog, or one layout pattern). Visual variants (desktop/mobile, light/dark) and business states (billing `active`/`pastdue`, KYC `rejected`) are listed under the screen, never as separate screens.
 - Multi-artboard screens: `AUTH-REGISTER` (email, details), `AUTH-FORGOT-PASSWORD` (request, code entry) and `AUTH-RESET-PASSWORD` (password mismatch, invalid code, done) merge artboards that the design drew separately but that are states of one route (both password-reset screens are states of `/forgot-password`).
+- Transactional email designs (`6-emails/`, `email-pages/`) are not screens and are not in this inventory; see [`email-template-catalog.md`](./email-template-catalog.md) (Trello FE-UI-019).
 - **Status**: the frontend today. **Class**: A existing functional · B existing partial · C UI reference only (workflow not built; backend may exist) · D unsupported capability (the design needs backend support that the handwritten `api-client` does not have).
 - **Backend** support is judged from `packages/api-client` operations; the repository OpenAPI snapshot is stale ([DR-003](./discrepancy-register.md#dr-003)).
 - **Priority**: P0 foundation · P1 redesign of a live flow · P2 missing screen that is unblocked or low risk · P3 blocked on backend or product decisions.
