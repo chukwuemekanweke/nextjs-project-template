@@ -13,6 +13,10 @@
     "./charts": {
       "types": "./src/charts/index.ts",
       "default": "./src/charts/index.ts"
+    },
+    "./documents": {
+      "types": "./src/documents/index.ts",
+      "default": "./src/documents/index.ts"
     }
   },
   "scripts": {

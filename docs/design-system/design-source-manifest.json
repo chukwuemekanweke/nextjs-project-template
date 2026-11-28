@@ -104,6 +104,27 @@
       ]
     },
     {
+      "ticket": "FE-UI-018 (Trello)",
+      "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+      "commitDate": "2026-11-25T21:19:56+01:00",
+      "treeSha": "1000fc95c79c4cda8f3c6361d73f3b5d485cd0c2",
+      "scope": "Invoice and receipt screens and print layouts only (USR-INVOICE-DETAIL, USR-RECEIPT-DETAIL, ADM-INVOICES, ADM-INVOICE-DETAIL). Their screen-inventory records carry ad9386e blobs; the per-file inventory, hashes and counts elsewhere still describe commit (DR-083). Not a full reconciliation of the revision (FE-UI-016).",
+      "filesInRevision": 994,
+      "changesSincePinnedCommit": {
+        "5-invoices-and-receipts": "30 files, all used: UserInvoiceDetail-{due,overdue,paid} and UserReceiptDetail-{subscription,wallet} (+Dark, Mobile, MobileDark), AdminInvoices and AdminInvoiceDetail (+Dark, Mobile, MobileDark), PrintInvoice and PrintReceipt (A4, light). Backend support is missing (DR-160); all four screens are preview-only compositions.",
+        "3-user-portal": "UserBillingHistory*, UserPurchaseDetail* and UserWallet* invoice/receipt links were inspected and stay omitted: no document ids exist (DR-162).",
+        "4-admin-portal": "The Operations 'Invoices' navigation item was inspected and stays out of production navigation (DR-163)."
+      },
+      "referencesUsed": [
+        "5-invoices-and-receipts/UserInvoiceDetail-{due,overdue,paid}.html (+Dark, Mobile, MobileDark)",
+        "5-invoices-and-receipts/UserReceiptDetail-{subscription,wallet}.html (+Dark, Mobile, MobileDark)",
+        "5-invoices-and-receipts/AdminInvoices.html (+Dark, Mobile, MobileDark)",
+        "5-invoices-and-receipts/AdminInvoiceDetail.html (+Dark, Mobile, MobileDark)",
+        "5-invoices-and-receipts/PrintInvoice.html",
+        "5-invoices-and-receipts/PrintReceipt.html"
+      ]
+    },
+    {
       "ticket": "FE-UI-019 (Trello)",
       "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
       "commitDate": "2026-11-25T21:19:56+01:00",

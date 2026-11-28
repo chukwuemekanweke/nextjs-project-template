@@ -366,12 +366,12 @@ anywhere.
   `Invoice.html` and its seed rows renamed), since the design is a receipt and
   real invoices get their own types.
 - **Context:** no invoice or receipt entity, numbering, tax or PDF exists in the
-  backend; FE-UI-018 owns the invoice/receipt screens and their backend gaps.
+  backend; FE-UI-018 built the invoice/receipt screens as previews and deferred
+  the backend domain to [BE-DS-007](https://trello.com/c/8JZSDXfH).
 - **Scope:** after the invoice/receipt domain lands: receipt email on successful
   subscription payment, invoice-issued and overdue emails, authenticated
   document links (attachments optional, needs transport support).
-- **Dependencies:** backend invoice/receipt domain (FE-UI-018 handoff),
-  BE-NOTIF-01.
+- **Dependencies:** backend invoice/receipt domain (BE-DS-007), BE-NOTIF-01.
 
 ### BE-NOTIF-08 — Billing email preferences
 
@@ -416,16 +416,16 @@ anywhere.
 No frontend API change is needed for email. Integration points the frontend
 must keep stable because emails link to them:
 
-| Email CTA destination         | Route                          | Status                                                                                        |
-| ----------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------- |
-| Dashboard                     | user portal `/dashboard`       | exists                                                                                        |
-| Billing / plans               | user portal `/billing`         | exists                                                                                        |
-| Security / sessions           | user portal `/security`        | exists                                                                                        |
-| Email confirmation            | user portal `/confirm-email`   | exists; needs its session cookie                                                              |
-| Password reset entry          | user portal `/forgot-password` | FE-UI-020                                                                                     |
-| Receipt / invoice views       | none                           | FE-UI-018 screens are preview-only until the backend invoice/receipt domain exists; omit CTAs |
-| Identity verification, wallet | none                           | no route; omit CTAs until they exist                                                          |
-| Admin portal                  | admin portal `/`               | exists                                                                                        |
+| Email CTA destination         | Route                          | Status                                                        |
+| ----------------------------- | ------------------------------ | ------------------------------------------------------------- |
+| Dashboard                     | user portal `/dashboard`       | exists                                                        |
+| Billing / plans               | user portal `/billing`         | exists                                                        |
+| Security / sessions           | user portal `/security`        | exists                                                        |
+| Email confirmation            | user portal `/confirm-email`   | exists; needs its session cookie                              |
+| Password reset entry          | user portal `/forgot-password` | FE-UI-020                                                     |
+| Receipt / invoice views       | none                           | FE-UI-018 screens are preview-only until BE-DS-007; omit CTAs |
+| Identity verification, wallet | none                           | no route; omit CTAs until they exist                          |
+| Admin portal                  | admin portal `/`               | exists                                                        |
 
 The backend needs configured base URLs for the user and admin portals to build
 these links (not present in `Notifications:Email` today; proposed in

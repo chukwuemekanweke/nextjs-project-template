@@ -30,8 +30,8 @@ system, pinned at commit `d23eb85` of
 (FE-UI-004) follows revision `a7e2a63` and the authentication screens
 (Trello FE-UI-006) and billing screens (Trello FE-UI-010) follow `ad9386e`,
 each recorded as a scoped revision in the manifest (full manifest
-regeneration outstanding, DR-083; invoices/receipts
-are FE-UI-018, email templates are tracked separately) (canonical files: the
+regeneration outstanding, DR-083; the invoice/receipt records of Trello
+FE-UI-018 also follow `ad9386e`, email templates are tracked separately) (canonical files: the
 numbered `0-foundations` … `4-admin-portal` directories). Detailed planning
 lives in `docs/design-system/`; load it only for UI redesign work.
 

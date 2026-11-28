@@ -2,6 +2,7 @@ import { DarkModeSwitch, ThemeProvider } from "@template/ui-core";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import { render } from "vitest-browser-react";
+import { emulateMedia } from "../../test/print-media";
 import type { DashboardNavGroup } from "../types";
 import { Breadcrumbs } from "./breadcrumbs";
 import { DashboardBrand } from "./dashboard-brand";
@@ -43,11 +44,14 @@ function Shell({
   defaultExpanded,
   longNavigation = false,
   onSignOut = () => undefined,
+  paper = false,
 }: {
   activeHref?: string;
   defaultExpanded?: boolean;
   longNavigation?: boolean;
   onSignOut?: () => void;
+  /** Adds paper-like content (`data-print-paper`), as a billing document does. */
+  paper?: boolean;
 }) {
   const brand = <DashboardBrand href="/dashboard" name="Template" />;
   const navigation = (
@@ -136,6 +140,7 @@ function Shell({
       >
         <h1>Page</h1>
         <button type="button">Page action</button>
+        {paper ? <article data-print-paper="">Paper</article> : null}
       </DashboardShell>
     </ThemeProvider>
   );
@@ -403,5 +408,52 @@ describe("tablet", () => {
       .not.toBeVisible();
     expect(getComputedStyle(sidebar()).display).toBe("none");
     expect(document.documentElement.scrollWidth).toBe(834);
+  });
+});
+
+describe("print", () => {
+  afterEach(async () => {
+    await emulateMedia("");
+  });
+
+  const sidebarChrome = () => sidebar().parentElement!;
+  const main = () => document.getElementById("main-content")!;
+
+  it("leaves pages without paper-like content unchanged", async () => {
+    await render(<Shell />);
+    await emulateMedia("print");
+
+    expect(matchMedia("print").matches).toBe(true);
+    expect(getComputedStyle(sidebarChrome()).display).toBe("contents");
+    expect(getComputedStyle(main()).paddingTop).not.toBe("0px");
+  });
+
+  it("prints only the content of a page with paper, without chrome or offsets", async () => {
+    await render(<Shell paper />);
+    await emulateMedia("print");
+
+    // Polled: the stylesheet can update after the first render.
+    await expect
+      .poll(() => getComputedStyle(sidebarChrome()).display)
+      .toBe("none");
+    const shell = document.querySelector("[data-dashboard-shell]")!;
+    const wrappers = shell.querySelectorAll(
+      '[class~="print:group-has-[[data-print-paper]]/shell:hidden"]',
+    );
+    expect(wrappers).toHaveLength(3);
+    for (const element of wrappers) {
+      expect(getComputedStyle(element).display).toBe("none");
+    }
+    await expect.poll(() => getComputedStyle(main()).padding).toBe("0px");
+    await expect.poll(() => getComputedStyle(main()).maxWidth).toBe("none");
+    await expect
+      .poll(() => getComputedStyle(main().parentElement!).paddingLeft)
+      .toBe("0px");
+    await expect
+      .poll(() => getComputedStyle(shell).backgroundColor)
+      .toBe("rgba(0, 0, 0, 0)");
+    await expect
+      .element(page.getByRole("heading", { name: "Page" }))
+      .toBeVisible();
   });
 });

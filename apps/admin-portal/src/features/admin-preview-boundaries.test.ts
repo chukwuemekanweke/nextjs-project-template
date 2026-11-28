@@ -6,7 +6,8 @@ import { describe, expect, it } from "vitest";
 /*
  * Cross-feature production boundaries for preview-only admin screens:
  * preview fixtures never reach production modules, and screens without an
- * admin API (FE-UI-015, DR-134) have no published route.
+ * admin API (FE-UI-015, DR-134; invoices FE-UI-018, DR-160) have no
+ * published route.
  */
 
 const src = fileURLToPath(new URL("../", import.meta.url));
@@ -20,6 +21,7 @@ const unpublishedRoutes = [
   "reference-data",
   "audit",
   "system-health",
+  "invoices",
 ];
 
 describe("admin preview boundaries", () => {

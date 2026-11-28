@@ -4,7 +4,8 @@ import type { BadgeTone } from "@template/ui-core";
 /*
  * Read states, options, UTC dates and unavailable copy shared by the admin
  * billing features (Trello FE-UI-014): `admin-payments`, `admin-plans` and
- * `admin-subscriptions`. Each feature owns its own record model.
+ * `admin-subscriptions`, plus `admin-invoices` (Trello FE-UI-018). Each
+ * feature owns its own record model.
  *
  * There is no admin billing API yet (DR-070): nothing in production builds
  * these states. Future adapters (CAF-FE-012/014/015/016) map authoritative
