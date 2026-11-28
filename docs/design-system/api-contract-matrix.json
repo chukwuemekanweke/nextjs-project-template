@@ -89,8 +89,12 @@
       "authorization": "permission users.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:ActiveUserAnalyticsResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:ActiveUserAnalyticsResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Analytics/AdminAnalyticsController.cs:44@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -102,8 +106,12 @@
       "authorization": "permission users.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:RegistrationAnalyticsResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:RegistrationAnalyticsResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Analytics/AdminAnalyticsController.cs:23@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -115,8 +123,15 @@
       "authorization": "permission audit.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403],
-      "declaredResponses": ["200:AdministrativeAuditListPage"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "declaredResponses": [
+        "200:AdministrativeAuditListPage"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Auditing/AdminAuditLogs/AdminAuditLogsController.cs:32@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -128,7 +143,12 @@
       "authorization": "permission audit.export (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [400, 401, 403, 422],
+      "declaredStatuses": [
+        400,
+        401,
+        403,
+        422
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Auditing/AdminAuditLogs/AdminAuditLogsController.cs:57@1fcad50",
       "inCheckedInOpenApi": false,
@@ -141,8 +161,15 @@
       "authorization": "permission kyc.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403],
-      "declaredResponses": ["200:ListAdminKycVerificationsResult"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "declaredResponses": [
+        "200:ListAdminKycVerificationsResult"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Kyc/AdminKyc/AdminKycController.cs:50@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -154,8 +181,16 @@
       "authorization": "permission kyc.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403, 404],
-      "declaredResponses": ["200:GetAdminKycVerificationDetailResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        404
+      ],
+      "declaredResponses": [
+        "200:GetAdminKycVerificationDetailResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Kyc/AdminKyc/AdminKycController.cs:82@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -167,8 +202,15 @@
       "authorization": "permission kyc.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403],
-      "declaredResponses": ["200:GetAdminKycSummaryResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "declaredResponses": [
+        "200:GetAdminKycSummaryResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Kyc/AdminKyc/AdminKycController.cs:29@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -180,8 +222,15 @@
       "authorization": "permission payments.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403],
-      "declaredResponses": ["200:GetAdminPaymentsResult"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "declaredResponses": [
+        "200:GetAdminPaymentsResult"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/AdminPaymentsController.cs:23@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -193,8 +242,16 @@
       "authorization": "permission payments.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403, 404],
-      "declaredResponses": ["200:GetAdminPaymentDetailResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        404
+      ],
+      "declaredResponses": [
+        "200:GetAdminPaymentDetailResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/AdminPaymentsController.cs:55@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -206,8 +263,12 @@
       "authorization": "permission payments.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:PaymentAnalyticsIntentsResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:PaymentAnalyticsIntentsResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/Analytics/AdminPaymentAnalyticsController.cs:65@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -219,8 +280,12 @@
       "authorization": "permission payments.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:PaymentAnalyticsProvidersResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:PaymentAnalyticsProvidersResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/Analytics/AdminPaymentAnalyticsController.cs:58@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -232,8 +297,12 @@
       "authorization": "permission payments.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:PaymentAnalyticsStatusesResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:PaymentAnalyticsStatusesResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/Analytics/AdminPaymentAnalyticsController.cs:51@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -245,8 +314,12 @@
       "authorization": "permission payments.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:PaymentAnalyticsSummaryResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:PaymentAnalyticsSummaryResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/Analytics/AdminPaymentAnalyticsController.cs:31@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -258,8 +331,12 @@
       "authorization": "permission payments.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:PaymentAnalyticsTimelineResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:PaymentAnalyticsTimelineResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/Analytics/AdminPaymentAnalyticsController.cs:38@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -271,8 +348,14 @@
       "authorization": "permission subscriptions.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 401, 403],
-      "declaredResponses": ["200:IReadOnlyList<AdminSubscriptionPlanResponse>"],
+      "declaredStatuses": [
+        200,
+        401,
+        403
+      ],
+      "declaredResponses": [
+        "200:IReadOnlyList<AdminSubscriptionPlanResponse>"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptionPlans/AdminSubscriptionPlansController.cs:34@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -284,8 +367,17 @@
       "authorization": "permission subscriptions.plans.manage (active session required); step-up MFA proof required (X-Step-Up-Authorization, operation CreateSubscriptionPlan)",
       "stepUpOperation": "CreateSubscriptionPlan",
       "rateLimitPolicy": null,
-      "declaredStatuses": [201, 400, 401, 403, 409, 422],
-      "declaredResponses": ["201:AdminSubscriptionPlanResponse"],
+      "declaredStatuses": [
+        201,
+        400,
+        401,
+        403,
+        409,
+        422
+      ],
+      "declaredResponses": [
+        "201:AdminSubscriptionPlanResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptionPlans/AdminSubscriptionPlansController.cs:44@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -297,8 +389,16 @@
       "authorization": "permission subscriptions.plans.manage (active session required); step-up MFA proof required (X-Step-Up-Authorization, operation UpdateSubscriptionPlan)",
       "stepUpOperation": "UpdateSubscriptionPlan",
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403, 404],
-      "declaredResponses": ["200:AdminSubscriptionPlanResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        404
+      ],
+      "declaredResponses": [
+        "200:AdminSubscriptionPlanResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptionPlans/AdminSubscriptionPlansController.cs:84@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -310,8 +410,16 @@
       "authorization": "permission subscriptions.plans.manage (active session required); step-up MFA proof required (X-Step-Up-Authorization, operation SetSubscriptionPlanActivation)",
       "stepUpOperation": "SetSubscriptionPlanActivation",
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403, 404],
-      "declaredResponses": ["200:AdminSubscriptionPlanResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        404
+      ],
+      "declaredResponses": [
+        "200:AdminSubscriptionPlanResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptionPlans/AdminSubscriptionPlansController.cs:121@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -323,8 +431,15 @@
       "authorization": "permission subscriptions.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403],
-      "declaredResponses": ["200:ListSubscriptionsResult"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "declaredResponses": [
+        "200:ListSubscriptionsResult"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:43@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -336,8 +451,16 @@
       "authorization": "permission subscriptions.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403, 404],
-      "declaredResponses": ["200:SubscriptionDetailResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        404
+      ],
+      "declaredResponses": [
+        "200:SubscriptionDetailResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:79@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -349,8 +472,17 @@
       "authorization": "permission subscriptions.manage (active session required); step-up MFA proof required (X-Step-Up-Authorization, operation CancelSubscriptionAtPeriodEnd)",
       "stepUpOperation": "CancelSubscriptionAtPeriodEnd",
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403, 404, 409],
-      "declaredResponses": ["200:AdminSubscriptionLifecycleResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        404,
+        409
+      ],
+      "declaredResponses": [
+        "200:AdminSubscriptionLifecycleResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:186@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -362,8 +494,17 @@
       "authorization": "permission subscriptions.manage (active session required); step-up MFA proof required (X-Step-Up-Authorization, operation CancelSubscriptionImmediately)",
       "stepUpOperation": "CancelSubscriptionImmediately",
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 403, 404, 409],
-      "declaredResponses": ["200:AdminSubscriptionLifecycleResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        404,
+        409
+      ],
+      "declaredResponses": [
+        "200:AdminSubscriptionLifecycleResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:155@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -375,8 +516,17 @@
       "authorization": "permission subscriptions.manage (active session required); step-up MFA proof required (X-Step-Up-Authorization, operation RetrySubscriptionPurchaseFulfillment)",
       "stepUpOperation": "RetrySubscriptionPurchaseFulfillment",
       "rateLimitPolicy": null,
-      "declaredStatuses": [202, 400, 401, 403, 404, 409],
-      "declaredResponses": ["202:RetrySubscriptionPurchaseFulfillmentResult"],
+      "declaredStatuses": [
+        202,
+        400,
+        401,
+        403,
+        404,
+        409
+      ],
+      "declaredResponses": [
+        "202:RetrySubscriptionPurchaseFulfillmentResult"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:218@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -388,7 +538,16 @@
       "authorization": "permission subscriptions.allocate (active session required); step-up MFA proof required (X-Step-Up-Authorization, operation AllocateSubscription)",
       "stepUpOperation": "AllocateSubscription",
       "rateLimitPolicy": null,
-      "declaredStatuses": [201, 200, 400, 401, 403, 404, 409, 422],
+      "declaredStatuses": [
+        201,
+        200,
+        400,
+        401,
+        403,
+        404,
+        409,
+        422
+      ],
       "declaredResponses": [
         "201:AllocateSubscriptionResponse",
         "200:AllocateSubscriptionResponse"
@@ -404,8 +563,12 @@
       "authorization": "permission subscriptions.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:SubscriptionAnalyticsPlansResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:SubscriptionAnalyticsPlansResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/Analytics/AdminSubscriptionAnalyticsController.cs:60@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -417,8 +580,12 @@
       "authorization": "permission subscriptions.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:SubscriptionAnalyticsRenewalsResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:SubscriptionAnalyticsRenewalsResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/Analytics/AdminSubscriptionAnalyticsController.cs:53@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -430,8 +597,12 @@
       "authorization": "permission subscriptions.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:SubscriptionAnalyticsStatusesResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:SubscriptionAnalyticsStatusesResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/Analytics/AdminSubscriptionAnalyticsController.cs:67@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -443,8 +614,12 @@
       "authorization": "permission subscriptions.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:SubscriptionAnalyticsSummaryResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:SubscriptionAnalyticsSummaryResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/Analytics/AdminSubscriptionAnalyticsController.cs:30@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -456,8 +631,12 @@
       "authorization": "permission subscriptions.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:SubscriptionAnalyticsTimelineResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:SubscriptionAnalyticsTimelineResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/Analytics/AdminSubscriptionAnalyticsController.cs:37@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -469,8 +648,12 @@
       "authorization": "permission users.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:AdminUserListPage"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:AdminUserListPage"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUsersController.cs:29@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -482,8 +665,12 @@
       "authorization": "permission users.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:AdminUserDetail"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:AdminUserDetail"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUsersController.cs:46@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -586,8 +773,12 @@
       "authorization": "permission users.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:ActiveUserListPage"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:ActiveUserListPage"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Analytics/AdminAnalyticsUsersController.cs:40@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -599,8 +790,12 @@
       "authorization": "permission users.analytics.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:RegisteredUserListPage"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:RegisteredUserListPage"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Analytics/AdminAnalyticsUsersController.cs:22@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -612,8 +807,13 @@
       "authorization": "anonymous (no [Authorize]; no global fallback policy)",
       "stepUpOperation": null,
       "rateLimitPolicy": "EmailOperationsPolicy",
-      "declaredStatuses": [200, 400],
-      "declaredResponses": ["200:SignUpOtpResponse"],
+      "declaredStatuses": [
+        200,
+        400
+      ],
+      "declaredResponses": [
+        "200:SignUpOtpResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/EmailConfirmations/EmailConfirmationsController.cs:25@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "authentication.confirmEmail",
@@ -625,8 +825,13 @@
       "authorization": "anonymous (no [Authorize]; no global fallback policy)",
       "stepUpOperation": null,
       "rateLimitPolicy": "EmailOperationsPolicy",
-      "declaredStatuses": [200, 400],
-      "declaredResponses": ["200:RequestEmailConfirmationOtpResponse"],
+      "declaredStatuses": [
+        200,
+        400
+      ],
+      "declaredResponses": [
+        "200:RequestEmailConfirmationOtpResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/EmailConfirmations/EmailConfirmationsController.cs:62@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.requestEmailConfirmationCode",
@@ -638,8 +843,14 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": "EmailOperationsPolicy",
-      "declaredStatuses": [200, 400, 429],
-      "declaredResponses": ["200:CheckEmailExistenceResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        429
+      ],
+      "declaredResponses": [
+        "200:CheckEmailExistenceResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/EmailExistenceChecks/EmailExistenceChecksController.cs:21@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.checkEmailExistence",
@@ -651,8 +862,12 @@
       "authorization": "anonymous (no [Authorize]; no global fallback policy)",
       "stepUpOperation": null,
       "rateLimitPolicy": "SignInPolicy",
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:GoogleSignInResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:GoogleSignInResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/GoogleLinks/GoogleLinksController.cs:23@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.linkGoogleAccount",
@@ -664,8 +879,12 @@
       "authorization": "anonymous (no [Authorize]; no global fallback policy)",
       "stepUpOperation": null,
       "rateLimitPolicy": "SignInPolicy",
-      "declaredStatuses": [201],
-      "declaredResponses": ["201:GoogleAuthenticationFlowResponse"],
+      "declaredStatuses": [
+        201
+      ],
+      "declaredResponses": [
+        "201:GoogleAuthenticationFlowResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/GoogleFlows/GoogleAuthenticationFlowsController.cs:18@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.startGoogleAuthenticationFlow",
@@ -677,8 +896,12 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:IReadOnlyList<PasskeyResponse>"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:IReadOnlyList<PasskeyResponse>"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Passkeys/PasskeysController.cs:162@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.listPasskeys",
@@ -690,8 +913,14 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [204, 404, 500],
-      "declaredResponses": ["500:ProblemDetails"],
+      "declaredStatuses": [
+        204,
+        404,
+        500
+      ],
+      "declaredResponses": [
+        "500:ProblemDetails"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Passkeys/PasskeysController.cs:203@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.removePasskey",
@@ -703,8 +932,14 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [204, 404, 500],
-      "declaredResponses": ["500:ProblemDetails"],
+      "declaredStatuses": [
+        204,
+        404,
+        500
+      ],
+      "declaredResponses": [
+        "500:ProblemDetails"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Passkeys/PasskeysController.cs:175@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.renamePasskey",
@@ -716,8 +951,12 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": "SignInPolicy",
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:PasskeySignInResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:PasskeySignInResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Passkeys/PasskeysController.cs:114@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.completePasskeyAuthentication",
@@ -729,8 +968,12 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": "SignInPolicy",
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:PasskeyOptionsResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:PasskeyOptionsResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Passkeys/PasskeysController.cs:99@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.createPasskeyAuthenticationOptions",
@@ -742,8 +985,12 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:PasskeyOptionsResponse"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:PasskeyOptionsResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Passkeys/PasskeysController.cs:42@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.createPasskeyRegistrationOptions",
@@ -755,8 +1002,12 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [201],
-      "declaredResponses": ["201:PasskeyResponse"],
+      "declaredStatuses": [
+        201
+      ],
+      "declaredResponses": [
+        "201:PasskeyResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Passkeys/PasskeysController.cs:63@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.completePasskeyRegistration",
@@ -768,7 +1019,12 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [204, 400, 401, 404],
+      "declaredStatuses": [
+        204,
+        400,
+        401,
+        404
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Passwords/PasswordsController.cs:21@1fcad50",
       "inCheckedInOpenApi": false,
@@ -781,8 +1037,14 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": "PasswordResetPolicy",
-      "declaredStatuses": [202, 400, 404],
-      "declaredResponses": ["202:RequestPasswordResetResponse"],
+      "declaredStatuses": [
+        202,
+        400,
+        404
+      ],
+      "declaredResponses": [
+        "202:RequestPasswordResetResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/PasswordResets/PasswordResetsController.cs:26@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "authentication.requestPasswordReset",
@@ -794,8 +1056,14 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": "PasswordResetPolicy",
-      "declaredStatuses": [200, 400, 404],
-      "declaredResponses": ["200:CompletePasswordResetResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        404
+      ],
+      "declaredResponses": [
+        "200:CompletePasswordResetResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/PasswordResets/PasswordResetsController.cs:53@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "authentication.completePasswordReset",
@@ -807,8 +1075,14 @@
       "authorization": "anonymous (no [Authorize]; no global fallback policy)",
       "stepUpOperation": null,
       "rateLimitPolicy": "SignUpPolicy",
-      "declaredStatuses": [202, 400, 409],
-      "declaredResponses": ["202:SignUpResponse"],
+      "declaredStatuses": [
+        202,
+        400,
+        409
+      ],
+      "declaredResponses": [
+        "202:SignUpResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Registrations/RegistrationsController.cs:25@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "authentication.signUp",
@@ -820,8 +1094,16 @@
       "authorization": "anonymous (no [Authorize]; no global fallback policy)",
       "stepUpOperation": null,
       "rateLimitPolicy": "SignUpPolicy",
-      "declaredStatuses": [200, 400, 401, 403, 409],
-      "declaredResponses": ["200:GoogleSignUpResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        409
+      ],
+      "declaredResponses": [
+        "200:GoogleSignUpResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Registrations/RegistrationsController.cs:71@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "authentication.signUpWithGoogle",
@@ -833,8 +1115,16 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": "TwoFactorVerificationPolicy",
-      "declaredStatuses": [200, 400, 401, 403, 429],
-      "declaredResponses": ["200:StepUpMfaVerificationResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        429
+      ],
+      "declaredResponses": [
+        "200:StepUpMfaVerificationResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Security/StepUpMfaController.cs:28@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -911,8 +1201,12 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:IReadOnlyList<ActiveSessionResponse>"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:IReadOnlyList<ActiveSessionResponse>"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Sessions/SessionsController.cs:44@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.listActiveSessions",
@@ -924,8 +1218,16 @@
       "authorization": "anonymous (no [Authorize]; no global fallback policy)",
       "stepUpOperation": null,
       "rateLimitPolicy": "SignInPolicy",
-      "declaredStatuses": [200, 400, 401, 403, 423],
-      "declaredResponses": ["200:SignInResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        423
+      ],
+      "declaredResponses": [
+        "200:SignInResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Sessions/SessionsController.cs:95@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "authentication.signIn",
@@ -937,7 +1239,10 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [204, 404],
+      "declaredStatuses": [
+        204,
+        404
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Sessions/SessionsController.cs:77@1fcad50",
       "inCheckedInOpenApi": false,
@@ -950,8 +1255,16 @@
       "authorization": "anonymous (no [Authorize]; no global fallback policy)",
       "stepUpOperation": null,
       "rateLimitPolicy": "SignInPolicy",
-      "declaredStatuses": [200, 400, 401, 403, 423],
-      "declaredResponses": ["200:GoogleSignInResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        423
+      ],
+      "declaredResponses": [
+        "200:GoogleSignInResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Sessions/SessionsController.cs:151@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "authentication.signInWithGoogle",
@@ -963,7 +1276,10 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [204, 401],
+      "declaredStatuses": [
+        204,
+        401
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Sessions/SessionsController.cs:330@1fcad50",
       "inCheckedInOpenApi": true,
@@ -976,7 +1292,9 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [204],
+      "declaredStatuses": [
+        204
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Sessions/SessionsController.cs:63@1fcad50",
       "inCheckedInOpenApi": false,
@@ -989,8 +1307,16 @@
       "authorization": "anonymous (no [Authorize]; no global fallback policy)",
       "stepUpOperation": null,
       "rateLimitPolicy": "RefreshSessionPolicy",
-      "declaredStatuses": [200, 400, 401, 403, 423],
-      "declaredResponses": ["200:RefreshSessionResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        423
+      ],
+      "declaredResponses": [
+        "200:RefreshSessionResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Sessions/SessionsController.cs:279@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "authentication.refreshSession",
@@ -1002,8 +1328,18 @@
       "authorization": "anonymous (no [Authorize]; no global fallback policy)",
       "stepUpOperation": null,
       "rateLimitPolicy": "TwoFactorVerificationPolicy",
-      "declaredStatuses": [200, 400, 401, 403, 409, 410, 423],
-      "declaredResponses": ["200:CompleteTwoFactorChallengeResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        403,
+        409,
+        410,
+        423
+      ],
+      "declaredResponses": [
+        "200:CompleteTwoFactorChallengeResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Authentication/Sessions/SessionsController.cs:218@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.completeTwoFactorChallenge",
@@ -1015,7 +1351,11 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401],
+      "declaredStatuses": [
+        200,
+        400,
+        401
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/EmailNotifications/Webhooks/Mailtrap/MailtrapWebhooksController.cs:20@1fcad50",
       "inCheckedInOpenApi": true,
@@ -1028,8 +1368,14 @@
       "authorization": "permission payments.read (active session required)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 401, 403],
-      "declaredResponses": ["200:IReadOnlyList<PaymentProviderResponse>"],
+      "declaredStatuses": [
+        200,
+        401,
+        403
+      ],
+      "declaredResponses": [
+        "200:IReadOnlyList<PaymentProviderResponse>"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/Providers/PaymentProvidersController.cs:31@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -1041,7 +1387,13 @@
       "authorization": "permission payments.manage (active session required); step-up MFA proof required (X-Step-Up-Authorization, operation SetPaymentProviderActivation)",
       "stepUpOperation": "SetPaymentProviderActivation",
       "rateLimitPolicy": null,
-      "declaredStatuses": [204, 400, 401, 403, 404],
+      "declaredStatuses": [
+        204,
+        400,
+        401,
+        403,
+        404
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/Providers/PaymentProvidersController.cs:39@1fcad50",
       "inCheckedInOpenApi": true,
@@ -1054,8 +1406,14 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401],
-      "declaredResponses": ["200:InitiatePaymentResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401
+      ],
+      "declaredResponses": [
+        "200:InitiatePaymentResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/InitiatePayment/PaymentsController.cs:21@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "payments.initiatePayment",
@@ -1067,8 +1425,14 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401],
-      "declaredResponses": ["200:GetStakeholderWalletTransactionsResult"],
+      "declaredStatuses": [
+        200,
+        400,
+        401
+      ],
+      "declaredResponses": [
+        "200:GetStakeholderWalletTransactionsResult"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/WalletTransactions/WalletTransactionsController.cs:23@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "payments.getWalletTransactions",
@@ -1080,7 +1444,12 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 404],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        404
+      ],
       "declaredResponses": [
         "200:GetStakeholderWalletTopUpTransactionDetailResponse"
       ],
@@ -1095,7 +1464,10 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400],
+      "declaredStatuses": [
+        200,
+        400
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/Webhooks/Bachs/BachsWebhooksController.cs:19@1fcad50",
       "inCheckedInOpenApi": false,
@@ -1108,7 +1480,10 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 401],
+      "declaredStatuses": [
+        200,
+        401
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/Webhooks/Credo/CredoWebhooksController.cs:20@1fcad50",
       "inCheckedInOpenApi": true,
@@ -1121,7 +1496,9 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
+      "declaredStatuses": [
+        200
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Payments/Webhooks/SafeHaven/SafeHavenWebhooksController.cs:23@1fcad50",
       "inCheckedInOpenApi": true,
@@ -1134,7 +1511,13 @@
       "authorization": "permission providers.manage (active session required); step-up MFA proof required (X-Step-Up-Authorization, operation ActivateProvider)",
       "stepUpOperation": "ActivateProvider",
       "rateLimitPolicy": null,
-      "declaredStatuses": [204, 400, 401, 403, 404],
+      "declaredStatuses": [
+        204,
+        400,
+        401,
+        403,
+        404
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Providers/ProvidersController.cs:22@1fcad50",
       "inCheckedInOpenApi": true,
@@ -1147,8 +1530,12 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:IReadOnlyList<GetCountriesResponse>"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:IReadOnlyList<GetCountriesResponse>"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/ReferenceData/Countries/CountriesController.cs:14@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "reference-data.getCountries",
@@ -1160,8 +1547,12 @@
       "authorization": "anonymous (no [Authorize]; no global fallback policy)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:IReadOnlyList<GetLanguagesResponse>"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:IReadOnlyList<GetLanguagesResponse>"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/ReferenceData/Languages/LanguagesController.cs:12@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -1173,8 +1564,13 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 401],
-      "declaredResponses": ["200:GetCurrentKycVerificationResponse"],
+      "declaredStatuses": [
+        200,
+        401
+      ],
+      "declaredResponses": [
+        "200:GetCurrentKycVerificationResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Kyc/KycController.cs:41@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -1186,8 +1582,17 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 404, 409, 503],
-      "declaredResponses": ["200:StartKycVerificationResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        404,
+        409,
+        503
+      ],
+      "declaredResponses": [
+        "200:StartKycVerificationResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Kyc/KycController.cs:20@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -1199,8 +1604,14 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 401, 404],
-      "declaredResponses": ["200:GetPreferencesResponse"],
+      "declaredStatuses": [
+        200,
+        401,
+        404
+      ],
+      "declaredResponses": [
+        "200:GetPreferencesResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Stakeholders/Preferences/PreferencesController.cs:20@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": null,
@@ -1212,7 +1623,12 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [204, 400, 401, 404],
+      "declaredStatuses": [
+        204,
+        400,
+        401,
+        404
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Stakeholders/Preferences/PreferencesController.cs:38@1fcad50",
       "inCheckedInOpenApi": false,
@@ -1225,8 +1641,14 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 401, 404],
-      "declaredResponses": ["200:GetProfileResponse"],
+      "declaredStatuses": [
+        200,
+        401,
+        404
+      ],
+      "declaredResponses": [
+        "200:GetProfileResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Stakeholders/Profiles/ProfilesController.cs:25@1fcad50",
       "inCheckedInOpenApi": true,
       "frontendOperation": "profiles.getProfile",
@@ -1238,7 +1660,12 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [204, 400, 401, 404],
+      "declaredStatuses": [
+        204,
+        400,
+        401,
+        404
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Stakeholders/Profiles/ProfilesController.cs:58@1fcad50",
       "inCheckedInOpenApi": true,
@@ -1251,8 +1678,15 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 404],
-      "declaredResponses": ["200:CreateAvatarUploadResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        404
+      ],
+      "declaredResponses": [
+        "200:CreateAvatarUploadResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Stakeholders/Profiles/ProfilesController.cs:80@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "profiles.createAvatarUpload",
@@ -1264,8 +1698,16 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 404, 409],
-      "declaredResponses": ["200:CompleteAvatarUploadResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        404,
+        409
+      ],
+      "declaredResponses": [
+        "200:CompleteAvatarUploadResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Stakeholders/Profiles/ProfilesController.cs:111@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "profiles.completeAvatarUpload",
@@ -1277,8 +1719,14 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401],
-      "declaredResponses": ["200:SecurityActivityHistoryResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401
+      ],
+      "declaredResponses": [
+        "200:SecurityActivityHistoryResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Stakeholders/SecurityActivity/SecurityActivityController.cs:21@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "authentication.getSecurityActivity",
@@ -1290,8 +1738,12 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200],
-      "declaredResponses": ["200:IReadOnlyList<ListSubscriptionPlansResponse>"],
+      "declaredStatuses": [
+        200
+      ],
+      "declaredResponses": [
+        "200:IReadOnlyList<ListSubscriptionPlansResponse>"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/Plans/SubscriptionPlansController.cs:23@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "subscriptions.listSubscriptionPlans",
@@ -1303,7 +1755,12 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 404],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        404
+      ],
       "declaredResponses": [
         "200:IReadOnlyList<EligiblePaymentProviderResponse>"
       ],
@@ -1318,8 +1775,13 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400],
-      "declaredResponses": ["200:GetBillingHistoryResponse"],
+      "declaredStatuses": [
+        200,
+        400
+      ],
+      "declaredResponses": [
+        "200:GetBillingHistoryResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/Subscriptions/SubscriptionsController.cs:117@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "subscriptions.getBillingHistory",
@@ -1331,8 +1793,13 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 404],
-      "declaredResponses": ["200:GetCurrentSubscriptionResponse"],
+      "declaredStatuses": [
+        200,
+        404
+      ],
+      "declaredResponses": [
+        "200:GetCurrentSubscriptionResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/Subscriptions/SubscriptionsController.cs:140@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "subscriptions.getCurrentSubscription",
@@ -1344,8 +1811,13 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 404],
-      "declaredResponses": ["200:CancelSubscriptionAtPeriodEndResult"],
+      "declaredStatuses": [
+        200,
+        404
+      ],
+      "declaredResponses": [
+        "200:CancelSubscriptionAtPeriodEndResult"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/Subscriptions/SubscriptionsController.cs:160@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "subscriptions.cancelSubscriptionAtPeriodEnd",
@@ -1357,8 +1829,15 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401, 409],
-      "declaredResponses": ["200:PurchaseSubscriptionResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        401,
+        409
+      ],
+      "declaredResponses": [
+        "200:PurchaseSubscriptionResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/Subscriptions/SubscriptionsController.cs:33@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "subscriptions.purchaseSubscription",
@@ -1370,8 +1849,14 @@
       "authorization": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 404],
-      "declaredResponses": ["200:GetSubscriptionPurchaseStatusResponse"],
+      "declaredStatuses": [
+        200,
+        400,
+        404
+      ],
+      "declaredResponses": [
+        "200:GetSubscriptionPurchaseStatusResponse"
+      ],
       "source": "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/Subscriptions/SubscriptionsController.cs:92@1fcad50",
       "inCheckedInOpenApi": false,
       "frontendOperation": "subscriptions.getSubscriptionPurchaseStatus",
@@ -1383,7 +1868,11 @@
       "authorization": "anonymous ([AllowAnonymous])",
       "stepUpOperation": null,
       "rateLimitPolicy": null,
-      "declaredStatuses": [200, 400, 401],
+      "declaredStatuses": [
+        200,
+        400,
+        401
+      ],
       "declaredResponses": null,
       "source": "src/BackendProjectTemplate.WebAPI/Features/Kyc/Webhooks/KycaidWebhooksController.cs:21@1fcad50",
       "inCheckedInOpenApi": false,
@@ -1422,7 +1911,9 @@
       },
       "apiReact": {
         "hooks": [],
-        "options": ["refreshSessionMutationOptions"],
+        "options": [
+          "refreshSessionMutationOptions"
+        ],
         "keys": [],
         "invalidation": []
       },
@@ -1473,10 +1964,16 @@
         "implementation": "packages/api-client/src/authentication/operations.ts"
       },
       "apiReact": {
-        "hooks": ["useLogout"],
-        "options": ["logoutMutationOptions"],
+        "hooks": [
+          "useLogout"
+        ],
+        "options": [
+          "logoutMutationOptions"
+        ],
         "keys": [],
-        "invalidation": ["queryClient.clear() on settle"]
+        "invalidation": [
+          "queryClient.clear() on settle"
+        ]
       },
       "dto": {
         "summary": "See backend source; no response type declared via ProducesResponseType."
@@ -1522,9 +2019,15 @@
         "implementation": "packages/api-client/src/profiles/operations.ts"
       },
       "apiReact": {
-        "hooks": ["useCurrentProfile"],
-        "options": ["currentProfileQueryOptions"],
-        "keys": ["profileKeys.current()"],
+        "hooks": [
+          "useCurrentProfile"
+        ],
+        "options": [
+          "currentProfileQueryOptions"
+        ],
+        "keys": [
+          "profileKeys.current()"
+        ],
         "invalidation": []
       },
       "dto": {
@@ -1553,7 +2056,9 @@
       "verb": "submit",
       "name": "Continue with Google (start flow, then authenticate the GIS credential)",
       "classification": "live",
-      "additionalEndpoints": ["POST /api/v1/authentication/google/flows"],
+      "additionalEndpoints": [
+        "POST /api/v1/authentication/google/flows"
+      ],
       "backendCapability": "verified-existing",
       "backend": {
         "endpoint": "POST /api/v1/authentication/sessions/google",
@@ -1585,7 +2090,10 @@
       "authPolicy": "Anonymous; rate limited (SignInPolicy). Flow token stays in an HttpOnly cookie; neither flow token nor app tokens reach the browser.",
       "statusSemantics": "Declared 200, 400, 401, 403, 423 for sessions/google; flow creation 201.",
       "uiBehavior": "Flow starts only on explicit activation (POST /api/auth/google/flow sets __Host-user-google-auth-flow); the official GIS button posts the credential to /api/auth/session/google. Outcomes: authenticated -> validated returnTo; two_factor_required -> /sign-in/two-factor; link_required -> AUTH-GOOGLE-LINK; registration_required -> AUTH-GOOGLE-REGISTER. Errors mapped by stable code in googleFeedback().",
-      "backendAuthoritativeFields": ["outcome", "error code"],
+      "backendAuthoritativeFields": [
+        "outcome",
+        "error code"
+      ],
       "evidence": [
         "apps/user-portal/src/components/google-authentication-button.tsx",
         "apps/user-portal/src/lib/google-bff.ts",
@@ -1621,8 +2129,12 @@
         "implementation": "packages/api-client/src/authentication/operations.ts"
       },
       "apiReact": {
-        "hooks": ["useRequestEmailConfirmationCode"],
-        "options": ["requestEmailConfirmationCodeMutationOptions"],
+        "hooks": [
+          "useRequestEmailConfirmationCode"
+        ],
+        "options": [
+          "requestEmailConfirmationCodeMutationOptions"
+        ],
         "keys": [],
         "invalidation": []
       },
@@ -1632,7 +2144,9 @@
       "authPolicy": "Anonymous; rate limited (EmailOperationsPolicy).",
       "statusSemantics": "Declared 200, 400; 429 from the rate limiter.",
       "uiBehavior": "Resend button disabled until backend retryAtUtc (+ small skew allowance); success shows 'code sent'.",
-      "backendAuthoritativeFields": ["retryAtUtc"],
+      "backendAuthoritativeFields": [
+        "retryAtUtc"
+      ],
       "evidence": [
         "apps/user-portal/src/app/confirm-email/confirm-email-form.tsx",
         "apps/user-portal/src/app/sign-in/sign-in-form.tsx",
@@ -1671,7 +2185,9 @@
       },
       "apiReact": {
         "hooks": [],
-        "options": ["refreshSessionMutationOptions"],
+        "options": [
+          "refreshSessionMutationOptions"
+        ],
         "keys": [],
         "invalidation": []
       },
@@ -1689,7 +2205,9 @@
         "docs/architecture/authorization.md@1fcad50 (backend)",
         "src/BackendProjectTemplate.WebAPI/Features/Authentication/Sessions/SessionsController.cs:279@1fcad50"
       ],
-      "gapIds": ["GAP-017-004"],
+      "gapIds": [
+        "GAP-017-004"
+      ],
       "followUp": null
     },
     {
@@ -1720,10 +2238,16 @@
         "implementation": "packages/api-client/src/authentication/operations.ts"
       },
       "apiReact": {
-        "hooks": ["useLogout"],
-        "options": ["logoutMutationOptions"],
+        "hooks": [
+          "useLogout"
+        ],
+        "options": [
+          "logoutMutationOptions"
+        ],
         "keys": [],
-        "invalidation": ["queryClient.clear() on settle"]
+        "invalidation": [
+          "queryClient.clear() on settle"
+        ]
       },
       "dto": {
         "summary": "See backend source; no response type declared via ProducesResponseType."
@@ -1772,13 +2296,19 @@
       "authPolicy": "authenticated customer/admin bearer token with an active session (RequireActiveSession)",
       "statusSemantics": "Declared 200, 400, 401, 403, 429; Cache-Control no-store.",
       "uiBehavior": "AdminStepUpDialog collects a code but never verifies it today. Stable failures: mfa_enrollment_required, mfa_verification_required, mfa_verification_failed, mfa_proof_expired, mfa_proof_invalid, mfa_proof_consumed, mfa_operation_mismatch, mfa_verification_rate_limited.",
-      "backendAuthoritativeFields": ["authorizationToken", "expiresAtUtc"],
+      "backendAuthoritativeFields": [
+        "authorizationToken",
+        "expiresAtUtc"
+      ],
       "evidence": [
         "apps/admin-portal/src/components/admin-patterns/step-up-dialog.tsx",
         "docs/architecture/authorization.md@1fcad50 (backend)",
         "src/BackendProjectTemplate.WebAPI/Features/Authentication/Security/StepUpMfaController.cs:28@1fcad50"
       ],
-      "gapIds": ["GAP-017-002", "GAP-017-003"],
+      "gapIds": [
+        "GAP-017-002",
+        "GAP-017-003"
+      ],
       "followUp": "Proposed new card (no existing owner found): admin step-up MFA + admin MFA sign-in."
     }
   ],
@@ -1789,7 +2319,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminActiveUsers"],
+        "artboards": [
+          "AdminActiveUsers"
+        ],
         "variantGroup": "AdminActiveUsers x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -1844,7 +2376,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Analytics/AdminAnalyticsController.cs:44@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": "FE-UI-031 (roadmap)"
         },
         {
@@ -1883,7 +2417,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Analytics/AdminAnalyticsUsersController.cs:40@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": "FE-UI-031 (roadmap)"
         },
         {
@@ -1918,7 +2454,9 @@
           "uiBehavior": "Controlled UTC range intent; no request until an adapter exists.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         }
       ]
@@ -1929,7 +2467,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminAllocate"],
+        "artboards": [
+          "AdminAllocate"
+        ],
         "variantGroup": "AdminAllocate x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -1981,7 +2521,9 @@
           "uiBehavior": "Preview form field; blocked without a source.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-009"],
+          "gapIds": [
+            "GAP-017-009"
+          ],
           "followUp": null
         },
         {
@@ -2020,7 +2562,10 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUsersController.cs:29@1fcad50"
           ],
-          "gapIds": ["GAP-017-006", "GAP-017-009"],
+          "gapIds": [
+            "GAP-017-006",
+            "GAP-017-009"
+          ],
           "followUp": null
         },
         {
@@ -2064,7 +2609,11 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:101@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003", "GAP-017-009"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003",
+            "GAP-017-009"
+          ],
           "followUp": "CAF-FE-016 (referenced in code; status unverified)"
         },
         {
@@ -2110,7 +2659,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminAudit"],
+        "artboards": [
+          "AdminAudit"
+        ],
         "variantGroup": "AdminAudit x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -2119,7 +2670,9 @@
         "proposed": "/audit",
         "previewOnly": true
       },
-      "implementationFiles": ["apps/admin-portal/src/features/admin-audit"],
+      "implementationFiles": [
+        "apps/admin-portal/src/features/admin-audit"
+      ],
       "inventoryClassification": {
         "status": "Implemented",
         "classification": "D",
@@ -2163,7 +2716,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Auditing/AdminAuditLogs/AdminAuditLogsController.cs:32@1fcad50"
           ],
-          "gapIds": ["GAP-017-011"],
+          "gapIds": [
+            "GAP-017-011"
+          ],
           "followUp": "FE-UI-030 (roadmap)"
         },
         {
@@ -2202,7 +2757,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Auditing/AdminAuditLogs/AdminAuditLogsController.cs:32@1fcad50"
           ],
-          "gapIds": ["GAP-017-011"],
+          "gapIds": [
+            "GAP-017-011"
+          ],
           "followUp": null
         },
         {
@@ -2241,7 +2798,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Auditing/AdminAuditLogs/AdminAuditLogsController.cs:32@1fcad50"
           ],
-          "gapIds": ["GAP-017-011"],
+          "gapIds": [
+            "GAP-017-011"
+          ],
           "followUp": null
         },
         {
@@ -2280,7 +2839,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Auditing/AdminAuditLogs/AdminAuditLogsController.cs:57@1fcad50"
           ],
-          "gapIds": ["GAP-017-011"],
+          "gapIds": [
+            "GAP-017-011"
+          ],
           "followUp": null
         }
       ]
@@ -2291,7 +2852,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminDashboard"],
+        "artboards": [
+          "AdminDashboard"
+        ],
         "variantGroup": "AdminDashboard x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -2349,7 +2912,9 @@
             "docs/architecture/admin-dashboard-data-requirements.md@1fcad50 (backend)",
             "src/BackendProjectTemplate.WebAPI/Features/Analytics/AdminAnalyticsController.cs:23@1fcad50"
           ],
-          "gapIds": ["GAP-017-005"],
+          "gapIds": [
+            "GAP-017-005"
+          ],
           "followUp": "FE-UI-023 (roadmap)"
         },
         {
@@ -2389,7 +2954,9 @@
             "docs/architecture/admin-dashboard-data-requirements.md@1fcad50 (backend)",
             "src/BackendProjectTemplate.WebAPI/Features/Analytics/AdminAnalyticsController.cs:44@1fcad50"
           ],
-          "gapIds": ["GAP-017-005"],
+          "gapIds": [
+            "GAP-017-005"
+          ],
           "followUp": null
         },
         {
@@ -2432,7 +2999,9 @@
             "docs/architecture/admin-dashboard-data-requirements.md@1fcad50 (backend)",
             "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/Analytics/AdminPaymentAnalyticsController.cs:31@1fcad50"
           ],
-          "gapIds": ["GAP-017-005"],
+          "gapIds": [
+            "GAP-017-005"
+          ],
           "followUp": null
         },
         {
@@ -2475,7 +3044,9 @@
             "docs/architecture/admin-dashboard-data-requirements.md@1fcad50 (backend)",
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/Analytics/AdminSubscriptionAnalyticsController.cs:30@1fcad50"
           ],
-          "gapIds": ["GAP-017-005"],
+          "gapIds": [
+            "GAP-017-005"
+          ],
           "followUp": null
         },
         {
@@ -2515,7 +3086,9 @@
             "docs/architecture/admin-dashboard-data-requirements.md@1fcad50 (backend)",
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/AdminKyc/AdminKycController.cs:29@1fcad50"
           ],
-          "gapIds": ["GAP-017-005"],
+          "gapIds": [
+            "GAP-017-005"
+          ],
           "followUp": null
         },
         {
@@ -2555,7 +3128,9 @@
             "docs/architecture/admin-dashboard-data-requirements.md@1fcad50 (backend)",
             "src/BackendProjectTemplate.WebAPI/Features/Payments/Providers/PaymentProvidersController.cs:31@1fcad50"
           ],
-          "gapIds": ["GAP-017-005"],
+          "gapIds": [
+            "GAP-017-005"
+          ],
           "followUp": null
         },
         {
@@ -2590,7 +3165,9 @@
           "uiBehavior": "Disabled control with reason.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-005"],
+          "gapIds": [
+            "GAP-017-005"
+          ],
           "followUp": null
         },
         {
@@ -2637,7 +3214,9 @@
       "portal": "admin-portal",
       "kind": "state-flow",
       "designReference": {
-        "artboards": ["AdminForbidden"],
+        "artboards": [
+          "AdminForbidden"
+        ],
         "variantGroup": "AdminForbidden x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -2692,7 +3271,9 @@
             "apps/admin-portal/src/components/admin-patterns/forbidden-details.ts",
             "docs/architecture/authorization.md@1fcad50 (backend)"
           ],
-          "gapIds": ["GAP-017-004"],
+          "gapIds": [
+            "GAP-017-004"
+          ],
           "followUp": null
         }
       ]
@@ -2703,7 +3284,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminInvoiceDetail"],
+        "artboards": [
+          "AdminInvoiceDetail"
+        ],
         "variantGroup": "AdminInvoiceDetail x {desktop,mobile,print} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -2754,7 +3337,9 @@
           "uiBehavior": "Preview-only composition: typed loading/empty/error/forbidden states rendered from fixtures in tests; no production route, navigation item or adapter.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-016"],
+          "gapIds": [
+            "GAP-017-016"
+          ],
           "followUp": "BE-DS-007"
         },
         {
@@ -2824,7 +3409,9 @@
           "uiBehavior": "Disabled with reason.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-016"],
+          "gapIds": [
+            "GAP-017-016"
+          ],
           "followUp": "BE-DS-007"
         },
         {
@@ -2859,7 +3446,10 @@
           "uiBehavior": "Disabled with reason.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-016", "GAP-017-024"],
+          "gapIds": [
+            "GAP-017-016",
+            "GAP-017-024"
+          ],
           "followUp": "BE-DS-007 / BE-DS-008"
         }
       ]
@@ -2870,7 +3460,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminInvoices"],
+        "artboards": [
+          "AdminInvoices"
+        ],
         "variantGroup": "AdminInvoices x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -2922,7 +3514,9 @@
           "uiBehavior": "Preview-only composition: typed loading/empty/error/forbidden states rendered from fixtures in tests; no production route, navigation item or adapter.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-016"],
+          "gapIds": [
+            "GAP-017-016"
+          ],
           "followUp": "BE-DS-007"
         },
         {
@@ -2957,7 +3551,9 @@
           "uiBehavior": "Disabled with reason.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-016"],
+          "gapIds": [
+            "GAP-017-016"
+          ],
           "followUp": null
         },
         {
@@ -2992,7 +3588,9 @@
           "uiBehavior": "Disabled with reason.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-016"],
+          "gapIds": [
+            "GAP-017-016"
+          ],
           "followUp": null
         }
       ]
@@ -3003,7 +3601,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminKyc"],
+        "artboards": [
+          "AdminKyc"
+        ],
         "variantGroup": "AdminKyc x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -3060,7 +3660,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/AdminKyc/AdminKycController.cs:29@1fcad50"
           ],
-          "gapIds": ["GAP-017-007"],
+          "gapIds": [
+            "GAP-017-007"
+          ],
           "followUp": "FE-UI-028 (roadmap)"
         },
         {
@@ -3102,7 +3704,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/AdminKyc/AdminKycController.cs:50@1fcad50"
           ],
-          "gapIds": ["GAP-017-007"],
+          "gapIds": [
+            "GAP-017-007"
+          ],
           "followUp": null
         },
         {
@@ -3141,7 +3745,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/AdminKyc/AdminKycController.cs:50@1fcad50"
           ],
-          "gapIds": ["GAP-017-007"],
+          "gapIds": [
+            "GAP-017-007"
+          ],
           "followUp": null
         },
         {
@@ -3180,7 +3786,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/AdminKyc/AdminKycController.cs:50@1fcad50"
           ],
-          "gapIds": ["GAP-017-007"],
+          "gapIds": [
+            "GAP-017-007"
+          ],
           "followUp": null
         },
         {
@@ -3226,7 +3834,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminKycDetail"],
+        "artboards": [
+          "AdminKycDetail"
+        ],
         "variantGroup": "AdminKycDetail x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -3281,7 +3891,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/AdminKyc/AdminKycController.cs:82@1fcad50"
           ],
-          "gapIds": ["GAP-017-007"],
+          "gapIds": [
+            "GAP-017-007"
+          ],
           "followUp": "FE-UI-028 (roadmap)"
         },
         {
@@ -3316,7 +3928,9 @@
           "uiBehavior": "Disabled with reason.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-007"],
+          "gapIds": [
+            "GAP-017-007"
+          ],
           "followUp": null
         }
       ]
@@ -3327,7 +3941,9 @@
       "portal": "admin-portal",
       "kind": "layout-pattern",
       "designReference": {
-        "artboards": ["AdminMobileMenu"],
+        "artboards": [
+          "AdminMobileMenu"
+        ],
         "variantGroup": "AdminMobileMenu x {mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -3430,7 +4046,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminPaymentAnalytics"],
+        "artboards": [
+          "AdminPaymentAnalytics"
+        ],
         "variantGroup": "AdminPaymentAnalytics x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -3485,7 +4103,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/Analytics/AdminPaymentAnalyticsController.cs:31@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": "FE-UI-031 (roadmap)"
         },
         {
@@ -3524,7 +4144,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/Analytics/AdminPaymentAnalyticsController.cs:38@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         },
         {
@@ -3563,7 +4185,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/Analytics/AdminPaymentAnalyticsController.cs:51@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         },
         {
@@ -3602,7 +4226,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/Analytics/AdminPaymentAnalyticsController.cs:58@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         },
         {
@@ -3641,7 +4267,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/Analytics/AdminPaymentAnalyticsController.cs:65@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         },
         {
@@ -3676,7 +4304,9 @@
           "uiBehavior": "Controlled range intent.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         }
       ]
@@ -3687,7 +4317,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminPaymentDetail"],
+        "artboards": [
+          "AdminPaymentDetail"
+        ],
         "variantGroup": "AdminPaymentDetail x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -3746,7 +4378,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/AdminPaymentsController.cs:55@1fcad50"
           ],
-          "gapIds": ["GAP-017-008"],
+          "gapIds": [
+            "GAP-017-008"
+          ],
           "followUp": "CAF-FE-014 (referenced in code; status unverified)"
         }
       ]
@@ -3757,7 +4391,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminPayments"],
+        "artboards": [
+          "AdminPayments"
+        ],
         "variantGroup": "AdminPayments x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -3813,7 +4449,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/AdminPaymentsController.cs:23@1fcad50"
           ],
-          "gapIds": ["GAP-017-008"],
+          "gapIds": [
+            "GAP-017-008"
+          ],
           "followUp": "CAF-FE-014 (referenced in code; status unverified)"
         },
         {
@@ -3852,7 +4490,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/AdminPaymentsController.cs:23@1fcad50"
           ],
-          "gapIds": ["GAP-017-008"],
+          "gapIds": [
+            "GAP-017-008"
+          ],
           "followUp": null
         },
         {
@@ -3891,7 +4531,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/AdminPayments/AdminPaymentsController.cs:23@1fcad50"
           ],
-          "gapIds": ["GAP-017-008"],
+          "gapIds": [
+            "GAP-017-008"
+          ],
           "followUp": null
         },
         {
@@ -3937,7 +4579,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminPlans"],
+        "artboards": [
+          "AdminPlans"
+        ],
         "variantGroup": "AdminPlans x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -3993,7 +4637,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptionPlans/AdminSubscriptionPlansController.cs:34@1fcad50"
           ],
-          "gapIds": ["GAP-017-009"],
+          "gapIds": [
+            "GAP-017-009"
+          ],
           "followUp": "CAF-FE-015 (referenced in code; status unverified)"
         },
         {
@@ -4032,7 +4678,10 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptionPlans/AdminSubscriptionPlansController.cs:44@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003"
+          ],
           "followUp": "CAF-FE-015"
         },
         {
@@ -4071,7 +4720,10 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptionPlans/AdminSubscriptionPlansController.cs:84@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003"
+          ],
           "followUp": "CAF-FE-015"
         },
         {
@@ -4110,7 +4762,10 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptionPlans/AdminSubscriptionPlansController.cs:121@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003"
+          ],
           "followUp": "CAF-FE-015"
         }
       ]
@@ -4121,7 +4776,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminProviders"],
+        "artboards": [
+          "AdminProviders"
+        ],
         "variantGroup": "AdminProviders x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -4178,7 +4835,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/Providers/PaymentProvidersController.cs:31@1fcad50"
           ],
-          "gapIds": ["GAP-017-012"],
+          "gapIds": [
+            "GAP-017-012"
+          ],
           "followUp": "FE-UI-029 (roadmap)"
         },
         {
@@ -4208,9 +4867,13 @@
           },
           "apiReact": {
             "hooks": [],
-            "options": ["setPaymentProviderActivationMutationOptions"],
+            "options": [
+              "setPaymentProviderActivationMutationOptions"
+            ],
             "keys": [],
-            "invalidation": ["paymentKeys.all"]
+            "invalidation": [
+              "paymentKeys.all"
+            ]
           },
           "dto": {
             "summary": "Frontend SetPaymentProviderActivationMutationRequest {isActive} vs backend SetPaymentProviderActivationRequest {isActive, reason?}; backend additionally requires X-Step-Up-Authorization which the operation cannot send."
@@ -4222,7 +4885,11 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/Providers/PaymentProvidersController.cs:39@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-012", "GAP-017-001"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-012",
+            "GAP-017-001"
+          ],
           "followUp": null
         },
         {
@@ -4251,10 +4918,18 @@
             "implementation": "packages/api-client/src/providers/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useSetActiveProvider"],
-            "options": ["setActiveProviderMutationOptions"],
-            "keys": ["providerKeys.all"],
-            "invalidation": ["providerKeys.all"]
+            "hooks": [
+              "useSetActiveProvider"
+            ],
+            "options": [
+              "setActiveProviderMutationOptions"
+            ],
+            "keys": [
+              "providerKeys.all"
+            ],
+            "invalidation": [
+              "providerKeys.all"
+            ]
           },
           "dto": {
             "summary": "Frontend ActivateProviderRequest {providerKey, providerType} vs backend {providerType, providerKey, reason?}; step-up header unsupported."
@@ -4266,7 +4941,10 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Providers/ProvidersController.cs:22@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-012"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-012"
+          ],
           "followUp": null
         },
         {
@@ -4301,7 +4979,9 @@
           "uiBehavior": "Disabled with reason.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-012"],
+          "gapIds": [
+            "GAP-017-012"
+          ],
           "followUp": null
         },
         {
@@ -4336,7 +5016,9 @@
           "uiBehavior": "Disabled with reason.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-012"],
+          "gapIds": [
+            "GAP-017-012"
+          ],
           "followUp": null
         }
       ]
@@ -4347,7 +5029,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminReferenceData"],
+        "artboards": [
+          "AdminReferenceData"
+        ],
         "variantGroup": "AdminReferenceData x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -4392,9 +5076,15 @@
             "implementation": "packages/api-client/src/reference-data/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useCountries"],
-            "options": ["countriesQueryOptions"],
-            "keys": ["referenceDataKeys.countries()"],
+            "hooks": [
+              "useCountries"
+            ],
+            "options": [
+              "countriesQueryOptions"
+            ],
+            "keys": [
+              "referenceDataKeys.countries()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -4407,7 +5097,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/ReferenceData/Countries/CountriesController.cs:14@1fcad50"
           ],
-          "gapIds": ["GAP-017-013"],
+          "gapIds": [
+            "GAP-017-013"
+          ],
           "followUp": "FE-UI-029 (roadmap)",
           "note": "Operation exists (used by registration); not wired in the Admin Portal."
         },
@@ -4447,7 +5139,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/ReferenceData/Languages/LanguagesController.cs:12@1fcad50"
           ],
-          "gapIds": ["GAP-017-013"],
+          "gapIds": [
+            "GAP-017-013"
+          ],
           "followUp": null
         },
         {
@@ -4482,7 +5176,9 @@
           "uiBehavior": "Tab unavailable.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-013"],
+          "gapIds": [
+            "GAP-017-013"
+          ],
           "followUp": null
         },
         {
@@ -4517,7 +5213,9 @@
           "uiBehavior": "Disabled with reason.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-013"],
+          "gapIds": [
+            "GAP-017-013"
+          ],
           "followUp": null
         }
       ]
@@ -4528,7 +5226,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminRegistrations"],
+        "artboards": [
+          "AdminRegistrations"
+        ],
         "variantGroup": "AdminRegistrations x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -4583,7 +5283,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Analytics/AdminAnalyticsController.cs:23@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": "FE-UI-031 (roadmap)"
         },
         {
@@ -4622,7 +5324,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Analytics/AdminAnalyticsUsersController.cs:22@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         },
         {
@@ -4657,7 +5361,9 @@
           "uiBehavior": "Controlled range intent.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         }
       ]
@@ -4668,7 +5374,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminRoleEdit"],
+        "artboards": [
+          "AdminRoleEdit"
+        ],
         "variantGroup": "AdminRoleEdit x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -4718,8 +5426,12 @@
           "statusSemantics": "Not applicable (no backend call).",
           "uiBehavior": "Read-only composition; every control disabled (CAF-FE-008).",
           "backendAuthoritativeFields": [],
-          "evidence": ["docs/architecture/authorization.md@1fcad50 (backend)"],
-          "gapIds": ["GAP-017-014"],
+          "evidence": [
+            "docs/architecture/authorization.md@1fcad50 (backend)"
+          ],
+          "gapIds": [
+            "GAP-017-014"
+          ],
           "followUp": null
         },
         {
@@ -4754,7 +5466,9 @@
           "uiBehavior": "Disabled with explanation.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-014"],
+          "gapIds": [
+            "GAP-017-014"
+          ],
           "followUp": null
         }
       ]
@@ -4765,7 +5479,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminRoles"],
+        "artboards": [
+          "AdminRoles"
+        ],
         "variantGroup": "AdminRoles x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -4816,8 +5532,12 @@
           "statusSemantics": "Not applicable (no backend call).",
           "uiBehavior": "Preview-only composition: typed loading/empty/error/forbidden states rendered from fixtures in tests; no production route, navigation item or adapter.",
           "backendAuthoritativeFields": [],
-          "evidence": ["docs/architecture/authorization.md@1fcad50 (backend)"],
-          "gapIds": ["GAP-017-014"],
+          "evidence": [
+            "docs/architecture/authorization.md@1fcad50 (backend)"
+          ],
+          "gapIds": [
+            "GAP-017-014"
+          ],
           "followUp": null
         }
       ]
@@ -4828,7 +5548,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminSignIn"],
+        "artboards": [
+          "AdminSignIn"
+        ],
         "variantGroup": "AdminSignIn x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -4937,7 +5659,9 @@
             "apps/admin-portal/src/app/api/auth/session/route.ts",
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/Sessions/SessionsController.cs:218@1fcad50"
           ],
-          "gapIds": ["GAP-017-003"],
+          "gapIds": [
+            "GAP-017-003"
+          ],
           "followUp": null
         },
         {
@@ -4975,7 +5699,9 @@
             "apps/admin-portal/src/lib/admin-authorization.ts",
             "apps/admin-portal/src/lib/admin-session-authorization.ts"
           ],
-          "gapIds": ["GAP-017-004"],
+          "gapIds": [
+            "GAP-017-004"
+          ],
           "followUp": null
         },
         {
@@ -5019,7 +5745,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/Sessions/SessionsController.cs:151@1fcad50"
           ],
-          "gapIds": ["GAP-017-022"],
+          "gapIds": [
+            "GAP-017-022"
+          ],
           "followUp": null
         }
       ]
@@ -5030,7 +5758,9 @@
       "portal": "admin-portal",
       "kind": "overlay",
       "designReference": {
-        "artboards": ["AdminStepUp"],
+        "artboards": [
+          "AdminStepUp"
+        ],
         "variantGroup": "AdminStepUp x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -5082,7 +5812,10 @@
           "uiBehavior": null,
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-002", "GAP-017-003"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003"
+          ],
           "followUp": null
         },
         {
@@ -5128,7 +5861,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminSubscriptionAnalytics"],
+        "artboards": [
+          "AdminSubscriptionAnalytics"
+        ],
         "variantGroup": "AdminSubscriptionAnalytics x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -5183,7 +5918,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/Analytics/AdminSubscriptionAnalyticsController.cs:30@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": "FE-UI-031 (roadmap)"
         },
         {
@@ -5222,7 +5959,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/Analytics/AdminSubscriptionAnalyticsController.cs:37@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         },
         {
@@ -5261,7 +6000,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/Analytics/AdminSubscriptionAnalyticsController.cs:53@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         },
         {
@@ -5300,7 +6041,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/Analytics/AdminSubscriptionAnalyticsController.cs:60@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         },
         {
@@ -5339,7 +6082,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/Analytics/AdminSubscriptionAnalyticsController.cs:67@1fcad50"
           ],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         },
         {
@@ -5374,7 +6119,9 @@
           "uiBehavior": "Controlled range intent.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-010"],
+          "gapIds": [
+            "GAP-017-010"
+          ],
           "followUp": null
         }
       ]
@@ -5385,7 +6132,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminSubscriptionDetail"],
+        "artboards": [
+          "AdminSubscriptionDetail"
+        ],
         "variantGroup": "AdminSubscriptionDetail x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -5440,7 +6189,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:79@1fcad50"
           ],
-          "gapIds": ["GAP-017-009"],
+          "gapIds": [
+            "GAP-017-009"
+          ],
           "followUp": "CAF-FE-016 (referenced in code; status unverified)"
         },
         {
@@ -5479,7 +6230,10 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:186@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003"
+          ],
           "followUp": "CAF-FE-016"
         },
         {
@@ -5518,7 +6272,10 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:155@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003"
+          ],
           "followUp": "CAF-FE-016"
         },
         {
@@ -5557,7 +6314,10 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:218@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003"
+          ],
           "followUp": "CAF-FE-016"
         }
       ]
@@ -5568,7 +6328,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminSubscriptions"],
+        "artboards": [
+          "AdminSubscriptions"
+        ],
         "variantGroup": "AdminSubscriptions x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -5624,7 +6386,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:43@1fcad50"
           ],
-          "gapIds": ["GAP-017-009"],
+          "gapIds": [
+            "GAP-017-009"
+          ],
           "followUp": "CAF-FE-016 (referenced in code; status unverified)"
         },
         {
@@ -5663,7 +6427,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:43@1fcad50"
           ],
-          "gapIds": ["GAP-017-009"],
+          "gapIds": [
+            "GAP-017-009"
+          ],
           "followUp": null
         },
         {
@@ -5702,7 +6468,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/AdminSubscriptions/AdminSubscriptionsController.cs:43@1fcad50"
           ],
-          "gapIds": ["GAP-017-009"],
+          "gapIds": [
+            "GAP-017-009"
+          ],
           "followUp": null
         },
         {
@@ -5783,7 +6551,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminSystemHealth"],
+        "artboards": [
+          "AdminSystemHealth"
+        ],
         "variantGroup": "AdminSystemHealth x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -5837,7 +6607,9 @@
             "apps/admin-portal/src/app/api/health/route.ts",
             "src/BackendProjectTemplate.WebAPI/Program.cs:92@1fcad50"
           ],
-          "gapIds": ["GAP-017-015"],
+          "gapIds": [
+            "GAP-017-015"
+          ],
           "followUp": "FE-UI-030 (roadmap)"
         },
         {
@@ -5872,7 +6644,9 @@
           "uiBehavior": "Re-read; no auto-polling defined.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-015"],
+          "gapIds": [
+            "GAP-017-015"
+          ],
           "followUp": null
         }
       ]
@@ -5883,7 +6657,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminUserDetail"],
+        "artboards": [
+          "AdminUserDetail"
+        ],
         "variantGroup": "AdminUserDetail x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -5940,7 +6716,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUsersController.cs:46@1fcad50"
           ],
-          "gapIds": ["GAP-017-006"],
+          "gapIds": [
+            "GAP-017-006"
+          ],
           "followUp": "FE-UI-024 (roadmap)"
         },
         {
@@ -5979,7 +6757,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUserRolesController.cs:25@1fcad50"
           ],
-          "gapIds": ["GAP-017-006"],
+          "gapIds": [
+            "GAP-017-006"
+          ],
           "followUp": null
         },
         {
@@ -6018,7 +6798,11 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUsersController.cs:57@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003", "GAP-017-006"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003",
+            "GAP-017-006"
+          ],
           "followUp": null
         },
         {
@@ -6057,7 +6841,11 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUsersController.cs:66@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003", "GAP-017-006"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003",
+            "GAP-017-006"
+          ],
           "followUp": null
         },
         {
@@ -6140,7 +6928,11 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUserRolesController.cs:45@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003", "GAP-017-006"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003",
+            "GAP-017-006"
+          ],
           "followUp": null
         },
         {
@@ -6179,7 +6971,11 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUserSessionsController.cs:23@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003", "GAP-017-006"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003",
+            "GAP-017-006"
+          ],
           "followUp": null
         },
         {
@@ -6218,7 +7014,11 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUserSessionsController.cs:42@1fcad50"
           ],
-          "gapIds": ["GAP-017-002", "GAP-017-003", "GAP-017-006"],
+          "gapIds": [
+            "GAP-017-002",
+            "GAP-017-003",
+            "GAP-017-006"
+          ],
           "followUp": null
         }
       ]
@@ -6229,7 +7029,9 @@
       "portal": "admin-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AdminUsers"],
+        "artboards": [
+          "AdminUsers"
+        ],
         "variantGroup": "AdminUsers x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -6286,7 +7088,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUsersController.cs:29@1fcad50"
           ],
-          "gapIds": ["GAP-017-006"],
+          "gapIds": [
+            "GAP-017-006"
+          ],
           "followUp": "FE-UI-024 (roadmap)"
         },
         {
@@ -6325,7 +7129,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUsersController.cs:29@1fcad50"
           ],
-          "gapIds": ["GAP-017-006"],
+          "gapIds": [
+            "GAP-017-006"
+          ],
           "followUp": null
         },
         {
@@ -6364,7 +7170,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/AdminUsers/AdminUsersController.cs:29@1fcad50"
           ],
-          "gapIds": ["GAP-017-006"],
+          "gapIds": [
+            "GAP-017-006"
+          ],
           "followUp": null
         },
         {
@@ -6410,7 +7218,9 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AuthConfirmEmail"],
+        "artboards": [
+          "AuthConfirmEmail"
+        ],
         "variantGroup": "AuthConfirmEmail x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -6469,7 +7279,9 @@
           "authPolicy": "Anonymous; EmailOperationsPolicy rate limit; BFF sets __Host- cookies.",
           "statusSemantics": "Declared 200, 400.",
           "uiBehavior": "Pending, field/form errors from backend validation; success sets session cookies and redirects to /passkey-setup?returnTo=… (validated).",
-          "backendAuthoritativeFields": ["session tokens (cookies only)"],
+          "backendAuthoritativeFields": [
+            "session tokens (cookies only)"
+          ],
           "evidence": [
             "apps/user-portal/src/app/confirm-email/confirm-email-form.tsx",
             "apps/user-portal/src/lib/email-confirmation-session.ts",
@@ -6522,7 +7334,10 @@
       "portal": "user-portal",
       "kind": "state-flow",
       "designReference": {
-        "artboards": ["AuthForgotPassword", "AuthForgotSent"],
+        "artboards": [
+          "AuthForgotPassword",
+          "AuthForgotSent"
+        ],
         "variantGroup": "AuthForgotPassword+AuthForgotSent x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -6575,7 +7390,9 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useRequestPasswordReset"],
+            "hooks": [
+              "useRequestPasswordReset"
+            ],
             "options": [
               "requestPasswordResetMutationOptions (gcTime 0, retry false)"
             ],
@@ -6596,7 +7413,10 @@
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/PasswordResets/PasswordResetsController.cs:49@1fcad50",
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/PasswordResets/PasswordResetsController.cs:26@1fcad50"
           ],
-          "gapIds": ["GAP-017-020", "GAP-017-027"],
+          "gapIds": [
+            "GAP-017-020",
+            "GAP-017-027"
+          ],
           "followUp": "BE-DS-006",
           "note": "Reconciled with FE-UI-016 (4af73eb, DR-167): /forgot-password now renders in the standalone auth layout instead of the dashboard shell; route, BFF calls, actions and states unchanged. The accepted 202 body differs between known and unknown emails (GAP-017-027)."
         },
@@ -6643,7 +7463,9 @@
       "portal": "user-portal",
       "kind": "state-flow",
       "designReference": {
-        "artboards": ["AuthGoogleLink"],
+        "artboards": [
+          "AuthGoogleLink"
+        ],
         "variantGroup": "AuthGoogleLink x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -6751,7 +7573,9 @@
       "portal": "user-portal",
       "kind": "state-flow",
       "designReference": {
-        "artboards": ["AuthGoogleRegister"],
+        "artboards": [
+          "AuthGoogleRegister"
+        ],
         "variantGroup": "AuthGoogleRegister x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -6860,7 +7684,9 @@
       "portal": "user-portal",
       "kind": "reference",
       "designReference": {
-        "artboards": ["AuthStates"],
+        "artboards": [
+          "AuthStates"
+        ],
         "variantGroup": "AuthStates x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -6954,7 +7780,9 @@
           "uiBehavior": "Never shown.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-021"],
+          "gapIds": [
+            "GAP-017-021"
+          ],
           "followUp": null
         },
         {
@@ -6989,7 +7817,9 @@
           "uiBehavior": "Never shown.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-021"],
+          "gapIds": [
+            "GAP-017-021"
+          ],
           "followUp": null
         }
       ]
@@ -7000,7 +7830,9 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AuthPasskeySetup"],
+        "artboards": [
+          "AuthPasskeySetup"
+        ],
         "variantGroup": "AuthPasskeySetup x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -7049,9 +7881,15 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["usePasskeys"],
-            "options": ["passkeysQueryOptions"],
-            "keys": ["authenticationKeys.passkeys()"],
+            "hooks": [
+              "usePasskeys"
+            ],
+            "options": [
+              "passkeysQueryOptions"
+            ],
+            "keys": [
+              "authenticationKeys.passkeys()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -7100,7 +7938,9 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useCreatePasskeyRegistrationOptions"],
+            "hooks": [
+              "useCreatePasskeyRegistrationOptions"
+            ],
             "options": [
               "createPasskeyRegistrationOptionsMutationOptions (gcTime 0)"
             ],
@@ -7165,7 +8005,10 @@
       "portal": "user-portal",
       "kind": "state-flow",
       "designReference": {
-        "artboards": ["AuthRegisterEmail", "AuthRegisterDetails"],
+        "artboards": [
+          "AuthRegisterEmail",
+          "AuthRegisterDetails"
+        ],
         "variantGroup": "AuthRegisterEmail+AuthRegisterDetails x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -7215,8 +8058,12 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useCheckEmailExistence"],
-            "options": ["checkEmailExistenceMutationOptions"],
+            "hooks": [
+              "useCheckEmailExistence"
+            ],
+            "options": [
+              "checkEmailExistenceMutationOptions"
+            ],
             "keys": [],
             "invalidation": []
           },
@@ -7261,9 +8108,15 @@
             "implementation": "packages/api-client/src/reference-data/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useCountries"],
-            "options": ["countriesQueryOptions"],
-            "keys": ["referenceDataKeys.countries()"],
+            "hooks": [
+              "useCountries"
+            ],
+            "options": [
+              "countriesQueryOptions"
+            ],
+            "keys": [
+              "referenceDataKeys.countries()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -7306,8 +8159,12 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useSignUp"],
-            "options": ["signUpMutationOptions"],
+            "hooks": [
+              "useSignUp"
+            ],
+            "options": [
+              "signUpMutationOptions"
+            ],
             "keys": [],
             "invalidation": []
           },
@@ -7321,7 +8178,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/Registrations/RegistrationsController.cs:25@1fcad50"
           ],
-          "gapIds": ["GAP-017-022"],
+          "gapIds": [
+            "GAP-017-022"
+          ],
           "followUp": null
         },
         {
@@ -7368,7 +8227,11 @@
       "portal": "user-portal",
       "kind": "state-flow",
       "designReference": {
-        "artboards": ["AuthResetPassword", "AuthResetDone", "AuthResetExpired"],
+        "artboards": [
+          "AuthResetPassword",
+          "AuthResetDone",
+          "AuthResetExpired"
+        ],
         "variantGroup": "AuthResetPassword+AuthResetDone+AuthResetExpired x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -7416,7 +8279,9 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useCompletePasswordReset"],
+            "hooks": [
+              "useCompletePasswordReset"
+            ],
             "options": [
               "completePasswordResetMutationOptions (gcTime 0, retry false)"
             ],
@@ -7429,12 +8294,17 @@
           "authPolicy": "Anonymous; PasswordResetPolicy.",
           "statusSemantics": "200 success; 400 'Invalid OTP' problem (no stable code) or validation problem; 404 unknown email (folded by BFF).",
           "uiBehavior": "One combined wrong/expired/used message; mismatch validated locally; lost response reported as unconfirmed; success never creates a session (backend revokes all sessions and returns no tokens).",
-          "backendAuthoritativeFields": ["OTP validity", "session revocation"],
+          "backendAuthoritativeFields": [
+            "OTP validity",
+            "session revocation"
+          ],
           "evidence": [
             "src/BackendProjectTemplate.Application/Authentication/Features/CompletePasswordReset/CompletePasswordResetHandler.cs:59@1fcad50",
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/PasswordResets/PasswordResetsController.cs:53@1fcad50"
           ],
-          "gapIds": ["GAP-017-020"],
+          "gapIds": [
+            "GAP-017-020"
+          ],
           "followUp": "BE-DS-006",
           "note": "Reconciled with FE-UI-016 (4af73eb, DR-167): standalone auth layout; contract unchanged."
         },
@@ -7517,7 +8387,9 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AuthSignIn"],
+        "artboards": [
+          "AuthSignIn"
+        ],
         "variantGroup": "AuthSignIn x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -7580,7 +8452,10 @@
           "authPolicy": "Anonymous; SignInPolicy; tokens only in __Host- cookies.",
           "statusSemantics": "Declared 200, 400, 401, 403, 423.",
           "uiBehavior": "authenticated -> validated returnTo (safeSignInDestination); two_factor_required -> challenge cookie + /sign-in/two-factor; 403 -> reason=email_not_confirmed; 423/429 alerts without counts/durations.",
-          "backendAuthoritativeFields": ["outcome", "challenge expiry"],
+          "backendAuthoritativeFields": [
+            "outcome",
+            "challenge expiry"
+          ],
           "evidence": [
             "apps/user-portal/src/app/sign-in/sign-in-form.tsx",
             "apps/user-portal/src/lib/sign-in.ts",
@@ -7789,7 +8664,9 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["AuthTwoFactor"],
+        "artboards": [
+          "AuthTwoFactor"
+        ],
         "variantGroup": "AuthTwoFactor x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -7938,7 +8815,9 @@
       "portal": "n/a",
       "kind": "reference",
       "designReference": {
-        "artboards": ["Main"],
+        "artboards": [
+          "Main"
+        ],
         "variantGroup": "Main x {desktop} x {light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -8000,7 +8879,9 @@
       "portal": "public-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["PublicAbout"],
+        "artboards": [
+          "PublicAbout"
+        ],
         "variantGroup": "PublicAbout x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -8009,7 +8890,9 @@
         "proposed": null,
         "previewOnly": false
       },
-      "implementationFiles": ["apps/public-portal/src/app/about/page.tsx"],
+      "implementationFiles": [
+        "apps/public-portal/src/app/about/page.tsx"
+      ],
       "inventoryClassification": {
         "status": "Implemented",
         "classification": "C",
@@ -8095,7 +8978,9 @@
       "portal": "public-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["PublicBlog"],
+        "artboards": [
+          "PublicBlog"
+        ],
         "variantGroup": "PublicBlog x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -8104,7 +8989,9 @@
         "proposed": null,
         "previewOnly": false
       },
-      "implementationFiles": ["apps/public-portal/src/app/blog/page.tsx"],
+      "implementationFiles": [
+        "apps/public-portal/src/app/blog/page.tsx"
+      ],
       "inventoryClassification": {
         "status": "Implemented",
         "classification": "C",
@@ -8190,7 +9077,9 @@
       "portal": "public-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["PublicFeatures"],
+        "artboards": [
+          "PublicFeatures"
+        ],
         "variantGroup": "PublicFeatures x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -8199,7 +9088,9 @@
         "proposed": null,
         "previewOnly": false
       },
-      "implementationFiles": ["apps/public-portal/src/app/features/page.tsx"],
+      "implementationFiles": [
+        "apps/public-portal/src/app/features/page.tsx"
+      ],
       "inventoryClassification": {
         "status": "Implemented",
         "classification": "C",
@@ -8285,7 +9176,9 @@
       "portal": "public-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["PublicLegal"],
+        "artboards": [
+          "PublicLegal"
+        ],
         "variantGroup": "PublicLegal x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -8348,7 +9241,9 @@
       "portal": "public-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["PublicContact"],
+        "artboards": [
+          "PublicContact"
+        ],
         "variantGroup": "PublicContact x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -8400,7 +9295,9 @@
           "uiBehavior": "Explains mailto behaviour; never claims a message was sent.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-026"],
+          "gapIds": [
+            "GAP-017-026"
+          ],
           "followUp": null
         }
       ]
@@ -8411,7 +9308,9 @@
       "portal": "public-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["PublicHome"],
+        "artboards": [
+          "PublicHome"
+        ],
         "variantGroup": "PublicHome x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -8420,7 +9319,9 @@
         "proposed": null,
         "previewOnly": false
       },
-      "implementationFiles": ["apps/public-portal/src/app/page.tsx"],
+      "implementationFiles": [
+        "apps/public-portal/src/app/page.tsx"
+      ],
       "inventoryClassification": {
         "status": "Implemented",
         "classification": "B",
@@ -8506,7 +9407,9 @@
       "portal": "public-portal",
       "kind": "layout-pattern",
       "designReference": {
-        "artboards": ["PublicMobileMenu"],
+        "artboards": [
+          "PublicMobileMenu"
+        ],
         "variantGroup": "PublicMobileMenu x {mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -8570,7 +9473,9 @@
       "portal": "public-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["PublicPricing"],
+        "artboards": [
+          "PublicPricing"
+        ],
         "variantGroup": "PublicPricing x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -8618,9 +9523,15 @@
             "implementation": "packages/api-client/src/subscriptions/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useSubscriptionPlans"],
-            "options": ["subscriptionPlansQueryOptions"],
-            "keys": ["subscriptionKeys.plans()"],
+            "hooks": [
+              "useSubscriptionPlans"
+            ],
+            "options": [
+              "subscriptionPlansQueryOptions"
+            ],
+            "keys": [
+              "subscriptionKeys.plans()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -8720,7 +9631,9 @@
       "portal": "user-portal",
       "kind": "state-flow",
       "designReference": {
-        "artboards": ["UserBilling"],
+        "artboards": [
+          "UserBilling"
+        ],
         "variantGroup": "UserBilling x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -8770,9 +9683,15 @@
             "implementation": "packages/api-client/src/subscriptions/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useCurrentSubscription"],
-            "options": ["currentSubscriptionQueryOptions (404 -> null)"],
-            "keys": ["subscriptionKeys.current(ownerType)"],
+            "hooks": [
+              "useCurrentSubscription"
+            ],
+            "options": [
+              "currentSubscriptionQueryOptions (404 -> null)"
+            ],
+            "keys": [
+              "subscriptionKeys.current(ownerType)"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -8820,9 +9739,15 @@
             "implementation": "packages/api-client/src/subscriptions/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useSubscriptionPlans"],
-            "options": ["subscriptionPlansQueryOptions"],
-            "keys": ["subscriptionKeys.plans()"],
+            "hooks": [
+              "useSubscriptionPlans"
+            ],
+            "options": [
+              "subscriptionPlansQueryOptions"
+            ],
+            "keys": [
+              "subscriptionKeys.plans()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -8902,10 +9827,16 @@
             "implementation": "packages/api-client/src/subscriptions/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useCancelSubscriptionAtPeriodEnd"],
-            "options": ["cancelSubscriptionAtPeriodEndMutationOptions"],
+            "hooks": [
+              "useCancelSubscriptionAtPeriodEnd"
+            ],
+            "options": [
+              "cancelSubscriptionAtPeriodEndMutationOptions"
+            ],
             "keys": [],
-            "invalidation": ["subscriptionKeys.current(ownerType)"]
+            "invalidation": [
+              "subscriptionKeys.current(ownerType)"
+            ]
           },
           "dto": {
             "summary": "Response 200:CancelSubscriptionAtPeriodEndResult (backend record names; fields not copied)."
@@ -8917,7 +9848,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/Subscriptions/SubscriptionsController.cs:160@1fcad50"
           ],
-          "gapIds": ["GAP-017-025"],
+          "gapIds": [
+            "GAP-017-025"
+          ],
           "followUp": null
         },
         {
@@ -8998,7 +9931,9 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["UserBillingHistory"],
+        "artboards": [
+          "UserBillingHistory"
+        ],
         "variantGroup": "UserBillingHistory x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -9046,8 +9981,12 @@
             "implementation": "packages/api-client/src/subscriptions/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useBillingHistory"],
-            "options": ["billingHistoryQueryOptions"],
+            "hooks": [
+              "useBillingHistory"
+            ],
+            "options": [
+              "billingHistoryQueryOptions"
+            ],
             "keys": [
               "subscriptionKeys.billingHistory(ownerType, {page, pageSize})"
             ],
@@ -9100,8 +10039,12 @@
             "implementation": "packages/api-client/src/subscriptions/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useBillingHistory"],
-            "options": ["billingHistoryQueryOptions"],
+            "hooks": [
+              "useBillingHistory"
+            ],
+            "options": [
+              "billingHistoryQueryOptions"
+            ],
             "keys": [
               "subscriptionKeys.billingHistory(ownerType, {page, pageSize})"
             ],
@@ -9152,7 +10095,9 @@
           "uiBehavior": "Not offered.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-025"],
+          "gapIds": [
+            "GAP-017-025"
+          ],
           "followUp": null
         },
         {
@@ -9187,7 +10132,9 @@
           "uiBehavior": "Not offered.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-025"],
+          "gapIds": [
+            "GAP-017-025"
+          ],
           "followUp": null
         },
         {
@@ -9222,7 +10169,10 @@
           "uiBehavior": "No row action.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-025", "GAP-017-016"],
+          "gapIds": [
+            "GAP-017-025",
+            "GAP-017-016"
+          ],
           "followUp": null
         }
       ]
@@ -9233,7 +10183,9 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["UserCheckout"],
+        "artboards": [
+          "UserCheckout"
+        ],
         "variantGroup": "UserCheckout x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -9282,9 +10234,15 @@
             "implementation": "packages/api-client/src/subscriptions/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useSubscriptionPlans"],
-            "options": ["subscriptionPlansQueryOptions"],
-            "keys": ["subscriptionKeys.plans()"],
+            "hooks": [
+              "useSubscriptionPlans"
+            ],
+            "options": [
+              "subscriptionPlansQueryOptions"
+            ],
+            "keys": [
+              "subscriptionKeys.plans()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -9328,9 +10286,15 @@
             "implementation": "packages/api-client/src/subscriptions/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useEligiblePaymentProviders"],
-            "options": ["eligiblePaymentProvidersQueryOptions"],
-            "keys": ["subscriptionKeys.eligibleProviders(ownerType, planId)"],
+            "hooks": [
+              "useEligiblePaymentProviders"
+            ],
+            "options": [
+              "eligiblePaymentProvidersQueryOptions"
+            ],
+            "keys": [
+              "subscriptionKeys.eligibleProviders(ownerType, planId)"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -9374,8 +10338,12 @@
             "implementation": "packages/api-client/src/subscriptions/operations.ts"
           },
           "apiReact": {
-            "hooks": ["usePurchaseSubscription"],
-            "options": ["purchaseSubscriptionMutationOptions"],
+            "hooks": [
+              "usePurchaseSubscription"
+            ],
+            "options": [
+              "purchaseSubscriptionMutationOptions"
+            ],
             "keys": [],
             "invalidation": [
               "subscriptionKeys.purchases(ownerType)",
@@ -9480,7 +10448,9 @@
       "portal": "user-portal",
       "kind": "state-flow",
       "designReference": {
-        "artboards": ["UserCheckoutResult"],
+        "artboards": [
+          "UserCheckoutResult"
+        ],
         "variantGroup": "UserCheckoutResult x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -9528,11 +10498,15 @@
             "implementation": "packages/api-client/src/subscriptions/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useSubscriptionPurchaseStatus"],
+            "hooks": [
+              "useSubscriptionPurchaseStatus"
+            ],
             "options": [
               "subscriptionPurchaseStatusQueryOptions (refetchInterval bounded by maxPolls)"
             ],
-            "keys": ["subscriptionKeys.purchaseStatus(ownerType, purchaseId)"],
+            "keys": [
+              "subscriptionKeys.purchaseStatus(ownerType, purchaseId)"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -9595,7 +10569,9 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["UserDashboard"],
+        "artboards": [
+          "UserDashboard"
+        ],
         "variantGroup": "UserDashboard x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -9644,9 +10620,15 @@
             "implementation": "packages/api-client/src/profiles/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useCurrentProfile"],
-            "options": ["currentProfileQueryOptions"],
-            "keys": ["profileKeys.current()"],
+            "hooks": [
+              "useCurrentProfile"
+            ],
+            "options": [
+              "currentProfileQueryOptions"
+            ],
+            "keys": [
+              "profileKeys.current()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -9730,9 +10712,15 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useTwoFactorStatus"],
-            "options": ["twoFactorStatusQueryOptions"],
-            "keys": ["authenticationKeys.twoFactorStatus()"],
+            "hooks": [
+              "useTwoFactorStatus"
+            ],
+            "options": [
+              "twoFactorStatusQueryOptions"
+            ],
+            "keys": [
+              "authenticationKeys.twoFactorStatus()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -9816,7 +10804,9 @@
           "uiBehavior": "Unavailable with reason.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-019"],
+          "gapIds": [
+            "GAP-017-019"
+          ],
           "followUp": null
         },
         {
@@ -9862,7 +10852,10 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["UserInvoiceDetail", "PrintInvoice"],
+        "artboards": [
+          "UserInvoiceDetail",
+          "PrintInvoice"
+        ],
         "variantGroup": "UserInvoiceDetail+PrintInvoice x {desktop,mobile,print} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -9914,7 +10907,9 @@
           "uiBehavior": "Preview-only composition: typed loading/empty/error/forbidden states rendered from fixtures in tests; no production route, navigation item or adapter.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-016"],
+          "gapIds": [
+            "GAP-017-016"
+          ],
           "followUp": "BE-DS-007"
         },
         {
@@ -9984,7 +10979,9 @@
           "uiBehavior": "Disabled with reason.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-016"],
+          "gapIds": [
+            "GAP-017-016"
+          ],
           "followUp": null
         }
       ]
@@ -9995,7 +10992,9 @@
       "portal": "user-portal",
       "kind": "layout-pattern",
       "designReference": {
-        "artboards": ["UserMobileMenu"],
+        "artboards": [
+          "UserMobileMenu"
+        ],
         "variantGroup": "UserMobileMenu x {mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -10129,7 +11128,9 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["UserPreferences"],
+        "artboards": [
+          "UserPreferences"
+        ],
         "variantGroup": "UserPreferences x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -10138,7 +11139,9 @@
         "proposed": null,
         "previewOnly": false
       },
-      "implementationFiles": ["apps/user-portal/src/app/preferences/page.tsx"],
+      "implementationFiles": [
+        "apps/user-portal/src/app/preferences/page.tsx"
+      ],
       "inventoryClassification": {
         "status": "Implemented",
         "classification": "C",
@@ -10182,7 +11185,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Stakeholders/Preferences/PreferencesController.cs:38@1fcad50"
           ],
-          "gapIds": ["GAP-017-018"],
+          "gapIds": [
+            "GAP-017-018"
+          ],
           "followUp": null,
           "note": "Backend preference API exists since af5d74e; page comment and DR-051 say it does not."
         },
@@ -10222,7 +11227,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Stakeholders/Preferences/PreferencesController.cs:20@1fcad50"
           ],
-          "gapIds": ["GAP-017-018"],
+          "gapIds": [
+            "GAP-017-018"
+          ],
           "followUp": null
         },
         {
@@ -10261,7 +11268,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/ReferenceData/Languages/LanguagesController.cs:12@1fcad50"
           ],
-          "gapIds": ["GAP-017-018"],
+          "gapIds": [
+            "GAP-017-018"
+          ],
           "followUp": null
         },
         {
@@ -10296,7 +11305,10 @@
           "uiBehavior": "Shown as unavailable.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-018", "GAP-017-024"],
+          "gapIds": [
+            "GAP-017-018",
+            "GAP-017-024"
+          ],
           "followUp": null
         }
       ]
@@ -10307,7 +11319,9 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["UserProfile"],
+        "artboards": [
+          "UserProfile"
+        ],
         "variantGroup": "UserProfile x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -10356,9 +11370,15 @@
             "implementation": "packages/api-client/src/profiles/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useCurrentProfile"],
-            "options": ["currentProfileQueryOptions"],
-            "keys": ["profileKeys.current()"],
+            "hooks": [
+              "useCurrentProfile"
+            ],
+            "options": [
+              "currentProfileQueryOptions"
+            ],
+            "keys": [
+              "profileKeys.current()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -10402,10 +11422,16 @@
             "implementation": "packages/api-client/src/profiles/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useUpdateProfile"],
-            "options": ["updateProfileMutationOptions"],
+            "hooks": [
+              "useUpdateProfile"
+            ],
+            "options": [
+              "updateProfileMutationOptions"
+            ],
             "keys": [],
-            "invalidation": ["profileKeys.current()"]
+            "invalidation": [
+              "profileKeys.current()"
+            ]
           },
           "dto": {
             "summary": "UpdateProfileRequest {firstName, lastName} -> 204. Matches backend."
@@ -10451,8 +11477,12 @@
             "implementation": "packages/api-client/src/profiles/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useCreateAvatarUpload"],
-            "options": ["createAvatarUploadMutationOptions"],
+            "hooks": [
+              "useCreateAvatarUpload"
+            ],
+            "options": [
+              "createAvatarUploadMutationOptions"
+            ],
             "keys": [],
             "invalidation": []
           },
@@ -10472,7 +11502,9 @@
             "apps/user-portal/src/lib/avatar-upload.ts:24-28",
             "src/BackendProjectTemplate.WebAPI/Features/Stakeholders/Profiles/ProfilesController.cs:80@1fcad50"
           ],
-          "gapIds": ["GAP-017-001"],
+          "gapIds": [
+            "GAP-017-001"
+          ],
           "followUp": null
         },
         {
@@ -10518,7 +11550,9 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["UserPurchaseDetail"],
+        "artboards": [
+          "UserPurchaseDetail"
+        ],
         "variantGroup": "UserPurchaseDetail x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -10566,11 +11600,15 @@
             "implementation": "packages/api-client/src/subscriptions/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useSubscriptionPurchaseStatus"],
+            "hooks": [
+              "useSubscriptionPurchaseStatus"
+            ],
             "options": [
               "subscriptionPurchaseStatusQueryOptions (refetchInterval bounded by maxPolls)"
             ],
-            "keys": ["subscriptionKeys.purchaseStatus(ownerType, purchaseId)"],
+            "keys": [
+              "subscriptionKeys.purchaseStatus(ownerType, purchaseId)"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -10583,7 +11621,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Subscriptions/Subscriptions/SubscriptionsController.cs:92@1fcad50"
           ],
-          "gapIds": ["GAP-017-016"],
+          "gapIds": [
+            "GAP-017-016"
+          ],
           "followUp": null
         }
       ]
@@ -10594,7 +11634,10 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["UserReceiptDetail", "PrintReceipt"],
+        "artboards": [
+          "UserReceiptDetail",
+          "PrintReceipt"
+        ],
         "variantGroup": "UserReceiptDetail+PrintReceipt x {desktop,mobile,print} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -10645,7 +11688,9 @@
           "uiBehavior": "Preview-only composition: typed loading/empty/error/forbidden states rendered from fixtures in tests; no production route, navigation item or adapter.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-016"],
+          "gapIds": [
+            "GAP-017-016"
+          ],
           "followUp": "BE-DS-007"
         },
         {
@@ -10691,7 +11736,9 @@
       "portal": "user-portal",
       "kind": "state-flow",
       "designReference": {
-        "artboards": ["UserSecurity"],
+        "artboards": [
+          "UserSecurity"
+        ],
         "variantGroup": "UserSecurity x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -10752,7 +11799,9 @@
           "verb": "read",
           "name": "Compute overview score from backend facts",
           "classification": "live",
-          "additionalEndpoints": ["GET /api/v1/authentication/passkeys"],
+          "additionalEndpoints": [
+            "GET /api/v1/authentication/passkeys"
+          ],
           "backendCapability": "verified-existing",
           "backend": {
             "endpoint": "GET /api/v1/authentication/security/two-factor",
@@ -10775,9 +11824,15 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useTwoFactorStatus"],
-            "options": ["twoFactorStatusQueryOptions"],
-            "keys": ["authenticationKeys.twoFactorStatus()"],
+            "hooks": [
+              "useTwoFactorStatus"
+            ],
+            "options": [
+              "twoFactorStatusQueryOptions"
+            ],
+            "keys": [
+              "authenticationKeys.twoFactorStatus()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -10821,8 +11876,12 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useChangePassword"],
-            "options": ["changePasswordMutationOptions"],
+            "hooks": [
+              "useChangePassword"
+            ],
+            "options": [
+              "changePasswordMutationOptions"
+            ],
             "keys": [],
             "invalidation": []
           },
@@ -10867,9 +11926,15 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["usePasskeys"],
-            "options": ["passkeysQueryOptions"],
-            "keys": ["authenticationKeys.passkeys()"],
+            "hooks": [
+              "usePasskeys"
+            ],
+            "options": [
+              "passkeysQueryOptions"
+            ],
+            "keys": [
+              "authenticationKeys.passkeys()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -10949,10 +12014,16 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useRenamePasskey"],
-            "options": ["renamePasskeyMutationOptions"],
+            "hooks": [
+              "useRenamePasskey"
+            ],
+            "options": [
+              "renamePasskeyMutationOptions"
+            ],
             "keys": [],
-            "invalidation": ["authenticationKeys.passkeys()"]
+            "invalidation": [
+              "authenticationKeys.passkeys()"
+            ]
           },
           "dto": {
             "summary": "Response 500:ProblemDetails (backend record names; fields not copied)."
@@ -10995,10 +12066,16 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useRemovePasskey"],
-            "options": ["removePasskeyMutationOptions"],
+            "hooks": [
+              "useRemovePasskey"
+            ],
+            "options": [
+              "removePasskeyMutationOptions"
+            ],
             "keys": [],
-            "invalidation": ["authenticationKeys.passkeys()"]
+            "invalidation": [
+              "authenticationKeys.passkeys()"
+            ]
           },
           "dto": {
             "summary": "Response 500:ProblemDetails (backend record names; fields not copied)."
@@ -11041,9 +12118,15 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useTwoFactorStatus"],
-            "options": ["twoFactorStatusQueryOptions"],
-            "keys": ["authenticationKeys.twoFactorStatus()"],
+            "hooks": [
+              "useTwoFactorStatus"
+            ],
+            "options": [
+              "twoFactorStatusQueryOptions"
+            ],
+            "keys": [
+              "authenticationKeys.twoFactorStatus()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -11123,8 +12206,12 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useRegenerateRecoveryCodes"],
-            "options": ["regenerateRecoveryCodesMutationOptions (gcTime 0)"],
+            "hooks": [
+              "useRegenerateRecoveryCodes"
+            ],
+            "options": [
+              "regenerateRecoveryCodesMutationOptions (gcTime 0)"
+            ],
             "keys": [],
             "invalidation": [
               "setQueryData authenticationKeys.twoFactorStatus()"
@@ -11171,8 +12258,12 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useDisableTwoFactor"],
-            "options": ["disableTwoFactorMutationOptions (gcTime 0)"],
+            "hooks": [
+              "useDisableTwoFactor"
+            ],
+            "options": [
+              "disableTwoFactorMutationOptions (gcTime 0)"
+            ],
             "keys": [],
             "invalidation": [
               "setQueryData authenticationKeys.twoFactorStatus()"
@@ -11219,9 +12310,15 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useActiveSessions"],
-            "options": ["activeSessionsQueryOptions"],
-            "keys": ["authenticationKeys.sessions()"],
+            "hooks": [
+              "useActiveSessions"
+            ],
+            "options": [
+              "activeSessionsQueryOptions"
+            ],
+            "keys": [
+              "authenticationKeys.sessions()"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -11265,10 +12362,16 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useRevokeSession"],
-            "options": ["revokeSessionMutationOptions"],
+            "hooks": [
+              "useRevokeSession"
+            ],
+            "options": [
+              "revokeSessionMutationOptions"
+            ],
             "keys": [],
-            "invalidation": ["authenticationKeys.sessions()"]
+            "invalidation": [
+              "authenticationKeys.sessions()"
+            ]
           },
           "dto": {
             "summary": "See backend source; no response type declared via ProducesResponseType."
@@ -11311,10 +12414,16 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useRevokeOtherSessions"],
-            "options": ["revokeOtherSessionsMutationOptions"],
+            "hooks": [
+              "useRevokeOtherSessions"
+            ],
+            "options": [
+              "revokeOtherSessionsMutationOptions"
+            ],
             "keys": [],
-            "invalidation": ["authenticationKeys.sessions()"]
+            "invalidation": [
+              "authenticationKeys.sessions()"
+            ]
           },
           "dto": {
             "summary": "See backend source; no response type declared via ProducesResponseType."
@@ -11357,11 +12466,15 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useSecurityActivity (useInfiniteQuery)"],
+            "hooks": [
+              "useSecurityActivity (useInfiniteQuery)"
+            ],
             "options": [
               "securityActivityQueryOptions (getInfiniteQueryOptions)"
             ],
-            "keys": ["authenticationKeys.securityActivityList(filters)"],
+            "keys": [
+              "authenticationKeys.securityActivityList(filters)"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -11410,11 +12523,15 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useSecurityActivity (useInfiniteQuery)"],
+            "hooks": [
+              "useSecurityActivity (useInfiniteQuery)"
+            ],
             "options": [
               "securityActivityQueryOptions (getInfiniteQueryOptions)"
             ],
-            "keys": ["authenticationKeys.securityActivityList(filters)"],
+            "keys": [
+              "authenticationKeys.securityActivityList(filters)"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -11438,7 +12555,9 @@
       "portal": "user-portal",
       "kind": "overlay",
       "designReference": {
-        "artboards": ["UserTwoFactorSetup"],
+        "artboards": [
+          "UserTwoFactorSetup"
+        ],
         "variantGroup": "UserTwoFactorSetup x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -11487,8 +12606,12 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useSetupTwoFactor"],
-            "options": ["setupTwoFactorMutationOptions (gcTime 0)"],
+            "hooks": [
+              "useSetupTwoFactor"
+            ],
+            "options": [
+              "setupTwoFactorMutationOptions (gcTime 0)"
+            ],
             "keys": [],
             "invalidation": []
           },
@@ -11533,10 +12656,16 @@
             "implementation": "packages/api-client/src/authentication/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useVerifyTwoFactorEnrollment"],
-            "options": ["verifyTwoFactorEnrollmentMutationOptions (gcTime 0)"],
+            "hooks": [
+              "useVerifyTwoFactorEnrollment"
+            ],
+            "options": [
+              "verifyTwoFactorEnrollmentMutationOptions (gcTime 0)"
+            ],
             "keys": [],
-            "invalidation": ["authenticationKeys.twoFactorStatus()"]
+            "invalidation": [
+              "authenticationKeys.twoFactorStatus()"
+            ]
           },
           "dto": {
             "summary": "See backend source; no response type declared via ProducesResponseType."
@@ -11629,7 +12758,9 @@
       "portal": "user-portal",
       "kind": "state-flow",
       "designReference": {
-        "artboards": ["UserVerification"],
+        "artboards": [
+          "UserVerification"
+        ],
         "variantGroup": "UserVerification x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -11690,7 +12821,9 @@
             "docs/kycaid-kyc.md@1fcad50 (backend)",
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/KycController.cs:41@1fcad50"
           ],
-          "gapIds": ["GAP-017-017"],
+          "gapIds": [
+            "GAP-017-017"
+          ],
           "followUp": "CAF-FE-006 (referenced in docs; status unverified)"
         },
         {
@@ -11730,7 +12863,9 @@
             "docs/kycaid-kyc.md@1fcad50 (backend)",
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/KycController.cs:20@1fcad50"
           ],
-          "gapIds": ["GAP-017-017"],
+          "gapIds": [
+            "GAP-017-017"
+          ],
           "followUp": "CAF-FE-006"
         },
         {
@@ -11769,7 +12904,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Kyc/KycController.cs:20@1fcad50"
           ],
-          "gapIds": ["GAP-017-017"],
+          "gapIds": [
+            "GAP-017-017"
+          ],
           "followUp": null
         },
         {
@@ -11803,8 +12940,12 @@
           "statusSemantics": "Not applicable (no backend call).",
           "uiBehavior": "Must re-read status on return; URL is never evidence of outcome.",
           "backendAuthoritativeFields": [],
-          "evidence": ["docs/kycaid-kyc.md@1fcad50 (backend)"],
-          "gapIds": ["GAP-017-017"],
+          "evidence": [
+            "docs/kycaid-kyc.md@1fcad50 (backend)"
+          ],
+          "gapIds": [
+            "GAP-017-017"
+          ],
           "followUp": null
         }
       ]
@@ -11815,7 +12956,9 @@
       "portal": "user-portal",
       "kind": "page",
       "designReference": {
-        "artboards": ["UserWallet"],
+        "artboards": [
+          "UserWallet"
+        ],
         "variantGroup": "UserWallet x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -11867,7 +13010,9 @@
           "uiBehavior": "Unavailable tiles.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-019"],
+          "gapIds": [
+            "GAP-017-019"
+          ],
           "followUp": "BE-DS-005"
         },
         {
@@ -11896,9 +13041,15 @@
             "implementation": "packages/api-client/src/payments/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useWalletTransactions"],
-            "options": ["walletTransactionsQueryOptions"],
-            "keys": ["paymentKeys.walletTransactionList(filters)"],
+            "hooks": [
+              "useWalletTransactions"
+            ],
+            "options": [
+              "walletTransactionsQueryOptions"
+            ],
+            "keys": [
+              "paymentKeys.walletTransactionList(filters)"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -11911,7 +13062,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/WalletTransactions/WalletTransactionsController.cs:23@1fcad50"
           ],
-          "gapIds": ["GAP-017-019"],
+          "gapIds": [
+            "GAP-017-019"
+          ],
           "followUp": "FE-UI-021 (roadmap)"
         },
         {
@@ -11940,9 +13093,15 @@
             "implementation": "packages/api-client/src/payments/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useWalletTransactions"],
-            "options": ["walletTransactionsQueryOptions"],
-            "keys": ["paymentKeys.walletTransactionList(filters)"],
+            "hooks": [
+              "useWalletTransactions"
+            ],
+            "options": [
+              "walletTransactionsQueryOptions"
+            ],
+            "keys": [
+              "paymentKeys.walletTransactionList(filters)"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -11955,7 +13114,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/WalletTransactions/WalletTransactionsController.cs:23@1fcad50"
           ],
-          "gapIds": ["GAP-017-019"],
+          "gapIds": [
+            "GAP-017-019"
+          ],
           "followUp": null
         },
         {
@@ -11984,9 +13145,15 @@
             "implementation": "packages/api-client/src/payments/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useWalletTopUp"],
-            "options": ["walletTopUpQueryOptions"],
-            "keys": ["paymentKeys.walletTopUpDetail(id)"],
+            "hooks": [
+              "useWalletTopUp"
+            ],
+            "options": [
+              "walletTopUpQueryOptions"
+            ],
+            "keys": [
+              "paymentKeys.walletTopUpDetail(id)"
+            ],
             "invalidation": []
           },
           "dto": {
@@ -11999,7 +13166,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/WalletTransactions/WalletTransactionsController.cs:47@1fcad50"
           ],
-          "gapIds": ["GAP-017-019"],
+          "gapIds": [
+            "GAP-017-019"
+          ],
           "followUp": null
         }
       ]
@@ -12010,7 +13179,9 @@
       "portal": "user-portal",
       "kind": "overlay",
       "designReference": {
-        "artboards": ["UserWalletTopUp"],
+        "artboards": [
+          "UserWalletTopUp"
+        ],
         "variantGroup": "UserWalletTopUp x {desktop,mobile} x {dark,light}",
         "designCommit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d"
       },
@@ -12061,7 +13232,9 @@
           "uiBehavior": "Unavailable.",
           "backendAuthoritativeFields": [],
           "evidence": [],
-          "gapIds": ["GAP-017-019"],
+          "gapIds": [
+            "GAP-017-019"
+          ],
           "followUp": null
         },
         {
@@ -12090,10 +13263,16 @@
             "implementation": "packages/api-client/src/payments/operations.ts"
           },
           "apiReact": {
-            "hooks": ["useInitiatePayment"],
-            "options": ["initiatePaymentMutationOptions"],
+            "hooks": [
+              "useInitiatePayment"
+            ],
+            "options": [
+              "initiatePaymentMutationOptions"
+            ],
             "keys": [],
-            "invalidation": ["paymentKeys.walletTransactions()"]
+            "invalidation": [
+              "paymentKeys.walletTransactions()"
+            ]
           },
           "dto": {
             "summary": "InitiatePaymentMutationRequest {amount, currencyId, paymentIntent, paymentProviderId}; backend Amount is decimal (unit convention differs from subscription minor units — unverified), no idempotency key."
@@ -12105,7 +13284,9 @@
           "evidence": [
             "src/BackendProjectTemplate.WebAPI/Features/Payments/InitiatePayment/PaymentsController.cs:21@1fcad50"
           ],
-          "gapIds": ["GAP-017-019"],
+          "gapIds": [
+            "GAP-017-019"
+          ],
           "followUp": "FE-UI-021 (roadmap); BE-DS-005"
         }
       ]
@@ -12135,10 +13316,10 @@
       ],
       "sequencing": "First; makes later admin/KYC contract work reviewable.",
       "relatedTickets": [
-        "CAF-FE-001 (named in the brief; not found in repository text)"
+        "CAF-FE-018 — Refresh checked-in OpenAPI reference (https://trello.com/c/9IvwOi5J/39-caf-fe-018-refresh-checked-in-openapi-reference)"
       ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-002",
@@ -12165,9 +13346,11 @@
         "Dialog browser test (code entry, error, cancel)."
       ],
       "sequencing": "After GAP-017-003; before any admin mutation adapter.",
-      "relatedTickets": ["Proposed new card (no existing owner found)"],
+      "relatedTickets": [
+        "CAF-FE-019 — Implement admin MFA sign-in and step-up (https://trello.com/c/zH2S4loY/40-caf-fe-019-implement-admin-mfa-sign-in-and-step-up)"
+      ],
       "blocker": true,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-003",
@@ -12189,9 +13372,11 @@
         "BFF tests for challenge set/verify/clear; browser test for the two-factor step."
       ],
       "sequencing": "First admin security task.",
-      "relatedTickets": ["Proposed new card (no existing owner found)"],
+      "relatedTickets": [
+        "CAF-FE-019 — Implement admin MFA sign-in and step-up (https://trello.com/c/zH2S4loY/40-caf-fe-019-implement-admin-mfa-sign-in-and-step-up)"
+      ],
       "blocker": true,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-004",
@@ -12217,10 +13402,10 @@
       ],
       "sequencing": "With GAP-017-005.",
       "relatedTickets": [
-        "Backend enhancement proposal (optional) — no existing owner found"
+        "CAF-FE-020 — Decide and implement Admin Portal admission policy (https://trello.com/c/a5anog5t/41-caf-fe-020-decide-and-implement-admin-portal-admission-policy)"
       ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-005",
@@ -12243,9 +13428,11 @@
         "HTTP-boundary tests per operation; dashboard composition tests for ready/forbidden/error per panel."
       ],
       "sequencing": "First admin read integration (reads need no step-up).",
-      "relatedTickets": ["FE-UI-023 (roadmap ID; Trello status unverified)"],
+      "relatedTickets": [
+        "CAF-FE-021 — Integrate live Admin Portal dashboard (https://trello.com/c/tBtw7iJ2/42-caf-fe-021-integrate-live-admin-portal-dashboard)"
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-006",
@@ -12268,9 +13455,11 @@
         "Operation tests; route tests; admin-preview-boundaries updated deliberately."
       ],
       "sequencing": "After dashboard reads.",
-      "relatedTickets": ["FE-UI-024 (roadmap)"],
+      "relatedTickets": [
+        "CAF-FE-008 — Implement admin user management screens (https://trello.com/c/WevOm7bI/9-caf-fe-008-implement-admin-user-management-screens)"
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-007",
@@ -12288,11 +13477,15 @@
       "acceptanceCriteria": [
         "Cursor pagination via getInfiniteQueryOptions; unknown statuses render Unknown."
       ],
-      "tests": ["Operation + composition tests."],
+      "tests": [
+        "Operation + composition tests."
+      ],
       "sequencing": "Parallel with GAP-017-006 reads.",
-      "relatedTickets": ["FE-UI-028 (roadmap)"],
+      "relatedTickets": [
+        "CAF-FE-009 — Implement admin KYC monitoring screens (https://trello.com/c/idWAB1hT/10-caf-fe-009-implement-admin-kyc-monitoring-screens)"
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-008",
@@ -12306,15 +13499,18 @@
         "apps/admin-portal/src/features/admin-payments/payments-model.ts"
       ],
       "prerequisite": "None.",
-      "acceptanceCriteria": ["Null fields render 'Not available', never zero."],
-      "tests": ["Operation + composition tests."],
+      "acceptanceCriteria": [
+        "Null fields render 'Not available', never zero."
+      ],
+      "tests": [
+        "Operation + composition tests."
+      ],
       "sequencing": "After dashboard.",
       "relatedTickets": [
-        "CAF-FE-014 (referenced in code; status unverified)",
-        "FE-UI-027 (roadmap)"
+        "CAF-FE-012 — Build admin payment transactions and detail pages (https://trello.com/c/pcUv381R/14-caf-fe-012-build-admin-payment-transactions-and-detail-pages)"
       ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-009",
@@ -12333,15 +13529,18 @@
         "Allocation sends idempotencyKey in body and treats 200 as replay.",
         "Plan prices converted exactly between editor and wire units."
       ],
-      "tests": ["Operation tests incl. idempotency; editor conversion tests."],
+      "tests": [
+        "Operation tests incl. idempotency; editor conversion tests."
+      ],
       "sequencing": "After users.",
       "relatedTickets": [
-        "CAF-FE-015",
-        "CAF-FE-016 (referenced in code; status unverified)",
-        "FE-UI-026 (roadmap)"
+        "CAF-FE-014 — Build admin subscription plan management screens (https://trello.com/c/m0jIHnTa/18-caf-fe-014-build-admin-subscription-plan-management-screens)",
+        "CAF-FE-015 — Build admin subscription management screens (https://trello.com/c/WMnvzksg/16-caf-fe-015-build-admin-subscription-management-screens)",
+        "CAF-FE-016 — Build admin subscription allocation workflow (https://trello.com/c/UkhYZPbR/17-caf-fe-016-build-admin-subscription-allocation-workflow)",
+        "BE-DS-009 — Define tenant directory contract for admin allocation (https://trello.com/c/acUGqwsT/46-be-ds-009-define-tenant-directory-contract-for-admin-allocation)"
       ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-010",
@@ -12360,11 +13559,18 @@
       "acceptanceCriteria": [
         "Range/interval sent exactly; figures and currency as reported."
       ],
-      "tests": ["Operation + composition tests."],
+      "tests": [
+        "Operation + composition tests."
+      ],
       "sequencing": "With dashboard.",
-      "relatedTickets": ["FE-UI-031 (roadmap)"],
+      "relatedTickets": [
+        "CAF-FE-010 — Build admin registration analytics page (https://trello.com/c/e40wpLWG/11-caf-fe-010-build-admin-registration-analytics-page)",
+        "CAF-FE-011 — Build admin active-user analytics page (https://trello.com/c/T8f6yIXa/12-caf-fe-011-build-admin-active-user-analytics-page)",
+        "CAF-FE-013 — Build admin payment analytics overview (https://trello.com/c/GXMwEsOL/13-caf-fe-013-build-admin-payment-analytics-overview)",
+        "CAF-FE-017 — Build admin subscription analytics overview (https://trello.com/c/SXT5WigJ/15-caf-fe-017-build-admin-subscription-analytics-overview)"
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-011",
@@ -12381,11 +13587,15 @@
       "acceptanceCriteria": [
         "Export never exposes bearer tokens; filename/media type from backend."
       ],
-      "tests": ["Operation + BFF download tests."],
+      "tests": [
+        "Operation + BFF download tests."
+      ],
       "sequencing": "Any time after GAP-017-004.",
-      "relatedTickets": ["FE-UI-030 (roadmap)"],
+      "relatedTickets": [
+        "CAF-FE-022 — Integrate admin audit history and export (https://trello.com/c/WOcgyG3l/43-caf-fe-022-integrate-admin-audit-history-and-export)"
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-012",
@@ -12404,11 +13614,16 @@
       "acceptanceCriteria": [
         "Operations send header + reason; HTTP-boundary tests updated."
       ],
-      "tests": ["api-client operation tests."],
+      "tests": [
+        "api-client operation tests."
+      ],
       "sequencing": "With GAP-017-002.",
-      "relatedTickets": ["FE-UI-029 (roadmap)"],
+      "relatedTickets": [
+        "CAF-FE-023 — Integrate admin payment providers (https://trello.com/c/QRIuHX4b/44-caf-fe-023-integrate-admin-payment-providers)",
+        "BE-DS-004 — Review operational provider and system-health API requirements (https://trello.com/c/MHDBW420/41-be-ds-004-review-operational-provider-and-system-health-api-requirements)"
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-013",
@@ -12422,12 +13637,18 @@
         "src/BackendProjectTemplate.WebAPI/Features/ReferenceData@1fcad50"
       ],
       "prerequisite": "Product decision.",
-      "acceptanceCriteria": ["Tabs without a source stay unavailable."],
-      "tests": ["n/a until endpoints exist."],
+      "acceptanceCriteria": [
+        "Tabs without a source stay unavailable."
+      ],
+      "tests": [
+        "n/a until endpoints exist."
+      ],
       "sequencing": "Low.",
-      "relatedTickets": ["FE-UI-029 (roadmap)"],
+      "relatedTickets": [
+        "BE-DS-010 — Decide admin reference-data management scope (https://trello.com/c/TUdcT0bq/47-be-ds-010-decide-admin-reference-data-management-scope)"
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-014",
@@ -12442,15 +13663,18 @@
         "apps/admin-portal/src/features/admin-roles/roles-model.ts"
       ],
       "prerequisite": "Product decision.",
-      "acceptanceCriteria": ["No production role editor."],
-      "tests": ["n/a"],
+      "acceptanceCriteria": [
+        "No production role editor."
+      ],
+      "tests": [
+        "n/a"
+      ],
       "sequencing": "Low.",
       "relatedTickets": [
-        "CAF-FE-008 (referenced in docs)",
-        "FE-UI-025 (roadmap)"
+        "CAF-FE-008 — Implement admin user management screens (https://trello.com/c/WevOm7bI/9-caf-fe-008-implement-admin-user-management-screens)"
       ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-015",
@@ -12460,14 +13684,22 @@
       "owner": "backend",
       "observed": "Only anonymous aggregate /health.",
       "desired": "Authorized per-dependency health read, or drop the screen.",
-      "evidence": ["src/BackendProjectTemplate.WebAPI/Program.cs:92@1fcad50"],
+      "evidence": [
+        "src/BackendProjectTemplate.WebAPI/Program.cs:92@1fcad50"
+      ],
       "prerequisite": "Product decision.",
-      "acceptanceCriteria": ["Screen stays preview-only until then."],
-      "tests": ["n/a"],
+      "acceptanceCriteria": [
+        "Screen stays preview-only until then."
+      ],
+      "tests": [
+        "n/a"
+      ],
       "sequencing": "Low.",
-      "relatedTickets": ["FE-UI-030 (roadmap)"],
+      "relatedTickets": [
+        "BE-DS-004 — Review operational provider and system-health API requirements (https://trello.com/c/MHDBW420/41-be-ds-004-review-operational-provider-and-system-health-api-requirements)"
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-016",
@@ -12477,18 +13709,22 @@
       "owner": "backend",
       "observed": "No invoice/receipt entity or endpoints (DR-160); billing history rows carry no document ids.",
       "desired": "As specified in docs/architecture/11-subscriptions-and-billing.md (owner-scoped reads, admin search/detail, issuance, PDF).",
-      "evidence": ["docs/architecture/11-subscriptions-and-billing.md"],
+      "evidence": [
+        "docs/architecture/11-subscriptions-and-billing.md"
+      ],
       "prerequisite": "BE-DS-007.",
       "acceptanceCriteria": [
         "Routes and nav stay unpublished until reads exist."
       ],
-      "tests": ["Existing billing-document browser/print tests reused."],
+      "tests": [
+        "Existing billing-document browser/print tests reused."
+      ],
       "sequencing": "Blocked on backend.",
       "relatedTickets": [
-        "BE-DS-007 (https://trello.com/c/8JZSDXfH; status unverified)"
+        "BE-DS-007 — Define invoice and receipt domain and API requirements (https://trello.com/c/8JZSDXfH/44-be-ds-007-define-invoice-and-receipt-domain-and-api-requirements)"
       ],
       "blocker": true,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-017",
@@ -12511,11 +13747,10 @@
       ],
       "sequencing": "Highest-value unblocked customer integration.",
       "relatedTickets": [
-        "CAF-FE-006 (referenced in docs; status unverified)",
-        "FE-UI-022 (roadmap)"
+        "CAF-FE-006 — Implement KYCAid KYC user flow (https://trello.com/c/EWDTKQ3u/7-caf-fe-006-implement-kycaid-kyc-user-flow)"
       ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-018",
@@ -12530,14 +13765,18 @@
         "src/BackendProjectTemplate.WebAPI/Features/Stakeholders/Preferences/PreferencesController.cs@1fcad50"
       ],
       "prerequisite": "Product decision.",
-      "acceptanceCriteria": ["No copy claims persistence that does not occur."],
-      "tests": ["BFF + page tests if adopted."],
+      "acceptanceCriteria": [
+        "No copy claims persistence that does not occur."
+      ],
+      "tests": [
+        "BFF + page tests if adopted."
+      ],
       "sequencing": "Low/medium.",
       "relatedTickets": [
-        "FE-UI-020 (roadmap 'preferences'; Trello FE-UI-020 is OTP reset — ID collision, see GAP-017-023)"
+        "CAF-FE-024 — Decide and integrate account preferences (https://trello.com/c/Zmy4ZP7l/45-caf-fe-024-decide-and-integrate-account-preferences)"
       ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-019",
@@ -12552,15 +13791,18 @@
         "packages/api-client/src/payments/contracts.ts"
       ],
       "prerequisite": "BE-DS-005.",
-      "acceptanceCriteria": ["Balances only from backend; units documented."],
-      "tests": ["n/a until available."],
+      "acceptanceCriteria": [
+        "Balances only from backend; units documented."
+      ],
+      "tests": [
+        "n/a until available."
+      ],
       "sequencing": "Optional (wallet).",
       "relatedTickets": [
-        "BE-DS-005 (status unverified)",
-        "FE-UI-021 (roadmap)"
+        "BE-DS-005 — Decide wallet and top-up domain scope for the project template (https://trello.com/c/773lH2Sg/42-be-ds-005-decide-wallet-and-top-up-domain-scope-for-the-project-template)"
       ],
       "blocker": true,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-020",
@@ -12578,13 +13820,15 @@
       "acceptanceCriteria": [
         "Remove the BFF 404 folding once the backend is non-enumerating."
       ],
-      "tests": ["Existing password-reset BFF tests."],
+      "tests": [
+        "Existing password-reset BFF tests."
+      ],
       "sequencing": "Backend-led.",
       "relatedTickets": [
-        "BE-DS-006 (https://trello.com/c/s9tsnAcK; status unverified)"
+        "BE-DS-006 — Review and harden password-reset API contracts and security (https://trello.com/c/s9tsnAcK/43-be-ds-006-review-and-harden-password-reset-api-contracts-and-security)"
       ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-021",
@@ -12594,14 +13838,22 @@
       "owner": "backend/product",
       "observed": "423 and 401 carry no counts/durations (DR-016).",
       "desired": "Keep omitted unless backend adds them.",
-      "evidence": ["apps/user-portal/src/lib/auth-feedback.ts"],
+      "evidence": [
+        "apps/user-portal/src/lib/auth-feedback.ts"
+      ],
       "prerequisite": "None.",
-      "acceptanceCriteria": ["UI never invents numbers."],
-      "tests": ["Existing feedback tests."],
+      "acceptanceCriteria": [
+        "UI never invents numbers."
+      ],
+      "tests": [
+        "Existing feedback tests."
+      ],
       "sequencing": "Low.",
-      "relatedTickets": [],
+      "relatedTickets": [
+        "No follow-up card: verified safe disposition is to omit attempt counts and lockout duration until the backend exposes authoritative values."
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-022",
@@ -12616,12 +13868,18 @@
         "apps/admin-portal/src/app/api/auth/session/google/route.ts"
       ],
       "prerequisite": "None.",
-      "acceptanceCriteria": ["Each BFF route has a caller or is removed."],
-      "tests": ["Route tests updated."],
+      "acceptanceCriteria": [
+        "Each BFF route has a caller or is removed."
+      ],
+      "tests": [
+        "Route tests updated."
+      ],
       "sequencing": "Low.",
-      "relatedTickets": [],
+      "relatedTickets": [
+        "CAF-FE-025 — Remove or adopt unused authentication BFF routes (https://trello.com/c/Hnl91kV3/46-caf-fe-025-remove-or-adopt-unused-authentication-bff-routes)"
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-023",
@@ -12631,16 +13889,22 @@
       "owner": "lead (shared docs)",
       "observed": "Admin screens marked backend 'Missing' though endpoints exist; compositions marked 'Missing' though implemented; USR-VERIFICATION/USR-PREFERENCES backend support stale; MKT-HOME lists a plan operation it no longer calls; roadmapTicket uses roadmap numbering (FE-UI-017 = Security) that collides with Trello numbering (FE-UI-017 = this mapping).",
       "desired": "Apply the patch proposal in api-contract-matrix.md.",
-      "evidence": ["docs/design-system/screen-inventory.json"],
+      "evidence": [
+        "docs/design-system/screen-inventory.json"
+      ],
       "prerequisite": "Reconcile with FE-UI-016 inventory edits.",
       "acceptanceCriteria": [
         "Inventory backend fields agree with this matrix."
       ],
-      "tests": ["JSON validation."],
+      "tests": [
+        "JSON validation."
+      ],
       "sequencing": "Lead, after FE-UI-016 merges.",
-      "relatedTickets": [],
+      "relatedTickets": [
+        "Tracked in PR #57: apply the proposed inventory/OKF/documentation reconciliation after PR #56 merges."
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-024",
@@ -12655,14 +13919,18 @@
         "docs/design-system/email-notification-handoff.md"
       ],
       "prerequisite": "BE-DS-008.",
-      "acceptanceCriteria": ["No Next.js email transport."],
-      "tests": ["n/a"],
+      "acceptanceCriteria": [
+        "No Next.js email transport."
+      ],
+      "tests": [
+        "n/a"
+      ],
       "sequencing": "Backend-led.",
       "relatedTickets": [
-        "BE-DS-008 (https://trello.com/c/RTpBnO3B; status unverified)"
+        "BE-DS-008 — Review transactional email catalog and notification infrastructure gaps (https://trello.com/c/RTpBnO3B/45-be-ds-008-review-transactional-email-catalog-and-notification-infrastructure-gaps)"
       ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-025",
@@ -12672,14 +13940,22 @@
       "owner": "backend",
       "observed": "No history filters/export, no purchaseId on history rows, no upgrade/downgrade/proration/refund/resume/immediate cancel for customers; Bachs return URLs carry no purchase id.",
       "desired": "As listed in docs/architecture/11-subscriptions-and-billing.md.",
-      "evidence": ["docs/architecture/11-subscriptions-and-billing.md"],
+      "evidence": [
+        "docs/architecture/11-subscriptions-and-billing.md"
+      ],
       "prerequisite": "Backend.",
-      "acceptanceCriteria": ["UI keeps these actions absent."],
-      "tests": ["Existing billing tests."],
+      "acceptanceCriteria": [
+        "UI keeps these actions absent."
+      ],
+      "tests": [
+        "Existing billing tests."
+      ],
       "sequencing": "Backend-led.",
-      "relatedTickets": [],
+      "relatedTickets": [
+        "CAF-FE-007 — Implement subscription and billing user experience (https://trello.com/c/SnrHMj1K/8-caf-fe-007-implement-subscription-and-billing-user-experience)"
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-027",
@@ -12703,11 +13979,11 @@
       ],
       "sequencing": "Small frontend fix; can ship before BE-DS-006.",
       "relatedTickets": [
-        "BE-DS-006 (related backend enumeration; status unverified)",
-        "FE-UI-020 (owner of the reset BFF)"
+        "CAF-FE-026 — Make password-reset accepted responses non-enumerating (https://trello.com/c/F9dWgYAW/47-caf-fe-026-make-password-reset-accepted-responses-non-enumerating)",
+        "BE-DS-006 — Review and harden password-reset API contracts and security (https://trello.com/c/s9tsnAcK/43-be-ds-006-review-and-harden-password-reset-api-contracts-and-security)"
       ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     },
     {
       "id": "GAP-017-026",
@@ -12717,14 +13993,22 @@
       "owner": "product",
       "observed": "mailto only (DR-033).",
       "desired": "Keep mailto or add a backend contact endpoint with abuse controls.",
-      "evidence": ["apps/public-portal/src/components/contact-form.tsx"],
+      "evidence": [
+        "apps/public-portal/src/components/contact-form.tsx"
+      ],
       "prerequisite": "Product decision.",
-      "acceptanceCriteria": ["Never claim a message was sent."],
-      "tests": ["n/a"],
+      "acceptanceCriteria": [
+        "Never claim a message was sent."
+      ],
+      "tests": [
+        "n/a"
+      ],
       "sequencing": "Low.",
-      "relatedTickets": [],
+      "relatedTickets": [
+        "CAF-FE-027 — Decide public contact form behavior (https://trello.com/c/NlDpmC2a/48-caf-fe-027-decide-public-contact-form-behavior)"
+      ],
       "blocker": false,
-      "ticketStatusVerified": false
+      "ticketStatusVerified": true
     }
   ],
   "coverage": {
@@ -12774,5 +14058,23 @@
     "checkedInOpenApiOperationsNotInBackend": [
       "POST /api/v1/stakeholders/me/profile/avatar"
     ]
+  },
+  "trelloReconciliation": {
+    "reconciledOn": "2026-11-28",
+    "frontendBoard": "Frontend Project Template",
+    "backendBoard": "Backend Project Template",
+    "feUi016": {
+      "status": "DOING",
+      "url": "https://trello.com/c/JuXUfUhQ"
+    },
+    "feUi017": {
+      "status": "DOING",
+      "url": "https://trello.com/c/5e5VLVim"
+    },
+    "beDs001": {
+      "status": "DEV TESTING",
+      "url": "https://trello.com/c/unWkpaY0"
+    },
+    "note": "Existing cards were refined and missing owners were created from this matrix. relatedTickets on every gap now uses verified Trello cards or an explicit no-card disposition."
   }
 }
