@@ -169,8 +169,13 @@ export function DataTable<Row>({
       )}
     >
       {showLoading ? <LoadingStatus label={loadingLabel} /> : null}
+      {/* `relative`: the scroll region also contains absolutely positioned
+          descendants (sr-only text), so they cannot widen the page. */}
       <div
-        className={cn("overflow-x-auto", stack && "max-md:overflow-visible")}
+        className={cn(
+          "relative overflow-x-auto",
+          stack && "max-md:overflow-visible",
+        )}
       >
         <table
           aria-busy={showLoading || undefined}

@@ -39,10 +39,14 @@ durable boundaries and pure behavior rather than broad browser rendering:
   node config excludes them.
 - Visual regression (`pnpm test:visual`, `tooling/ui-workbench/visual`):
   `toMatchScreenshot` over composed workbench stories (primitive galleries at
-  1440/390 × light/dark, dialogs, and a selective desktop dashboard-shell
-  set); Windows/Chromium baselines. Update only with `-u` and review the
-  diffs. Implementation tickets add selective shots only; the comprehensive
-  matrix is FE-UI-016.
+  1440/390 × light/dark, dialogs, desktop dashboard shells, and phone/tablet
+  shells plus the open drawer at the artboard viewport, `grow: false`);
+  Windows/Chromium baselines. Update only with `-u` (forwarded to
+  `vitest run`) and review every diff. Implementation tickets add selective
+  shots only; the comprehensive matrix ran once in FE-UI-016
+  (`docs/design-system/final-visual-qa.md`: portal pages via `next start`,
+  gated screens via the app preview harness, axe-core, overflow checks;
+  evidence kept outside the repository).
 - `ui-core`: pure presentation helpers such as minor-unit money formatting;
   `styles/theme.test.ts` parses `theme.css` to assert reference token values,
   dark overrides and WCAG contrast (text 4.5:1, controls/focus 3:1); theme
@@ -51,7 +55,8 @@ durable boundaries and pure behavior rather than broad browser rendering:
 - `public-ui`: static markup tests (`components.test.tsx`: active link,
   plan card naming, decorative product shot, legal switch) and browser tests
   for the marketing menu (focus trap/return, Escape, link choice, closing at
-  `lg`, dark mode) and the pricing interval switch.
+  `lg`, dark mode), the pricing interval switch, CTA lead contrast and FAQ
+  description-list structure.
 - `dashboard-ui`: active-route resolution (`navigation.test.ts`), sidebar
   grouping/rail rendering and `AuthLayout` structure via
   `renderToStaticMarkup`; browser tests

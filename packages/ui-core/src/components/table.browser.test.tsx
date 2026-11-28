@@ -163,6 +163,46 @@ describe("DataTable", () => {
       }
     });
   });
+
+  // FE-UI-016: visually hidden text in off-screen columns (for example a
+  // copy button's label) is clipped by the scroll region instead of
+  // widening the page (seen on tablet billing history).
+  it("keeps visually hidden cell text inside the scroll region", async () => {
+    await page.viewport(834, 1112);
+    try {
+      const wide = Array.from({ length: 8 }, (_, index) => ({
+        cell: (row: Payment) => `${row.id} detail ${index}`,
+        header: `Column ${index}`,
+      }));
+      const screen = await render(
+        <DataTable
+          caption="Payments"
+          columns={[
+            ...wide,
+            {
+              cell: (row) => (
+                <button type="button">
+                  {row.id}
+                  <span className="sr-only">Copy reference</span>
+                </button>
+              ),
+              header: "Reference",
+            },
+          ]}
+          keyField={(row) => row.id}
+          rows={rows}
+        />,
+      );
+      const scroller = screen.getByRole("table").element()
+        .parentElement as HTMLElement;
+      expect(scroller.scrollWidth).toBeGreaterThan(scroller.clientWidth);
+      expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
+        document.documentElement.clientWidth,
+      );
+    } finally {
+      await page.viewport(1440, 900);
+    }
+  });
 });
 
 describe("Pager", () => {

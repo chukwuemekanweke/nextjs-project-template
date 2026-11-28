@@ -1,40 +1,45 @@
 # Screen inventory
 
-Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the authoritative, machine-readable inventory. Both are produced from the same data; when they disagree, the JSON wins. Design source: [`design-source-manifest.json`](./design-source-manifest.json) (commit `d23eb85`; the dashboard shell and navigation records use revision `a7e2a63` — see the manifest's `scopedRevisions` and [DR-083](./discrepancy-register.md#dr-083)).
+Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the authoritative, machine-readable inventory. Both are produced from the same data; when they disagree, the JSON wins. Design source: [`design-source-manifest.json`](./design-source-manifest.json), commit `ad9386e` (pinned by Trello FE-UI-016, which regenerated the manifest and refreshed every reference blob; [DR-083](./discrepancy-register.md#dr-083) resolved). Per-screen QA results come from [`final-visual-qa.md`](./final-visual-qa.md).
 
 ## How to read this
 
 - A **logical screen** is one user-facing surface (one route, one in-page state machine, one dialog, or one layout pattern). Visual variants (desktop/mobile, light/dark) and business states (billing `active`/`pastdue`, KYC `rejected`) are listed under the screen, never as separate screens.
 - Multi-artboard screens: `AUTH-REGISTER` (email, details), `AUTH-FORGOT-PASSWORD` (request, code entry) and `AUTH-RESET-PASSWORD` (password mismatch, invalid code, done) merge artboards that the design drew separately but that are states of one route (both password-reset screens are states of `/forgot-password`).
 - Transactional email designs (`6-emails/`, `email-pages/`) are not screens and are not in this inventory; see [`email-template-catalog.md`](./email-template-catalog.md) (Trello FE-UI-019).
-- **Status**: the frontend today. **Class**: A existing functional · B existing partial · C UI reference only (workflow not built; backend may exist) · D unsupported capability (the design needs backend support that the handwritten `api-client` does not have).
+- **Status**: the frontend as recorded by each ticket (historical; whether a production route exists is **QA surface** / `qa.deployedRoute`). **Class**: A existing functional · B existing partial · C UI reference only (workflow not built; backend may exist) · D unsupported capability (the design needs backend support that the handwritten `api-client` does not have).
 - **Backend** support is judged from `packages/api-client` operations; the repository OpenAPI snapshot is stale ([DR-003](./discrepancy-register.md#dr-003)).
 - **Priority**: P0 foundation · P1 redesign of a live flow · P2 missing screen that is unblocked or low risk · P3 blocked on backend or product decisions.
 - Every design file path, git blob id, viewport, theme and state is in the JSON (`design.referenceFiles`). Tickets refer to [migration-roadmap.md](./migration-roadmap.md).
 
 ## Statistics
 
-| Measure                                                       | Count |
-| ------------------------------------------------------------- | ----- |
-| Logical screens (incl. overlays, layout patterns, references) | 62    |
-| Design artboards                                              | 68    |
-| Canonical static reference files mapped                       | 337   |
-| Editable `.dc.html` artboards mapped                          | 239   |
-| Screens with an existing route or in-app state                | 28    |
-| Screens with a proposed route only                            | 29    |
-| Screens whose design assumes unsupported backend capabilities | 48    |
-| Status: Implemented                                           | 40    |
-| Status: Missing                                               | 19    |
-| Status: Partial                                               | 3     |
-| Status: Reference-only                                        | 0     |
-| Classification A                                              | 17    |
-| Classification B                                              | 8     |
-| Classification C                                              | 8     |
-| Classification D                                              | 29    |
-| Backend: Existing                                             | 15    |
-| Backend: Missing                                              | 25    |
-| Backend: Not required                                         | 8     |
-| Backend: Partial                                              | 14    |
+| Measure                                                       | Count    |
+| ------------------------------------------------------------- | -------- |
+| Logical screens (incl. overlays, layout patterns, references) | 62       |
+| Design artboards                                              | 68       |
+| Canonical static reference files mapped                       | 337      |
+| Export copies (`project-template-design-html/screens`) mapped | 361      |
+| Screens with an existing route or in-app state                | 28       |
+| Screens with a proposed route only                            | 29       |
+| Screens whose design assumes unsupported backend capabilities | 48       |
+| Status: Implemented                                           | 40       |
+| Status: Missing                                               | 19       |
+| Status: Partial                                               | 3        |
+| Status: Reference-only                                        | 0        |
+| Classification A                                              | 17       |
+| Classification B                                              | 8        |
+| Classification C                                              | 8        |
+| Classification D                                              | 29       |
+| Backend: Existing                                             | 15       |
+| Backend: Missing                                              | 25       |
+| Backend: Not required                                         | 8        |
+| Backend: Partial                                              | 14       |
+| Screens with a deployed route (`qa.deployedRoute`)            | 28       |
+| QA result: pass / pass after fix                              | 43 / 13  |
+| QA result: open gap / reference reviewed                      | 2 / 4    |
+| Reference files compared / representative                     | 262 / 62 |
+| Reference files reference-only / external IdP                 | 5 / 8    |
 
 ## Inventory by category
 
@@ -133,6 +138,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `Main` — 1 reference files (desktop; light).
 - **Status:** Implemented (C); **backend:** Not required; **priority:** P0; **ticket:** FE-UI-003 (delivered by the Trello card numbered FE-UI-002, see [DR-077](./discrepancy-register.md#dr-077)).
+- **QA (FE-UI-016):** surface development-preview-route; no production route; **reference-reviewed**; 1 reference-only; open [DR-172](./discrepancy-register.md#dr-172).
 - **Implementation:** `packages/ui-core/src/styles/theme.css`, `packages/ui-core/src/theme/theme-provider.tsx`, `packages/ui-core/src/theme/theme-controls.tsx`, `packages/dashboard-ui/src/tailadmin-theme.css`, `apps/public-portal/src/app/globals.css`, `apps/public-portal/src/app/foundations/page.tsx`
 - **Works today:** All three apps import `@template/ui-core/theme.css`, load Outfit and JetBrains Mono with `next/font`, and use the shared `next-themes` `ThemeProvider` with `ThemeSwitch`/`ThemeSelect`.
 - **Works today:** A development-only specimen at `/foundations` in the public portal (404 in production builds) renders the real tokens; token values and WCAG contrast are unit-tested from `theme.css`.
@@ -149,6 +155,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `PublicAbout` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (C); **backend:** Not required; **priority:** P3; **ticket:** FE-UI-010.
+- **QA (FE-UI-016):** surface route; route `/about`; **pass**; 4 compared.
 - **Implementation:** `apps/public-portal/src/app/about/page.tsx`, `apps/public-portal/src/config/site.tsx`, `packages/public-ui/src/components/feature-grid.tsx`
 - **Works today:** Trello FE-UI-005: hero and Mission / Values / Team cards per the reference, with configurable placeholder copy.
 - **Depends on:** FE-UI-009
@@ -160,6 +167,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `PublicBlog` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (C); **backend:** Not required; **priority:** P3; **ticket:** FE-UI-010.
+- **QA (FE-UI-016):** surface route; route `/blog`; **pass**; 4 compared.
 - **Implementation:** `apps/public-portal/src/app/blog/page.tsx`, `apps/public-portal/src/config/site.tsx`, `packages/public-ui/src/components/blog-card.tsx`
 - **Works today:** Trello FE-UI-005: card grid with brand banner, category chip and excerpt; cards keep #id anchors and do not link.
 - **Unsupported / missing backend:** Blog post content source (CMS/MDX) and post detail route
@@ -174,6 +182,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `PublicContact` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Partial (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-010.
+- **QA (FE-UI-016):** surface route; route `/contact`; **pass**; 4 compared.
 - **Implementation:** `apps/public-portal/src/app/contact/page.tsx`, `apps/public-portal/src/components/contact-form.tsx`, `apps/public-portal/src/lib/contact-mailto.ts`, `packages/public-ui/src/components/contact-layout.tsx`
 - **Works today:** Trello FE-UI-005: reference layout (name, email, topic, message; email and office cards). Submitting opens a mailto: draft to the support email and states that nothing is sent from the site.
 - **Unsupported / missing backend:** Contact/lead submission endpoint
@@ -187,6 +196,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `PublicFeatures` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (C); **backend:** Not required; **priority:** P2; **ticket:** FE-UI-010.
+- **QA (FE-UI-016):** surface route; route `/features`; **pass**; 4 compared.
 - **Implementation:** `apps/public-portal/src/app/features/page.tsx`, `apps/public-portal/src/config/site.tsx`, `packages/public-ui/src/components/numbered-feature-list.tsx`
 - **Works today:** Trello FE-UI-005: numbered (01-06) capability list with soft icon panels per the reference.
 - **Gap:** Copy lists only implemented capabilities (accounts, strong sign-in, security, subscriptions, portals, branding) instead of the reference wallet/verification/administration claims (DR-031).
@@ -200,6 +210,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `PublicHome` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (B); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-010.
+- **QA (FE-UI-016):** surface route; route `/`; **pass-after-fix**; 4 compared; fixed [DR-165](./discrepancy-register.md#dr-165).
 - **Implementation:** `apps/public-portal/src/app/page.tsx`, `apps/public-portal/src/config/site.tsx`, `packages/public-ui/src/components/hero.tsx`, `packages/public-ui/src/components/product-shot.tsx`, `packages/public-ui/src/components/feature-grid.tsx`, `packages/public-ui/src/components/cta-banner.tsx`
 - **Works today:** Trello FE-UI-005: hero, decorative product shot (no figures), six feature cards and CTA per the reference; static (no plan request).
 - **Gap:** Reference 'New: passkey sign-in' chip omitted (announcement copy is a product decision).
@@ -215,6 +226,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `PublicLegal` — 4 reference files (desktop/mobile; dark/light; interactive: document:privacy, document:terms (segmented switch; only privacy drawn)).
 - **Status:** Implemented (C); **backend:** Not required; **priority:** P3; **ticket:** FE-UI-010.
+- **QA (FE-UI-016):** surface route; route `/privacy, /terms`; **pass**; 4 compared.
 - **Implementation:** `apps/public-portal/src/app/privacy/page.tsx`, `apps/public-portal/src/app/terms/page.tsx`, `apps/public-portal/src/components/legal-page.tsx`, `packages/public-ui/src/components/legal-document.tsx`
 - **Works today:** Trello FE-UI-005: 'On this page' contents, Privacy/Terms switch as links with aria-current, numbered sections; both routes kept.
 - **Gap:** Legal text remains configurable placeholder copy.
@@ -228,6 +240,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `PublicMobileMenu` — 2 reference files (mobile; dark/light).
 - **Status:** Implemented (B); **backend:** Not required; **priority:** P1; **ticket:** FE-UI-009.
+- **QA (FE-UI-016):** surface layout-pattern; no production route; **pass**; 2 compared.
 - **Implementation:** `packages/public-ui/src/components/marketing-header.tsx`, `apps/public-portal/src/components/site-header.tsx`, `apps/public-portal/src/app/layout.tsx`
 - **Works today:** Trello FE-UI-005: compact bar (brand, Get started, menu) below lg opening a full-screen ui-core Drawer with navigation, both CTAs and a Dark mode switch; focus trap/return, Escape, closes on link choice and at lg.
 - **Depends on:** FE-UI-005 Dialog/Sheet
@@ -238,8 +251,9 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 **Pricing** — page; target `public-portal`; auth: public.
 
-- **Artboards:** `PublicPricing` — 4 reference files (desktop/mobile; dark/light; interactive: interval:monthly, interval:yearly (editable .dc.html artboard only)).
+- **Artboards:** `PublicPricing` — 4 reference files (desktop/mobile; dark/light; interactive: interval:monthly, interval:yearly (only in the d23eb85 editable artboard; no static yearly prices at ad9386e)).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-011.
+- **QA (FE-UI-016):** surface route; route `/pricing`; **pass-after-fix**; 4 compared; fixed [DR-170](./discrepancy-register.md#dr-170).
 - **Implementation:** `apps/public-portal/src/app/pricing/page.tsx`, `apps/public-portal/src/components/subscription-pricing.tsx`, `apps/public-portal/src/lib/subscription-plans.ts`, `apps/public-portal/src/lib/subscription-pricing.ts`, `packages/public-ui/src/components/plan-card.tsx`, `packages/public-ui/src/components/pricing-intervals.tsx`
 - **Works today:** Plans from GET /api/v1/subscription-plans in a streamed Server Component (PlanGridSkeleton while loading); empty and unavailable states; CTA links to User Portal /billing/checkout?planId=&billingInterval=.
 - **Works today:** Trello FE-UI-005: plan cards and a Monthly/Yearly switch when plans offer several intervals; questions grid.
@@ -250,7 +264,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Gap:** FAQ copy is static and must not contradict backend policy.
 - **Depends on:** FE-UI-005 SegmentedControl; PlanCard (ui-core)
 - **Note:** Interval toggle is client state on a server-rendered list; keep plans loading in Server Components.
-- **Note:** Yearly prices appear only in the editable .dc.html artboard, not in the static snapshot.
+- **Note:** Yearly prices appeared only in the d23eb85 editable .dc.html artboard; ad9386e has no editable artboards and no static yearly prices (the implementation shows backend yearly prices).
 - **Discrepancies:** [DR-010](./discrepancy-register.md#dr-010), [DR-011](./discrepancy-register.md#dr-011)
 
 ### ADM-SIGN-IN
@@ -259,6 +273,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminSignIn` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (B); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-014.
+- **QA (FE-UI-016):** surface route; route `/sign-in`; **pass**; 4 compared.
 - **Implementation:** `apps/admin-portal/src/app/sign-in/page.tsx`, `apps/admin-portal/src/app/sign-in/sign-in-form.tsx`, `apps/admin-portal/src/lib/sign-in-feedback.ts`, `packages/dashboard-ui/src/components/auth-layout.tsx`, `apps/admin-portal/src/lib/admin-authorization.ts`
 - **Works today:** Trello FE-UI-006 (design ad9386e): AuthLayout with 'Operations console' panel and 'Admin portal' chip; password flow unchanged; passkey button and authenticator notice omitted (DR-017, DR-041).
 - **Operations:** `signIn`; `refreshSession`; `logout`
@@ -275,6 +290,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthConfirmEmail` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
+- **QA (FE-UI-016):** surface route; route `/confirm-email`; **pass**; 4 compared.
 - **Implementation:** `apps/user-portal/src/app/confirm-email/page.tsx`, `apps/user-portal/src/app/confirm-email/confirm-email-form.tsx`, `apps/user-portal/src/lib/email-confirmation-session.ts`
 - **Works today:** Trello FE-UI-006 (design ad9386e): step 3 with mail icon, six OTP boxes, backend cooldown row, 'Wrong address? Start again'; reason=email_not_confirmed shows the 'Email not confirmed' warning instead of progress.
 - **Operations:** `confirmEmail`; `requestEmailConfirmationCode`
@@ -287,6 +303,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthForgotPassword`, `AuthForgotSent` — 8 reference files (desktop/mobile; dark/light; states: code-entry, request).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-013.
+- **QA (FE-UI-016):** surface route; route `/forgot-password`; **pass-after-fix**; 6 compared, 2 compared-representative; fixed [DR-167](./discrepancy-register.md#dr-167), [DR-171](./discrepancy-register.md#dr-171).
 - **Implementation:** `apps/user-portal/src/app/forgot-password/page.tsx`, `apps/user-portal/src/app/forgot-password/forgot-password-flow.tsx`, `apps/user-portal/src/app/forgot-password/password-reset-completion-form.tsx`, `apps/user-portal/src/lib/password-reset.ts`, `apps/user-portal/src/lib/password-reset-bff.ts`, `apps/user-portal/src/lib/auth-feedback.ts`, `apps/user-portal/src/app/api/auth/password-resets/route.ts`
 - **Works today:** Trello FE-UI-020 (design ad9386e): one public route; email step requests a 6-digit code through the same-origin BFF (unknown emails answered like accepted requests), then the code, new password and confirmation are submitted together; resend and Change email; 'Forgot password?' on sign-in.
 - **Operations:** requestPasswordReset POST /api/v1/authentication/password-resets
@@ -304,6 +321,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthGoogleLink` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
+- **QA (FE-UI-016):** surface route; route `/sign-in (link_required state)`; **reference-reviewed**; 4 not-captured-external.
 - **Implementation:** `apps/user-portal/src/components/google-link-form.tsx`, `apps/user-portal/src/app/api/auth/google/link/route.ts`
 - **Works today:** Trello FE-UI-006 (design ad9386e): in-page state of the Google flow; password only (link_required carries no email, DR-086).
 - **Operations:** `linkGoogleAccount`
@@ -316,6 +334,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthGoogleRegister` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
+- **QA (FE-UI-016):** surface route; route `/register?google=continue`; **reference-reviewed**; 4 not-captured-external.
 - **Implementation:** `apps/user-portal/src/app/register/registration-form.tsx`, `apps/user-portal/src/app/api/auth/registrations/google/route.ts`
 - **Works today:** Trello FE-UI-006 (design ad9386e): names and country only; 'Signed in with Google' identity block and terms checkbox omitted (DR-086).
 - **Operations:** `signUpWithGoogle`; `getCountries`
@@ -328,6 +347,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthStates` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (B); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-012.
+- **QA (FE-UI-016):** surface reference; no production route; **reference-reviewed**; 4 reference-only.
 - **Implementation:** `apps/user-portal/src/lib/auth-feedback.ts`, `apps/user-portal/src/components/auth-feedback-alert.tsx`, `apps/admin-portal/src/lib/sign-in-feedback.ts`, `apps/user-portal/src/lib/sign-in.ts`, `apps/user-portal/src/lib/two-factor.ts`, `apps/user-portal/src/lib/passkey-sign-in.ts`
 - **Works today:** Trello FE-UI-006 (design ad9386e): titled Alerts mapped from HTTP status / stable error codes; no attempt counts, lockout durations or 'No account for this email' (DR-016); password-updated, code and rate-limit states are used by the reset flow (Trello FE-UI-020).
 - **Unsupported / missing backend:** Remaining-attempts count ('3 attempts left'); Lockout duration ('15 minutes') unless returned by backend
@@ -342,6 +362,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthPasskeySetup` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
+- **QA (FE-UI-016):** surface route; route `/passkey-setup`; **pass-after-fix**; 4 compared; fixed [DR-171](./discrepancy-register.md#dr-171).
 - **Implementation:** `apps/user-portal/src/app/passkey-setup/page.tsx`, `apps/user-portal/src/app/passkey-setup/passkey-setup-prompt.tsx`, `apps/user-portal/src/lib/passkey-setup.ts`
 - **Works today:** Trello FE-UI-006 (design ad9386e): split layout, benefit list, passkey name field kept (backend binds a name), Create passkey / Skip for now.
 - **Operations:** `listPasskeys`; `createPasskeyRegistrationOptions`; `completePasskeyRegistration`
@@ -354,6 +375,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthRegisterEmail`, `AuthRegisterDetails` — 8 reference files (desktop/mobile; dark/light; states: step:details, step:email).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
+- **QA (FE-UI-016):** surface route; route `/register`; **pass**; 6 compared, 2 compared-representative.
 - **Implementation:** `apps/user-portal/src/app/register/page.tsx`, `apps/user-portal/src/app/register/registration-form.tsx`, `apps/user-portal/src/components/registration-steps.tsx`, `packages/dashboard-ui/src/components/auth-layout.tsx`, `apps/user-portal/src/components/user-auth-layout.tsx`, `apps/user-portal/src/lib/registration.ts`
 - **Works today:** Trello FE-UI-006 (design ad9386e): Steps Email → Your details → Confirm email; details = profile + password schemas combined (DR-014 adopted); searchable country select kept; policy hint instead of a strength meter.
 - **Operations:** `checkEmailExistence`; `getCountries`; `signUp`; `startGoogleAuthenticationFlow`
@@ -370,6 +392,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthResetPassword`, `AuthResetDone`, `AuthResetExpired` — 12 reference files (desktop/mobile; dark/light; states: done, invalid-code, password-mismatch).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-013.
+- **QA (FE-UI-016):** surface route; route `/forgot-password (code step)`; **pass-after-fix**; 6 compared, 6 compared-representative; fixed [DR-167](./discrepancy-register.md#dr-167).
 - **Implementation:** `apps/user-portal/src/app/forgot-password/page.tsx`, `apps/user-portal/src/app/forgot-password/forgot-password-flow.tsx`, `apps/user-portal/src/app/forgot-password/password-reset-completion-form.tsx`, `apps/user-portal/src/lib/password-reset.ts`, `apps/user-portal/src/lib/password-reset-bff.ts`, `apps/user-portal/src/lib/auth-feedback.ts`, `apps/user-portal/src/app/api/auth/password-resets/completions/route.ts`
 - **Works today:** Trello FE-UI-020 (design ad9386e): code, new password and confirmation in one form (no auto-submit); one combined 'That code didn't work' state (new code via Resend code); field-mapped backend validation; success only after the backend confirms, then Sign in. No session or cookie is created.
 - **Operations:** completePasswordReset POST /api/v1/authentication/password-resets/completions
@@ -386,6 +409,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthSignIn` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
+- **QA (FE-UI-016):** surface route; route `/sign-in`; **pass**; 4 compared.
 - **Implementation:** `apps/user-portal/src/app/sign-in/page.tsx`, `apps/user-portal/src/app/sign-in/sign-in-form.tsx`, `apps/user-portal/src/app/sign-in/passkey-sign-in-button.tsx`, `apps/user-portal/src/components/google-authentication-button.tsx`, `packages/dashboard-ui/src/components/auth-layout.tsx`, `apps/user-portal/src/components/user-auth-layout.tsx`, `apps/user-portal/src/lib/sign-in.ts`
 - **Works today:** Trello FE-UI-006 (design ad9386e): AuthLayout split layout; official GIS button kept (DR-013); passkey sign-in; titled alerts from auth-feedback; 'Keep me signed in' omitted (DR-012). 'Forgot password?' links to /forgot-password, keeping a validated returnTo (Trello FE-UI-020).
 - **Operations:** `signIn`; `signInWithGoogle`; `startGoogleAuthenticationFlow`; `createPasskeyAuthenticationOptions`; `completePasskeyAuthentication`; `requestEmailConfirmationCode`
@@ -401,6 +425,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AuthTwoFactor` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-012.
+- **QA (FE-UI-016):** surface route; route `/sign-in/two-factor`; **pass**; 4 compared.
 - **Implementation:** `apps/user-portal/src/app/sign-in/two-factor/page.tsx`, `apps/user-portal/src/app/sign-in/two-factor/two-factor-sign-in-form.tsx`, `apps/user-portal/src/lib/two-factor.ts`
 - **Works today:** Trello FE-UI-006 (design ad9386e): authenticator/recovery code switch in the reference help panel, explicit 'Verify and sign in', expiry state on Alert in the same layout (DR-040 resolved).
 - **Operations:** `completeTwoFactorChallenge`
@@ -414,6 +439,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserBilling` — 24 reference files (desktop/mobile; dark/light; states: active, cancelling, expired, none, pastdue, pending).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-018 (UI delivered by Trello FE-UI-010, design `ad9386e`; see DR-055–DR-058).
+- **QA (FE-UI-016):** surface route; route `/billing`; **pass-after-fix**; 14 compared, 10 compared-representative; fixed [DR-168](./discrepancy-register.md#dr-168), [DR-171](./discrepancy-register.md#dr-171).
 - **Implementation:** `apps/user-portal/src/app/billing/page.tsx`, `apps/user-portal/src/app/billing/billing-overview.tsx`, `apps/user-portal/src/app/billing/current-subscription-card.tsx`, `apps/user-portal/src/app/billing/subscription-plan-grid.tsx`, `apps/user-portal/src/lib/billing-view.ts`
 - **Works today:** View switch (loading/error/discovery/pending/subscription) from current subscription; plan grid with interval toggle; cancel at period end with confirmation; history placement rules.
 - **Operations:** `getCurrentSubscription`; `listSubscriptionPlans`; `getBillingHistory`; `cancelSubscriptionAtPeriodEnd`
@@ -431,6 +457,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserBillingHistory` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-018 (UI delivered by Trello FE-UI-010, design `ad9386e`; see DR-055–DR-058).
+- **QA (FE-UI-016):** surface route; route `/billing/history`; **pass-after-fix**; 4 compared; fixed [DR-168](./discrepancy-register.md#dr-168), [DR-171](./discrepancy-register.md#dr-171).
 - **Implementation:** `apps/user-portal/src/app/billing/history/page.tsx`, `apps/user-portal/src/app/billing/billing-history-card.tsx`
 - **Works today:** Server-paginated table (page size 20) with 7 columns, reference copy button, empty/loading/error.
 - **Operations:** `getBillingHistory`
@@ -447,6 +474,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserCheckout` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-018 (UI delivered by Trello FE-UI-010, design `ad9386e`; see DR-055–DR-058).
+- **QA (FE-UI-016):** surface route; route `/billing/checkout`; **pass-after-fix**; 4 compared; fixed [DR-171](./discrepancy-register.md#dr-171).
 - **Implementation:** `apps/user-portal/src/app/billing/checkout/page.tsx`, `apps/user-portal/src/app/billing/checkout/checkout-view.tsx`, `apps/user-portal/src/app/billing/checkout/plan-picker.tsx`, `apps/user-portal/src/lib/checkout-submission.ts`, `apps/user-portal/src/lib/checkout-attempt.ts`
 - **Works today:** Plan picker or order summary; eligible providers; PaymentLink/BankTransfer (Card disabled); auto-renew; idempotent purchase; hosted redirect or bank-transfer instructions.
 - **Operations:** `listSubscriptionPlans`; `listEligiblePaymentProviders`; `purchaseSubscription`
@@ -463,6 +491,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserCheckoutResult` — 12 reference files (desktop/mobile; dark/light; states: cancelled, pending, success).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-018 (UI delivered by Trello FE-UI-010, design `ad9386e`; see DR-055–DR-058).
+- **QA (FE-UI-016):** surface route; route `/billing/checkout/success, /billing/checkout/cancelled, /billing/checkout/return`; **pass-after-fix**; 8 compared, 4 compared-representative; fixed [DR-171](./discrepancy-register.md#dr-171).
 - **Implementation:** `apps/user-portal/src/app/billing/checkout/payment-return.tsx`, `apps/user-portal/src/app/billing/checkout/payment-result.tsx`, `apps/user-portal/src/lib/payment-return.ts`
 - **Works today:** Outcome resolved only from purchase status polling (3 s x 40); ~10 views (checking, missing, active, activating, pending, not completed, cancelled, failed/expired, underpaid/blocked, unknown).
 - **Operations:** `getSubscriptionPurchaseStatus`; `listSubscriptionPlans`
@@ -478,6 +507,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserDashboard` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (B); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-015 (delivered by Trello FE-UI-007).
+- **QA (FE-UI-016):** surface route; route `/dashboard`; **pass-after-fix**; 4 compared; fixed [DR-171](./discrepancy-register.md#dr-171).
 - **Implementation:** `apps/user-portal/src/app/dashboard/page.tsx`, `dashboard-live.tsx`, `dashboard-sections.tsx`, `dashboard-overview.ts`, `dashboard-preview.fixtures.ts`, `loading.tsx`, `error.tsx`
 - **UI implemented:** greeting header with View billing, four metric tiles, profile summary, security checklist, recent billing activity (stacked rows on phones); per-widget loading, empty, error and retry states.
 - **Existing integration preserved:** identity from the server-side `getProfile`; empty-profile state.
@@ -493,6 +523,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserInvoiceDetail` (states due, overdue, paid) — 12 reference files (desktop/mobile; dark/light); `PrintInvoice` — 1 print reference (A4, light). Design revision `ad9386e`.
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 8 compared, 5 compared-representative; open [DR-176](./discrepancy-register.md#dr-176).
 - **Composition (Trello FE-UI-018):** `apps/user-portal/src/features/billing-documents/` — `billing-documents-model.ts` (local invoice/receipt types, statuses, UTC dates, sheet content), `invoice-detail-screen.tsx` (back link, header with Print and Download PDF, document sheet, summary card), `document-parts.tsx`, `billing-documents-preview.fixtures.ts` (tests only; every state by name); sheet from `@template/dashboard-ui/documents`. Rendered by the static and browser tests only; no route, navigation item, API call or production import.
 - **Actions:** Print uses the browser; Download PDF and Email me a copy are disabled with a visible reason; there is no Pay action; View receipt links only with a receipt id.
 - **Print:** browser print CSS scoped to pages containing the sheet: the dashboard shell, page header and summary are hidden; the light sheet fills the printable width, repeats the line-item header and keeps rows and totals whole. No print route and no PDF generation.
@@ -507,6 +538,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserMobileMenu` — 2 reference files (mobile; dark/light), revision `a7e2a63` (unchanged since `d23eb85`).
 - **Status:** Implemented (B); **backend:** Not required; **priority:** P1; **ticket:** FE-UI-008 (delivered by Trello FE-UI-004).
+- **QA (FE-UI-016):** surface layout-pattern; no production route; **pass**; 2 compared.
 - **Implementation:** `apps/user-portal/src/components/user-layout-shell.tsx`, `apps/user-portal/src/config/navigation.ts`, `packages/dashboard-ui/src/components/{dashboard-shell,dashboard-topbar,mobile-nav,mobile-tab-bar,sidebar}.tsx`
 - **Works today:** Mobile top bar (menu, brand, account menu); phone tab bar Home, Billing, Security, Account; 304px drawer with profile identity, the implemented destinations, Dark mode switch and Sign out. Tablet (`md`–`lg`) uses top bar + drawer without the tab bar.
 - **Operations:** getProfile (identity in top bar and drawer)
@@ -520,6 +552,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserPreferences` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (C); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-020 (delivered by Trello FE-UI-007).
+- **QA (FE-UI-016):** surface route; route `/preferences`; **pass-after-fix**; 4 compared; fixed [DR-171](./discrepancy-register.md#dr-171).
 - **Implementation:** `apps/user-portal/src/app/preferences/page.tsx`; navigation in `config/navigation.ts` and `components/user-layout-shell.tsx`.
 - **UI implemented:** Theme card with the shared `ThemeSelect` (Light/Dark/System), applied immediately and stored per portal origin by the existing `ThemeProvider`; sidebar item after Security; breadcrumb Account › Preferences. Not in the phone tab bar.
 - **Preview-only:** Language (disabled, English only) and Email notifications ("Proposed": security alerts always on and not toggleable; billing and product updates "Not available"). No save action or success message.
@@ -532,6 +565,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserProfile` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (A); **backend:** Partial; **priority:** P1; **ticket:** FE-UI-016 (delivered by Trello FE-UI-007).
+- **QA (FE-UI-016):** surface route; route `/profile`; **pass-after-fix**; 4 compared; fixed [DR-171](./discrepancy-register.md#dr-171).
 - **Implementation:** `apps/user-portal/src/app/profile/page.tsx`, `profile-edit-form.tsx`, `profile-update-submission.ts`, `avatar-upload-control.tsx`, `avatar-upload-guard.ts`; `apps/user-portal/src/lib/avatar-upload.ts`, `profile-editing.ts`, `profile-display.ts`
 - **UI implemented:** Photo card and Personal information card (Cancel resets, Save changes); verification badge in the card header; indeterminate upload status and a success message only after completion.
 - **Existing integration preserved:** server-side `getProfile`; `updateProfile` with Zod and backend validation mapping and profile cache invalidation; signed direct avatar upload (create → storage request without credentials → complete) with duplicate-upload guard, input reset and refresh; BFF routes unchanged.
@@ -545,6 +579,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserPurchaseDetail` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (B); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-018 (UI delivered by Trello FE-UI-010, design `ad9386e`; see DR-055–DR-058).
+- **QA (FE-UI-016):** surface route; route `/billing/purchases/[purchaseId]`; **gap**; 4 compared; fixed [DR-171](./discrepancy-register.md#dr-171); open [DR-172](./discrepancy-register.md#dr-172), [DR-175](./discrepancy-register.md#dr-175).
 - **Implementation:** `apps/user-portal/src/app/billing/purchases/[purchaseId]/page.tsx`, `apps/user-portal/src/app/billing/purchases/[purchaseId]/purchase-status-view.tsx`
 - **Works today:** Purchase status card with polling, bank-transfer details and blocked/underpaid warnings.
 - **Operations:** `getSubscriptionPurchaseStatus`
@@ -559,6 +594,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserReceiptDetail` (states subscription, wallet) — 8 reference files (desktop/mobile; dark/light); `PrintReceipt` — 1 print reference (A4, light). Design revision `ad9386e`.
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared, 5 compared-representative; open [DR-176](./discrepancy-register.md#dr-176).
 - **Composition (Trello FE-UI-018):** `receipt-detail-screen.tsx` in `apps/user-portal/src/features/billing-documents/` — one composition for subscription and wallet receipts (amount paid and time, parties, method, reference, line items, totals, payment card); the "For" row links an invoice only by its id. Rendered only by tests; no route, navigation item, API call or production import.
 - **Actions:** as `USR-INVOICE-DETAIL`; no Pay. A successful purchase or wallet top-up is never presented as a receipt.
 - **Unsupported / missing backend (BE-DS-007):** Owner-scoped receipt read; receipt ids on billing-history, purchase status and wallet rows; receipt PDF and email copy operations
@@ -572,6 +608,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserSecurity` — 24 reference files (desktop/mobile; dark/light; states: activity, overview, passkeys, password, sessions, two-factor).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-017 (delivered by Trello FE-UI-008).
+- **QA (FE-UI-016):** surface route; route `/security`; **pass-after-fix**; 14 compared, 10 compared-representative; fixed [DR-171](./discrepancy-register.md#dr-171).
 - **Implementation:** `apps/user-portal/src/app/security/page.tsx`, `apps/user-portal/src/app/security/security-tab.ts`, `apps/user-portal/src/app/security/security-tabs.tsx`, `apps/user-portal/src/app/security/security-overview.ts`, `apps/user-portal/src/app/security/security-overview-card.tsx`, `apps/user-portal/src/app/security/password-change-card.tsx`, `apps/user-portal/src/app/security/passkeys-card.tsx`, `apps/user-portal/src/app/security/two-factor-security-card.tsx`, `apps/user-portal/src/app/security/active-sessions-card.tsx`, `apps/user-portal/src/app/security/security-activity-card.tsx`, `apps/user-portal/src/app/security/activity-presentation.tsx`
 - **UI implemented:** six URL-addressable tabs (`?tab=overview|password|passkeys|two-factor|sessions|activity`; absent/unknown → overview) on design-system primitives, light/dark, phone to desktop.
 - **Existing integration preserved:** password change (backend validation mapping); passkey register/rename/remove (WebAuthn ceremony); 2FA status/setup/verify/regenerate/disable with proof; sessions revoke one/others (each now confirmed); cursor-paginated activity ("Load more").
@@ -589,6 +626,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserTwoFactorSetup` — 4 reference files (desktop/mobile; dark/light; interactive: step:2-of-3 (scan + verify), step:3-of-3 (recovery codes)).
 - **Status:** Implemented (A); **backend:** Existing; **priority:** P1; **ticket:** FE-UI-017 (delivered by Trello FE-UI-008).
+- **QA (FE-UI-016):** surface dialog-on-route; route `/security (dialog)`; **pass**; 2 compared-representative, 2 compared.
 - **Implementation:** `apps/user-portal/src/app/security/two-factor-security-card.tsx`, `apps/user-portal/src/app/security/two-factor-setup-dialog.tsx`, `apps/user-portal/src/app/security/two-factor-proof-dialog.tsx`, `apps/user-portal/src/app/security/recovery-codes-panel.tsx`, `apps/user-portal/src/app/security/two-factor-flow.ts`
 - **UI implemented:** three-step `Dialog` on `/security` (1 explain, 2 QR + grouped manual key with copy + six-digit code, 3 recovery codes with download/copy and an "I have saved my recovery codes" gate before Finish); focus trap, Escape and focus return from ui-core `Dialog`.
 - **Existing integration preserved:** `setupTwoFactor`; `verifyTwoFactorEnrollment`; `regenerateRecoveryCodes`; disable and regenerate still require an authenticator (6-digit) or recovery-code (10-character) proof.
@@ -603,6 +641,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserVerification` — 24 reference files (desktop/mobile; dark/light; states: expired, inprogress, notstarted, pending, rejected, verified).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-022.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 14 compared, 10 compared-representative.
 - **Works today:** Only profile.isVerified is displayed.
 - **Composition (Trello FE-UI-009):** `apps/user-portal/src/features/verification/` — `verification-model.ts` (six-state union, history, loading/error/unknown, action availability, date formatting), `verification-sections.tsx` (header, status panel, instruction steps, history table with stacked phone rows, action slot), `verification-preview.fixtures.ts` (deterministic fixtures, tests only). All six states, loading, error, unknown and empty history are rendered by `verification-screen.test.tsx`; no route, navigation item or production import.
 - **Actions:** start / continue / retry / refresh are intents reported through `onAction`; without a handler they render disabled with "Identity verification is not available yet." Pending offers only Refresh status; verified has none; rejected without retry shows the configured support email.
@@ -618,6 +657,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserWallet` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Partial; **priority:** P3; **ticket:** FE-UI-021.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Implementation:** `apps/user-portal/src/features/wallet/wallet-model.ts`, `apps/user-portal/src/features/wallet/wallet-screen.tsx`, `apps/user-portal/src/features/wallet/wallet-preview.fixtures.ts`, `packages/api-client/src/payments/operations.ts`, `packages/api-react/src/payments`
 - **Works today:** api-client/api-react wallet transaction operations exist.
 - **Composition (Trello FE-UI-011, design `ad9386e`):** `apps/user-portal/src/features/wallet/` — `wallet-model.ts` (summary figures, transaction list typed on `WalletTransactionResponse` plus preview-only status/provider/reference, filters, top-up config, intents, amount parsing), `wallet-screen.tsx` (header with Top up, summary tiles, filters, transactions table with stacked phone rows and Load more), `wallet-top-up-dialog.tsx`, `wallet-preview.fixtures.ts` (tests only). Rendered by `wallet-screen.test.tsx`; no route, navigation item, API call or production import.
@@ -635,6 +675,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `UserWalletTopUp` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Partial; **priority:** P3; **ticket:** FE-UI-021.
+- **QA (FE-UI-016):** surface pattern-component; no production route; **pass**; 2 compared-representative, 2 compared.
 - **Works today:** initiatePayment and getWalletTopUpTransaction operations exist.
 - **Composition (Trello FE-UI-011):** `wallet-top-up-dialog.tsx` on ui-core `Dialog` — amount (minor-unit parsing, optional limits), preset buttons (`aria-pressed`), provider select and redirect notice; submit validates and reports a `topUp` intent only (no charge, redirect or result screen). Not dismissible while pending.
 - **Operations:** initiatePayment POST /api/v1/payments/initiate; `getWalletTopUpTransaction`
@@ -649,6 +690,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminActiveUsers` — 4 reference files (desktop/mobile; dark/light; interactive: range:7d|30d|90d|custom, day-selected drill-down).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-031.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-active-user-analytics/` — supplied DAU/WAU/MAU and stickiness metrics, daily chart with controlled day drill-down (typed ISO date), preset and custom UTC ranges, and a paged activity table titled with the selected date ([DR-135](./discrepancy-register.md#dr-135)). No route, navigation item or production source; deterministic fixtures are test-only.
 - **Unsupported / missing backend:** DAU/WAU/MAU and per-day active-user list
 - **Gap:** Stat tiles, daily chart with day drill-down, table.
@@ -661,6 +703,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminAllocate` — 4 reference files (desktop/mobile; dark/light; interactive: owner:user, owner:tenant, overlap-warning).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-026.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-subscriptions/allocate-screen.tsx` + `allocation-model.ts` — User/Tenant control, tenant, user lookup (user only), active plan, UTC start date, contract durations, auto-renew, required reason; summary without a computed period end; overlap warning as reported state; confirmation reports an intent. No submission without a handler.
 - **Unsupported / missing backend:** Complimentary allocation endpoint; Tenant list; User lookup
 - **Gap:** Form with owner type segmented control, plan, start, duration, auto-renew, required reason; summary + overlap warning.
@@ -673,6 +716,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminAudit` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-030.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-audit/` — immutable event table, UTC dates, actor/action/resource/outcome presentation, controlled search, range and source-supplied actor/action options, paging, and export/detail intents gated by their own availability. No route, navigation item or production source.
 - **Unsupported / missing backend:** Audit-log API (reference itself says 'Proposed screen - needs an audit-log API')
 - **Gap:** Search, action/actor/date filters, table, CSV export.
@@ -685,6 +729,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminDashboard` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (C); **backend:** Missing; **priority:** P2; **ticket:** FE-UI-023.
+- **QA (FE-UI-016):** surface route; route `/`; **pass**; 4 compared.
 - **Implementation:** `apps/admin-portal/src/app/page.tsx`, `apps/admin-portal/src/app/_dashboard/admin-dashboard.tsx`, `apps/admin-portal/src/app/_dashboard/admin-dashboard-data.ts`, `apps/admin-portal/src/app/_dashboard/admin-dashboard-preview.fixtures.ts`, `apps/admin-portal/src/components/admin-patterns/index.ts`
 - **Works today:** UI implemented (Trello FE-UI-012): Operations overview header with a UTC reporting-period select, four KPI tiles, registrations and payments chart frames, KYC queue, subscriptions needing attention and payment providers cards; responsive one-to-four-column grids. Unsupported, shown honestly: every panel is 'Not available' with its missing API; the period select is disabled; no 'Open …' links (routes do not exist). Preview-only: typed reference figures in admin-dashboard-preview.fixtures.ts, used by tests only; a test forbids production imports.
 - **Unsupported / missing backend:** Admin analytics summaries (users, DAU, payment volume, MRR); KYC queue counts; Subscription attention counts; Provider status read
@@ -699,6 +744,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminForbidden` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Partial (C); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-023.
+- **QA (FE-UI-016):** surface pattern-component; no production route; **pass**; 2 compared, 2 compared-representative.
 - **Implementation:** `apps/admin-portal/src/components/admin-patterns/forbidden.tsx`, `apps/admin-portal/src/components/admin-patterns/forbidden-details.ts`, `apps/admin-portal/src/proxy.ts`, `apps/admin-portal/src/lib/admin-authorization.ts`
 - **Works today:** Non-admin sessions are still redirected to sign-in by the proxy (unchanged). Reusable AdminForbidden (Trello FE-UI-012): 403 card, permission text only when supplied, Back to dashboard (/), Copy request details limited to status, path without query, correlation id and UTC time; forbiddenDetailsFromError maps a 403 ApiError. No live consumer: the admin portal has no backend reads that can return 403 yet.
 - **Unsupported / missing backend:** Permission names in tokens or a permissions endpoint (reference cites payments.analytics.read)
@@ -713,6 +759,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminInvoiceDetail` — 4 reference files (desktop/mobile; dark/light), revision `ad9386e`.
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared; open [DR-176](./discrepancy-register.md#dr-176).
 - **Composition (Trello FE-UI-018):** `apps/admin-portal/src/features/admin-invoices/invoice-detail.tsx` — header with status and Print, the shared invoice document sheet, an invoice card (customer, subscription, payment, receipt; links only through ids and caller URL builders) with Resend and Download PDF disabled with their reason, and a history timeline; loading/error/not found/unavailable/forbidden states. In print only the document remains.
 - **Unsupported / missing backend (BE-DS-007):** Admin invoice detail; resend and invoice PDF operations
 - **Gap:** No invoice or receipt entity, read, render, email or payment operation exists in the backend or api-client (DR-160).
@@ -725,6 +772,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminInvoices` — 4 reference files (desktop/mobile; dark/light), revision `ad9386e`.
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-018):** `apps/admin-portal/src/features/admin-invoices/` — `invoices-model.ts` (local row/detail types, status, sheet content), `invoices-list.tsx` (disabled Export CSV, four KPI tiles, disabled status and date-range filters, eight-column table, pager), `invoices-preview.fixtures.ts` (tests only; every state by name); shared states in `admin-billing-shared/`. Rendered by the static and browser tests only; no route, navigation item or production import.
 - **Unsupported / missing backend (BE-DS-007):** Admin invoice search/list; KPI aggregates; CSV export
 - **Gap:** The reference adds an "Invoices" item under Operations; production navigation stays Dashboard-only until the route and API exist (DR-163).
@@ -737,6 +785,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminKyc` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-028.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-kyc/` — `AdminKycScreen`: four `AdminKpiCard` count tiles (unavailable is never 0), search/status/provider/UTC period filters inert without a handler, verification table with status badges (incl. Failed and Unknown), pager, empty/filtered-empty/loading/error/forbidden. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
 - **Unsupported / missing backend:** KYC verification list and counts
 - **Gap:** Route `/kyc`, navigation item and adapter.
@@ -749,6 +798,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminKycDetail` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-028.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-kyc/` — read-only `AdminKycDetailScreen`: verification key-values, user card, status timeline, previous attempts, provider-decision notice, unknown-status warning. Refresh status is the only intent (`onRefresh`), disabled with an explanation without it; no approve, reject or override. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
 - **Unsupported / missing backend:** Verification detail, status history, refresh-from-provider
 - **Gap:** Route `/kyc/[verificationId]` and adapter.
@@ -761,6 +811,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminMobileMenu` — 2 reference files (mobile; dark/light), revision `a7e2a63` (adds Invoices under Operations).
 - **Status:** Implemented (B); **backend:** Not required; **priority:** P1; **ticket:** FE-UI-008 (delivered by Trello FE-UI-004).
+- **QA (FE-UI-016):** surface layout-pattern; no production route; **pass**; 2 compared.
 - **Implementation:** `apps/admin-portal/src/components/admin-layout-shell.tsx`, `apps/admin-portal/src/config/navigation.ts`, `packages/dashboard-ui/src/components/{dashboard-shell,dashboard-topbar,mobile-nav,sidebar}.tsx`
 - **Works today:** Mobile top bar (menu, brand with Admin chip, account menu); drawer with grouped navigation, the admitted role, Dark mode switch and Sign out. Only implemented routes are listed (Dashboard).
 - **Unsupported / missing backend:** Global admin search API (top-bar search)
@@ -775,6 +826,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminPaymentAnalytics` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-031.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **gap**; 4 compared; fixed [DR-169](./discrepancy-register.md#dr-169); open [DR-174](./discrepancy-register.md#dr-174).
 - **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-payment-analytics/` — currency-scoped supplied metrics, volume/outcome charts, provider and intent breakdowns, controlled filters with source-supplied currency and provider options, and screen-level loading/error/forbidden states. Figures stay labelled with the reported currency during filter transitions ([DR-136](./discrepancy-register.md#dr-136)); missing values stay unavailable; no route or production source.
 - **Unsupported / missing backend:** Payment volume/success aggregates by status, provider and intent
 - **Gap:** 7 stat tiles, stacked bar chart, donut, two breakdown tables, filter buttons.
@@ -787,6 +839,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminPaymentDetail` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-027.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-payments/payment-detail.tsx` — key-value card, fulfillment outcome alert (from reported fulfillment only, never inferred from payment status), status timeline, webhooks/reconciliation table; missing history/logs say so. Read-only: no refund, retry, copy-link or invoice actions (FE-UI-018).
 - **Unsupported / missing backend:** Payment detail, fulfillment outcome, status history, webhook/reconciliation log
 - **Gap:** kv card, outcome alert, timeline, events table.
@@ -799,6 +852,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminPayments` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-027.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-payments/` — `payments-model.ts` (row/detail types, status, intent and fulfillment presentation, URL filter helpers), `payments-list.tsx` (Export CSV intent, search + five filters, eight-column table, pager), `payments-preview.fixtures.ts` (tests only); shared states in `admin-billing-shared/`. Rendered only by `payments-screens.test.tsx`; no route, navigation item or production import. Filters, export and row links are inert without caller handlers/routes.
 - **Unsupported / missing backend:** Admin payment transaction search/list
 - **Gap:** Search, 5 filters, 8-column table, CSV export.
@@ -811,6 +865,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminPlans` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Partial; **priority:** P3; **ticket:** FE-UI-026.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Works today:** Public plan list exists (listSubscriptionPlans); no admin CRUD.
 - **Operations:** listSubscriptionPlans (active plans only)
 - **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-plans/` — `plans-model.ts` (plan type, draft, validation, immutable code, create/update intents), `plans-screen.tsx` (table + right `Drawer` editor), `plans-preview.fixtures.ts` (tests only). `listSubscriptionPlans` is not used as an admin inventory. Save is disabled without a handler; the drawer never shows success.
@@ -825,6 +880,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminProviders` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (D); **backend:** Partial; **priority:** P3; **ticket:** FE-UI-029.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-providers/` — provider directory, supplied operational status, capabilities, search, and per-provider make-active/configure/test intents with their own availability, pending state and confirmation. No credentials, route, navigation item or production list source. Existing mutations remain unwired until an authoritative read exists.
 - **Operations:** setPaymentProviderActivation PUT /api/v1/payment-providers/{id}/activation; setActiveProvider PUT /api/v1/providers/active
 - **Unsupported / missing backend:** Provider list/read endpoints (current activation state); Step-up enforcement
@@ -838,6 +894,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminReferenceData` — 4 reference files (desktop/mobile; dark/light; interactive: tab:countries, tab:languages (not drawn), tab:currencies (not drawn)).
 - **Status:** Implemented (D); **backend:** Partial; **priority:** P2; **ticket:** FE-UI-029.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-reference-data/` — typed, read-only category tabs, search and paging, each controlled and explained when not wired. The public country lookup is not treated as an administrative source; no route, navigation item or mutations.
 - **Operations:** getCountries GET /api/v1/reference-data/countries
 - **Unsupported / missing backend:** Languages and currencies lists; Country status/dial code/currency fields (verify contract)
@@ -852,6 +909,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminRegistrations` — 4 reference files (desktop/mobile; dark/light; interactive: granularity:day|week|month|year, day-selected drill-down).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-031.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-registration-analytics/` — supplied count/growth metrics, line chart with controlled period drill-down (typed UTC range), preset and custom UTC ranges, granularity, search and a paged user table titled with the selected period ([DR-135](./discrepancy-register.md#dr-135)) with avatar fallback and distinct last-login semantics. No route or production source.
 - **Unsupported / missing backend:** Registration counts/time series; Users registered in period list
 - **Gap:** Charts, granularity toggle, date-range filter, drill-down table.
@@ -865,6 +923,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminRoleEdit` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-025.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-roles/` — read-only visual `AdminRoleEditScreen`: details, grouped permission checklists with counts, summary, members, danger zone; every control disabled and explained; no form, intents or persistence. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
 - **Unsupported / missing backend:** Role CRUD, permission assignment, membership
 - **Gap:** CAF-FE-008 prohibits a production role editor; "Start from" and the removal-impact warning are omitted.
@@ -877,6 +936,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminRoles` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-025.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Works today:** No route or navigation item (navigation lists only Dashboard); authorization is a single configured role claim.
 - **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-roles/` — `AdminRolesScreen`: roles table (System/Custom, counts; a missing count is not zero), read-only permission matrix with text Granted/Not granted cells, disabled New role. The 16 × 5 reference catalogue is a test fixture, not an authoritative permission list, and is never evaluated. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
 - **Unsupported / missing backend:** Role/permission model and APIs (reference itself says 'Needs new role-management APIs')
@@ -890,6 +950,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminStepUp` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Partial (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-024.
+- **QA (FE-UI-016):** surface pattern-component; no production route; **pass**; 2 compared-representative, 2 compared.
 - **Implementation:** `apps/admin-portal/src/components/admin-patterns/step-up-dialog.tsx`, `apps/admin-portal/src/components/admin-patterns/step-up-form.ts`
 - **Works today:** Presentation-only AdminStepUpDialog (Trello FE-UI-012): action summary, optional reason, authenticator code, cancel/confirm, pending/error states; callbacks only, no verification or privileged action. No step-up endpoint or admin 2FA; no validity window is shown unless the caller supplies one.
 - **Unsupported / missing backend:** Step-up challenge/verification endpoint; Reason capture for audit
@@ -904,6 +965,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminSubscriptionAnalytics` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-031.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-subscription-analytics/` — supplied recurring-revenue, churn, growth, lifecycle, renewal and plan metrics/charts formatted in the reported currency, source-supplied plan/owner/currency options and screen-level states ([DR-136](./discrepancy-register.md#dr-136)). No frontend calculation, route or production source.
 - **Unsupported / missing backend:** MRR/ARR, churn, renewal aggregates
 - **Gap:** 8 stat tiles, 4 charts.
@@ -916,6 +978,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminSubscriptionDetail` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-026.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-subscriptions/subscription-detail.tsx` — state-dependent actions (retry only when fulfillment is blocked), each with its own confirmation reporting an intent and never claiming completion; four stat tiles ('Not available' when unreported), details, timeline, renewals table. Actions disabled without a handler; step-up deferred (DR-112).
 - **Unsupported / missing backend:** Admin subscription read; Retry fulfillment; Admin cancel at period end / cancel now
 - **Gap:** Actions, stat tiles, kv, timeline, renewals table.
@@ -928,6 +991,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminSubscriptions` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-026.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-014, design ad9386e):** `apps/admin-portal/src/features/admin-subscriptions/subscriptions-list.tsx` + `subscriptions-model.ts` — search + four filters, owner-type chips, eight-column table, pager; owner and tenant only as returned. Preview-only (`subscriptions-screens.test.tsx`); Allocate/View links only when routes are supplied.
 - **Unsupported / missing backend:** Admin subscription list across owners/tenants
 - **Gap:** Search, 4 filters, owner type chips, table.
@@ -940,6 +1004,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminSystemHealth` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Implemented (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-030.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-015, design ad9386e):** `apps/admin-portal/src/features/admin-system-health/` — supplied overall/service states, latency, uptime, check timestamps, screen-level forbidden/retry states and a refresh intent gated by its own availability and pending state. Unknown never reads as healthy; no Grafana link, polling, route or production source.
 - **Unsupported / missing backend:** Aggregated health-check read API (reference marks the screen 'Proposed'); Grafana URL configuration
 - **Gap:** Service status card grid; 'Open Grafana' external link.
@@ -952,6 +1017,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminUserDetail` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-024.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-users/` — `AdminUserDetailScreen`: identity header with status/email badges and actions, account key-values, role chips with remove and an assign control, KYC and subscription summaries, sessions, security activity; per-section loading/error/unavailable/empty, not found, forbidden. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
 - **Actions:** lock/unlock, sign out all and role changes open `AdminStepUpDialog`; revoking one session opens `ConfirmDialog`. Each confirmation captures its explicit target (user id plus role or session id), closes with a notice if the displayed user, status, role or session no longer matches, and is re-checked before submitting; one request at a time; a failure keeps the dialog open with safe copy (`describeAdminActionFailure`) for a retry; success closes it and the screen never shows success. Without a handler every action is disabled with an explanation.
 - **Unsupported / missing backend:** Admin user read model; Lock/unlock; Revoke user sessions; Assign/remove roles; User security activity (admin scope)
@@ -965,6 +1031,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 - **Artboards:** `AdminUsers` — 4 reference files (desktop/mobile; dark/light).
 - **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-024.
+- **QA (FE-UI-016):** surface preview-composition; no production route; **pass**; 4 compared.
 - **Works today:** No route or navigation item; admin navigation lists only Dashboard.
 - **Composition (Trello FE-UI-013):** `apps/admin-portal/src/features/admin-users/` — `users-model.ts` (list item, filters, sort, `AdminListState` model, explicit-target intents), `users-filters.tsx` (`AdminUserFilterBar`), `users-list.tsx` (`AdminUsersScreen` on `AdminListCard` + `AdminListTable` + `AdminListPager`), `users-preview.fixtures.ts` (synthetic fixtures, tests only). Shared date, missing-value, list-state and badge helpers come from `components/admin-patterns`. Search, Status/KYC/Role/Plan menus and sort are controlled callbacks, inert and explained without them; role/plan options come from the backend; status/KYC/plan/role badges; pager only with a page handler; detail links only for an implemented route. No route, navigation item or production import; rendered only by its app tests from typed preview fixtures (design `ad9386e`).
 - **Unsupported / missing backend:** Admin user search/list API

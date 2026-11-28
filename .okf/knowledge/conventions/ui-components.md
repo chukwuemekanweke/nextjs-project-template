@@ -57,6 +57,6 @@ component list, variants and states are in
   `Tooltip` (not an accessible name).
 - New or changed primitives need a representative workbench story and
   browser interaction tests (`*.browser.test.tsx`, `pnpm test:component`);
-  visual baselines are selective (`pnpm test:visual`, full matrix in
-  FE-UI-016). Do not recreate portal screens in the workbench. Workbench fixtures are generic and
+  visual baselines are selective (`pnpm test:visual`; the full matrix ran
+  in FE-UI-016). Do not recreate portal screens in the workbench. Workbench fixtures are generic and
   never simulate payments, identity, authentication or security outcomes.

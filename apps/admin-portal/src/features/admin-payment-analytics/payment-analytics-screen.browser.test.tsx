@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
+import { page } from "vitest/browser";
 import { render } from "vitest-browser-react";
 import type { AdminOptionsState } from "@/components/admin-patterns";
 import type { PaymentAnalyticsFilters } from "./payment-analytics-model";
@@ -71,5 +72,34 @@ describe("PaymentAnalyticsScreen", () => {
       )
       .toBeVisible();
     await expect.element(screen.getByText("Amounts in NGN")).toBeVisible();
+  });
+
+  // FE-UI-016: the breakdown tables scroll inside their own region on a
+  // phone instead of widening the whole page.
+  it("keeps the phone layout within the viewport", async () => {
+    await page.viewport(390, 844);
+    try {
+      const screen = await render(
+        <PaymentAnalyticsScreen
+          filters={initialFilters}
+          state={{ data: paymentAnalyticsPreview, state: "ready" }}
+        />,
+      );
+      await expect
+        .element(screen.getByRole("table", { name: "By provider" }))
+        .toBeVisible();
+
+      await expect
+        .poll(() => document.documentElement.scrollWidth)
+        .toBeLessThanOrEqual(document.documentElement.clientWidth);
+      const region = screen
+        .getByRole("table", { name: "By provider" })
+        .element()
+        .closest<HTMLElement>(".overflow-x-auto");
+      expect(region).not.toBeNull();
+      expect(region!.getBoundingClientRect().right).toBeLessThanOrEqual(390);
+    } finally {
+      await page.viewport(1440, 900);
+    }
   });
 });

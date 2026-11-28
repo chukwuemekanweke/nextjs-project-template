@@ -5,52 +5,65 @@
   "designSource": {
     "repository": "https://github.com/chukwuemekanweke/Project-Template-Design-System",
     "branch": "main",
-    "commit": "d23eb85fbebd2bccbf038a2050a2a5bf82236076",
+    "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+    "commitDate": "2026-11-25T21:19:56+01:00",
+    "treeSha": "1000fc95c79c4cda8f3c6361d73f3b5d485cd0c2",
+    "pinnedBy": "Trello FE-UI-016 (final visual QA); reference blobs in every record describe this commit",
+    "previousCommit": "d23eb85fbebd2bccbf038a2050a2a5bf82236076",
     "manifest": "design-source-manifest.json",
     "scopedRevisions": [
       {
         "ticket": "FE-UI-004",
         "commit": "a7e2a63411f4c406e577ccd2c72e42053fbce41e",
-        "scope": "USR-NAV-MOBILE, ADM-NAV-MOBILE and the dashboard shell of every authenticated screen; reference blobs elsewhere still describe 'commit' (DR-083)"
+        "scope": "USR-NAV-MOBILE, ADM-NAV-MOBILE and the dashboard shell of every authenticated screen; reference blobs elsewhere still describe 'commit' (DR-083)",
+        "historical": true
       },
       {
         "ticket": "Trello FE-UI-010",
         "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
-        "scope": "USR-BILLING, USR-BILLING-HISTORY, USR-CHECKOUT, USR-CHECKOUT-RESULT, USR-PURCHASE-DETAIL (reference blobs in the records still describe 'commit', DR-083)"
+        "scope": "USR-BILLING, USR-BILLING-HISTORY, USR-CHECKOUT, USR-CHECKOUT-RESULT, USR-PURCHASE-DETAIL (reference blobs in the records still describe 'commit', DR-083)",
+        "historical": true
       },
       {
         "ticket": "Trello FE-UI-011",
         "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
-        "scope": "USR-WALLET, USR-WALLET-TOP-UP (reference blobs in the records still describe 'commit', DR-083)"
+        "scope": "USR-WALLET, USR-WALLET-TOP-UP (reference blobs in the records still describe 'commit', DR-083)",
+        "historical": true
       },
       {
         "ticket": "Trello FE-UI-013",
         "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
-        "scope": "ADM-USERS, ADM-USER-DETAIL, ADM-ROLES, ADM-ROLE-EDIT, ADM-KYC, ADM-KYC-DETAIL (feature compositions only; reference blobs in the records still describe 'commit', DR-083)"
+        "scope": "ADM-USERS, ADM-USER-DETAIL, ADM-ROLES, ADM-ROLE-EDIT, ADM-KYC, ADM-KYC-DETAIL (feature compositions only; reference blobs in the records still describe 'commit', DR-083)",
+        "historical": true
       },
       {
         "ticket": "Trello FE-UI-015",
         "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
-        "scope": "ADM-REGISTRATIONS, ADM-ACTIVE-USERS, ADM-PAYMENT-ANALYTICS, ADM-SUBSCRIPTION-ANALYTICS, ADM-PROVIDERS, ADM-REFERENCE-DATA, ADM-AUDIT and ADM-SYSTEM-HEALTH (feature compositions only; reference blobs in the records still describe 'commit', DR-083)"
+        "scope": "ADM-REGISTRATIONS, ADM-ACTIVE-USERS, ADM-PAYMENT-ANALYTICS, ADM-SUBSCRIPTION-ANALYTICS, ADM-PROVIDERS, ADM-REFERENCE-DATA, ADM-AUDIT and ADM-SYSTEM-HEALTH (feature compositions only; reference blobs in the records still describe 'commit', DR-083)",
+        "historical": true
       },
       {
         "ticket": "Trello FE-UI-018",
         "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
-        "scope": "USR-INVOICE-DETAIL, USR-RECEIPT-DETAIL, ADM-INVOICES, ADM-INVOICE-DETAIL (5-invoices-and-receipts; feature compositions and print CSS only; these records carry ad9386e blobs, other records still describe commit, DR-083)"
+        "scope": "USR-INVOICE-DETAIL, USR-RECEIPT-DETAIL, ADM-INVOICES, ADM-INVOICE-DETAIL (5-invoices-and-receipts; feature compositions and print CSS only; these records carry ad9386e blobs, other records still describe commit, DR-083)",
+        "historical": true
       },
       {
         "ticket": "Trello FE-UI-020",
         "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
-        "scope": "AUTH-FORGOT-PASSWORD, AUTH-RESET-PASSWORD (email OTP password reset on /forgot-password; reference blobs in the records still describe 'commit', DR-083)"
+        "scope": "AUTH-FORGOT-PASSWORD, AUTH-RESET-PASSWORD (email OTP password reset on /forgot-password; reference blobs in the records still describe 'commit', DR-083)",
+        "historical": true
       }
-    ]
+    ],
+    "scopedRevisionsNote": "Historical: the tickets below used ad9386e/a7e2a63 for parts of the inventory before the FE-UI-016 regeneration (DR-083 resolved)."
   },
   "legend": {
     "status": "Implemented | Partial | Missing | Reference-only (current frontend implementation of the screen)",
     "classification": "A existing functional | B existing partial | C UI reference only (no workflow yet) | D unsupported capability (needs backend)",
     "backendSupport": "Existing | Partial | Missing | Not required (judged from handwritten api-client operations; see discrepancy DR-003)",
     "priority": "P0 foundation | P1 redesign of live flows | P2 missing screen with backend support or low risk | P3 blocked on backend/product",
-    "routeType": "page | in-page-state | dialog | layout | none"
+    "routeType": "page | in-page-state | dialog | layout | none",
+    "qa": "FE-UI-016 per-screen result: surface (route | dialog-on-route | preview-composition | pattern-component | layout-pattern | reference | development-preview-route), deployedRoute (null = no production route), reference-file dispositions, axe/overflow after fixes, result (pass | pass-after-fix | gap | reference-reviewed). Evidence: final-visual-qa.json. implementation.status is historical per ticket; use qa.surface/deployedRoute for what is deployed."
   },
   "statistics": {
     "logicalScreens": 62,
@@ -88,10 +101,24 @@
     },
     "artboards": 68,
     "canonicalReferenceFiles": 337,
-    "editableArtboardFiles": 239,
     "screensWithExistingRoute": 28,
     "screensWithProposedRouteOnly": 29,
-    "screensWithUnsupportedCapabilities": 48
+    "screensWithUnsupportedCapabilities": 48,
+    "exportCopyFiles": 361,
+    "editableArtboardFilesAtPinnedCommit": 0,
+    "qaResults": {
+      "pass": 43,
+      "gap": 2,
+      "pass-after-fix": 13,
+      "reference-reviewed": 4
+    },
+    "qaReferenceDispositions": {
+      "compared": 262,
+      "compared-representative": 62,
+      "not-captured-external": 8,
+      "reference-only": 5
+    },
+    "screensWithDeployedRoute": 28
   },
   "screens": [
     {
@@ -120,13 +147,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminActiveUsers.html",
-            "blob": "331bfecf6b752c5de6637e6f62a90a7d34c9d5b2",
+            "blob": "2838db1522415ce87ca538547ca3fd63e6a9e0f8",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminActiveUsersDark.html",
-            "blob": "22c97a723bf2696f1eb59d7a091b2ec865b7e992",
+            "blob": "8088d8335209f5183d221d6e958456f84f03755a",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -143,11 +170,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminActiveUsers.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminActiveUsersDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminActiveUsersMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminActiveUsersMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminActiveUsers.html",
+          "project-template-design-html/screens/AdminActiveUsersDark.html",
+          "project-template-design-html/screens/AdminActiveUsersMobile.html",
+          "project-template-design-html/screens/AdminActiveUsersMobileDark.html"
         ]
       },
       "implementation": {
@@ -168,7 +195,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-031",
       "discrepancies": ["DR-070"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-ACTIVE-USERS"
+      }
     },
     {
       "id": "ADM-ALLOCATE",
@@ -193,13 +236,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminAllocate.html",
-            "blob": "7cc6b13d410e09a21264ac3fbec6bb855871a748",
+            "blob": "a417c30de1af692f4e2401bcb54d4897eca039a3",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminAllocateDark.html",
-            "blob": "9c63abf0f45c4b671c642d5c3fe28b6158251f4b",
+            "blob": "7e49318e64c72ec3ff3ab0380c99563eba176191",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -216,11 +259,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminAllocate.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminAllocateDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminAllocateMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminAllocateMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminAllocate.html",
+          "project-template-design-html/screens/AdminAllocateDark.html",
+          "project-template-design-html/screens/AdminAllocateMobile.html",
+          "project-template-design-html/screens/AdminAllocateMobileDark.html"
         ]
       },
       "implementation": {
@@ -254,7 +297,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-026",
       "discrepancies": ["DR-070", "DR-133"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-ALLOCATE"
+      }
     },
     {
       "id": "ADM-AUDIT",
@@ -279,13 +338,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminAudit.html",
-            "blob": "b7bf9dc22497b5394ec1c22b6df8e1fbe357b11c",
+            "blob": "2f098875eb9d4bfdf849859962a9d6c714ac8cff",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminAuditDark.html",
-            "blob": "de4419eac3b4c32a426d428c202dc72c44d58de0",
+            "blob": "9eef297ca145e94fc98101bb585c7480442b771c",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -302,11 +361,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminAudit.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminAuditDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminAuditMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminAuditMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminAudit.html",
+          "project-template-design-html/screens/AdminAuditDark.html",
+          "project-template-design-html/screens/AdminAuditMobile.html",
+          "project-template-design-html/screens/AdminAuditMobileDark.html"
         ]
       },
       "implementation": {
@@ -329,7 +388,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-030",
       "discrepancies": ["DR-071"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-AUDIT"
+      }
     },
     {
       "id": "ADM-DASHBOARD",
@@ -354,13 +429,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminDashboard.html",
-            "blob": "7902a76194d02513cc8b664b1e3be60638ffc472",
+            "blob": "89d80663e63c75683ac734e52f248737971059c5",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminDashboardDark.html",
-            "blob": "4148bf5d407413e5d0fe70a9275c7ede4b6d3d4c",
+            "blob": "0054e9c4d22da7343ce3580c093907e7ecd71525",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -377,11 +452,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminDashboard.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminDashboardDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminDashboardMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminDashboardMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminDashboard.html",
+          "project-template-design-html/screens/AdminDashboardDark.html",
+          "project-template-design-html/screens/AdminDashboardMobile.html",
+          "project-template-design-html/screens/AdminDashboardMobileDark.html"
         ]
       },
       "implementation": {
@@ -419,7 +494,23 @@
       "discrepancies": ["DR-070", "DR-074", "DR-110"],
       "notes": [
         "No mock numbers in production; replace each productionAdminDashboard field with a live read when its API exists (admin-patterns.md)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 11,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-DASHBOARD"
+      }
     },
     {
       "id": "ADM-FORBIDDEN",
@@ -444,13 +535,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminForbidden.html",
-            "blob": "290a88270627ceb6eb76181dd7af62a1dd604fb9",
+            "blob": "1b5b13a604dbe28fc5c3715f9d1dac0a3cd41c62",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminForbiddenDark.html",
-            "blob": "a632464141960553022491717f957a7d62dd4bdb",
+            "blob": "f0cc0431a184ee572a6d0042ce777ddc39840c78",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -467,11 +558,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminForbidden.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminForbiddenDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminForbiddenMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminForbiddenMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminForbidden.html",
+          "project-template-design-html/screens/AdminForbiddenDark.html",
+          "project-template-design-html/screens/AdminForbiddenMobile.html",
+          "project-template-design-html/screens/AdminForbiddenMobileDark.html"
         ]
       },
       "implementation": {
@@ -503,7 +594,24 @@
       "discrepancies": ["DR-073", "DR-111"],
       "notes": [
         "Render when a backend call returns 403 inside an admitted admin session; never relax the proxy role check."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "pattern-component",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 2,
+          "compared-representative": 2
+        },
+        "implementationCaptures": 2,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-FORBIDDEN"
+      }
     },
     {
       "id": "ADM-INVOICE-DETAIL",
@@ -551,7 +659,12 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": []
+        "exportCopies": [
+          "project-template-design-html/screens/AdminInvoiceDetail.html",
+          "project-template-design-html/screens/AdminInvoiceDetailDark.html",
+          "project-template-design-html/screens/AdminInvoiceDetailMobile.html",
+          "project-template-design-html/screens/AdminInvoiceDetailMobileDark.html"
+        ]
       },
       "implementation": {
         "status": "Missing",
@@ -585,7 +698,23 @@
       "discrepancies": ["DR-070", "DR-160", "DR-161", "DR-162", "DR-164"],
       "notes": [
         "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 26,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": ["DR-176"],
+        "evidence": "final-visual-qa.json#screens/ADM-INVOICE-DETAIL"
+      }
     },
     {
       "id": "ADM-INVOICES",
@@ -633,7 +762,12 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": []
+        "exportCopies": [
+          "project-template-design-html/screens/AdminInvoices.html",
+          "project-template-design-html/screens/AdminInvoicesDark.html",
+          "project-template-design-html/screens/AdminInvoicesMobile.html",
+          "project-template-design-html/screens/AdminInvoicesMobileDark.html"
+        ]
       },
       "implementation": {
         "status": "Missing",
@@ -669,7 +803,23 @@
       "discrepancies": ["DR-070", "DR-160", "DR-162", "DR-163"],
       "notes": [
         "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 14,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-INVOICES"
+      }
     },
     {
       "id": "ADM-KYC",
@@ -694,13 +844,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminKyc.html",
-            "blob": "c9219bc6530b945b380370caf904b1d7c106c3ad",
+            "blob": "f4d486aa4e9e93542fa7f8a520f72d8451d7fa86",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminKycDark.html",
-            "blob": "150b949e0d12920eda43e3889c35baecbf5055d8",
+            "blob": "ffbd2b459d1c4d25c052891cd05ccc08c689943d",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -717,11 +867,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminKyc.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminKycDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminKycMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminKycMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminKyc.html",
+          "project-template-design-html/screens/AdminKycDark.html",
+          "project-template-design-html/screens/AdminKycMobile.html",
+          "project-template-design-html/screens/AdminKycMobileDark.html"
         ]
       },
       "implementation": {
@@ -749,7 +899,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-028",
       "discrepancies": ["DR-054", "DR-124"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-KYC"
+      }
     },
     {
       "id": "ADM-KYC-DETAIL",
@@ -774,13 +940,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminKycDetail.html",
-            "blob": "99a9b77ffe9fef00d3e08aa05df0e0826a91c799",
+            "blob": "41075ae31d3973eed59d68a1cd9d198912c72f15",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminKycDetailDark.html",
-            "blob": "65e5214502c0a5682b18566e3cd76964cced5432",
+            "blob": "c5661f20f60db4ce381aed701272d4555e72ef1d",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -797,11 +963,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminKycDetail.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminKycDetailDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminKycDetailMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminKycDetailMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminKycDetail.html",
+          "project-template-design-html/screens/AdminKycDetailDark.html",
+          "project-template-design-html/screens/AdminKycDetailMobile.html",
+          "project-template-design-html/screens/AdminKycDetailMobileDark.html"
         ]
       },
       "implementation": {
@@ -830,7 +996,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-028",
       "discrepancies": ["DR-054", "DR-124"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-KYC-DETAIL"
+      }
     },
     {
       "id": "ADM-NAV-MOBILE",
@@ -855,20 +1037,20 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminMobileMenuMobile.html",
-            "blob": "6df5ddd27cca53046afbc0e540ac46fd97bd2e6e",
+            "blob": "8381f3d42198e79c16f01ce85c69bc412e22b12a",
             "viewport": "mobile",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminMobileMenuMobileDark.html",
-            "blob": "9499deef2e0a1eddd7c08820c5e882ae9caa48df",
+            "blob": "2bfaede9cc4fd836a0e8e2554bd91d3bdd4587f9",
             "viewport": "mobile",
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminMobileMenuMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminMobileMenuMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminMobileMenuMobile.html",
+          "project-template-design-html/screens/AdminMobileMenuMobileDark.html"
         ]
       },
       "implementation": {
@@ -902,7 +1084,23 @@
       "discrepancies": ["DR-022", "DR-027", "DR-070", "DR-071", "DR-075"],
       "notes": [
         "Mobile-only artboards. Reference revision a7e2a63 adds 'Invoices' under Operations."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "layout-pattern",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 2
+        },
+        "implementationCaptures": 2,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-NAV-MOBILE"
+      }
     },
     {
       "id": "ADM-PAYMENT-ANALYTICS",
@@ -927,13 +1125,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminPaymentAnalytics.html",
-            "blob": "13307480202f03f39de151ee9b099f70abd4e707",
+            "blob": "2dbd3513e67b7d964c89b6b99f30a2a44dbf04ed",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminPaymentAnalyticsDark.html",
-            "blob": "a21f48f08e3671d98a697ff564ad4579c76129b6",
+            "blob": "25a3f589601fb42190bc727231f699a033cfa5e4",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -950,11 +1148,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminPaymentAnalytics.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPaymentAnalyticsDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPaymentAnalyticsMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPaymentAnalyticsMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminPaymentAnalytics.html",
+          "project-template-design-html/screens/AdminPaymentAnalyticsDark.html",
+          "project-template-design-html/screens/AdminPaymentAnalyticsMobile.html",
+          "project-template-design-html/screens/AdminPaymentAnalyticsMobileDark.html"
         ]
       },
       "implementation": {
@@ -979,7 +1177,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-031",
       "discrepancies": ["DR-070"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": ["scrollable-region-focusable"],
+        "horizontalOverflowAfterFixes": false,
+        "result": "gap",
+        "defectsFixed": ["DR-169"],
+        "gaps": ["DR-174"],
+        "evidence": "final-visual-qa.json#screens/ADM-PAYMENT-ANALYTICS"
+      }
     },
     {
       "id": "ADM-PAYMENT-DETAIL",
@@ -1004,13 +1218,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminPaymentDetail.html",
-            "blob": "17c59663f7e08eec54d4a0c9b52a97d94e6e612f",
+            "blob": "d88a2cc5dcba4980e4e773e49dadc93a7458dc4d",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminPaymentDetailDark.html",
-            "blob": "60f9b0a24382536158d6a7cea172e56e7c592e23",
+            "blob": "b1db501bd25078d9ecc256268b8e9232a56ca435",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -1027,11 +1241,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminPaymentDetail.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPaymentDetailDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPaymentDetailMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPaymentDetailMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminPaymentDetail.html",
+          "project-template-design-html/screens/AdminPaymentDetailDark.html",
+          "project-template-design-html/screens/AdminPaymentDetailMobile.html",
+          "project-template-design-html/screens/AdminPaymentDetailMobileDark.html"
         ]
       },
       "implementation": {
@@ -1061,7 +1275,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-027",
       "discrepancies": ["DR-070", "DR-130", "DR-131"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-PAYMENT-DETAIL"
+      }
     },
     {
       "id": "ADM-PAYMENTS",
@@ -1086,13 +1316,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminPayments.html",
-            "blob": "376bb09fe4fbde2092a75273ad788c1b0fc693fb",
+            "blob": "7f2ad642720ad691775be63541d881755247c817",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminPaymentsDark.html",
-            "blob": "7ac2e8f0b9aa8564fe22a06a324061c6a69ddb9a",
+            "blob": "dd8f07004bde07fb0c2b2e02aa8dbc0d35d42913",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -1109,11 +1339,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminPayments.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPaymentsDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPaymentsMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPaymentsMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminPayments.html",
+          "project-template-design-html/screens/AdminPaymentsDark.html",
+          "project-template-design-html/screens/AdminPaymentsMobile.html",
+          "project-template-design-html/screens/AdminPaymentsMobileDark.html"
         ]
       },
       "implementation": {
@@ -1141,7 +1371,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-027",
       "discrepancies": ["DR-070", "DR-130"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 6,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-PAYMENTS"
+      }
     },
     {
       "id": "ADM-PLANS",
@@ -1166,13 +1412,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminPlans.html",
-            "blob": "12ff39a78493d4b6dc5bc2010aa96ca481e58476",
+            "blob": "29ccd2331b71e0eda6fc456a0769bbf8dc240e1b",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminPlansDark.html",
-            "blob": "5f6fbf27c67d1c59ee6fcee786734391eaefeee2",
+            "blob": "33466eb5d21f2754ffd443757b163e017d103a78",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -1189,11 +1435,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminPlans.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPlansDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPlansMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminPlansMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminPlans.html",
+          "project-template-design-html/screens/AdminPlansDark.html",
+          "project-template-design-html/screens/AdminPlansMobile.html",
+          "project-template-design-html/screens/AdminPlansMobileDark.html"
         ]
       },
       "implementation": {
@@ -1227,7 +1473,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-026",
       "discrepancies": ["DR-070", "DR-130", "DR-132"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 8,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-PLANS"
+      }
     },
     {
       "id": "ADM-PROVIDERS",
@@ -1252,13 +1514,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminProviders.html",
-            "blob": "89ee167324777cad6cff507dfed5066da2d2fbf9",
+            "blob": "ccfb858da09af281199c3ad105181a86baeaa203",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminProvidersDark.html",
-            "blob": "2a5ce553643307ac4ca8f800e0bb4c1af8e7dacb",
+            "blob": "5b5d6c5bafa959b7fbd6dd468f2b0682cc269087",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -1275,11 +1537,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminProviders.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminProvidersDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminProvidersMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminProvidersMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminProviders.html",
+          "project-template-design-html/screens/AdminProvidersDark.html",
+          "project-template-design-html/screens/AdminProvidersMobile.html",
+          "project-template-design-html/screens/AdminProvidersMobileDark.html"
         ]
       },
       "implementation": {
@@ -1313,7 +1575,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-029",
       "discrepancies": ["DR-074"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-PROVIDERS"
+      }
     },
     {
       "id": "ADM-REFERENCE-DATA",
@@ -1342,13 +1620,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminReferenceData.html",
-            "blob": "f6c5714888adfd5d322f77b6e75fe161718385cb",
+            "blob": "6f9c6c92553a68e021be66a26514fe7e22ebe344",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminReferenceDataDark.html",
-            "blob": "74a9b3036f4dc73c2545a1463c72717b5c5c55db",
+            "blob": "15374dc589a653ec219560ac790e4389892335aa",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -1365,11 +1643,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminReferenceData.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminReferenceDataDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminReferenceDataMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminReferenceDataMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminReferenceData.html",
+          "project-template-design-html/screens/AdminReferenceDataDark.html",
+          "project-template-design-html/screens/AdminReferenceDataMobile.html",
+          "project-template-design-html/screens/AdminReferenceDataMobileDark.html"
         ]
       },
       "implementation": {
@@ -1398,7 +1676,23 @@
       "discrepancies": ["DR-071"],
       "notes": [
         "Countries tab may ship first if the contract carries the displayed fields."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-REFERENCE-DATA"
+      }
     },
     {
       "id": "ADM-REGISTRATIONS",
@@ -1426,13 +1720,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminRegistrations.html",
-            "blob": "e888e0cc55fd123cd00a5565b527442bc385b108",
+            "blob": "ed063a976a77ad8cce90720465e5140d46c72e1b",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminRegistrationsDark.html",
-            "blob": "ea01d8bc7b97f5d0028858b0709bfdb10b2a5967",
+            "blob": "9b45100002320050f82b82d5a678a58ecceb36e9",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -1449,11 +1743,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminRegistrations.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminRegistrationsDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminRegistrationsMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminRegistrationsMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminRegistrations.html",
+          "project-template-design-html/screens/AdminRegistrationsDark.html",
+          "project-template-design-html/screens/AdminRegistrationsMobile.html",
+          "project-template-design-html/screens/AdminRegistrationsMobileDark.html"
         ]
       },
       "implementation": {
@@ -1483,7 +1777,23 @@
       "discrepancies": ["DR-024", "DR-070"],
       "notes": [
         "Artboard contains an unrendered template token ('1{k}:02') in Last login cells."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-REGISTRATIONS"
+      }
     },
     {
       "id": "ADM-ROLE-EDIT",
@@ -1508,13 +1818,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminRoleEdit.html",
-            "blob": "f9278dad58eab08df9fcc5ca87ad3ba543e2e182",
+            "blob": "39b1d0f8af3913ec90a0ebb6514b013f08c1a362",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminRoleEditDark.html",
-            "blob": "47b7f20ea42b80f74b64b8d41e56545c25268df2",
+            "blob": "01f6c2be5a0f53da181c427deb10c6f39bc9ef6f",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -1531,11 +1841,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminRoleEdit.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminRoleEditDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminRoleEditMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminRoleEditMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminRoleEdit.html",
+          "project-template-design-html/screens/AdminRoleEditDark.html",
+          "project-template-design-html/screens/AdminRoleEditMobile.html",
+          "project-template-design-html/screens/AdminRoleEditMobileDark.html"
         ]
       },
       "implementation": {
@@ -1562,7 +1872,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-025",
       "discrepancies": ["DR-073", "DR-123"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 6,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-ROLE-EDIT"
+      }
     },
     {
       "id": "ADM-ROLES",
@@ -1587,13 +1913,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminRoles.html",
-            "blob": "e32ce5a4fa2f86dc20548936e905c93560c74157",
+            "blob": "fe13090876789b7fec78587e7dab38fe39ab6a13",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminRolesDark.html",
-            "blob": "c65ec24e2309dea3b3f5ffd9a31b9204ef3eeebb",
+            "blob": "8d74de85ce3769a3c261d1ebe291ae22adc7e39b",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -1610,11 +1936,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminRoles.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminRolesDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminRolesMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminRolesMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminRoles.html",
+          "project-template-design-html/screens/AdminRolesDark.html",
+          "project-template-design-html/screens/AdminRolesMobile.html",
+          "project-template-design-html/screens/AdminRolesMobileDark.html"
         ]
       },
       "implementation": {
@@ -1648,7 +1974,23 @@
       "discrepancies": ["DR-073", "DR-122"],
       "notes": [
         "Permission names (users.read, roles.manage, …) are future targets; nothing grants or checks them."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 6,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-ROLES"
+      }
     },
     {
       "id": "ADM-SIGN-IN",
@@ -1696,11 +2038,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminSignIn.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSignInDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSignInMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSignInMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminSignIn.html",
+          "project-template-design-html/screens/AdminSignInDark.html",
+          "project-template-design-html/screens/AdminSignInMobile.html",
+          "project-template-design-html/screens/AdminSignInMobileDark.html"
         ]
       },
       "implementation": {
@@ -1736,7 +2078,23 @@
       "discrepancies": ["DR-017", "DR-041"],
       "notes": [
         "Passkey/2FA for admins need new admin BFF routes reusing existing api-client operations; scope as its own ticket."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/sign-in",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-SIGN-IN"
+      }
     },
     {
       "id": "ADM-STEP-UP",
@@ -1762,13 +2120,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminStepUp.html",
-            "blob": "3311e280bb1324687b5273507047bae34f499790",
+            "blob": "df8b99e296a43202527552a60d66cd3902bb6ecc",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminStepUpDark.html",
-            "blob": "83845aae8dcebb6972ea2ccf269956706770a050",
+            "blob": "e1c1fd6bf9eb5e1b64531d2c3f0c9895539df6c6",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -1785,11 +2143,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminStepUp.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminStepUpDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminStepUpMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminStepUpMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminStepUp.html",
+          "project-template-design-html/screens/AdminStepUpDark.html",
+          "project-template-design-html/screens/AdminStepUpMobile.html",
+          "project-template-design-html/screens/AdminStepUpMobileDark.html"
         ]
       },
       "implementation": {
@@ -1821,7 +2179,24 @@
       "discrepancies": ["DR-041", "DR-072", "DR-112"],
       "notes": [
         "Build as a reusable app-level dialog used by lock, cancel, provider change, role change."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "pattern-component",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared-representative": 2,
+          "compared": 2
+        },
+        "implementationCaptures": 2,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-STEP-UP"
+      }
     },
     {
       "id": "ADM-SUBSCRIPTION-ANALYTICS",
@@ -1846,13 +2221,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminSubscriptionAnalytics.html",
-            "blob": "9b5ddd30aec2e091378087482b4711624f35299f",
+            "blob": "dec5653ff354126698a57a7e6eed4ac8ec1517d1",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminSubscriptionAnalyticsDark.html",
-            "blob": "721d36d6fa21160ac1d5f95b4f9c742553fff9e7",
+            "blob": "60be52d859fdf6158a9ba814cd2c2e40b7226403",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -1869,11 +2244,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionAnalytics.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionAnalyticsDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionAnalyticsMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionAnalyticsMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminSubscriptionAnalytics.html",
+          "project-template-design-html/screens/AdminSubscriptionAnalyticsDark.html",
+          "project-template-design-html/screens/AdminSubscriptionAnalyticsMobile.html",
+          "project-template-design-html/screens/AdminSubscriptionAnalyticsMobileDark.html"
         ]
       },
       "implementation": {
@@ -1896,7 +2271,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-031",
       "discrepancies": ["DR-070"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-SUBSCRIPTION-ANALYTICS"
+      }
     },
     {
       "id": "ADM-SUBSCRIPTION-DETAIL",
@@ -1921,13 +2312,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminSubscriptionDetail.html",
-            "blob": "0c0e5ee1f67b8abce50567bfd682b23aeb4b4b06",
+            "blob": "94ed77dca32c7f9aed0b8a575f3ba8474102d42a",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminSubscriptionDetailDark.html",
-            "blob": "67889cbdca198a1a24b570a19785f6f92acb7019",
+            "blob": "3db7a02649baa6d93452fb8c9da93490665fb046",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -1944,11 +2335,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionDetail.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionDetailDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionDetailMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionDetailMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminSubscriptionDetail.html",
+          "project-template-design-html/screens/AdminSubscriptionDetailDark.html",
+          "project-template-design-html/screens/AdminSubscriptionDetailMobile.html",
+          "project-template-design-html/screens/AdminSubscriptionDetailMobileDark.html"
         ]
       },
       "implementation": {
@@ -1980,7 +2371,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-026",
       "discrepancies": ["DR-070", "DR-130", "DR-131"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-SUBSCRIPTION-DETAIL"
+      }
     },
     {
       "id": "ADM-SUBSCRIPTIONS",
@@ -2005,13 +2412,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminSubscriptions.html",
-            "blob": "702089bd3b45df5993ea1b010e51edde9ce6a3e5",
+            "blob": "c0c5d4e64396d6a488c55e1960dca6d43f7b72fa",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminSubscriptionsDark.html",
-            "blob": "c7deb0df36e45074cdcb5fd64c4e0281d1bda896",
+            "blob": "3b56e7701ccb72ff966fcef5906dc79132c327bb",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -2028,11 +2435,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptions.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionsDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionsMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSubscriptionsMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminSubscriptions.html",
+          "project-template-design-html/screens/AdminSubscriptionsDark.html",
+          "project-template-design-html/screens/AdminSubscriptionsMobile.html",
+          "project-template-design-html/screens/AdminSubscriptionsMobileDark.html"
         ]
       },
       "implementation": {
@@ -2060,7 +2467,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-026",
       "discrepancies": ["DR-070", "DR-130"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-SUBSCRIPTIONS"
+      }
     },
     {
       "id": "ADM-SYSTEM-HEALTH",
@@ -2085,13 +2508,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminSystemHealth.html",
-            "blob": "25f65b7276e738c55bc3f45f0177683572aed28f",
+            "blob": "fac0a157003259e793df4fffa79941e2145d17ce",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminSystemHealthDark.html",
-            "blob": "04762051c00cd65a44b18ea8d6e8bb6ec74be4a4",
+            "blob": "1f85be0263928031eed80f148ba930dd3d0ed25c",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -2108,11 +2531,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminSystemHealth.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSystemHealthDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSystemHealthMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminSystemHealthMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminSystemHealth.html",
+          "project-template-design-html/screens/AdminSystemHealthDark.html",
+          "project-template-design-html/screens/AdminSystemHealthMobile.html",
+          "project-template-design-html/screens/AdminSystemHealthMobileDark.html"
         ]
       },
       "implementation": {
@@ -2136,7 +2559,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-030",
       "discrepancies": ["DR-071"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-SYSTEM-HEALTH"
+      }
     },
     {
       "id": "ADM-USER-DETAIL",
@@ -2161,13 +2600,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminUserDetail.html",
-            "blob": "f81150a07cd25e60e2f85307bcc4785820157b8d",
+            "blob": "509b33e293f8819c3ac439a17e769b96bc4b4d19",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminUserDetailDark.html",
-            "blob": "47269ea6d527ac5c9e334fdc45240d448bb23a5e",
+            "blob": "dae9ce63b888059d93d72954cc09bb821d3bc937",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -2184,11 +2623,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminUserDetail.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminUserDetailDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminUserDetailMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminUserDetailMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminUserDetail.html",
+          "project-template-design-html/screens/AdminUserDetailDark.html",
+          "project-template-design-html/screens/AdminUserDetailMobile.html",
+          "project-template-design-html/screens/AdminUserDetailMobileDark.html"
         ]
       },
       "implementation": {
@@ -2226,7 +2665,23 @@
       "discrepancies": ["DR-072", "DR-121"],
       "notes": [
         "Which actions require step-up, and whether a reason is recorded, is a backend contract decision (DR-072, DR-112)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-USER-DETAIL"
+      }
     },
     {
       "id": "ADM-USERS",
@@ -2251,13 +2706,13 @@
         "referenceFiles": [
           {
             "path": "4-admin-portal/AdminUsers.html",
-            "blob": "5acb12adeca536252c9690b258c2c7b77ce29bd9",
+            "blob": "616f7d648991a85da45fc318c3243cfb44361a8b",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "4-admin-portal/AdminUsersDark.html",
-            "blob": "23b88839dda2fbbde162b8c7e122392a65b67fd3",
+            "blob": "84e902064d70f0f1586d7aa4b5dc8fe328b26dbb",
             "viewport": "desktop",
             "theme": "dark"
           },
@@ -2274,11 +2729,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AdminUsers.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminUsersDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminUsersMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AdminUsersMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AdminUsers.html",
+          "project-template-design-html/screens/AdminUsersDark.html",
+          "project-template-design-html/screens/AdminUsersMobile.html",
+          "project-template-design-html/screens/AdminUsersMobileDark.html"
         ]
       },
       "implementation": {
@@ -2309,7 +2764,23 @@
       "discrepancies": ["DR-071", "DR-120"],
       "notes": [
         "Filter, sort and paging behaviour is exercised only on synthetic fixtures in tests; nothing is server-backed."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 6,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/ADM-USERS"
+      }
     },
     {
       "id": "AUTH-CONFIRM-EMAIL",
@@ -2357,11 +2828,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AuthConfirmEmail.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthConfirmEmailDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthConfirmEmailMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthConfirmEmailMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AuthConfirmEmail.html",
+          "project-template-design-html/screens/AuthConfirmEmailDark.html",
+          "project-template-design-html/screens/AuthConfirmEmailMobile.html",
+          "project-template-design-html/screens/AuthConfirmEmailMobileDark.html"
         ]
       },
       "implementation": {
@@ -2388,7 +2859,23 @@
       "priority": "P1",
       "roadmapTicket": "FE-UI-012",
       "discrepancies": [],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/confirm-email",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/AUTH-CONFIRM-EMAIL"
+      }
     },
     {
       "id": "AUTH-FORGOT-PASSWORD",
@@ -2413,70 +2900,70 @@
         "referenceFiles": [
           {
             "path": "2-authentication/AuthForgotPassword.html",
-            "blob": "d32e73d57d3077a17f1ee7614319c40764ff916f",
+            "blob": "c03d48b9bb8c940dcbd1b89a2c5f550140b2ffca",
             "viewport": "desktop",
             "theme": "light",
             "state": "request"
           },
           {
             "path": "2-authentication/AuthForgotPasswordDark.html",
-            "blob": "c865c29ecc65e9b2247810eda05ebcc3ff8ec0e1",
+            "blob": "06e79113fc440b1862558ed91211b131785abb53",
             "viewport": "desktop",
             "theme": "dark",
             "state": "request"
           },
           {
             "path": "2-authentication/AuthForgotPasswordMobile.html",
-            "blob": "208d33ba4e0dbafea82b7774bea2b69b3d643913",
+            "blob": "7b9bffb9d30b18728324e23fbc6dc92a0f33b405",
             "viewport": "mobile",
             "theme": "light",
             "state": "request"
           },
           {
             "path": "2-authentication/AuthForgotPasswordMobileDark.html",
-            "blob": "23fa4f290300a63e4edce1e50582056a547a201f",
+            "blob": "c3be0af16a6153552c33ae24ee52af72037e78f8",
             "viewport": "mobile",
             "theme": "dark",
             "state": "request"
           },
           {
             "path": "2-authentication/AuthForgotSent.html",
-            "blob": "018c06208da2eabbebe4b1d32246e0d84ec1e03b",
+            "blob": "5313e4418c9dc0ede571a9b5cc96a5113d0f327a",
             "viewport": "desktop",
             "theme": "light",
             "state": "code-entry"
           },
           {
             "path": "2-authentication/AuthForgotSentDark.html",
-            "blob": "d6cebc5fbed6448190d2605dc2956e53b8cf5f2c",
+            "blob": "5b553d644240bd9687a0d94d62e06fdfb5de61bd",
             "viewport": "desktop",
             "theme": "dark",
             "state": "code-entry"
           },
           {
             "path": "2-authentication/AuthForgotSentMobile.html",
-            "blob": "96cbfdb1501cb4b5abd3b0f59a648b9b139030f6",
+            "blob": "1f22d3bb0415829017635fb0741efcda1046d317",
             "viewport": "mobile",
             "theme": "light",
             "state": "code-entry"
           },
           {
             "path": "2-authentication/AuthForgotSentMobileDark.html",
-            "blob": "1d029593f653d1073f51a7d5b61743048baeb0ae",
+            "blob": "7e386ac1ee69db858abccac8c5ef7fe024d4e164",
             "viewport": "mobile",
             "theme": "dark",
             "state": "code-entry"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AuthForgotPassword.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthForgotPasswordDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthForgotPasswordMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthForgotPasswordMobileDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthForgotSent.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthForgotSentDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthForgotSentMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthForgotSentMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AuthForgotPassword.html",
+          "project-template-design-html/screens/AuthForgotPasswordDark.html",
+          "project-template-design-html/screens/AuthForgotPasswordMobile.html",
+          "project-template-design-html/screens/AuthForgotPasswordMobileDark.html",
+          "project-template-design-html/screens/AuthForgotSent.html",
+          "project-template-design-html/screens/AuthForgotSentDark.html",
+          "project-template-design-html/screens/AuthForgotSentMobile.html",
+          "project-template-design-html/screens/AuthForgotSentMobileDark.html"
         ]
       },
       "implementation": {
@@ -2515,7 +3002,24 @@
       "notes": [
         "/forgot-password is in the proxy's exact PUBLIC_PATHS; the matcher is unchanged.",
         "No reset link, URL token or separate /reset-password route: the design's email-OTP flow replaces them."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/forgot-password",
+        "referenceFiles": {
+          "compared": 6,
+          "compared-representative": 2
+        },
+        "implementationCaptures": 7,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-167", "DR-171"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/AUTH-FORGOT-PASSWORD"
+      }
     },
     {
       "id": "AUTH-GOOGLE-LINK",
@@ -2563,11 +3067,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AuthGoogleLink.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthGoogleLinkDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthGoogleLinkMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthGoogleLinkMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AuthGoogleLink.html",
+          "project-template-design-html/screens/AuthGoogleLinkDark.html",
+          "project-template-design-html/screens/AuthGoogleLinkMobile.html",
+          "project-template-design-html/screens/AuthGoogleLinkMobileDark.html"
         ]
       },
       "implementation": {
@@ -2593,7 +3097,23 @@
       "priority": "P1",
       "roadmapTicket": "FE-UI-012",
       "discrepancies": ["DR-086"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/sign-in (link_required state)",
+        "referenceFiles": {
+          "not-captured-external": 4
+        },
+        "implementationCaptures": 0,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "reference-reviewed",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/AUTH-GOOGLE-LINK"
+      }
     },
     {
       "id": "AUTH-GOOGLE-REGISTER",
@@ -2641,11 +3161,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AuthGoogleRegister.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthGoogleRegisterDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthGoogleRegisterMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthGoogleRegisterMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AuthGoogleRegister.html",
+          "project-template-design-html/screens/AuthGoogleRegisterDark.html",
+          "project-template-design-html/screens/AuthGoogleRegisterMobile.html",
+          "project-template-design-html/screens/AuthGoogleRegisterMobileDark.html"
         ]
       },
       "implementation": {
@@ -2671,7 +3191,23 @@
       "priority": "P1",
       "roadmapTicket": "FE-UI-012",
       "discrepancies": ["DR-086"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/register?google=continue",
+        "referenceFiles": {
+          "not-captured-external": 4
+        },
+        "implementationCaptures": 0,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "reference-reviewed",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/AUTH-GOOGLE-REGISTER"
+      }
     },
     {
       "id": "AUTH-MESSAGES",
@@ -2696,34 +3232,34 @@
         "referenceFiles": [
           {
             "path": "2-authentication/AuthStates.html",
-            "blob": "73b14fe32bd63d5d51450a2009206e6fb396b9b8",
+            "blob": "55215866b46f67a1088d605c9224590c53638031",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "2-authentication/AuthStatesDark.html",
-            "blob": "10512f6d576c7bbd71b9c66a64914407dd44939d",
+            "blob": "b04489416ad2f4a0c6b2ca4597041114df375fba",
             "viewport": "desktop",
             "theme": "dark"
           },
           {
             "path": "2-authentication/AuthStatesMobile.html",
-            "blob": "116e2c6536b16c8462d65227705dfb674263f8f1",
+            "blob": "284e2442474fcd55c4295473a0a3dc32feaf97c0",
             "viewport": "mobile",
             "theme": "light"
           },
           {
             "path": "2-authentication/AuthStatesMobileDark.html",
-            "blob": "331ab0ce6f15118d9f78c4e9208fea61d6b58e42",
+            "blob": "e1c5a3f873637c54a97c7a9a8b9f8cabdfad053e",
             "viewport": "mobile",
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AuthStates.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthStatesDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthStatesMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthStatesMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AuthStates.html",
+          "project-template-design-html/screens/AuthStatesDark.html",
+          "project-template-design-html/screens/AuthStatesMobile.html",
+          "project-template-design-html/screens/AuthStatesMobileDark.html"
         ]
       },
       "implementation": {
@@ -2758,7 +3294,23 @@
       "discrepancies": ["DR-016"],
       "notes": [
         "Not a route: use as the copy/visual spec for Alert usage on every auth screen."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "reference",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "reference-only": 4
+        },
+        "implementationCaptures": 0,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "reference-reviewed",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/AUTH-MESSAGES"
+      }
     },
     {
       "id": "AUTH-PASSKEY-SETUP",
@@ -2806,11 +3358,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AuthPasskeySetup.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthPasskeySetupDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthPasskeySetupMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthPasskeySetupMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AuthPasskeySetup.html",
+          "project-template-design-html/screens/AuthPasskeySetupDark.html",
+          "project-template-design-html/screens/AuthPasskeySetupMobile.html",
+          "project-template-design-html/screens/AuthPasskeySetupMobileDark.html"
         ]
       },
       "implementation": {
@@ -2841,7 +3393,23 @@
       "priority": "P1",
       "roadmapTicket": "FE-UI-012",
       "discrepancies": [],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/passkey-setup",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-171"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/AUTH-PASSKEY-SETUP"
+      }
     },
     {
       "id": "AUTH-REGISTER",
@@ -2921,15 +3489,15 @@
             "state": "step:details"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AuthRegisterEmail.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthRegisterEmailDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthRegisterEmailMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthRegisterEmailMobileDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthRegisterDetails.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthRegisterDetailsDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthRegisterDetailsMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthRegisterDetailsMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AuthRegisterEmail.html",
+          "project-template-design-html/screens/AuthRegisterEmailDark.html",
+          "project-template-design-html/screens/AuthRegisterEmailMobile.html",
+          "project-template-design-html/screens/AuthRegisterEmailMobileDark.html",
+          "project-template-design-html/screens/AuthRegisterDetails.html",
+          "project-template-design-html/screens/AuthRegisterDetailsDark.html",
+          "project-template-design-html/screens/AuthRegisterDetailsMobile.html",
+          "project-template-design-html/screens/AuthRegisterDetailsMobileDark.html"
         ]
       },
       "implementation": {
@@ -2968,7 +3536,24 @@
       "discrepancies": ["DR-014"],
       "notes": [
         "Step indicator spans /register and /confirm-email; keep step state in the app, not in URLs, as today."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/register",
+        "referenceFiles": {
+          "compared": 6,
+          "compared-representative": 2
+        },
+        "implementationCaptures": 7,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/AUTH-REGISTER"
+      }
     },
     {
       "id": "AUTH-RESET-PASSWORD",
@@ -2993,28 +3578,28 @@
         "referenceFiles": [
           {
             "path": "2-authentication/AuthResetPassword.html",
-            "blob": "a06cec8e89f98b67a3aa21600e9ec64ecbcf2e29",
+            "blob": "44c0e178e224fcd2b42e9904eae70e2ff926aeba",
             "viewport": "desktop",
             "theme": "light",
             "state": "password-mismatch"
           },
           {
             "path": "2-authentication/AuthResetPasswordDark.html",
-            "blob": "671d2337109a32cb4c17d2b92f788bd76d19f4d5",
+            "blob": "555abe2f855b6d5605556aa556a7538027da3640",
             "viewport": "desktop",
             "theme": "dark",
             "state": "password-mismatch"
           },
           {
             "path": "2-authentication/AuthResetPasswordMobile.html",
-            "blob": "32bfde8dde6cb62790a06a91ad582bbf82c21406",
+            "blob": "6b446367d0351306a132d3d8c4f06327d639b2c9",
             "viewport": "mobile",
             "theme": "light",
             "state": "password-mismatch"
           },
           {
             "path": "2-authentication/AuthResetPasswordMobileDark.html",
-            "blob": "a1881b03b123db9c267df4668f39b109d968194c",
+            "blob": "a9b03b1cc945006f6e5cb6d24783cf56e604d55d",
             "viewport": "mobile",
             "theme": "dark",
             "state": "password-mismatch"
@@ -3049,46 +3634,46 @@
           },
           {
             "path": "2-authentication/AuthResetExpired.html",
-            "blob": "a8db8be082954436824a79be518b35d039ddf754",
+            "blob": "48bdac2d5e16a3c092296f73adcc74b20a1ed7d7",
             "viewport": "desktop",
             "theme": "light",
             "state": "invalid-code"
           },
           {
             "path": "2-authentication/AuthResetExpiredDark.html",
-            "blob": "7a9a8791d282a3e96e5970e77e85e5a7acd4c314",
+            "blob": "ab6ac5fb710a9efbe2c8262cca78bb7bac849fe2",
             "viewport": "desktop",
             "theme": "dark",
             "state": "invalid-code"
           },
           {
             "path": "2-authentication/AuthResetExpiredMobile.html",
-            "blob": "1ad759599cd5a400cf65579348005f7c64bbd2fd",
+            "blob": "52beae81a5a0c8490d5699ea5e2d1ce672939f23",
             "viewport": "mobile",
             "theme": "light",
             "state": "invalid-code"
           },
           {
             "path": "2-authentication/AuthResetExpiredMobileDark.html",
-            "blob": "aa6b091b40b4cf173e89a11dffc4497ff2be53ea",
+            "blob": "7d8c4daf52ca9d525e472757213e0ef31f58e238",
             "viewport": "mobile",
             "theme": "dark",
             "state": "invalid-code"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AuthResetPassword.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthResetPasswordDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthResetPasswordMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthResetPasswordMobileDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthResetDone.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthResetDoneDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthResetDoneMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthResetDoneMobileDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthResetExpired.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthResetExpiredDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthResetExpiredMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthResetExpiredMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AuthResetPassword.html",
+          "project-template-design-html/screens/AuthResetPasswordDark.html",
+          "project-template-design-html/screens/AuthResetPasswordMobile.html",
+          "project-template-design-html/screens/AuthResetPasswordMobileDark.html",
+          "project-template-design-html/screens/AuthResetDone.html",
+          "project-template-design-html/screens/AuthResetDoneDark.html",
+          "project-template-design-html/screens/AuthResetDoneMobile.html",
+          "project-template-design-html/screens/AuthResetDoneMobileDark.html",
+          "project-template-design-html/screens/AuthResetExpired.html",
+          "project-template-design-html/screens/AuthResetExpiredDark.html",
+          "project-template-design-html/screens/AuthResetExpiredMobile.html",
+          "project-template-design-html/screens/AuthResetExpiredMobileDark.html"
         ]
       },
       "implementation": {
@@ -3126,7 +3711,24 @@
       "discrepancies": ["DR-015"],
       "notes": [
         "Code-entry, invalid-code and done are in-page states of /forgot-password, not routes."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/forgot-password (code step)",
+        "referenceFiles": {
+          "compared": 6,
+          "compared-representative": 6
+        },
+        "implementationCaptures": 8,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-167"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/AUTH-RESET-PASSWORD"
+      }
     },
     {
       "id": "AUTH-SIGN-IN",
@@ -3174,11 +3776,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AuthSignIn.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthSignInDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthSignInMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthSignInMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AuthSignIn.html",
+          "project-template-design-html/screens/AuthSignInDark.html",
+          "project-template-design-html/screens/AuthSignInMobile.html",
+          "project-template-design-html/screens/AuthSignInMobileDark.html"
         ]
       },
       "implementation": {
@@ -3219,7 +3821,23 @@
       "priority": "P1",
       "roadmapTicket": "FE-UI-012",
       "discrepancies": ["DR-012", "DR-013"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/sign-in",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 9,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/AUTH-SIGN-IN"
+      }
     },
     {
       "id": "AUTH-TWO-FACTOR",
@@ -3267,11 +3885,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/AuthTwoFactor.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthTwoFactorDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthTwoFactorMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/AuthTwoFactorMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/AuthTwoFactor.html",
+          "project-template-design-html/screens/AuthTwoFactorDark.html",
+          "project-template-design-html/screens/AuthTwoFactorMobile.html",
+          "project-template-design-html/screens/AuthTwoFactorMobileDark.html"
         ]
       },
       "implementation": {
@@ -3298,7 +3916,23 @@
       "priority": "P1",
       "roadmapTicket": "FE-UI-012",
       "discrepancies": ["DR-040"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/sign-in/two-factor",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/AUTH-TWO-FACTOR"
+      }
     },
     {
       "id": "FND-FOUNDATIONS",
@@ -3328,9 +3962,7 @@
             "theme": "light"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/Main.dc.html"
-        ]
+        "exportCopies": ["project-template-design-html/screens/Main.html"]
       },
       "implementation": {
         "status": "Implemented",
@@ -3372,7 +4004,23 @@
       "notes": [
         "Delivered by the Trello card numbered FE-UI-002, which carries this roadmap ticket's scope (see DR-077).",
         "Authoritative token values are the `.tp` / `.tp.dark` custom properties in theme.css inlined into every canonical file; see token-mapping.md."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "development-preview-route",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "reference-only": 1
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "reference-reviewed",
+        "defectsFixed": [],
+        "gaps": ["DR-172"],
+        "evidence": "final-visual-qa.json#screens/FND-FOUNDATIONS"
+      }
     },
     {
       "id": "MKT-ABOUT",
@@ -3420,11 +4068,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/PublicAbout.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicAboutDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicAboutMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicAboutMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/PublicAbout.html",
+          "project-template-design-html/screens/PublicAboutDark.html",
+          "project-template-design-html/screens/PublicAboutMobile.html",
+          "project-template-design-html/screens/PublicAboutMobileDark.html"
         ]
       },
       "implementation": {
@@ -3449,7 +4097,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-010",
       "discrepancies": ["DR-030"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/about",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/MKT-ABOUT"
+      }
     },
     {
       "id": "MKT-BLOG",
@@ -3497,11 +4161,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/PublicBlog.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicBlogDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicBlogMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicBlogMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/PublicBlog.html",
+          "project-template-design-html/screens/PublicBlogDark.html",
+          "project-template-design-html/screens/PublicBlogMobile.html",
+          "project-template-design-html/screens/PublicBlogMobileDark.html"
         ]
       },
       "implementation": {
@@ -3532,7 +4196,23 @@
       "discrepancies": ["DR-032"],
       "notes": [
         "Post detail route (/blog/[slug]) is reference-less; requires a content-source decision (DR-032)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/blog",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/MKT-BLOG"
+      }
     },
     {
       "id": "MKT-CONTACT",
@@ -3580,11 +4260,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/PublicContact.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicContactDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicContactMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicContactMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/PublicContact.html",
+          "project-template-design-html/screens/PublicContactDark.html",
+          "project-template-design-html/screens/PublicContactMobile.html",
+          "project-template-design-html/screens/PublicContactMobileDark.html"
         ]
       },
       "implementation": {
@@ -3612,7 +4292,23 @@
       "priority": "P3",
       "roadmapTicket": "FE-UI-010",
       "discrepancies": ["DR-033"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/contact",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/MKT-CONTACT"
+      }
     },
     {
       "id": "MKT-FEATURES",
@@ -3660,11 +4356,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/PublicFeatures.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicFeaturesDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicFeaturesMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicFeaturesMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/PublicFeatures.html",
+          "project-template-design-html/screens/PublicFeaturesDark.html",
+          "project-template-design-html/screens/PublicFeaturesMobile.html",
+          "project-template-design-html/screens/PublicFeaturesMobileDark.html"
         ]
       },
       "implementation": {
@@ -3693,7 +4389,23 @@
       "discrepancies": ["DR-031"],
       "notes": [
         "Marketing copy describing unimplemented capabilities (wallet, KYC, admin operations) needs product sign-off before launch (DR-031)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/features",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/MKT-FEATURES"
+      }
     },
     {
       "id": "MKT-HOME",
@@ -3741,11 +4453,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/PublicHome.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicHomeDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicHomeMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicHomeMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/PublicHome.html",
+          "project-template-design-html/screens/PublicHomeDark.html",
+          "project-template-design-html/screens/PublicHomeMobile.html",
+          "project-template-design-html/screens/PublicHomeMobileDark.html"
         ]
       },
       "implementation": {
@@ -3780,7 +4492,23 @@
       "discrepancies": ["DR-030"],
       "notes": [
         "Removing sections without reference (testimonials, logo cloud, home pricing/contact/blog) is a product decision (DR-030)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-165"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/MKT-HOME"
+      }
     },
     {
       "id": "MKT-LEGAL",
@@ -3831,11 +4559,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/PublicLegal.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicLegalDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicLegalMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicLegalMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/PublicLegal.html",
+          "project-template-design-html/screens/PublicLegalDark.html",
+          "project-template-design-html/screens/PublicLegalMobile.html",
+          "project-template-design-html/screens/PublicLegalMobileDark.html"
         ]
       },
       "implementation": {
@@ -3863,7 +4591,23 @@
       "discrepancies": ["DR-034"],
       "notes": [
         "Keep both routes (linkable, indexable); render the segmented switch as two links (aria-current), not client state."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/privacy, /terms",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 7,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/MKT-LEGAL"
+      }
     },
     {
       "id": "MKT-NAV-MOBILE",
@@ -3899,9 +4643,9 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/PublicMobileMenuMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicMobileMenuMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/PublicMobileMenuMobile.html",
+          "project-template-design-html/screens/PublicMobileMenuMobileDark.html"
         ]
       },
       "implementation": {
@@ -3926,7 +4670,23 @@
       "priority": "P1",
       "roadmapTicket": "FE-UI-009",
       "discrepancies": ["DR-021"],
-      "notes": ["Mobile-only artboards (no desktop variant by design)."]
+      "notes": ["Mobile-only artboards (no desktop variant by design)."],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "layout-pattern",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 2
+        },
+        "implementationCaptures": 2,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/MKT-NAV-MOBILE"
+      }
     },
     {
       "id": "MKT-PRICING",
@@ -3948,7 +4708,7 @@
           "states": [],
           "interactiveStates": [
             "interval:monthly",
-            "interval:yearly (editable .dc.html artboard only)"
+            "interval:yearly (only in the d23eb85 editable artboard; no static yearly prices at ad9386e)"
           ]
         },
         "referenceFiles": [
@@ -3977,11 +4737,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/PublicPricing.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicPricingDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicPricingMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/PublicPricingMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/PublicPricing.html",
+          "project-template-design-html/screens/PublicPricingDark.html",
+          "project-template-design-html/screens/PublicPricingMobile.html",
+          "project-template-design-html/screens/PublicPricingMobileDark.html"
         ]
       },
       "implementation": {
@@ -4018,8 +4778,24 @@
       "discrepancies": ["DR-010", "DR-011"],
       "notes": [
         "Interval toggle is client state on a server-rendered list; keep plans loading in Server Components.",
-        "Yearly prices appear only in the editable .dc.html artboard, not in the static snapshot."
-      ]
+        "Yearly prices appeared only in the d23eb85 editable .dc.html artboard; ad9386e has no editable artboards and no static yearly prices (the implementation shows backend yearly prices)."
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/pricing",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 7,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-170"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/MKT-PRICING"
+      }
     },
     {
       "id": "USR-BILLING",
@@ -4218,11 +4994,31 @@
             "state": "pending"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserBilling.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserBillingDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserBillingMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserBillingMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserBilling-active.html",
+          "project-template-design-html/screens/UserBilling-cancelling.html",
+          "project-template-design-html/screens/UserBilling-expired.html",
+          "project-template-design-html/screens/UserBilling-none.html",
+          "project-template-design-html/screens/UserBilling-pastdue.html",
+          "project-template-design-html/screens/UserBilling-pending.html",
+          "project-template-design-html/screens/UserBillingDark-active.html",
+          "project-template-design-html/screens/UserBillingDark-cancelling.html",
+          "project-template-design-html/screens/UserBillingDark-expired.html",
+          "project-template-design-html/screens/UserBillingDark-none.html",
+          "project-template-design-html/screens/UserBillingDark-pastdue.html",
+          "project-template-design-html/screens/UserBillingDark-pending.html",
+          "project-template-design-html/screens/UserBillingMobile-active.html",
+          "project-template-design-html/screens/UserBillingMobile-cancelling.html",
+          "project-template-design-html/screens/UserBillingMobile-expired.html",
+          "project-template-design-html/screens/UserBillingMobile-none.html",
+          "project-template-design-html/screens/UserBillingMobile-pastdue.html",
+          "project-template-design-html/screens/UserBillingMobile-pending.html",
+          "project-template-design-html/screens/UserBillingMobileDark-active.html",
+          "project-template-design-html/screens/UserBillingMobileDark-cancelling.html",
+          "project-template-design-html/screens/UserBillingMobileDark-expired.html",
+          "project-template-design-html/screens/UserBillingMobileDark-none.html",
+          "project-template-design-html/screens/UserBillingMobileDark-pastdue.html",
+          "project-template-design-html/screens/UserBillingMobileDark-pending.html"
         ]
       },
       "implementation": {
@@ -4269,7 +5065,24 @@
       "discrepancies": ["DR-010", "DR-055"],
       "notes": [
         "billing-view.ts stays the single owner of layout rules; restyle only."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/billing",
+        "referenceFiles": {
+          "compared": 14,
+          "compared-representative": 10
+        },
+        "implementationCaptures": 15,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-168", "DR-171"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-BILLING"
+      }
     },
     {
       "id": "USR-BILLING-HISTORY",
@@ -4294,34 +5107,34 @@
         "referenceFiles": [
           {
             "path": "3-user-portal/UserBillingHistory.html",
-            "blob": "f097ad7ef703c8a958dac30d1dfeb17061fe4004",
+            "blob": "4a54036e9a1ad95cd57a2b183de1d2b54e161f41",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "3-user-portal/UserBillingHistoryDark.html",
-            "blob": "388946a86ff597028765f7c2311d753ed822307b",
+            "blob": "eef0aea5e6f09e25491bd048a462ac69692eb698",
             "viewport": "desktop",
             "theme": "dark"
           },
           {
             "path": "3-user-portal/UserBillingHistoryMobile.html",
-            "blob": "c1787594898a396d4976fa36c17e3c3ec7283a10",
+            "blob": "5ed766c21086fbd6e3f59a1d0349ffec1b59129c",
             "viewport": "mobile",
             "theme": "light"
           },
           {
             "path": "3-user-portal/UserBillingHistoryMobileDark.html",
-            "blob": "4a5a276ff9fe4b8271ac745f31260db660f85b44",
+            "blob": "79a61335f64c19c0b3f8bcb7f9c79a2356d687b3",
             "viewport": "mobile",
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserBillingHistory.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserBillingHistoryDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserBillingHistoryMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserBillingHistoryMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserBillingHistory.html",
+          "project-template-design-html/screens/UserBillingHistoryDark.html",
+          "project-template-design-html/screens/UserBillingHistoryMobile.html",
+          "project-template-design-html/screens/UserBillingHistoryMobileDark.html"
         ]
       },
       "implementation": {
@@ -4354,7 +5167,23 @@
       "priority": "P1",
       "roadmapTicket": "FE-UI-018",
       "discrepancies": ["DR-058"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/billing/history",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-168", "DR-171"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-BILLING-HISTORY"
+      }
     },
     {
       "id": "USR-CHECKOUT",
@@ -4402,11 +5231,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserCheckout.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserCheckoutDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserCheckoutMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserCheckoutMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserCheckout.html",
+          "project-template-design-html/screens/UserCheckoutDark.html",
+          "project-template-design-html/screens/UserCheckoutMobile.html",
+          "project-template-design-html/screens/UserCheckoutMobileDark.html"
         ]
       },
       "implementation": {
@@ -4447,7 +5276,23 @@
       "discrepancies": ["DR-056"],
       "notes": [
         "Idempotency and attempt storage logic must not change in a visual ticket."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/billing/checkout",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-171"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-CHECKOUT"
+      }
     },
     {
       "id": "USR-CHECKOUT-RESULT",
@@ -4555,11 +5400,19 @@
             "state": "success"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserCheckoutResult.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserCheckoutResultDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserCheckoutResultMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserCheckoutResultMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserCheckoutResult-cancelled.html",
+          "project-template-design-html/screens/UserCheckoutResult-pending.html",
+          "project-template-design-html/screens/UserCheckoutResult-success.html",
+          "project-template-design-html/screens/UserCheckoutResultDark-cancelled.html",
+          "project-template-design-html/screens/UserCheckoutResultDark-pending.html",
+          "project-template-design-html/screens/UserCheckoutResultDark-success.html",
+          "project-template-design-html/screens/UserCheckoutResultMobile-cancelled.html",
+          "project-template-design-html/screens/UserCheckoutResultMobile-pending.html",
+          "project-template-design-html/screens/UserCheckoutResultMobile-success.html",
+          "project-template-design-html/screens/UserCheckoutResultMobileDark-cancelled.html",
+          "project-template-design-html/screens/UserCheckoutResultMobileDark-pending.html",
+          "project-template-design-html/screens/UserCheckoutResultMobileDark-success.html"
         ]
       },
       "implementation": {
@@ -4591,7 +5444,24 @@
       "priority": "P1",
       "roadmapTicket": "FE-UI-018",
       "discrepancies": ["DR-057"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/billing/checkout/success, /billing/checkout/cancelled, /billing/checkout/return",
+        "referenceFiles": {
+          "compared": 8,
+          "compared-representative": 4
+        },
+        "implementationCaptures": 9,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-171"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-CHECKOUT-RESULT"
+      }
     },
     {
       "id": "USR-DASHBOARD",
@@ -4639,11 +5509,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserDashboard.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserDashboardDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserDashboardMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserDashboardMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserDashboard.html",
+          "project-template-design-html/screens/UserDashboardDark.html",
+          "project-template-design-html/screens/UserDashboardMobile.html",
+          "project-template-design-html/screens/UserDashboardMobileDark.html"
         ]
       },
       "implementation": {
@@ -4696,7 +5566,23 @@
       "discrepancies": ["DR-018", "DR-050", "DR-087", "DR-088"],
       "notes": [
         "Delivered by Trello FE-UI-007 (roadmap FE-UI-015). Production never falls back to fixture data."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/dashboard",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-171"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-DASHBOARD"
+      }
     },
     {
       "id": "USR-INVOICE-DETAIL",
@@ -4810,7 +5696,21 @@
             "theme": "light"
           }
         ],
-        "editableArtboards": []
+        "exportCopies": [
+          "project-template-design-html/screens/UserInvoiceDetail-due.html",
+          "project-template-design-html/screens/UserInvoiceDetail-overdue.html",
+          "project-template-design-html/screens/UserInvoiceDetail-paid.html",
+          "project-template-design-html/screens/UserInvoiceDetailDark-due.html",
+          "project-template-design-html/screens/UserInvoiceDetailDark-overdue.html",
+          "project-template-design-html/screens/UserInvoiceDetailDark-paid.html",
+          "project-template-design-html/screens/UserInvoiceDetailMobile-due.html",
+          "project-template-design-html/screens/UserInvoiceDetailMobile-overdue.html",
+          "project-template-design-html/screens/UserInvoiceDetailMobile-paid.html",
+          "project-template-design-html/screens/UserInvoiceDetailMobileDark-due.html",
+          "project-template-design-html/screens/UserInvoiceDetailMobileDark-overdue.html",
+          "project-template-design-html/screens/UserInvoiceDetailMobileDark-paid.html",
+          "project-template-design-html/screens/PrintInvoice.html"
+        ]
       },
       "implementation": {
         "status": "Missing",
@@ -4847,7 +5747,24 @@
       "notes": [
         "Preview-only: fixtures are imported only by tests (enforced); overdue is never computed from the clock.",
         "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 8,
+          "compared-representative": 5
+        },
+        "implementationCaptures": 26,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": ["DR-176"],
+        "evidence": "final-visual-qa.json#screens/USR-INVOICE-DETAIL"
+      }
     },
     {
       "id": "USR-NAV-MOBILE",
@@ -4883,9 +5800,9 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserMobileMenuMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserMobileMenuMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserMobileMenuMobile.html",
+          "project-template-design-html/screens/UserMobileMenuMobileDark.html"
         ]
       },
       "implementation": {
@@ -4919,7 +5836,23 @@
       "notes": [
         "Mobile-only artboards. Reference revision a7e2a63 (unchanged since d23eb85).",
         "'Account' links to /profile, as the reference markup does (UserProfileMobile marks Account current)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "layout-pattern",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 2
+        },
+        "implementationCaptures": 2,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-NAV-MOBILE"
+      }
     },
     {
       "id": "USR-PREFERENCES",
@@ -4967,11 +5900,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserPreferences.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserPreferencesDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserPreferencesMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserPreferencesMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserPreferences.html",
+          "project-template-design-html/screens/UserPreferencesDark.html",
+          "project-template-design-html/screens/UserPreferencesMobile.html",
+          "project-template-design-html/screens/UserPreferencesMobileDark.html"
         ]
       },
       "implementation": {
@@ -5005,7 +5938,23 @@
       "discrepancies": ["DR-051", "DR-090"],
       "notes": [
         "Delivered by Trello FE-UI-007 (roadmap FE-UI-020). Protected by the proxy's default authenticated boundary; not a public path."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/preferences",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-171"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-PREFERENCES"
+      }
     },
     {
       "id": "USR-PROFILE",
@@ -5053,11 +6002,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserProfile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserProfileDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserProfileMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserProfileMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserProfile.html",
+          "project-template-design-html/screens/UserProfileDark.html",
+          "project-template-design-html/screens/UserProfileMobile.html",
+          "project-template-design-html/screens/UserProfileMobileDark.html"
         ]
       },
       "implementation": {
@@ -5103,7 +6052,23 @@
       "priority": "P1",
       "roadmapTicket": "FE-UI-016",
       "discrepancies": ["DR-019", "DR-089"],
-      "notes": ["Delivered by Trello FE-UI-007 (roadmap FE-UI-016)."]
+      "notes": ["Delivered by Trello FE-UI-007 (roadmap FE-UI-016)."],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/profile",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-171"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-PROFILE"
+      }
     },
     {
       "id": "USR-PURCHASE-DETAIL",
@@ -5128,34 +6093,34 @@
         "referenceFiles": [
           {
             "path": "3-user-portal/UserPurchaseDetail.html",
-            "blob": "564cb3bf6a382fdd974716663738f51d50ba911c",
+            "blob": "1fa2e9e23e5b33c749b900e266c11c8f3a8d1de6",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "3-user-portal/UserPurchaseDetailDark.html",
-            "blob": "effb89fee4f8fdad38f1317f1a929da19cb773f0",
+            "blob": "96ac05acade2de14cada724977f810dbb867fd19",
             "viewport": "desktop",
             "theme": "dark"
           },
           {
             "path": "3-user-portal/UserPurchaseDetailMobile.html",
-            "blob": "29039cf8b4a0fc5b7c98eb5a8ef91b8311ebd079",
+            "blob": "cf772284a1b59c4098e9050151a5baaf6a4f6495",
             "viewport": "mobile",
             "theme": "light"
           },
           {
             "path": "3-user-portal/UserPurchaseDetailMobileDark.html",
-            "blob": "ef8ebb56980f2216c32f72c27497dc26f5d7e505",
+            "blob": "0fe7ca3e96f972e54d3bd833d05816bcf13c15b1",
             "viewport": "mobile",
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserPurchaseDetail.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserPurchaseDetailDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserPurchaseDetailMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserPurchaseDetailMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserPurchaseDetail.html",
+          "project-template-design-html/screens/UserPurchaseDetailDark.html",
+          "project-template-design-html/screens/UserPurchaseDetailMobile.html",
+          "project-template-design-html/screens/UserPurchaseDetailMobileDark.html"
         ]
       },
       "implementation": {
@@ -5186,7 +6151,23 @@
       "priority": "P2",
       "roadmapTicket": "FE-UI-018",
       "discrepancies": ["DR-057", "DR-058"],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/billing/purchases/[purchaseId]",
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 5,
+        "axeViolationsAfterFixes": ["target-size"],
+        "horizontalOverflowAfterFixes": false,
+        "result": "gap",
+        "defectsFixed": ["DR-171"],
+        "gaps": ["DR-172", "DR-175"],
+        "evidence": "final-visual-qa.json#screens/USR-PURCHASE-DETAIL"
+      }
     },
     {
       "id": "USR-RECEIPT-DETAIL",
@@ -5272,7 +6253,17 @@
             "theme": "light"
           }
         ],
-        "editableArtboards": []
+        "exportCopies": [
+          "project-template-design-html/screens/UserReceiptDetail-subscription.html",
+          "project-template-design-html/screens/UserReceiptDetail-wallet.html",
+          "project-template-design-html/screens/UserReceiptDetailDark-subscription.html",
+          "project-template-design-html/screens/UserReceiptDetailDark-wallet.html",
+          "project-template-design-html/screens/UserReceiptDetailMobile-subscription.html",
+          "project-template-design-html/screens/UserReceiptDetailMobile-wallet.html",
+          "project-template-design-html/screens/UserReceiptDetailMobileDark-subscription.html",
+          "project-template-design-html/screens/UserReceiptDetailMobileDark-wallet.html",
+          "project-template-design-html/screens/PrintReceipt.html"
+        ]
       },
       "implementation": {
         "status": "Missing",
@@ -5312,7 +6303,24 @@
       "notes": [
         "Preview-only: fixtures are imported only by tests (enforced).",
         "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4,
+          "compared-representative": 5
+        },
+        "implementationCaptures": 20,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": ["DR-176"],
+        "evidence": "final-visual-qa.json#screens/USR-RECEIPT-DETAIL"
+      }
     },
     {
       "id": "USR-SECURITY",
@@ -5511,11 +6519,31 @@
             "state": "two-factor"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserSecurity.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserSecurityDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserSecurityMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserSecurityMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserSecurity-activity.html",
+          "project-template-design-html/screens/UserSecurity-overview.html",
+          "project-template-design-html/screens/UserSecurity-passkeys.html",
+          "project-template-design-html/screens/UserSecurity-password.html",
+          "project-template-design-html/screens/UserSecurity-sessions.html",
+          "project-template-design-html/screens/UserSecurity-twofa.html",
+          "project-template-design-html/screens/UserSecurityDark-activity.html",
+          "project-template-design-html/screens/UserSecurityDark-overview.html",
+          "project-template-design-html/screens/UserSecurityDark-passkeys.html",
+          "project-template-design-html/screens/UserSecurityDark-password.html",
+          "project-template-design-html/screens/UserSecurityDark-sessions.html",
+          "project-template-design-html/screens/UserSecurityDark-twofa.html",
+          "project-template-design-html/screens/UserSecurityMobile-activity.html",
+          "project-template-design-html/screens/UserSecurityMobile-overview.html",
+          "project-template-design-html/screens/UserSecurityMobile-passkeys.html",
+          "project-template-design-html/screens/UserSecurityMobile-password.html",
+          "project-template-design-html/screens/UserSecurityMobile-sessions.html",
+          "project-template-design-html/screens/UserSecurityMobile-twofa.html",
+          "project-template-design-html/screens/UserSecurityMobileDark-activity.html",
+          "project-template-design-html/screens/UserSecurityMobileDark-overview.html",
+          "project-template-design-html/screens/UserSecurityMobileDark-passkeys.html",
+          "project-template-design-html/screens/UserSecurityMobileDark-password.html",
+          "project-template-design-html/screens/UserSecurityMobileDark-sessions.html",
+          "project-template-design-html/screens/UserSecurityMobileDark-twofa.html"
         ]
       },
       "implementation": {
@@ -5583,7 +6611,24 @@
         "DR-100",
         "DR-101"
       ],
-      "notes": []
+      "notes": [],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "route",
+        "deployedRoute": "/security",
+        "referenceFiles": {
+          "compared": 14,
+          "compared-representative": 10
+        },
+        "implementationCaptures": 15,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass-after-fix",
+        "defectsFixed": ["DR-171"],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-SECURITY"
+      }
     },
     {
       "id": "USR-TWO-FACTOR-SETUP",
@@ -5635,11 +6680,11 @@
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserTwoFactorSetup.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserTwoFactorSetupDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserTwoFactorSetupMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserTwoFactorSetupMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserTwoFactorSetup.html",
+          "project-template-design-html/screens/UserTwoFactorSetupDark.html",
+          "project-template-design-html/screens/UserTwoFactorSetupMobile.html",
+          "project-template-design-html/screens/UserTwoFactorSetupMobileDark.html"
         ]
       },
       "implementation": {
@@ -5675,7 +6720,24 @@
       "discrepancies": ["DR-060", "DR-098"],
       "notes": [
         "Recovery codes remain ephemeral UI state; never persisted or put in fixtures that resemble real codes in production bundles."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "dialog-on-route",
+        "deployedRoute": "/security (dialog)",
+        "referenceFiles": {
+          "compared-representative": 2,
+          "compared": 2
+        },
+        "implementationCaptures": 2,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-TWO-FACTOR-SETUP"
+      }
     },
     {
       "id": "USR-VERIFICATION",
@@ -5874,11 +6936,31 @@
             "state": "verified"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserVerification.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserVerificationDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserVerificationMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserVerificationMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserVerification-expired.html",
+          "project-template-design-html/screens/UserVerification-inprogress.html",
+          "project-template-design-html/screens/UserVerification-notstarted.html",
+          "project-template-design-html/screens/UserVerification-pending.html",
+          "project-template-design-html/screens/UserVerification-rejected.html",
+          "project-template-design-html/screens/UserVerification-verified.html",
+          "project-template-design-html/screens/UserVerificationDark-expired.html",
+          "project-template-design-html/screens/UserVerificationDark-inprogress.html",
+          "project-template-design-html/screens/UserVerificationDark-notstarted.html",
+          "project-template-design-html/screens/UserVerificationDark-pending.html",
+          "project-template-design-html/screens/UserVerificationDark-rejected.html",
+          "project-template-design-html/screens/UserVerificationDark-verified.html",
+          "project-template-design-html/screens/UserVerificationMobile-expired.html",
+          "project-template-design-html/screens/UserVerificationMobile-inprogress.html",
+          "project-template-design-html/screens/UserVerificationMobile-notstarted.html",
+          "project-template-design-html/screens/UserVerificationMobile-pending.html",
+          "project-template-design-html/screens/UserVerificationMobile-rejected.html",
+          "project-template-design-html/screens/UserVerificationMobile-verified.html",
+          "project-template-design-html/screens/UserVerificationMobileDark-expired.html",
+          "project-template-design-html/screens/UserVerificationMobileDark-inprogress.html",
+          "project-template-design-html/screens/UserVerificationMobileDark-notstarted.html",
+          "project-template-design-html/screens/UserVerificationMobileDark-pending.html",
+          "project-template-design-html/screens/UserVerificationMobileDark-rejected.html",
+          "project-template-design-html/screens/UserVerificationMobileDark-verified.html"
         ]
       },
       "implementation": {
@@ -5912,7 +6994,24 @@
       "discrepancies": ["DR-054", "DR-102", "DR-103"],
       "notes": [
         "Blocked for production. The composition reports start/continue/retry/refresh intents through a callback and renders them disabled without one; it never contacts a provider or collects documents. Fixtures are imported only by tests (enforced)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 14,
+          "compared-representative": 10
+        },
+        "implementationCaptures": 16,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-VERIFICATION"
+      }
     },
     {
       "id": "USR-WALLET",
@@ -5937,34 +7036,34 @@
         "referenceFiles": [
           {
             "path": "3-user-portal/UserWallet.html",
-            "blob": "4436f1aee414daca9e3f578a49abd2c11dcb2f2c",
+            "blob": "1ee24c21653aa209d15e16dab7e7838ee4a0e596",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "3-user-portal/UserWalletDark.html",
-            "blob": "aa3efb6afe445e15b083e20624db522968fbe517",
+            "blob": "fdb6b7481ab70ce037ab1d79f311b2cfadfff27a",
             "viewport": "desktop",
             "theme": "dark"
           },
           {
             "path": "3-user-portal/UserWalletMobile.html",
-            "blob": "f7137e45411902007d357636f045159924991614",
+            "blob": "45bf8ef8ae5027e5f1f3a6b4d104c08e15816736",
             "viewport": "mobile",
             "theme": "light"
           },
           {
             "path": "3-user-portal/UserWalletMobileDark.html",
-            "blob": "81f8f0448685bbd1c9fdf09b5d4902d944cdb1a6",
+            "blob": "9cb219404a92b9b063eea329742b9f53f192bb03",
             "viewport": "mobile",
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserWallet.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserWalletDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserWalletMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserWalletMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserWallet.html",
+          "project-template-design-html/screens/UserWalletDark.html",
+          "project-template-design-html/screens/UserWalletMobile.html",
+          "project-template-design-html/screens/UserWalletMobileDark.html"
         ]
       },
       "implementation": {
@@ -6004,7 +7103,23 @@
       "notes": [
         "Frontend must never compute balances from transaction pages.",
         "Blocked for production. Summary figures render 'Not available' (never zero); Provider/Reference/Status columns appear only when rows carry them; top-up, filter, load-more and reload are intents through onAction and render disabled without one. Fixtures are imported only by tests (enforced)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "preview-composition",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared": 4
+        },
+        "implementationCaptures": 4,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-WALLET"
+      }
     },
     {
       "id": "USR-WALLET-TOP-UP",
@@ -6030,34 +7145,34 @@
         "referenceFiles": [
           {
             "path": "3-user-portal/UserWalletTopUp.html",
-            "blob": "653e872ef2c4f2aaea9d54d2a4755c60ff1ce5e3",
+            "blob": "8875c97da6b9d035e9c880eab3fdc00690b0c921",
             "viewport": "desktop",
             "theme": "light"
           },
           {
             "path": "3-user-portal/UserWalletTopUpDark.html",
-            "blob": "dea2af71a918a323cbc78e4c6ff245237e0b8b9c",
+            "blob": "3d3797ca736a8f66b4df915a06e1e53644c823d8",
             "viewport": "desktop",
             "theme": "dark"
           },
           {
             "path": "3-user-portal/UserWalletTopUpMobile.html",
-            "blob": "1c6d8dcd9eb25682735e5912afe860934590267c",
+            "blob": "f94bbbe40e4ce559714266df1669e649e68627e9",
             "viewport": "mobile",
             "theme": "light"
           },
           {
             "path": "3-user-portal/UserWalletTopUpMobileDark.html",
-            "blob": "6e793bc4b104fac3b1f97519d4767d20e1136ef1",
+            "blob": "140e14bdb95699de06b57a746dd26f9deb853958",
             "viewport": "mobile",
             "theme": "dark"
           }
         ],
-        "editableArtboards": [
-          "User Portal/Project Template — Complete Product Design-project/UserWalletTopUp.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserWalletTopUpDark.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserWalletTopUpMobile.dc.html",
-          "User Portal/Project Template — Complete Product Design-project/UserWalletTopUpMobileDark.dc.html"
+        "exportCopies": [
+          "project-template-design-html/screens/UserWalletTopUp.html",
+          "project-template-design-html/screens/UserWalletTopUpDark.html",
+          "project-template-design-html/screens/UserWalletTopUpMobile.html",
+          "project-template-design-html/screens/UserWalletTopUpMobileDark.html"
         ]
       },
       "implementation": {
@@ -6092,7 +7207,25 @@
       "discrepancies": ["DR-059", "DR-113", "DR-114"],
       "notes": [
         "No payment initiation, redirect or success/result screen: return handling is not designed and Bachs return URLs are shared with subscriptions (DR-059)."
-      ]
+      ],
+      "qa": {
+        "ticket": "FE-UI-016 (Trello)",
+        "designRevision": "ad9386e",
+        "surface": "pattern-component",
+        "deployedRoute": null,
+        "referenceFiles": {
+          "compared-representative": 2,
+          "compared": 2
+        },
+        "implementationCaptures": 2,
+        "axeViolationsAfterFixes": [],
+        "horizontalOverflowAfterFixes": false,
+        "result": "pass",
+        "defectsFixed": [],
+        "gaps": [],
+        "evidence": "final-visual-qa.json#screens/USR-WALLET-TOP-UP"
+      }
     }
-  ]
+  ],
+  "updatedOn": "2026-11-28"
 }

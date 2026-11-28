@@ -22,7 +22,8 @@ export function CtaBanner({
         {title}
       </h2>
       {description ? (
-        <p className="text-on-brand/85 max-w-130 text-lg">{description}</p>
+        // Opaque on-brand text: the reference 85% white is 4.2:1 (DR-165).
+        <p className="text-on-brand max-w-130 text-lg">{description}</p>
       ) : null}
       <Button
         asChild
