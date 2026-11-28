@@ -221,18 +221,19 @@ These notes reconcile FE-UI-016 (`4af73eb` on `feat/fe-ui-016-final-visual-qa`, 
 - **`MKT-HOME`.** FE-UI-016's CTA contrast fix is presentation only. The proposal to mark this screen "Not required" still stands.
 - **Discrepancy IDs.** The DR IDs cited here (DR-003, 016, 019, 033, 051, 054, 070–074, 089, 160) exist both on main and on the FE-UI-016 branch. FE-UI-016 adds DR-165 to DR-176 and resolves DR-083 and DR-085. This matrix cites none of those except DR-167 above.
 
-## BE-DS-001
+## BE-DS-001 and Trello reconciliation
 
-No reference to `BE-DS-001` exists in the backend repository: not in docs, source, commit messages on any branch, or branch names. It does not appear in the frontend repository either. The Trello boards could not be read (the API returned 401). **The status of BE-DS-001 and its outputs is unverified.** Nearby evidence:
+Trello was verified on 2026-11-28:
 
-- BE-DS-002 is the only BE-DS ID in the backend. It appears in `docs/architecture/admin-dashboard-data-requirements.md`, and the commit `503a4e5` ("add KYC summary and payment provider listing endpoints (#91)") states that it closes the two BE-DS-002 dashboard gaps.
-- The frontend docs reference BE-DS-005 (wallet), BE-DS-006 (password reset), BE-DS-007 (invoices and receipts) and BE-DS-008 (notifications), each with a Trello URL. None of their statuses were verified.
+- [BE-DS-001](https://trello.com/c/unWkpaY0) exists on the Backend Project Template board and is in **DEV TESTING**. Its discovery scope matches this matrix: inventory contracts, permissions, tenant boundaries, ownership and genuine gaps without implementing endpoints.
+- [FE-UI-016](https://trello.com/c/JuXUfUhQ) and [FE-UI-017](https://trello.com/c/5e5VLVim) are both in **DOING**.
+- Existing CAF-FE and BE-DS cards were refined with the verified findings. Missing owners were created as CAF-FE-018…027 and BE-DS-009…010. The canonical `gaps[].relatedTickets` entries contain the exact card URLs.
+- Roadmap IDs in `screen-inventory.json` are not Trello IDs; the collision is tracked by GAP-017-023.
 
-FE-UI-017 final sign-off depends on BE-DS-001 and on FE-UI-016, so it stays open until both are confirmed.
-
+BE-DS-001 is in verification rather than DONE, so FE-UI-017 remains open pending acceptance and the PR #56 merge order.
 ## Unresolved sources and limitations
 
-- The Trello frontend and backend boards and cards could not be read (401). No card status is claimed. The CAF-FE IDs are referenced only where repository text names them (004, 005, 006, 008, 012, 014, 015, 016). CAF-FE-001 is named in the brief but appears nowhere in the repository.
+- Trello was reconciled on 2026-11-28. Exact verified owners and URLs are in the canonical JSON gap records; roadmap FE-UI identifiers remain distinct from Trello card identifiers.
 - The backend was read statically and not run. Generated OpenAPI was not compared. Some controllers declare no status codes (admin user mutations, roles, sessions, two-factor), and those actions say so.
 - The extractor truncated the full parameter list of `ListSubscriptionsRequest`, and the action records this. The response field lists of admin records are named but not copied.
 - The units of the admin plan price wire fields and of the `initiatePayment` amount were not confirmed. The backend's timezone semantics for `DateOnly` analytics ranges are assumed to be UTC days and were not verified.
