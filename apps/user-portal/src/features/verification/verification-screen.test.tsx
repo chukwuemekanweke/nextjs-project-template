@@ -21,8 +21,9 @@ import {
 } from "./verification-preview.fixtures";
 
 /*
- * Isolated harness for USR-VERIFICATION: every reference state is rendered
- * from typed fixtures. There is no production route (DR-054).
+ * Isolated presentation harness for USR-VERIFICATION: every reference state
+ * is rendered from typed fixtures. The live route has separate adapter and
+ * workflow coverage.
  */
 
 const utc = { timeZone: "UTC" } as const;
@@ -55,6 +56,7 @@ function actionButton(element: ReactNode): ReactElement<{
 describe("VerificationScreen states", () => {
   const expectations = {
     expired: ["Your verification session expired", "Start again"],
+    failed: ["Verification could not be completed", "Try again"],
     inProgress: ["Verification in progress", "Continue verification"],
     notStarted: ["Verify your identity", "Start verification"],
     pending: ["We&#x27;re reviewing your documents", "Refresh status"],
@@ -210,6 +212,7 @@ describe("VerificationActionSlot", () => {
     ["pending", "refresh"],
     ["rejected", "retry"],
     ["expired", "start"],
+    ["failed", "retry"],
   ];
 
   for (const [status, intent] of cases) {
@@ -364,13 +367,15 @@ describe("production boundary", () => {
     }
   });
 
-  it("adds no production route or navigation entry", () => {
+  it("publishes the live route and navigation entry", () => {
     const appDirectory = join(sourceRoot, "app");
-    expect(() => statSync(join(appDirectory, "verification"))).toThrow();
+    expect(statSync(join(appDirectory, "verification")).isDirectory()).toBe(
+      true,
+    );
     const navigation = readFileSync(
       join(sourceRoot, "config", "navigation.ts"),
       "utf8",
     );
-    expect(navigation).not.toMatch(/href: "\/verification"/);
+    expect(navigation).toMatch(/href: "\/verification"/);
   });
 });

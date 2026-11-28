@@ -1,5 +1,6 @@
 "use client";
 
+import { useCurrentKycVerification } from "@template/api-react/kyc";
 import {
   useActiveSessions,
   usePasskeys,
@@ -37,11 +38,17 @@ import {
 } from "./dashboard-overview";
 import {
   ActivityTable,
+  IdentityVerificationCallout,
   MetricCard,
   MetricGrid,
   SecurityChecklist,
   textLinkClassName,
 } from "./dashboard-sections";
+import { toVerificationState } from "@/features/verification/verification-adapter";
+import {
+  verificationActionFor,
+  verificationStatusCopy,
+} from "@/features/verification/verification-model";
 
 /*
  * Live dashboard widgets. They reuse the portal's existing TanStack Query
@@ -50,6 +57,32 @@ import {
  */
 
 const SECURITY_HREF = "/security";
+const VERIFICATION_HREF = "/verification";
+
+/** Uses the same authoritative KYC key as the verification page. */
+export function DashboardVerificationCallout() {
+  const query = useCurrentKycVerification();
+  if (!query.data || query.isError || query.isPending) return null;
+  const state = toVerificationState(query.data);
+  if (!state || state.status === "verified") return null;
+  const copy = verificationStatusCopy(state);
+  const action = verificationActionFor(state);
+  return (
+    <IdentityVerificationCallout
+      action={
+        <Link
+          className={buttonVariants({ size: "sm", variant: "secondary" })}
+          href={VERIFICATION_HREF}
+        >
+          {action?.label ?? "View verification"}
+        </Link>
+      }
+      title={copy.title}
+    >
+      {copy.description}
+    </IdentityVerificationCallout>
+  );
+}
 
 /** No wallet API exists (DR-059); the tile never shows a balance. */
 const WALLET_UNAVAILABLE: MetricSummary = {

@@ -81,6 +81,7 @@ export function VerificationHeader() {
 
 const panelIcons: Record<VerificationStatus | "unknown", ReactNode> = {
   expired: <TriangleAlertIcon />,
+  failed: <TriangleAlertIcon />,
   inProgress: <ClockIcon />,
   notStarted: <ShieldCheckIcon />,
   pending: <ClockIcon />,
@@ -383,6 +384,7 @@ export function VerificationScreen({
   busyIntent,
   dates,
   model,
+  notices,
   onAction,
   onReload,
   supportEmail,
@@ -390,6 +392,8 @@ export function VerificationScreen({
   Readonly<{
     dates?: VerificationDateOptions;
     model: VerificationScreenModel;
+    /** Live workflow notices shown below the page header. */
+    notices?: ReactNode;
     /** Re-reads status and history after an error. */
     onReload?: () => void;
     supportEmail?: string;
@@ -397,6 +401,7 @@ export function VerificationScreen({
   return (
     <section className="space-y-6">
       <VerificationHeader />
+      {notices}
       {model.state === "loading" ? (
         <>
           <StatusPanelSkeleton />

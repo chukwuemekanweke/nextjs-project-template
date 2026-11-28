@@ -109,9 +109,9 @@ export function MetricGrid({ children }: Readonly<{ children: ReactNode }>) {
 /* ------------------------------------------------------------------------ */
 
 /**
- * Reference "Your profile" card with live identity only. Country, language,
- * member-since and KYC status have no backend source (DR-018, DR-054).
- * `isVerified` is account verification, not identity verification.
+ * Reference "Your profile" card with live profile identity only. Country,
+ * language and member-since have no backend source. The separate live KYC
+ * callout uses the shared current-verification query.
  */
 export function ProfileSummaryCard({
   avatarUrl,
@@ -265,13 +265,12 @@ export function ActivityTable({
 }
 
 /* ------------------------------------------------------------------------ */
-/* Identity verification callout (preview only)                              */
+/* Identity verification callout                                             */
 /* ------------------------------------------------------------------------ */
 
 /**
- * Reference KYC banner. There is no identity-verification API or route
- * (DR-054), so production never renders it; it exists for typed preview
- * fixtures and tests until FE-UI-022 supplies real status.
+ * Reference KYC banner. Production supplies backend-authoritative copy and a
+ * link to the live verification route; preview fixtures remain test-only.
  */
 export function IdentityVerificationCallout({
   action,

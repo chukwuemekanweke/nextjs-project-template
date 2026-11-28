@@ -13,6 +13,7 @@ vi.mock("@/lib/server-api", () => ({
 // Live widgets are covered in dashboard-live.test.tsx.
 vi.mock("./dashboard-live", () => ({
   DashboardMetrics: () => <div data-testid="metrics" />,
+  DashboardVerificationCallout: () => <div data-testid="verification" />,
   RecentBillingActivityCard: () => <div data-testid="activity" />,
   SecurityChecklistCard: () => <div data-testid="checklist" />,
 }));
@@ -45,18 +46,17 @@ describe("Dashboard page", () => {
   it("composes the reference sections", async () => {
     const markup = await render();
     expect(markup).toContain('data-testid="metrics"');
+    expect(markup).toContain('data-testid="verification"');
     expect(markup).toContain("Your profile");
     expect(markup).toContain('data-testid="checklist"');
     expect(markup).toContain('data-testid="activity"');
   });
 
-  it("links View billing and omits unsupported wallet and KYC content", async () => {
+  it("links View billing and omits unsupported wallet content", async () => {
     const markup = await render();
 
     expect(markup).toMatch(/<a[^>]*href="\/billing"[^>]*>View billing<\/a>/);
-    expect(markup).not.toMatch(
-      /Top up|Verify your identity|\/verification|\/wallet/,
-    );
+    expect(markup).not.toMatch(/Top up|\/wallet/);
   });
 
   it("renders the empty state when the profile has no identity", async () => {

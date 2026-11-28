@@ -1,6 +1,7 @@
 import { TENANT_ID_HEADER } from "@template/api-client";
 import { createBrowserApiClient } from "@template/api-client/browser";
 import { authenticationOperations } from "@template/api-client/authentication";
+import { kycOperations } from "@template/api-client/kyc";
 import { profilesOperations } from "@template/api-client/profiles";
 import { subscriptionsOperations } from "@template/api-client/subscriptions";
 
@@ -65,6 +66,10 @@ const PASSWORD_RESET_BFF_ROUTES = new Map<string, string>([
 const COMPLETE_AVATAR_UPLOAD_PATH =
   /^\/api\/v1\/stakeholders\/me\/profile\/avatar\/uploads\/([^/]+)\/complete$/;
 const BILLING_BFF_PREFIX = "/api/billing";
+const KYC_BFF_ROUTES = new Map<string, string>([
+  [kycOperations.getCurrentKycVerification.path, "/api/kyc"],
+  [kycOperations.startKycVerification.path, "/api/kyc/start"],
+]);
 const BACKEND_VERSION_PREFIX = "/api/v1";
 const SEGMENT = "[^/]+";
 /**
@@ -233,6 +238,14 @@ export function createUserPortalBrowserApi({
       );
       if (billingRoute) {
         return fetchImplementation(`${billingRoute}${requestUrl.search}`, {
+          ...init,
+          credentials: "same-origin",
+        });
+      }
+
+      const kycRoute = KYC_BFF_ROUTES.get(requestUrl.pathname);
+      if (kycRoute) {
+        return fetchImplementation(kycRoute, {
           ...init,
           credentials: "same-origin",
         });

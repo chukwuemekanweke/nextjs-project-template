@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const queries = vi.hoisted(() => ({
   history: vi.fn(),
+  kyc: vi.fn(),
   passkeys: vi.fn(),
   sessions: vi.fn(),
   subscription: vi.fn(),
@@ -20,9 +21,13 @@ vi.mock("@template/api-react/subscriptions", () => ({
   useBillingHistory: (...args: unknown[]) => queries.history(...args),
   useCurrentSubscription: (...args: unknown[]) => queries.subscription(...args),
 }));
+vi.mock("@template/api-react/kyc", () => ({
+  useCurrentKycVerification: () => queries.kyc(),
+}));
 
 import {
   DashboardMetrics,
+  DashboardVerificationCallout,
   RecentBillingActivityCard,
   SecurityChecklistCard,
 } from "./dashboard-live";
@@ -77,6 +82,44 @@ beforeEach(() => {
   queries.history.mockReturnValue(
     ready({ items: [], page: 1, pageSize: 20, totalCount: 0 }),
   );
+  queries.kyc.mockReturnValue(
+    ready({
+      completedAtUtc: null,
+      isVerified: false,
+      provider: null,
+      startedAtUtc: null,
+      status: "NotStarted",
+      submittedAtUtc: null,
+      verificationId: null,
+      verificationUrl: null,
+    }),
+  );
+});
+
+describe("DashboardVerificationCallout", () => {
+  it("links an unverified stakeholder to the shared verification route", () => {
+    const markup = render(DashboardVerificationCallout);
+    expect(markup).toContain("Verify your identity");
+    expect(markup).toMatch(/href="\/verification"[^>]*>Start verification</);
+  });
+
+  it("omits the callout after authoritative verification or on read failure", () => {
+    queries.kyc.mockReturnValue(
+      ready({
+        completedAtUtc: "2026-11-28T13:00:00Z",
+        isVerified: true,
+        provider: "kycaid",
+        startedAtUtc: "2026-11-28T12:00:00Z",
+        status: "Verified",
+        submittedAtUtc: "2026-11-28T12:30:00Z",
+        verificationId: "verification-1",
+        verificationUrl: null,
+      }),
+    );
+    expect(render(DashboardVerificationCallout)).toBe("");
+    queries.kyc.mockReturnValue(failed);
+    expect(render(DashboardVerificationCallout)).toBe("");
+  });
 });
 
 describe("DashboardMetrics", () => {

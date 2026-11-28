@@ -27,7 +27,7 @@ describe("user layout shell", () => {
     expect(usesDashboardShell(pathname)).toBe(false);
   });
 
-  it.each(["/dashboard", "/profile", "/security"])(
+  it.each(["/dashboard", "/profile", "/security", "/verification"])(
     "renders dashboard chrome for %s",
     (pathname) => {
       expect(usesDashboardShell(pathname)).toBe(true);

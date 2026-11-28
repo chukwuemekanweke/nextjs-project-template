@@ -4,14 +4,13 @@ import {
 } from "@template/dashboard-ui";
 
 /**
- * User portal navigation. Only implemented routes are listed: the design's
- * Verification and Wallet items are added by the tickets that build those
- * screens (see docs/design-system/route-mapping.md). Order follows the
- * reference sidebar.
+ * User portal navigation. Only implemented routes are listed. Wallet remains
+ * deferred; verification is live through CAF-FE-006.
  */
 export const userNavigation = [
   { label: "Overview", href: "/dashboard" },
   { label: "Profile", href: "/profile" },
+  { label: "Verification", href: "/verification" },
   { label: "Billing", href: "/billing" },
   { label: "Security", href: "/security" },
   { label: "Preferences", href: "/preferences" },
@@ -35,6 +34,7 @@ const userBreadcrumbTrails: Readonly<
 > = {
   "/dashboard": [{ label: "Overview" }],
   "/profile": [{ label: "Account" }, { label: "Profile" }],
+  "/verification": [{ label: "Account" }, { label: "Verification" }],
   "/security": [{ label: "Account" }, { label: "Security" }],
   "/preferences": [{ label: "Account" }, { label: "Preferences" }],
   "/billing": [{ label: "Billing" }],

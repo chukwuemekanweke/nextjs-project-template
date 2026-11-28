@@ -24,6 +24,7 @@ describe("verificationActionFor", () => {
     );
     expect(actions).toEqual({
       expired: { intent: "start", label: "Start again", variant: "primary" },
+      failed: { intent: "retry", label: "Try again", variant: "primary" },
       inProgress: {
         intent: "continue",
         label: "Continue verification",
@@ -48,6 +49,12 @@ describe("verificationActionFor", () => {
     expect(verificationActionFor({ status: "pending" })?.intent).not.toBe(
       "start",
     );
+  });
+
+  it("uses a recoverable action while the provider session is preparing", () => {
+    expect(
+      verificationActionFor({ preparing: true, status: "inProgress" }),
+    ).toEqual({ intent: "continue", label: "Try again", variant: "primary" });
   });
 
   it("drops retry when the source disallows another attempt", () => {

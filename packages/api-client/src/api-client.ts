@@ -4,6 +4,7 @@ import {
 } from "./authentication";
 import { createFetchApiTransport } from "./transport/fetch-api-transport";
 import type { ApiClientConfiguration, ApiTransport } from "./client/types";
+import { createKycClient, type KycClient } from "./kyc";
 import { createPaymentsClient, type PaymentsClient } from "./payments";
 import { createProfilesClient, type ProfilesClient } from "./profiles";
 import { createProvidersClient, type ProvidersClient } from "./providers";
@@ -18,6 +19,7 @@ import {
 
 export interface ApiClient extends ApiTransport {
   readonly authentication: AuthenticationClient;
+  readonly kyc: KycClient;
   readonly payments: PaymentsClient;
   readonly profiles: ProfilesClient;
   readonly providers: ProvidersClient;
@@ -37,6 +39,7 @@ export function createApiClientWithTransport(
 ): ApiClient {
   return Object.assign(transport, {
     authentication: createAuthenticationClient(transport),
+    kyc: createKycClient(transport),
     payments: createPaymentsClient(transport),
     profiles: createProfilesClient(transport),
     providers: createProvidersClient(transport),

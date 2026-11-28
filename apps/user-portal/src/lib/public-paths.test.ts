@@ -21,6 +21,7 @@ describe("isPublicPath", () => {
       "/security",
       "/profile",
       "/billing",
+      "/verification",
       "/passkey-setup",
       "/forgot-password/extra",
       "/reset-password",

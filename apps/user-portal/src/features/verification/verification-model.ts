@@ -3,16 +3,21 @@ import type { BadgeTone, IconTileTone } from "@template/ui-core";
 /*
  * Identity verification (KYC) view model for USR-VERIFICATION.
  *
- * There is no KYC API yet (DR-054): nothing in production builds this model.
- * A future adapter (CAF-FE-006) maps authoritative backend data into it; it
- * must not invent statuses, dates or reasons the backend did not return.
+ * The live CAF-FE-006 adapter maps authoritative backend data into this model;
+ * it must not invent statuses, dates or reasons the backend did not return.
  * Values that cannot be mapped become `{ state: "unknown" }` (screen) or
  * `"unknown"` (attempt status) rather than a guessed state.
  */
 
 /** The six lifecycle states drawn in the reference `UserVerification*`. */
 export type VerificationStatus =
-  "notStarted" | "inProgress" | "pending" | "verified" | "rejected" | "expired";
+  | "notStarted"
+  | "inProgress"
+  | "pending"
+  | "verified"
+  | "rejected"
+  | "failed"
+  | "expired";
 
 /**
  * Current verification, one variant per lifecycle state. Dates are ISO 8601
@@ -21,7 +26,12 @@ export type VerificationStatus =
  */
 export type VerificationState =
   | Readonly<{ status: "notStarted" }>
-  | Readonly<{ status: "inProgress"; startedAt?: string }>
+  | Readonly<{
+      status: "inProgress";
+      startedAt?: string;
+      /** The backend has reserved an attempt but has not returned a URL yet. */
+      preparing?: boolean;
+    }>
   | Readonly<{ status: "pending"; submittedAt?: string }>
   | Readonly<{ status: "verified"; verifiedAt?: string }>
   | Readonly<{
@@ -32,6 +42,7 @@ export type VerificationState =
       /** `false` when the source says another attempt is not allowed. */
       retryAllowed?: boolean;
     }>
+  | Readonly<{ status: "failed"; decidedAt?: string }>
   | Readonly<{ status: "expired"; expiredAt?: string }>;
 
 export type VerificationAttemptStatus = VerificationStatus | "unknown";
@@ -91,7 +102,7 @@ export function verificationActionFor(
     case "inProgress":
       return {
         intent: "continue",
-        label: "Continue verification",
+        label: verification.preparing ? "Try again" : "Continue verification",
         variant: "primary",
       };
     case "pending":
@@ -109,6 +120,8 @@ export function verificationActionFor(
         : { intent: "retry", label: "Try again", variant: "primary" };
     case "expired":
       return { intent: "start", label: "Start again", variant: "primary" };
+    case "failed":
+      return { intent: "retry", label: "Try again", variant: "primary" };
   }
 }
 
@@ -118,6 +131,7 @@ export const UNAVAILABLE_ACTION_DESCRIPTION =
 
 const statusLabels: Record<VerificationAttemptStatus, string> = {
   expired: "Expired",
+  failed: "Failed",
   inProgress: "In progress",
   notStarted: "Not started",
   pending: "Pending",
@@ -128,6 +142,7 @@ const statusLabels: Record<VerificationAttemptStatus, string> = {
 
 const statusTones: Record<VerificationAttemptStatus, BadgeTone> = {
   expired: "neutral",
+  failed: "danger",
   inProgress: "info",
   notStarted: "neutral",
   pending: "warning",
@@ -152,6 +167,7 @@ export function verificationPanelTone(
     case "verified":
       return "success";
     case "rejected":
+    case "failed":
       return "danger";
     case "pending":
     case "expired":
@@ -230,6 +246,13 @@ export function verificationStatusCopy(
           "You haven't started verification yet. Have a photo ID ready before you begin.",
       };
     case "inProgress":
+      if (verification.preparing) {
+        return {
+          title: "Preparing your verification",
+          description:
+            "Your secure verification session is still being prepared. Try again shortly.",
+        };
+      }
       return {
         title: "Verification in progress",
         description:
@@ -268,6 +291,12 @@ export function verificationStatusCopy(
         title: "Your verification session expired",
         description:
           "The verification session timed out before it was completed. Start a new attempt.",
+      };
+    case "failed":
+      return {
+        title: "Verification could not be completed",
+        description:
+          "The verification attempt ended before a decision was available. You can try again.",
       };
   }
 }
