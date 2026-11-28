@@ -20,19 +20,13 @@ import {
   REFRESH_TOKEN_COOKIE,
   setSessionCookies,
 } from "@/lib/session-cookies";
+import { isPublicPath, SIGN_IN_PATH } from "@/lib/public-paths";
 
-const SIGN_IN_PATH = "/sign-in";
-const PUBLIC_PATHS = new Set([
-  SIGN_IN_PATH,
-  "/sign-in/two-factor",
-  "/register",
-  "/confirm-email",
-]);
 const coordinateSessionRefresh =
   createSessionRefreshCoordinator<RefreshSessionMutationResponse>();
 
 export async function proxy(request: NextRequest) {
-  if (PUBLIC_PATHS.has(request.nextUrl.pathname)) {
+  if (isPublicPath(request.nextUrl.pathname)) {
     return NextResponse.next();
   }
 

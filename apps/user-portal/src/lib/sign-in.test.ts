@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createSignInRedirectUrl } from "@template/api-client/authentication";
 import {
   createEmailConfirmationDestination,
+  createForgotPasswordHref,
   createRegistrationHref,
   createSignInHref,
   createTwoFactorDestination,
@@ -114,6 +115,17 @@ describe("authentication links", () => {
     );
     expect(createSignInHref({ returnTo: "//evil.example" })).toBe("/sign-in");
     expect(createSignInHref()).toBe("/sign-in");
+  });
+
+  it("links to password recovery with only a validated destination", () => {
+    expect(createForgotPasswordHref()).toBe("/forgot-password");
+    expect(createForgotPasswordHref("/dashboard")).toBe("/forgot-password");
+    expect(createForgotPasswordHref("https://evil.example")).toBe(
+      "/forgot-password",
+    );
+    expect(createForgotPasswordHref(checkout)).toBe(
+      `/forgot-password?returnTo=${encodeURIComponent(checkout)}`,
+    );
   });
 });
 

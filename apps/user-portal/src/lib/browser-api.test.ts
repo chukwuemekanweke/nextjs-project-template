@@ -115,6 +115,55 @@ describe("User Portal browser API", () => {
     expect(init).toMatchObject({ credentials: "same-origin", method: "GET" });
   });
 
+  it("routes password-reset request and completion through the same-origin BFF", async () => {
+    const fetchImplementation = vi
+      .fn<typeof fetch>()
+      .mockImplementation(async () =>
+        Response.json({ message: "ok" }, { status: 202 }),
+      );
+    const client = createUserPortalBrowserApi({
+      apiBaseUrl: "http://api.test",
+      fetch: fetchImplementation,
+      tenantId: TENANT_ID,
+    });
+    const completion = {
+      confirmPassword: "Synthetic#Pass1",
+      email: "reset@example.test",
+      otp: "012345",
+      password: "Synthetic#Pass1",
+    };
+
+    await client.authentication.requestPasswordReset({
+      email: "reset@example.test",
+    });
+    await client.authentication.completePasswordReset(completion);
+
+    expect(fetchImplementation).toHaveBeenCalledTimes(2);
+    const [requestInput, requestInit] = fetchImplementation.mock.calls[0]!;
+    expect(requestInput.toString()).toBe("/api/auth/password-resets");
+    expect(requestInit).toMatchObject({
+      credentials: "same-origin",
+      method: "POST",
+    });
+    expect(requestInit?.body).toBe(
+      JSON.stringify({ email: "reset@example.test" }),
+    );
+    const [completionInput, completionInit] =
+      fetchImplementation.mock.calls[1]!;
+    expect(completionInput.toString()).toBe(
+      "/api/auth/password-resets/completions",
+    );
+    expect(completionInit).toMatchObject({
+      credentials: "same-origin",
+      method: "POST",
+    });
+    expect(completionInit?.body).toBe(JSON.stringify(completion));
+    // Nothing sensitive is ever placed in a URL.
+    for (const [input] of fetchImplementation.mock.calls) {
+      expect(input.toString()).not.toMatch(/012345|Synthetic|reset%40/);
+    }
+  });
+
   it("routes password changes through the authenticated same-origin BFF", async () => {
     const fetchImplementation = vi
       .fn<typeof fetch>()
