@@ -15,23 +15,23 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 
 | Measure                                                       | Count |
 | ------------------------------------------------------------- | ----- |
-| Logical screens (incl. overlays, layout patterns, references) | 58    |
-| Design artboards                                              | 62    |
-| Canonical static reference files mapped                       | 307   |
+| Logical screens (incl. overlays, layout patterns, references) | 62    |
+| Design artboards                                              | 68    |
+| Canonical static reference files mapped                       | 337   |
 | Editable `.dc.html` artboards mapped                          | 239   |
-| Screens with an existing route or in-app state                | 26    |
-| Screens with a proposed route only                            | 27    |
-| Screens whose design assumes unsupported backend capabilities | 44    |
-| Status: Implemented                                           | 30    |
-| Status: Missing                                               | 25    |
+| Screens with an existing route or in-app state                | 28    |
+| Screens with a proposed route only                            | 29    |
+| Screens whose design assumes unsupported backend capabilities | 48    |
+| Status: Implemented                                           | 40    |
+| Status: Missing                                               | 19    |
 | Status: Partial                                               | 3     |
 | Status: Reference-only                                        | 0     |
-| Classification A                                              | 15    |
+| Classification A                                              | 17    |
 | Classification B                                              | 8     |
-| Classification C                                              | 10    |
-| Classification D                                              | 25    |
+| Classification C                                              | 8     |
+| Classification D                                              | 29    |
 | Backend: Existing                                             | 15    |
-| Backend: Missing                                              | 21    |
+| Backend: Missing                                              | 25    |
 | Backend: Not required                                         | 8     |
 | Backend: Partial                                              | 14    |
 
@@ -72,7 +72,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | [`AUTH-SIGN-IN`](#auth-sign-in)                 | Sign in                                   | page       | user-portal  | `/sign-in`                       | —              | Implemented | A     | Existing | P1       | FE-UI-012 |
 | [`AUTH-TWO-FACTOR`](#auth-two-factor)           | Two-factor challenge                      | page       | user-portal  | `/sign-in/two-factor`            | —              | Implemented | A     | Existing | P1       | FE-UI-012 |
 
-### User portal (14)
+### User portal (16)
 
 | Screen ID                                       | Screen                                                                  | Kind           | App         | Existing route                                                                     | Proposed route                                                                 | Status      | Class | Backend      | Priority | Ticket    |
 | ----------------------------------------------- | ----------------------------------------------------------------------- | -------------- | ----------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------- | ----- | ------------ | -------- | --------- |
@@ -81,17 +81,19 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | [`USR-CHECKOUT`](#usr-checkout)                 | Checkout                                                                | page           | user-portal | `/billing/checkout`                                                                | —                                                                              | Implemented | A     | Existing     | P1       | FE-UI-018 |
 | [`USR-CHECKOUT-RESULT`](#usr-checkout-result)   | Checkout result                                                         | state-flow     | user-portal | `/billing/checkout/success, /billing/checkout/cancelled, /billing/checkout/return` | —                                                                              | Implemented | A     | Existing     | P1       | FE-UI-018 |
 | [`USR-DASHBOARD`](#usr-dashboard)               | Overview dashboard                                                      | page           | user-portal | `/dashboard`                                                                       | —                                                                              | Implemented | B     | Partial      | P1       | FE-UI-015 |
+| [`USR-INVOICE-DETAIL`](#usr-invoice-detail)     | Invoice detail (due, overdue, paid; print)                              | page           | user-portal | —                                                                                  | `/billing/invoices/[invoiceId]`                                                | Missing     | D     | Missing      | P3       | FE-UI-018 |
 | [`USR-NAV-MOBILE`](#usr-nav-mobile)             | User portal mobile navigation (top bar, tab bar, drawer)                | layout-pattern | user-portal | —                                                                                  | —                                                                              | Implemented | B     | Not required | P1       | FE-UI-008 |
 | [`USR-PREFERENCES`](#usr-preferences)           | Preferences                                                             | page           | user-portal | `/preferences`                                                                     | —                                                                              | Implemented | C     | Partial      | P2       | FE-UI-020 |
 | [`USR-PROFILE`](#usr-profile)                   | Profile                                                                 | page           | user-portal | `/profile`                                                                         | —                                                                              | Implemented | A     | Partial      | P1       | FE-UI-016 |
 | [`USR-PURCHASE-DETAIL`](#usr-purchase-detail)   | Purchase detail                                                         | page           | user-portal | `/billing/purchases/[purchaseId]`                                                  | —                                                                              | Implemented | B     | Partial      | P2       | FE-UI-018 |
+| [`USR-RECEIPT-DETAIL`](#usr-receipt-detail)     | Receipt detail (subscription, wallet; print)                            | page           | user-portal | —                                                                                  | `/billing/receipts/[receiptId]`                                                | Missing     | D     | Missing      | P3       | FE-UI-018 |
 | [`USR-SECURITY`](#usr-security)                 | Security (overview, password, passkeys, two-factor, sessions, activity) | state-flow     | user-portal | `/security`                                                                        | `/security?tab={overview\|password\|passkeys\|two-factor\|sessions\|activity}` | Implemented | A     | Existing     | P1       | FE-UI-017 |
 | [`USR-TWO-FACTOR-SETUP`](#usr-two-factor-setup) | Two-factor setup dialog and recovery codes                              | overlay        | user-portal | `/security (dialog)`                                                               | —                                                                              | Implemented | A     | Existing     | P1       | FE-UI-017 |
 | [`USR-VERIFICATION`](#usr-verification)         | Identity verification (KYC)                                             | state-flow     | user-portal | —                                                                                  | `/verification`                                                                | Missing     | D     | Missing      | P3       | FE-UI-022 |
 | [`USR-WALLET`](#usr-wallet)                     | Wallet                                                                  | page           | user-portal | —                                                                                  | `/wallet`                                                                      | Missing     | D     | Partial      | P3       | FE-UI-021 |
 | [`USR-WALLET-TOP-UP`](#usr-wallet-top-up)       | Wallet top-up dialog                                                    | overlay        | user-portal | —                                                                                  | `/wallet (dialog)`                                                             | Missing     | D     | Partial      | P3       | FE-UI-021 |
 
-### Admin portal (24)
+### Admin portal (26)
 
 | Screen ID                                                   | Screen                                       | Kind           | App          | Existing route | Proposed route                                           | Status      | Class | Backend      | Priority | Ticket    |
 | ----------------------------------------------------------- | -------------------------------------------- | -------------- | ------------ | -------------- | -------------------------------------------------------- | ----------- | ----- | ------------ | -------- | --------- |
@@ -100,6 +102,8 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 | [`ADM-AUDIT`](#adm-audit)                                   | Audit history                                | page           | admin-portal | —              | `/audit`                                                 | Implemented | D     | Missing      | P3       | FE-UI-030 |
 | [`ADM-DASHBOARD`](#adm-dashboard)                           | Operations overview                          | page           | admin-portal | `/`            | —                                                        | Implemented | C     | Missing      | P2       | FE-UI-023 |
 | [`ADM-FORBIDDEN`](#adm-forbidden)                           | 403 forbidden state                          | state-flow     | admin-portal | —              | `(in-place state on any admin route)`                    | Partial     | C     | Partial      | P2       | FE-UI-023 |
+| [`ADM-INVOICE-DETAIL`](#adm-invoice-detail)                 | Invoice detail (admin)                       | page           | admin-portal | —              | `/invoices/[invoiceId]`                                  | Missing     | D     | Missing      | P3       | FE-UI-018 |
+| [`ADM-INVOICES`](#adm-invoices)                             | Invoices and receipts                        | page           | admin-portal | —              | `/invoices`                                              | Missing     | D     | Missing      | P3       | FE-UI-018 |
 | [`ADM-KYC`](#adm-kyc)                                       | KYC monitoring                               | page           | admin-portal | —              | `/kyc`                                                   | Missing     | D     | Missing      | P3       | FE-UI-028 |
 | [`ADM-KYC-DETAIL`](#adm-kyc-detail)                         | KYC detail                                   | page           | admin-portal | —              | `/kyc/[verificationId]`                                  | Missing     | D     | Missing      | P3       | FE-UI-028 |
 | [`ADM-NAV-MOBILE`](#adm-nav-mobile)                         | Admin mobile navigation (top bar and drawer) | layout-pattern | admin-portal | —              | —                                                        | Implemented | B     | Not required | P1       | FE-UI-008 |
@@ -482,6 +486,20 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Gap:** security score counts three backend-reported steps; the password is not scored ([DR-087](./discrepancy-register.md#dr-087)). Recent activity is billing history only.
 - **Discrepancies:** [DR-018](./discrepancy-register.md#dr-018), [DR-050](./discrepancy-register.md#dr-050), [DR-087](./discrepancy-register.md#dr-087), [DR-088](./discrepancy-register.md#dr-088)
 
+### USR-INVOICE-DETAIL
+
+**Invoice detail** — page; target `user-portal`; auth: authenticated (owner-scoped).
+
+- **Artboards:** `UserInvoiceDetail` (states due, overdue, paid) — 12 reference files (desktop/mobile; dark/light); `PrintInvoice` — 1 print reference (A4, light). Design revision `ad9386e`.
+- **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
+- **Composition (Trello FE-UI-018):** `apps/user-portal/src/features/billing-documents/` — `billing-documents-model.ts` (local invoice/receipt types, statuses, UTC dates, sheet content), `invoice-detail-screen.tsx` (back link, header with Print and Download PDF, document sheet, summary card), `document-parts.tsx`, `billing-documents-preview.fixtures.ts` (tests only; every state by name); sheet from `@template/dashboard-ui/documents`. Rendered by the static and browser tests only; no route, navigation item, API call or production import.
+- **Actions:** Print uses the browser; Download PDF and Email me a copy are disabled with a visible reason; there is no Pay action; View receipt links only with a receipt id.
+- **Print:** browser print CSS scoped to pages containing the sheet: the dashboard shell, page header and summary are hidden; the light sheet fills the printable width, repeats the line-item header and keeps rows and totals whole. No print route and no PDF generation.
+- **Unsupported / missing backend (BE-DS-007):** Owner-scoped invoice read; invoice ids on billing-history rows and purchase status; invoice PDF, email copy and payment operations
+- **Gap:** No invoice or receipt entity, read, render, email or payment operation exists in the backend or api-client (DR-160). Reference issuer placeholders, legal footer, VAT copy, payment-method promises and page numbering are not rendered unless the document model supplies them (DR-161).
+- **Depends on:** USR-BILLING-HISTORY; backend invoice read model
+- **Discrepancies:** [DR-160](./discrepancy-register.md#dr-160), [DR-161](./discrepancy-register.md#dr-161), [DR-162](./discrepancy-register.md#dr-162), [DR-164](./discrepancy-register.md#dr-164)
+
 ### USR-NAV-MOBILE
 
 **User portal mobile navigation (top bar, tab bar, drawer)** — layout-pattern; target `user-portal`; auth: authenticated.
@@ -530,9 +548,22 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Works today:** Purchase status card with polling, bank-transfer details and blocked/underpaid warnings.
 - **Operations:** `getSubscriptionPurchaseStatus`
 - **Unsupported / missing backend:** Purchase timeline events; Receipt download; Navigation from history rows (no purchaseId on rows)
-- **Gap:** Reference: details key-value card + event timeline + 'Download receipt'; only current status is available.
+- **Gap:** Reference: details key-value card + event timeline + 'Download receipt'; only current status is available. View invoice / View receipt stay omitted: the purchase carries no invoice or receipt id (DR-160).
 - **Depends on:** FE-UI-006 Timeline
 - **Discrepancies:** [DR-057](./discrepancy-register.md#dr-057), [DR-058](./discrepancy-register.md#dr-058)
+
+### USR-RECEIPT-DETAIL
+
+**Receipt detail** — page; target `user-portal`; auth: authenticated (owner-scoped).
+
+- **Artboards:** `UserReceiptDetail` (states subscription, wallet) — 8 reference files (desktop/mobile; dark/light); `PrintReceipt` — 1 print reference (A4, light). Design revision `ad9386e`.
+- **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
+- **Composition (Trello FE-UI-018):** `receipt-detail-screen.tsx` in `apps/user-portal/src/features/billing-documents/` — one composition for subscription and wallet receipts (amount paid and time, parties, method, reference, line items, totals, payment card); the "For" row links an invoice only by its id. Rendered only by tests; no route, navigation item, API call or production import.
+- **Actions:** as `USR-INVOICE-DETAIL`; no Pay. A successful purchase or wallet top-up is never presented as a receipt.
+- **Unsupported / missing backend (BE-DS-007):** Owner-scoped receipt read; receipt ids on billing-history, purchase status and wallet rows; receipt PDF and email copy operations
+- **Gap:** No invoice or receipt entity, read, render, email or payment operation exists in the backend or api-client (DR-160).
+- **Depends on:** USR-BILLING-HISTORY; USR-WALLET; backend receipt read model
+- **Discrepancies:** [DR-160](./discrepancy-register.md#dr-160), [DR-161](./discrepancy-register.md#dr-161), [DR-162](./discrepancy-register.md#dr-162), [DR-164](./discrepancy-register.md#dr-164)
 
 ### USR-SECURITY
 
@@ -594,7 +625,7 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Unsupported / missing backend:** Wallet balance / pending / funded-this-month aggregates; Transaction status, provider and reference fields on list rows; Status/date-range filters
 - **Gap:** List rows expose title/category/type/amount/timestamp only; reference columns Provider, Reference, Status are unsupported.
 - **Depends on:** Backend wallet read model; FE-UI-006
-- **Note:** Frontend must never compute balances from transaction pages. Blocked for production until the wallet read model exists (BE-DS-005); Receipt column waits for FE-UI-018.
+- **Note:** Frontend must never compute balances from transaction pages. Blocked for production until the wallet read model exists (BE-DS-005); the Receipt column stays omitted: rows carry no receipt id and receipts are preview-only (FE-UI-018, DR-160).
 - **Discrepancies:** [DR-059](./discrepancy-register.md#dr-059), [DR-113](./discrepancy-register.md#dr-113), [DR-115](./discrepancy-register.md#dr-115)
 
 ### USR-WALLET-TOP-UP
@@ -674,6 +705,30 @@ Human-readable view of [`screen-inventory.json`](./screen-inventory.json), the a
 - **Depends on:** FE-UI-008
 - **Note:** Render when a backend call returns 403 inside an admitted admin session; never relax the proxy role check.
 - **Discrepancies:** [DR-073](./discrepancy-register.md#dr-073), [DR-111](./discrepancy-register.md#dr-111)
+
+### ADM-INVOICE-DETAIL
+
+**Invoice detail (admin)** — page; target `admin-portal`; auth: admin (invoices.read; invoices.manage for actions).
+
+- **Artboards:** `AdminInvoiceDetail` — 4 reference files (desktop/mobile; dark/light), revision `ad9386e`.
+- **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
+- **Composition (Trello FE-UI-018):** `apps/admin-portal/src/features/admin-invoices/invoice-detail.tsx` — header with status and Print, the shared invoice document sheet, an invoice card (customer, subscription, payment, receipt; links only through ids and caller URL builders) with Resend and Download PDF disabled with their reason, and a history timeline; loading/error/not found/unavailable/forbidden states. In print only the document remains.
+- **Unsupported / missing backend (BE-DS-007):** Admin invoice detail; resend and invoice PDF operations
+- **Gap:** No invoice or receipt entity, read, render, email or payment operation exists in the backend or api-client (DR-160).
+- **Depends on:** ADM-INVOICES
+- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070), [DR-160](./discrepancy-register.md#dr-160), [DR-161](./discrepancy-register.md#dr-161), [DR-162](./discrepancy-register.md#dr-162), [DR-164](./discrepancy-register.md#dr-164)
+
+### ADM-INVOICES
+
+**Invoices and receipts** — page; target `admin-portal`; auth: admin (invoices.read).
+
+- **Artboards:** `AdminInvoices` — 4 reference files (desktop/mobile; dark/light), revision `ad9386e`.
+- **Status:** Missing (D); **backend:** Missing; **priority:** P3; **ticket:** FE-UI-018.
+- **Composition (Trello FE-UI-018):** `apps/admin-portal/src/features/admin-invoices/` — `invoices-model.ts` (local row/detail types, status, sheet content), `invoices-list.tsx` (disabled Export CSV, four KPI tiles, disabled status and date-range filters, eight-column table, pager), `invoices-preview.fixtures.ts` (tests only; every state by name); shared states in `admin-billing-shared/`. Rendered by the static and browser tests only; no route, navigation item or production import.
+- **Unsupported / missing backend (BE-DS-007):** Admin invoice search/list; KPI aggregates; CSV export
+- **Gap:** The reference adds an "Invoices" item under Operations; production navigation stays Dashboard-only until the route and API exist (DR-163).
+- **Depends on:** FE-UI-006; backend admin invoice API
+- **Discrepancies:** [DR-070](./discrepancy-register.md#dr-070), [DR-160](./discrepancy-register.md#dr-160), [DR-162](./discrepancy-register.md#dr-162), [DR-163](./discrepancy-register.md#dr-163)
 
 ### ADM-KYC
 

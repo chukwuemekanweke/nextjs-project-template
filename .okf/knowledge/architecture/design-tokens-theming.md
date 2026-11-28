@@ -38,9 +38,14 @@ status: stable
   `--space-*`) are bound with `@theme inline`. Never pair `dark:` colour
   classes in new code, hard-code hex values, or add arbitrary z-index values.
   Tailwind's default breakpoints apply (phone < `md`, sidebar from `lg`).
-- To add or change a token, edit `theme.css` (light value + `.dark` override)
-  and `theme.test.ts`, which checks the pinned reference values and WCAG
-  contrast. Form-control boundaries use `--color-control-border` (3:1), not
+- To add or change a token, edit `theme.css` (light value + `.dark` override,
+  and, if paper content uses it, `.theme-light`) and `theme.test.ts`, which
+  checks the pinned reference values, WCAG contrast and that each
+  `.theme-light` value equals its light token. `class="theme-light"` keeps a
+  subtree light inside a dark page (the billing document sheet); `dark:`
+  variants still match inside it, so such content must not use them. Only
+  pages containing `data-print-paper` print with a transparent body and a
+  light `color-scheme`; other pages print unchanged. Form-control boundaries use `--color-control-border` (3:1), not
   the reference `--color-border-strong`.
 - Rebrand by replacing `--palette-blue-*` (and optionally the neutral
   palettes) plus each app's `public/images` logo/favicon files and branding env.

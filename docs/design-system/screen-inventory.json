@@ -34,6 +34,11 @@
         "scope": "ADM-REGISTRATIONS, ADM-ACTIVE-USERS, ADM-PAYMENT-ANALYTICS, ADM-SUBSCRIPTION-ANALYTICS, ADM-PROVIDERS, ADM-REFERENCE-DATA, ADM-AUDIT and ADM-SYSTEM-HEALTH (feature compositions only; reference blobs in the records still describe 'commit', DR-083)"
       },
       {
+        "ticket": "Trello FE-UI-018",
+        "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
+        "scope": "USR-INVOICE-DETAIL, USR-RECEIPT-DETAIL, ADM-INVOICES, ADM-INVOICE-DETAIL (5-invoices-and-receipts; feature compositions and print CSS only; these records carry ad9386e blobs, other records still describe commit, DR-083)"
+      },
+      {
         "ticket": "Trello FE-UI-020",
         "commit": "ad9386efe354d0d4d6d9b57d5e1cd492a29cb80d",
         "scope": "AUTH-FORGOT-PASSWORD, AUTH-RESET-PASSWORD (email OTP password reset on /forgot-password; reference blobs in the records still describe 'commit', DR-083)"
@@ -48,24 +53,24 @@
     "routeType": "page | in-page-state | dialog | layout | none"
   },
   "statistics": {
-    "logicalScreens": 58,
+    "logicalScreens": 62,
     "byCategory": {
-      "admin": 24,
+      "admin": 26,
       "authentication": 11,
       "foundations": 1,
       "marketing": 8,
-      "user": 14
+      "user": 16
     },
     "byKind": {
       "layout-pattern": 3,
       "overlay": 3,
-      "page": 40,
+      "page": 44,
       "reference": 2,
       "state-flow": 10
     },
     "byStatus": {
       "Implemented": 40,
-      "Missing": 15,
+      "Missing": 19,
       "Partial": 3,
       "Reference-only": 0
     },
@@ -73,20 +78,20 @@
       "A": 17,
       "B": 8,
       "C": 8,
-      "D": 25
+      "D": 29
     },
     "byBackendSupport": {
       "Existing": 15,
-      "Missing": 21,
+      "Missing": 25,
       "Not required": 8,
       "Partial": 14
     },
-    "artboards": 62,
-    "canonicalReferenceFiles": 307,
+    "artboards": 68,
+    "canonicalReferenceFiles": 337,
     "editableArtboardFiles": 239,
     "screensWithExistingRoute": 28,
-    "screensWithProposedRouteOnly": 25,
-    "screensWithUnsupportedCapabilities": 44
+    "screensWithProposedRouteOnly": 29,
+    "screensWithUnsupportedCapabilities": 48
   },
   "screens": [
     {
@@ -498,6 +503,172 @@
       "discrepancies": ["DR-073", "DR-111"],
       "notes": [
         "Render when a backend call returns 403 inside an admitted admin session; never relax the proxy role check."
+      ]
+    },
+    {
+      "id": "ADM-INVOICE-DETAIL",
+      "name": "Invoice detail (admin)",
+      "category": "admin",
+      "kind": "page",
+      "targetApplication": "admin-portal",
+      "route": {
+        "existing": null,
+        "proposed": "/invoices/[invoiceId]",
+        "type": "page",
+        "authBoundary": "admin (invoices.read; invoices.manage for actions)"
+      },
+      "design": {
+        "artboards": ["AdminInvoiceDetail"],
+        "variants": {
+          "viewports": ["desktop", "mobile", "print"],
+          "themes": ["dark", "light"],
+          "states": [],
+          "interactiveStates": []
+        },
+        "referenceFiles": [
+          {
+            "path": "5-invoices-and-receipts/AdminInvoiceDetail.html",
+            "blob": "9738e7c7c97b947c926b022635c18dd510aab123",
+            "viewport": "desktop",
+            "theme": "light"
+          },
+          {
+            "path": "5-invoices-and-receipts/AdminInvoiceDetailDark.html",
+            "blob": "89e119413cf64ebc413aa99c1ff28a0678629a2a",
+            "viewport": "desktop",
+            "theme": "dark"
+          },
+          {
+            "path": "5-invoices-and-receipts/AdminInvoiceDetailMobile.html",
+            "blob": "e02eb7196d7b39e39f6a665c550cc4442e313502",
+            "viewport": "mobile",
+            "theme": "light"
+          },
+          {
+            "path": "5-invoices-and-receipts/AdminInvoiceDetailMobileDark.html",
+            "blob": "e4e3fcdf4344e486100051b4a5a537d27d6e87d1",
+            "viewport": "mobile",
+            "theme": "dark"
+          }
+        ],
+        "editableArtboards": []
+      },
+      "implementation": {
+        "status": "Missing",
+        "classification": "D",
+        "files": [
+          "apps/admin-portal/src/features/admin-invoices/invoice-detail.tsx",
+          "apps/admin-portal/src/features/admin-invoices/invoices-model.ts",
+          "apps/admin-portal/src/features/admin-invoices/invoices-preview.fixtures.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-model.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-sections.tsx",
+          "packages/dashboard-ui/src/documents/billing-document.tsx"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-018 (design ad9386e): header with status and Print, the shared invoice document sheet, an invoice card (customer, subscription, payment, receipt; links only through ids and caller URL builders) with Resend and Download PDF disabled with their reason, and a history timeline; loading/error/not found/unavailable/forbidden states."
+        ]
+      },
+      "backend": {
+        "support": "Missing",
+        "operations": [],
+        "missingCapabilities": [
+          "Admin invoice detail with issuer, line items, totals, payment, receipt and history",
+          "Resend invoice/receipt and invoice PDF operations"
+        ]
+      },
+      "uiGaps": [
+        "No invoice or receipt entity, read, render, email or payment operation exists in the backend or api-client (DR-160)."
+      ],
+      "dependencies": ["ADM-INVOICES"],
+      "priority": "P3",
+      "roadmapTicket": "FE-UI-018",
+      "discrepancies": ["DR-070", "DR-160", "DR-161", "DR-162", "DR-164"],
+      "notes": [
+        "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
+      ]
+    },
+    {
+      "id": "ADM-INVOICES",
+      "name": "Invoices and receipts",
+      "category": "admin",
+      "kind": "page",
+      "targetApplication": "admin-portal",
+      "route": {
+        "existing": null,
+        "proposed": "/invoices",
+        "type": "page",
+        "authBoundary": "admin (invoices.read)"
+      },
+      "design": {
+        "artboards": ["AdminInvoices"],
+        "variants": {
+          "viewports": ["desktop", "mobile"],
+          "themes": ["dark", "light"],
+          "states": [],
+          "interactiveStates": []
+        },
+        "referenceFiles": [
+          {
+            "path": "5-invoices-and-receipts/AdminInvoices.html",
+            "blob": "716e97a655a7ef4e4f2938e69618d5f761cc28d3",
+            "viewport": "desktop",
+            "theme": "light"
+          },
+          {
+            "path": "5-invoices-and-receipts/AdminInvoicesDark.html",
+            "blob": "22364fcda255e51f8b3cdb1082cb73ff6fbc0734",
+            "viewport": "desktop",
+            "theme": "dark"
+          },
+          {
+            "path": "5-invoices-and-receipts/AdminInvoicesMobile.html",
+            "blob": "5c3d014c988d4de09ff1368ba396f60a19fb1f04",
+            "viewport": "mobile",
+            "theme": "light"
+          },
+          {
+            "path": "5-invoices-and-receipts/AdminInvoicesMobileDark.html",
+            "blob": "e42cda37836c7dcc0886d3e32aa2337564cce2d4",
+            "viewport": "mobile",
+            "theme": "dark"
+          }
+        ],
+        "editableArtboards": []
+      },
+      "implementation": {
+        "status": "Missing",
+        "classification": "D",
+        "files": [
+          "apps/admin-portal/src/features/admin-invoices/invoices-list.tsx",
+          "apps/admin-portal/src/features/admin-invoices/invoices-model.ts",
+          "apps/admin-portal/src/features/admin-invoices/invoices-preview.fixtures.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-model.ts",
+          "apps/admin-portal/src/features/admin-billing-shared/billing-sections.tsx"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-018 (design ad9386e): header with disabled Export CSV, four KPI tiles (unavailable until reported), disabled status and date-range filters with their reason, eight-column table with stacked phone rows and pager; loading/error/empty/unavailable/forbidden states. Rendered only by tests from typed fixtures; no route, navigation item or production import.",
+          "Rows link only through a detail URL built from the invoice id."
+        ]
+      },
+      "backend": {
+        "support": "Missing",
+        "operations": [],
+        "missingCapabilities": [
+          "Admin invoice search/list with status and date filters, totals and receipt numbers",
+          "Invoice KPI aggregates (invoiced, collected, outstanding, overdue)",
+          "Invoice CSV export"
+        ]
+      },
+      "uiGaps": [
+        "No invoice or receipt entity, read, render, email or payment operation exists in the backend or api-client (DR-160).",
+        "The reference adds an 'Invoices' item under Operations; production navigation stays Dashboard-only until the route and API exist (DR-163)."
+      ],
+      "dependencies": ["FE-UI-006", "Backend admin invoice API"],
+      "priority": "P3",
+      "roadmapTicket": "FE-UI-018",
+      "discrepancies": ["DR-070", "DR-160", "DR-162", "DR-163"],
+      "notes": [
+        "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
       ]
     },
     {
@@ -4528,6 +4699,157 @@
       ]
     },
     {
+      "id": "USR-INVOICE-DETAIL",
+      "name": "Invoice detail",
+      "category": "user",
+      "kind": "page",
+      "targetApplication": "user-portal",
+      "route": {
+        "existing": null,
+        "proposed": "/billing/invoices/[invoiceId]",
+        "type": "page",
+        "authBoundary": "authenticated (owner-scoped)"
+      },
+      "design": {
+        "artboards": ["UserInvoiceDetail", "PrintInvoice"],
+        "variants": {
+          "viewports": ["desktop", "mobile", "print"],
+          "themes": ["dark", "light"],
+          "states": ["due", "overdue", "paid"],
+          "interactiveStates": []
+        },
+        "referenceFiles": [
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetail-due.html",
+            "blob": "ab7bd526efe7e54b98f0f0ec2b3debb0f1bfe575",
+            "viewport": "desktop",
+            "theme": "light",
+            "state": "due"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetail-overdue.html",
+            "blob": "75089c005f7af406f17a6afc38ff6603ef97813d",
+            "viewport": "desktop",
+            "theme": "light",
+            "state": "overdue"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetail-paid.html",
+            "blob": "a41e278d7c27d5f2c0322515bfa12b86bd2c8f4b",
+            "viewport": "desktop",
+            "theme": "light",
+            "state": "paid"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetailDark-due.html",
+            "blob": "768920f1ee9fba92d8cf637318b74d416971978d",
+            "viewport": "desktop",
+            "theme": "dark",
+            "state": "due"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetailDark-overdue.html",
+            "blob": "4ef4393cce346d3bfdb01505e042b74ebf7de503",
+            "viewport": "desktop",
+            "theme": "dark",
+            "state": "overdue"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetailDark-paid.html",
+            "blob": "c29974b4fad7b6863b426f8f57792a7b15b47d39",
+            "viewport": "desktop",
+            "theme": "dark",
+            "state": "paid"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetailMobile-due.html",
+            "blob": "8aad76886a289ab06da1452c93028af6c79a39b2",
+            "viewport": "mobile",
+            "theme": "light",
+            "state": "due"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetailMobile-overdue.html",
+            "blob": "8f89f27e515d70493096226056cea20d6ecdbf2c",
+            "viewport": "mobile",
+            "theme": "light",
+            "state": "overdue"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetailMobile-paid.html",
+            "blob": "692816deb38d3c9ab97ec5007ffdb74f32c7e0f7",
+            "viewport": "mobile",
+            "theme": "light",
+            "state": "paid"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetailMobileDark-due.html",
+            "blob": "15eb9cc97c1bca48658247160a30d6f38f63d01d",
+            "viewport": "mobile",
+            "theme": "dark",
+            "state": "due"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetailMobileDark-overdue.html",
+            "blob": "980347673952fac5a84b1fa6d549118d5934aaec",
+            "viewport": "mobile",
+            "theme": "dark",
+            "state": "overdue"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserInvoiceDetailMobileDark-paid.html",
+            "blob": "c8afc9b94af8d6831d156dd42a67ff2d29d3bb1b",
+            "viewport": "mobile",
+            "theme": "dark",
+            "state": "paid"
+          },
+          {
+            "path": "5-invoices-and-receipts/PrintInvoice.html",
+            "blob": "7f7eea287447dada98eda2e8ca5883f6b5a5adfc",
+            "viewport": "print",
+            "theme": "light"
+          }
+        ],
+        "editableArtboards": []
+      },
+      "implementation": {
+        "status": "Missing",
+        "classification": "D",
+        "files": [
+          "apps/user-portal/src/features/billing-documents/invoice-detail-screen.tsx",
+          "apps/user-portal/src/features/billing-documents/billing-documents-model.ts",
+          "apps/user-portal/src/features/billing-documents/document-parts.tsx",
+          "apps/user-portal/src/features/billing-documents/billing-documents-preview.fixtures.ts",
+          "packages/dashboard-ui/src/documents/billing-document.tsx"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-018 (design ad9386e): one responsive, theme-aware composition (back link, header with Print and Download PDF, invoice document sheet, summary card) for the due, overdue and paid variants, derived from the backend status only; loading/error/not found/unavailable states. Rendered only by tests from typed fixtures; no route, navigation item or API call.",
+          "No Pay action; Download PDF and Email me a copy are disabled with a visible reason; Print uses the browser; View receipt links only with a real receipt id. Print CSS is scoped to pages containing the sheet: the shell, header and summary are hidden and the light document fills the page."
+        ]
+      },
+      "backend": {
+        "support": "Missing",
+        "operations": [],
+        "missingCapabilities": [
+          "Owner-scoped invoice read (number, status, issue/due dates, period, issuer and recipient, line items, subtotal, taxes, total, amount paid/due, payment and receipt reference)",
+          "Invoice ids on billing-history rows and purchase status",
+          "Invoice PDF, email copy and invoice payment operations"
+        ]
+      },
+      "uiGaps": [
+        "No invoice or receipt entity, read, render, email or payment operation exists in the backend or api-client (DR-160).",
+        "Reference issuer placeholders, legal footer, VAT copy, payment-method promises and page numbering are not rendered unless the document model supplies them (DR-161)."
+      ],
+      "dependencies": ["USR-BILLING-HISTORY", "Backend invoice read model"],
+      "priority": "P3",
+      "roadmapTicket": "FE-UI-018",
+      "discrepancies": ["DR-160", "DR-161", "DR-162", "DR-164"],
+      "notes": [
+        "Preview-only: fixtures are imported only by tests (enforced); overdue is never computed from the clock.",
+        "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
+      ]
+    },
+    {
       "id": "USR-NAV-MOBILE",
       "name": "User portal mobile navigation (top bar, tab bar, drawer)",
       "category": "user",
@@ -4845,7 +5167,7 @@
         ],
         "existingFunctionality": [
           "Purchase status card with polling, bank-transfer details and blocked/underpaid warnings.",
-          "UI implemented (Trello FE-UI-010): Details card and a timeline of recorded timestamps only; invoice/receipt buttons omitted until FE-UI-018 (DR-057)."
+          "UI implemented (Trello FE-UI-010): Details card and a timeline of recorded timestamps only; invoice/receipt buttons omitted: the purchase carries no invoice or receipt id and those screens are preview-only (DR-057, DR-160)."
         ]
       },
       "backend": {
@@ -4865,6 +5187,132 @@
       "roadmapTicket": "FE-UI-018",
       "discrepancies": ["DR-057", "DR-058"],
       "notes": []
+    },
+    {
+      "id": "USR-RECEIPT-DETAIL",
+      "name": "Receipt detail",
+      "category": "user",
+      "kind": "page",
+      "targetApplication": "user-portal",
+      "route": {
+        "existing": null,
+        "proposed": "/billing/receipts/[receiptId]",
+        "type": "page",
+        "authBoundary": "authenticated (owner-scoped)"
+      },
+      "design": {
+        "artboards": ["UserReceiptDetail", "PrintReceipt"],
+        "variants": {
+          "viewports": ["desktop", "mobile", "print"],
+          "themes": ["dark", "light"],
+          "states": ["subscription", "wallet"],
+          "interactiveStates": []
+        },
+        "referenceFiles": [
+          {
+            "path": "5-invoices-and-receipts/UserReceiptDetail-subscription.html",
+            "blob": "b0aa454e8dad437f85dc837a13886158c669d180",
+            "viewport": "desktop",
+            "theme": "light",
+            "state": "subscription"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserReceiptDetail-wallet.html",
+            "blob": "7c271f8b21d94e669fc06ef82ccef71e8f4e2abb",
+            "viewport": "desktop",
+            "theme": "light",
+            "state": "wallet"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserReceiptDetailDark-subscription.html",
+            "blob": "8adce5e38b47d43f376c84fac1d9061a6d6aaf16",
+            "viewport": "desktop",
+            "theme": "dark",
+            "state": "subscription"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserReceiptDetailDark-wallet.html",
+            "blob": "40f41f0dc263b1e5a141fa38cce6cfd83190c771",
+            "viewport": "desktop",
+            "theme": "dark",
+            "state": "wallet"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserReceiptDetailMobile-subscription.html",
+            "blob": "754da670d06122e46efa1eddd625b1e627b1f6d3",
+            "viewport": "mobile",
+            "theme": "light",
+            "state": "subscription"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserReceiptDetailMobile-wallet.html",
+            "blob": "b90e7c0e99c0e625acfc334e1a594902c72ccd8d",
+            "viewport": "mobile",
+            "theme": "light",
+            "state": "wallet"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserReceiptDetailMobileDark-subscription.html",
+            "blob": "53e509732558b80e84d3f4e15212d70cc3e5304b",
+            "viewport": "mobile",
+            "theme": "dark",
+            "state": "subscription"
+          },
+          {
+            "path": "5-invoices-and-receipts/UserReceiptDetailMobileDark-wallet.html",
+            "blob": "a4025bdc1d0d84b96e627a93dc9dfbfb5e5b5787",
+            "viewport": "mobile",
+            "theme": "dark",
+            "state": "wallet"
+          },
+          {
+            "path": "5-invoices-and-receipts/PrintReceipt.html",
+            "blob": "81dfb7352da8b20a798aae89a53573836f64cc6a",
+            "viewport": "print",
+            "theme": "light"
+          }
+        ],
+        "editableArtboards": []
+      },
+      "implementation": {
+        "status": "Missing",
+        "classification": "D",
+        "files": [
+          "apps/user-portal/src/features/billing-documents/receipt-detail-screen.tsx",
+          "apps/user-portal/src/features/billing-documents/billing-documents-model.ts",
+          "apps/user-portal/src/features/billing-documents/document-parts.tsx",
+          "apps/user-portal/src/features/billing-documents/billing-documents-preview.fixtures.ts",
+          "packages/dashboard-ui/src/documents/billing-document.tsx"
+        ],
+        "existingFunctionality": [
+          "Trello FE-UI-018 (design ad9386e): one composition for subscription and wallet receipts (amount paid, paid time, parties, method, reference, line items, totals, payment card); the 'For' row links an invoice only by its id. Rendered only by tests from typed fixtures; no route, navigation item or API call.",
+          "A successful purchase or wallet top-up is never shown as a receipt; Download PDF and Email me a copy are disabled with a visible reason."
+        ]
+      },
+      "backend": {
+        "support": "Missing",
+        "operations": [],
+        "missingCapabilities": [
+          "Owner-scoped receipt read (number, status, amount, paid time, method, reference, issuer and payer, line items, totals, related invoice or wallet transaction)",
+          "Receipt ids on billing-history, purchase status and wallet transaction rows",
+          "Receipt PDF and email copy operations"
+        ]
+      },
+      "uiGaps": [
+        "No invoice or receipt entity, read, render, email or payment operation exists in the backend or api-client (DR-160)."
+      ],
+      "dependencies": [
+        "USR-BILLING-HISTORY",
+        "USR-WALLET",
+        "Backend receipt read model"
+      ],
+      "priority": "P3",
+      "roadmapTicket": "FE-UI-018",
+      "discrepancies": ["DR-160", "DR-161", "DR-162", "DR-164"],
+      "notes": [
+        "Preview-only: fixtures are imported only by tests (enforced).",
+        "Backend capabilities deferred to BE-DS-007 (https://trello.com/c/8JZSDXfH)."
+      ]
     },
     {
       "id": "USR-SECURITY",
@@ -5547,7 +5995,7 @@
       },
       "uiGaps": [
         "List rows expose title/category/type/amount/timestamp only; reference columns Provider, Reference, Status are unsupported.",
-        "No production route, navigation item or data adapter until the wallet read model exists (BE-DS-005); Receipt column waits for FE-UI-018."
+        "No production route, navigation item or data adapter until the wallet read model exists (BE-DS-005); the Receipt column stays omitted: rows carry no receipt id and receipts are preview-only (FE-UI-018, DR-160)."
       ],
       "dependencies": ["Backend wallet read model", "FE-UI-006"],
       "priority": "P3",

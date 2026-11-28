@@ -4,11 +4,11 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
 /**
- * User Portal interaction tests in a real browser (`*.browser.test.tsx`,
- * `pnpm test:component`): form input, confirmation lifecycles, pending
- * state and stale-data handling that static rendering cannot exercise.
- * Feature compositions only; no route, session or network. Not part of
- * `pnpm test` (CI has no browser yet, OD-05).
+ * User Portal feature compositions in a real browser (`*.browser.test.tsx`,
+ * `pnpm test:component`): form input, confirmation lifecycles, pending and
+ * stale-data handling, responsive layout, themes and print media with the
+ * production stylesheet. Feature compositions only; no route, session or
+ * network. Not part of `pnpm test` (CI has no browser yet, OD-05).
  */
 export default defineConfig({
   css: { postcss: { plugins: [tailwindcss()] } },

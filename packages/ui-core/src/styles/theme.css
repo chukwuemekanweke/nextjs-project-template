@@ -307,6 +307,35 @@
     --elevation-sm: none;
     --elevation-lg: 0 16px 40px rgb(0 0 0 / 0.5);
   }
+
+  /* Light paper inside a dark page (`class="theme-light"`, the billing
+     document sheet): restates only the light values paper content uses
+     (surfaces, border, text, brand, status, elevation). The values come from
+     `@theme static` above; theme.test.ts keeps them equal. `dark:` variants
+     still match inside, so this content must not use them. */
+  .theme-light {
+    color-scheme: light;
+
+    --color-surface: var(--palette-slate-0);
+    --color-surface-2: var(--palette-slate-25);
+    --color-border: var(--palette-slate-200);
+    --color-fg: var(--palette-slate-900);
+    --color-fg-muted: var(--palette-slate-600);
+    --color-fg-subtle: var(--palette-slate-500);
+    --color-brand: var(--palette-blue-500);
+    --color-on-brand: var(--palette-white);
+    --color-success: var(--palette-green-700);
+    --color-success-bg: var(--palette-green-50);
+    --color-warning: var(--palette-amber-700);
+    --color-warning-bg: var(--palette-amber-50);
+    --color-danger: var(--palette-red-700);
+    --color-danger-bg: var(--palette-red-50);
+    --color-info: var(--palette-blue-600);
+    --color-info-bg: var(--palette-blue-50);
+    --color-neutral: var(--palette-slate-600);
+    --color-neutral-bg: var(--palette-slate-75);
+    --elevation-lg: 0 12px 32px rgb(16 24 40 / 0.14);
+  }
 }
 
 @theme inline {
@@ -486,6 +515,19 @@
     font-family: var(--font-sans);
     font-size: var(--text-body);
     line-height: var(--text-body--line-height);
+  }
+
+  /* Only pages that print paper-like content (`data-print-paper`, the
+     billing document sheet) print on light paper in every theme; other
+     pages keep the default print behaviour. */
+  @media print {
+    :root:has([data-print-paper]) {
+      color-scheme: light;
+    }
+
+    body:has([data-print-paper]) {
+      background-color: transparent;
+    }
   }
 
   :where(code, kbd, samp, pre) {
