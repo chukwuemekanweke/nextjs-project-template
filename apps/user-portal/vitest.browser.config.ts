@@ -4,10 +4,11 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
 /**
- * Feature compositions in a real browser (`*.browser.test.tsx`,
- * `pnpm test:component`): responsive layout, themes and print media with
- * the production stylesheet. Feature compositions only; no route, session
- * or network. Not part of `pnpm test` (CI has no browser yet, OD-05).
+ * User Portal feature compositions in a real browser (`*.browser.test.tsx`,
+ * `pnpm test:component`): form input, confirmation lifecycles, pending and
+ * stale-data handling, responsive layout, themes and print media with the
+ * production stylesheet. Feature compositions only; no route, session or
+ * network. Not part of `pnpm test` (CI has no browser yet, OD-05).
  */
 export default defineConfig({
   css: { postcss: { plugins: [tailwindcss()] } },
@@ -15,6 +16,10 @@ export default defineConfig({
   optimizeDeps: {
     include: [
       // Dependencies of workspace packages, pre-bundled through them.
+      "@template/forms > @hookform/resolvers/zod",
+      "@template/forms > react-hook-form",
+      "@template/api-react > @tanstack/react-query",
+      "@template/api-react > @tanstack/react-query-devtools",
       "@template/ui-core > class-variance-authority",
       "@template/ui-core > clsx",
       "@template/ui-core > lucide-react",
@@ -24,6 +29,7 @@ export default defineConfig({
       "react-dom",
       "react/jsx-dev-runtime",
       "vitest-browser-react",
+      "zod",
     ],
   },
   resolve: {

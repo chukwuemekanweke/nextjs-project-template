@@ -31,7 +31,9 @@ retry policy, and reusable invalidation.
   (see subscriptions) so different billing contexts never share cache entries.
 - Status polling uses TanStack `refetchInterval` driven by backend flags plus a
   client-side bound, not custom timers; stop polling after a failed read.
-- Mutations do not retry by default. Domain mutation options may invalidate or
+- Mutations do not retry by default. Mutations carrying one-time secrets
+  (two-factor setup/proof, password-reset codes and passwords) set
+  `gcTime: 0`; password-reset options also pin `retry: false`. Domain mutation options may invalidate or
   clear well-defined shared caches (for example profile updates and logout).
 - `ApiProvider` supplies the API client and query client to applications.
 

@@ -1,3 +1,5 @@
+import { FORGOT_PASSWORD_PATH } from "./public-paths";
+
 export const DEFAULT_SIGN_IN_DESTINATION = "/dashboard";
 
 /** Why confirmation is shown outside registration (presentation only). */
@@ -57,6 +59,11 @@ export function createSignInHref({
   returnTo,
 }: Readonly<{ email?: string; returnTo?: string }> = {}): string {
   return withAuthenticationParameters("/sign-in", { email, returnTo });
+}
+
+/** Password-recovery link that keeps a non-default, validated destination. */
+export function createForgotPasswordHref(returnTo?: string): string {
+  return withAuthenticationParameters(FORGOT_PASSWORD_PATH, { returnTo });
 }
 
 /** Registration link that keeps a non-default, validated destination. */

@@ -55,8 +55,8 @@ export function SignInForm({
   /** Shows the "email confirmed" notice (validated `confirmed=true`). */
   emailConfirmed?: boolean;
   /**
-   * Password-recovery entry point on the password label row. Rendered only
-   * when supplied: the recovery route ships with FE-UI-020.
+   * Password-recovery entry point on the password label row (the public
+   * `/forgot-password` email-code flow). Rendered only when supplied.
    */
   forgotPasswordHref?: string;
   googleClientId: string;

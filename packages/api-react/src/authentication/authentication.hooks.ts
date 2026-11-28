@@ -10,6 +10,7 @@ import { useApiClient } from "../query-client/api-provider";
 import {
   changePasswordMutationOptions,
   checkEmailExistenceMutationOptions,
+  completePasswordResetMutationOptions,
   completePasskeyRegistrationMutationOptions,
   createPasskeyRegistrationOptionsMutationOptions,
   removePasskeyMutationOptions,
@@ -18,6 +19,7 @@ import {
   disableTwoFactorMutationOptions,
   regenerateRecoveryCodesMutationOptions,
   requestEmailConfirmationCodeMutationOptions,
+  requestPasswordResetMutationOptions,
   revokeOtherSessionsMutationOptions,
   revokeSessionMutationOptions,
   signInMutationOptions,
@@ -70,6 +72,14 @@ export const useSignUp = () =>
 export const useRequestEmailConfirmationCode = () =>
   useMutation(
     requestEmailConfirmationCodeMutationOptions(useApiClient().authentication),
+  );
+export const useRequestPasswordReset = () =>
+  useMutation(
+    requestPasswordResetMutationOptions(useApiClient().authentication),
+  );
+export const useCompletePasswordReset = () =>
+  useMutation(
+    completePasswordResetMutationOptions(useApiClient().authentication),
   );
 export function useLogout() {
   const api = useApiClient();

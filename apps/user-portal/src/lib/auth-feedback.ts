@@ -2,6 +2,7 @@ import {
   GOOGLE_AUTH_ERROR_CODES,
   type GoogleAuthenticationError,
 } from "./google-authentication";
+import type { PasswordResetFailure } from "./password-reset";
 import { safeSignInError } from "./sign-in";
 
 /**
@@ -110,3 +111,53 @@ export function twoFactorFeedback({
   }
   return { message, title: "Verification unavailable", variant: "error" };
 }
+
+/**
+ * Password-reset feedback. Copy never reveals whether an account exists,
+ * how many attempts remain or how long a limit lasts: the backend returns
+ * none of that, and the first would enable account enumeration.
+ */
+export function passwordResetFeedback(
+  failure: Exclude<PasswordResetFailure, "validation">,
+  operation: "complete" | "request" | "resend",
+): AuthFeedback {
+  if (failure === "invalid_code") {
+    return {
+      message:
+        "It's wrong, expired or already used. Use Resend code to get a new one.",
+      title: "That code didn't work",
+      variant: "error",
+    };
+  }
+  if (failure === "rate_limited") {
+    return {
+      message: "Please wait a few minutes before trying again.",
+      title: "Too many requests",
+      variant: "warning",
+    };
+  }
+  // A lost response does not show whether the backend applied the reset.
+  return operation === "complete"
+    ? {
+        message:
+          "Check your connection, then try signing in with your new password. If that doesn't work, try again or request a new code.",
+        title: "We couldn't confirm your password reset",
+        variant: "error",
+      }
+    : {
+        message: "Check your connection and try again.",
+        title: "We couldn't send a code",
+        variant: "error",
+      };
+}
+
+/**
+ * A repeated request is accepted even when nothing is sent: while an earlier
+ * code is still valid the backend keeps it instead of issuing a new one.
+ */
+export const passwordResetResentFeedback: AuthFeedback = {
+  message:
+    "If an account uses this address, we'll email it a code. An earlier code that hasn't expired stays valid, so use the most recent one you received.",
+  title: "Code requested",
+  variant: "info",
+};

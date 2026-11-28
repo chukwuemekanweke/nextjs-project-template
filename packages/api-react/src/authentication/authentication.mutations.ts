@@ -96,10 +96,17 @@ export const signUpMutationOptions = (client: AuthenticationClient) =>
     mutationFn: (request: Parameters<AuthenticationClient["signUp"]>[0]) =>
       client.signUp(request),
   });
+/**
+ * Password-reset mutations carry an email, a one-time code and new
+ * passwords: `gcTime: 0` drops their variables as soon as no observer needs
+ * them, and they never retry (a retry could replay a consumed code).
+ */
 export const requestPasswordResetMutationOptions = (
   client: AuthenticationClient,
 ) =>
   mutationOptions({
+    gcTime: 0,
+    retry: false,
     mutationKey: authenticationKeys.mutation("request-password-reset"),
     mutationFn: (
       request: Parameters<AuthenticationClient["requestPasswordReset"]>[0],
@@ -109,6 +116,8 @@ export const completePasswordResetMutationOptions = (
   client: AuthenticationClient,
 ) =>
   mutationOptions({
+    gcTime: 0,
+    retry: false,
     mutationKey: authenticationKeys.mutation("complete-password-reset"),
     mutationFn: (
       request: Parameters<AuthenticationClient["completePasswordReset"]>[0],

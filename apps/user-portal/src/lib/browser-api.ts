@@ -47,6 +47,21 @@ const TWO_FACTOR_BFF_ROUTES = new Map<string, string>([
     `${TWO_FACTOR_BFF_PATH}/disable`,
   ],
 ]);
+/**
+ * Anonymous password-reset operations still use the same-origin BFF so the
+ * email, one-time code and new password never go to a browser-built backend
+ * URL, and the BFF can apply its enumeration-safe responses.
+ */
+const PASSWORD_RESET_BFF_ROUTES = new Map<string, string>([
+  [
+    authenticationOperations.requestPasswordReset.path,
+    "/api/auth/password-resets",
+  ],
+  [
+    authenticationOperations.completePasswordReset.path,
+    "/api/auth/password-resets/completions",
+  ],
+]);
 const COMPLETE_AVATAR_UPLOAD_PATH =
   /^\/api\/v1\/stakeholders\/me\/profile\/avatar\/uploads\/([^/]+)\/complete$/;
 const BILLING_BFF_PREFIX = "/api/billing";
@@ -99,6 +114,15 @@ export function createUserPortalBrowserApi({
     defaultHeaders: { [TENANT_ID_HEADER]: tenantId },
     fetch: (input, init) => {
       const requestUrl = new URL(input.toString());
+      const passwordResetRoute = PASSWORD_RESET_BFF_ROUTES.get(
+        requestUrl.pathname,
+      );
+      if (passwordResetRoute && init?.method === "POST") {
+        return fetchImplementation(passwordResetRoute, {
+          ...init,
+          credentials: "same-origin",
+        });
+      }
       if (
         init?.method === authenticationOperations.changePassword.method &&
         requestUrl.pathname === authenticationOperations.changePassword.path

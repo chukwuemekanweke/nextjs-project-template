@@ -16,6 +16,7 @@ code_refs:
     apps/user-portal/src/lib/passkey-*.ts,
     apps/user-portal/src/app/api/auth/passkey/**,
     apps/user-portal/src/proxy.ts,
+    apps/user-portal/src/lib/public-paths.ts,
     apps/user-portal/src/app/api/auth/session/**,
     apps/admin-portal/src/lib/session-*.ts,
     apps/admin-portal/src/proxy.ts,
@@ -60,6 +61,11 @@ token, clears the flow cookie after every attempt (the backend consumes it),
 and reuses the two-factor challenge cookie or `setSessionCookies`. The passkey
 endpoint names expiry `accessTokenExpiresAtUtc`; `passkeySessionTokens` adapts
 it to `SessionTokenResponse` rather than introducing a second session format.
+
+The User Portal proxy admits only the exact public pages in
+`src/lib/public-paths.ts` (sign-in, two-factor, register, confirm-email,
+forgot-password); add pages there, never by widening the matcher. Password
+reset BFF routes are anonymous, `no-store`, and never set or clear cookies.
 
 Protected-route proxies validate access-token time claims and refresh from the
 refresh cookie when needed. Refreshes are deduplicated per refresh token.
