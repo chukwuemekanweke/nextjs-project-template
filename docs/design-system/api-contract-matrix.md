@@ -44,7 +44,7 @@ The backend was not run. Its OpenAPI document was not generated, and no endpoint
 | Backend endpoints at `1fcad50`                                  | 100 (95 non-webhook + 5 provider webhooks)                                                            |
 | Non-webhook backend endpoints referenced by at least one action | **95 / 95**                                                                                           |
 | Frontend `api-client` operations                                | 48; all 48 match a backend method and path                                                            |
-| Gaps                                                            | 26: blocker 2 · high 5 · medium 10 · low 9                                                            |
+| Gaps                                                            | 27: blocker 2 · high 5 · medium 11 · low 9                                                            |
 
 ## Drift summary
 
@@ -69,7 +69,7 @@ The backend was not run. Its OpenAPI document was not generated, and no endpoint
 - **Passkeys.** The browser uses WebAuthn JSON wire shapes. Base64url conversion lives in `@template/api-client/browser`. Sign-in options and completion go through the BFF only, with a single-use flow cookie.
 - **Session revocation.** Customers can revoke one session or all other sessions. A password-reset completion revokes all sessions on the backend (`CompletePasswordResetHandler.cs:59`) and returns no tokens.
 - **Lockout, rate limits and enumeration.** The backend sends 423 for a lockout with no duration. Rate-limit policies cover sign-in, sign-up, email operations, password reset, refresh and two-factor. Email-existence checks enumerate by design. A password-reset request for an unknown email returns 404, and the BFF folds that into the accepted response ([GAP-017-020](./integration-handoff.md#gap-017-020), BE-DS-006).
-- **Password reset.** The request body is `{email}`. The completion body is `{email, otp, password, confirmPassword}`. There is no standalone OTP verification endpoint, and none is used. Invalid, expired and used codes all return one 400 problem without a stable code. The backend returns no resend cooldown or expiry.
+- **Password reset.** The request body is `{email}`. The completion body is `{email, otp, password, confirmPassword}`. There is no standalone OTP verification endpoint, and none is used. Invalid, expired and used codes all return one 400 problem without a stable code. The backend returns no resend cooldown or expiry. The request BFF's accepted 202 body still differs between known emails (the backend message, "…a password reset OTP will be sent shortly.", `PasswordResetsController.cs:49`) and unknown emails (the BFF's fixed "…a password reset code will be sent shortly."), so the network response enumerates accounts even though the on-screen copy is identical ([GAP-017-027](./integration-handoff.md#gap-017-027), medium, frontend BFF: always return the fixed message).
 - **AuthStates.** Real outcomes are mapped in `auth-feedback.ts` and `sign-in-feedback.ts`. Attempt counts and lockout durations are not supported and are recorded as gaps ([GAP-017-021](./integration-handoff.md#gap-017-021)).
 - **Avatar.** The flow is create (BFF), then a direct storage `PUT` with the server-supplied method and headers and `credentials: "omit"`, with no app auth, tenant or correlation headers (`avatar-upload.ts:24-28`), then complete with the `uploadId` (BFF). The backend validates the upload at completion: 400 for expired or invalid, 409 if the upload changed.
 - **Preferences and dashboard.** Theme is stored on the device. The backend preference API (`theme`, `language`) exists but is not used ([GAP-017-018](./integration-handoff.md#gap-017-018)). The dashboard tiles read profile, subscription, two-factor, passkeys, sessions and billing history. The wallet tile is unavailable.
@@ -208,8 +208,18 @@ The inventory legend defines `backend.support` as "judged from handwritten api-c
 
 For `ADM-*` screens whose `backend.operations` is empty, add the endpoint keys from the matrix's `endpointCatalogue`, using the inventory's existing `"<operation> <METHOD> <path>"` style and `(not integrated)` in place of an operation name. Two related inventory issues are outside B's ownership, so they are left to the lead and FE-UI-016:
 
-- `implementation.status` is `Missing` for screens whose preview composition exists, including `ADM-ALLOCATE`, `ADM-USERS`, `ADM-PLANS`, `USR-VERIFICATION` and `USR-WALLET`.
+- `implementation.status` is `Missing` for screens whose preview composition exists. On the FE-UI-016 branch, `qa.deployedRoute` is the field that says whether a production route exists, so use it, not `implementation.status`, when deciding whether an integration may publish a route. Screens affected include including `ADM-ALLOCATE`, `ADM-USERS`, `ADM-PLANS`, `USR-VERIFICATION` and `USR-WALLET`.
 - `roadmapTicket` uses roadmap numbering. For example, `USR-SECURITY` has roadmap FE-UI-017 ("Security"), which collides with Trello FE-UI-017 (this mapping) ([GAP-017-023](./integration-handoff.md#gap-017-023)).
+
+## Reconciliation with FE-UI-016
+
+These notes reconcile FE-UI-016 (`4af73eb` on `feat/fe-ui-016-final-visual-qa`, not yet on main). The DR IDs that are new on that branch depend on FE-UI-016 merging.
+
+- **`/forgot-password` layout.** `AUTH-FORGOT-PASSWORD` and `AUTH-RESET-PASSWORD` now render in the standalone auth layout, like `/sign-in`, instead of inside the signed-in dashboard shell (`apps/user-portal/src/lib/user-layout.ts`; DR-167, which depends on FE-UI-016). No matrix entry referred to the shell or navigation for these screens. The route, the BFF calls (`POST /api/auth/password-resets` and `/completions`), the actions and the states are unchanged. The two actions now carry a note recording the delta.
+- **Inventory format.** On that branch, every inventory record gains a `qa` block (`surface`, `deployedRoute`), `design.editableArtboards` becomes `design.exportCopies`, and the reference blobs point at `ad9386e`. The matrix reads only `design.artboards` and `design.variants`, which are unchanged, and the screen IDs are identical (62), so the design-reference fields and the join are unaffected. The patch proposal adds `backend.endpointStatus` and `backend.contractMatrix` and touches no FE-UI-016 field. Where it mentions `implementation.status`, `qa.deployedRoute` is now the authority for whether a production route exists.
+- **Password-reset response bodies.** FE-UI-016's open item is verified at backend `1fcad50` and recorded as [GAP-017-027](./integration-handoff.md#gap-017-027).
+- **`MKT-HOME`.** FE-UI-016's CTA contrast fix is presentation only. The proposal to mark this screen "Not required" still stands.
+- **Discrepancy IDs.** The DR IDs cited here (DR-003, 016, 019, 033, 051, 054, 070–074, 089, 160) exist both on main and on the FE-UI-016 branch. FE-UI-016 adds DR-165 to DR-176 and resolves DR-083 and DR-085. This matrix cites none of those except DR-167 above.
 
 ## BE-DS-001
 

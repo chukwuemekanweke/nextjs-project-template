@@ -8,12 +8,12 @@ Baselines: frontend `79642f8`, backend `1fcad50`, design `ad9386e`.
 
 ## Summary
 
-| Severity | Gaps                                                                                                                                                                                                                                                                                                                                                                  |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Blocker  | [002](#gap-017-002) admin step-up MFA, [003](#gap-017-003) admin MFA sign-in                                                                                                                                                                                                                                                                                          |
-| High     | [001](#gap-017-001) stale OpenAPI, [004](#gap-017-004) admin admission and permissions, [005](#gap-017-005) admin dashboard, [006](#gap-017-006) admin users, [017](#gap-017-017) customer KYC                                                                                                                                                                        |
-| Medium   | [007](#gap-017-007) admin KYC, [008](#gap-017-008) admin payments, [009](#gap-017-009) admin subscriptions, plans and allocation, [010](#gap-017-010) analytics, [011](#gap-017-011) audit, [012](#gap-017-012) providers, [016](#gap-017-016) invoices and receipts, [018](#gap-017-018) preferences, [019](#gap-017-019) wallet, [020](#gap-017-020) password reset |
-| Low      | [013](#gap-017-013), [014](#gap-017-014), [015](#gap-017-015), [021](#gap-017-021), [022](#gap-017-022), [023](#gap-017-023), [024](#gap-017-024), [025](#gap-017-025), [026](#gap-017-026)                                                                                                                                                                           |
+| Severity | Gaps                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Blocker  | [002](#gap-017-002) admin step-up MFA, [003](#gap-017-003) admin MFA sign-in                                                                                                                                                                                                                                                                                                                                          |
+| High     | [001](#gap-017-001) stale OpenAPI, [004](#gap-017-004) admin admission and permissions, [005](#gap-017-005) admin dashboard, [006](#gap-017-006) admin users, [017](#gap-017-017) customer KYC                                                                                                                                                                                                                        |
+| Medium   | [007](#gap-017-007) admin KYC, [008](#gap-017-008) admin payments, [009](#gap-017-009) admin subscriptions, plans and allocation, [010](#gap-017-010) analytics, [011](#gap-017-011) audit, [012](#gap-017-012) providers, [016](#gap-017-016) invoices and receipts, [018](#gap-017-018) preferences, [019](#gap-017-019) wallet, [020](#gap-017-020) password reset, [027](#gap-017-027) reset BFF body enumeration |
+| Low      | [013](#gap-017-013), [014](#gap-017-014), [015](#gap-017-015), [021](#gap-017-021), [022](#gap-017-022), [023](#gap-017-023), [024](#gap-017-024), [025](#gap-017-025), [026](#gap-017-026)                                                                                                                                                                                                                           |
 
 **Blockers versus enhancements.** GAP-017-002 and GAP-017-003 together block every privileged admin mutation. Two more gaps carry the "blocks the dependent capability" flag because their capability cannot ship without backend work: GAP-017-016 (invoices and receipts, BE-DS-007) and GAP-017-019 (wallet, BE-DS-005). GAP-017-009 is not flagged, but its missing tenant directory blocks the allocation tenant picker. Every admin **read** integration, plus customer KYC and preferences, is an enhancement that the backend already supports and that can start now.
 
@@ -21,7 +21,7 @@ Baselines: frontend `79642f8`, backend `1fcad50`, design `ad9386e`.
 
 1. **GAP-017-001: refresh the OpenAPI reference** (separately authorized `pnpm sync:openapi` against backend `1fcad50` or later). This makes the later contract diffs reviewable.
 2. **Admin reads, no step-up needed:** GAP-017-005 (dashboard) → GAP-017-006 (users and roles, reads only), GAP-017-007, GAP-017-008, GAP-017-010 and GAP-017-011. Decide GAP-017-004 (admission and per-section 403) first, or alongside.
-3. **Customer:** GAP-017-017 (KYC, CAF-FE-006) can run in parallel with step 2. GAP-017-018 (preferences) follows its product decision.
+3. **Customer:** GAP-017-027 (fixed reset BFF body; small, ship first). GAP-017-017 (KYC, CAF-FE-006) can run in parallel with step 2. GAP-017-018 (preferences) follows its product decision.
 4. **Admin security foundation:** GAP-017-003 (MFA sign-in), then GAP-017-002 (step-up), together with GAP-017-012 (provider operation drift).
 5. **Admin mutations:** users, roles and sessions (GAP-017-006), then subscriptions, plans and allocation (GAP-017-009) and providers (GAP-017-012).
 6. **Backend-led:** BE-DS-005 (wallet), BE-DS-006 (password reset), BE-DS-007 (invoices and receipts), BE-DS-008 (notifications), the tenant directory, admin health and reference-data management.
@@ -392,6 +392,19 @@ Apply only after reconciling with FE-UI-016 and after confirming each card exist
 - **Sequencing:** Backend-led.
 - **Existing tickets:** none found.
 - **Affected actions:** `USR-BILLING.cancel-at-period-end`, `USR-BILLING-HISTORY.filter-billing-history`, `USR-BILLING-HISTORY.export-billing-history`, `USR-BILLING-HISTORY.open-row-detail`.
+
+### <a id="gap-017-027"></a>GAP-017-027: Password-reset request BFF body reveals whether the email exists
+
+- **Severity:** medium (not a blocker). **Kind:** security. **Owner:** frontend (BFF).
+- **Observed:** On a known email the BFF passes through the backend 202 body {message: 'If the account is eligible, a password reset OTP will be sent shortly.'} (PasswordResetsController.cs:49); on an unknown email it converts the backend 404 into 202 with its own fixed PASSWORD_RESET_ACCEPTED_MESSAGE 'If the account is eligible, a password reset code will be sent shortly.' (password-reset-bff.ts:20-21). Status codes match and on-screen copy is identical, but the HTTP bodies differ ('OTP' vs 'code'), so the response still enumerates accounts to anyone reading the network response. Raised as an open item by FE-UI-016.
+- **Desired:** The request BFF always returns the fixed accepted message (never the backend body) for both outcomes; the completion BFF likewise returns fixed bodies.
+- **Evidence:** `apps/user-portal/src/app/api/auth/password-resets/route.ts`, `apps/user-portal/src/lib/password-reset-bff.ts:20-21`, `src/BackendProjectTemplate.WebAPI/Features/Authentication/PasswordResets/PasswordResetsController.cs:49@1fcad50`.
+- **Prerequisite:** None (independent of BE-DS-006, which removes the backend 404).
+- **Acceptance criteria:** Known and unknown emails produce byte-identical 202 response bodies and the same headers from the BFF.
+- **Tests:** BFF route test asserting identical bodies for backend 202 and backend 404.
+- **Sequencing:** Small frontend fix; can ship before BE-DS-006.
+- **Existing tickets:** BE-DS-006 (related backend enumeration; status unverified); FE-UI-020 (owner of the reset BFF).
+- **Affected actions:** `AUTH-FORGOT-PASSWORD.request-reset-code`.
 
 ### <a id="gap-017-026"></a>GAP-017-026: Public contact form has no backend
 

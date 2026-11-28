@@ -6592,11 +6592,13 @@
           "evidence": [
             "apps/user-portal/src/app/forgot-password/forgot-password-flow.tsx",
             "apps/user-portal/src/lib/password-reset.ts",
-            "apps/user-portal/src/lib/password-reset-bff.ts",
+            "apps/user-portal/src/lib/password-reset-bff.ts:20-21",
+            "src/BackendProjectTemplate.WebAPI/Features/Authentication/PasswordResets/PasswordResetsController.cs:49@1fcad50",
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/PasswordResets/PasswordResetsController.cs:26@1fcad50"
           ],
-          "gapIds": ["GAP-017-020"],
-          "followUp": "BE-DS-006"
+          "gapIds": ["GAP-017-020", "GAP-017-027"],
+          "followUp": "BE-DS-006",
+          "note": "Reconciled with FE-UI-016 (4af73eb, DR-167): /forgot-password now renders in the standalone auth layout instead of the dashboard shell; route, BFF calls, actions and states unchanged. The accepted 202 body differs between known and unknown emails (GAP-017-027)."
         },
         {
           "id": "AUTH-FORGOT-PASSWORD.change-email",
@@ -7433,7 +7435,8 @@
             "src/BackendProjectTemplate.WebAPI/Features/Authentication/PasswordResets/PasswordResetsController.cs:53@1fcad50"
           ],
           "gapIds": ["GAP-017-020"],
-          "followUp": "BE-DS-006"
+          "followUp": "BE-DS-006",
+          "note": "Reconciled with FE-UI-016 (4af73eb, DR-167): standalone auth layout; contract unchanged."
         },
         {
           "id": "AUTH-RESET-PASSWORD.resend-reset-code",
@@ -12679,6 +12682,34 @@
       "ticketStatusVerified": false
     },
     {
+      "id": "GAP-017-027",
+      "severity": "medium",
+      "kind": "security",
+      "title": "Password-reset request BFF body reveals whether the email exists",
+      "owner": "frontend (BFF)",
+      "observed": "On a known email the BFF passes through the backend 202 body {message: 'If the account is eligible, a password reset OTP will be sent shortly.'} (PasswordResetsController.cs:49); on an unknown email it converts the backend 404 into 202 with its own fixed PASSWORD_RESET_ACCEPTED_MESSAGE 'If the account is eligible, a password reset code will be sent shortly.' (password-reset-bff.ts:20-21). Status codes match and on-screen copy is identical, but the HTTP bodies differ ('OTP' vs 'code'), so the response still enumerates accounts to anyone reading the network response. Raised as an open item by FE-UI-016.",
+      "desired": "The request BFF always returns the fixed accepted message (never the backend body) for both outcomes; the completion BFF likewise returns fixed bodies.",
+      "evidence": [
+        "apps/user-portal/src/app/api/auth/password-resets/route.ts",
+        "apps/user-portal/src/lib/password-reset-bff.ts:20-21",
+        "src/BackendProjectTemplate.WebAPI/Features/Authentication/PasswordResets/PasswordResetsController.cs:49@1fcad50"
+      ],
+      "prerequisite": "None (independent of BE-DS-006, which removes the backend 404).",
+      "acceptanceCriteria": [
+        "Known and unknown emails produce byte-identical 202 response bodies and the same headers from the BFF."
+      ],
+      "tests": [
+        "BFF route test asserting identical bodies for backend 202 and backend 404."
+      ],
+      "sequencing": "Small frontend fix; can ship before BE-DS-006.",
+      "relatedTickets": [
+        "BE-DS-006 (related backend enumeration; status unverified)",
+        "FE-UI-020 (owner of the reset BFF)"
+      ],
+      "blocker": false,
+      "ticketStatusVerified": false
+    },
+    {
       "id": "GAP-017-026",
       "severity": "low",
       "kind": "product",
@@ -12725,11 +12756,11 @@
       "local-static": 10,
       "live": 21
     },
-    "gaps": 26,
+    "gaps": 27,
     "gapsBySeverity": {
       "high": 5,
       "blocker": 2,
-      "medium": 10,
+      "medium": 11,
       "low": 9
     },
     "backendEndpoints": 100,
