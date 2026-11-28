@@ -57,7 +57,14 @@ durable boundaries and pure behavior rather than broad browser rendering:
   `renderToStaticMarkup`; browser tests
   (`dashboard-shell.browser.test.tsx`) cover the drawer (focus trap/return,
   Escape, scrim, nav selection, scroll lock, closing at `lg`), rail tooltips
-  and names, account-menu keyboard use, theme switching and breakpoints.
+  and names, account-menu keyboard use, theme switching, breakpoints and
+  print media (chrome hidden only with `data-print-paper`). `BillingDocument`
+  browser tests cover light paper in the dark theme, print layout and phone
+  overflow. The User and Admin Portal browser suites compose every named
+  invoice/receipt preview state in the dashboard shell (desktop/phone,
+  light/dark, print); FE-UI-016 reuses those states. Print media is emulated
+  through CDP, and computed styles are read with `expect.poll` because the
+  Tailwind stylesheet can update after render.
 - applications: rendering via `renderToStaticMarkup` with mocked hooks (no DOM
   runner in apps; portalled Radix overlays do not server-render, so app tests
   assert dialog content through a stand-in and dialog semantics are covered

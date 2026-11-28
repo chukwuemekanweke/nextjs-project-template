@@ -87,6 +87,10 @@ Controls are 44px tall. Form-control borders use `--color-control-border` (≥ 3
 - **`Skeleton`**, `SkeletonText`, `SkeletonCard`, `SkeletonList`, `LoadingStatus` — decorative blocks plus a polite status label on the composed placeholders.
 - **`EmptyState`** (icon, title, description, `action`, `secondaryAction`) and **`ErrorState`** (title, safe default description, `onRetry` with `retrying`, alternative `action`; `role="alert"`). Never pass raw exception text or backend payloads.
 
+### Billing document sheet (`@template/dashboard-ui/documents`)
+
+`BillingDocument` renders a document `article` from already-formatted content: brand mark and issuer, title (shown uppercase, `h2`), number, status `Badge`, optional highlight figure, parties (`address`), a facts strip (`dl`, optional `mono` values), a captioned line-item table (quantity/unit-price columns only when a row supplies them; stacked below `sm` with a "Qty · Unit price" line), totals (`default`, `total`, `balance`), a toned notice and footer lines. It never formats money or dates and renders nothing it is not given. It uses the `theme-light` scope (`theme.css`), so it is light paper in both themes, and marks itself `data-print-paper`: only pages that contain it hide the `DashboardShell` chrome and print on light paper. In print it drops its frame, padding and width cap, repeats the table header and avoids breaks inside rows, totals and footer. Browser tests cover dark-theme rendering, print media and phone overflow; the workbench story uses generic sample content only.
+
 ### Chart foundations (`@template/dashboard-ui/charts`)
 
 `ChartFrame` (card with title, description, actions, legend, plot area 180px phone / 240px desktop, `state` `ready`/`loading`/`empty`/`error` with retry, required `summary` used as the figure's text alternative), `ChartLegend`, `chartSeriesColor(1–4)` and `chartColors` (`grid`, `axis`, `area`) returning theme-aware CSS variables for SVG. **Deferred (TD-10):** Recharts, chart types (line, bar, donut), axes and tooltips, data-table alternatives — introduced with the first analytics screen.

@@ -45,6 +45,7 @@ import {
   PanelLeft,
   Pencil,
   Plus,
+  Printer,
   RefreshCw,
   Search,
   Settings,
@@ -177,6 +178,7 @@ export const CloseIcon = createIcon(X, "CloseIcon");
 export const MoreIcon = createIcon(Ellipsis, "MoreIcon");
 export const UploadIcon = createIcon(Upload, "UploadIcon");
 export const DownloadIcon = createIcon(Download, "DownloadIcon");
+export const PrinterIcon = createIcon(Printer, "PrinterIcon");
 export const ExternalLinkIcon = createIcon(ExternalLink, "ExternalLinkIcon");
 export const ArrowLeftIcon = createIcon(ArrowLeft, "ArrowLeftIcon");
 export const ArrowRightIcon = createIcon(ArrowRight, "ArrowRightIcon");

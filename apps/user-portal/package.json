@@ -8,7 +8,8 @@
     "start": "next start --port 9000",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:component": "vitest run --config vitest.browser.config.ts"
   },
   "dependencies": {
     "@template/api-client": "workspace:*",
@@ -31,10 +32,13 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
     "eslint": "catalog:",
+    "playwright": "catalog:",
     "postcss": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "vitest-browser-react": "catalog:"
   }
 }
